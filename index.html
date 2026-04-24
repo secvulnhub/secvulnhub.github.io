@@ -3,898 +3,750 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SecVulnHub — Ethical Hacking Arsenal</title>
+<title>SecVulnHub — Security Tools for Practitioners</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300&family=IBM+Plex+Sans:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+/* ── Palette: dark grey-green, brutal ── */
 :root {
-  --bg:    #06070d;
-  --bg1:   #0a0c14;
-  --bg2:   #10121c;
-  --bg3:   #161824;
-  --fg:    #c2c8d8;
-  --fg2:   #6a7390;
-  --fg3:   #323850;
-  --red:   #e8334a;
-  --red2:  #ff4d63;
-  --cyan:  #1de9b6;
-  --amber: #f59e0b;
-  --violet:#9370ff;
-  --border: rgba(255,255,255,0.05);
-  --border2:rgba(255,255,255,0.10);
+  --bg:      #0b0d0b;
+  --bg1:     #101210;
+  --bg2:     #161918;
+  --border:  rgba(110,170,100,0.07);
+  --border2: rgba(110,170,100,0.15);
+  --text:    #b4bfae;
+  --muted:   #4e5c48;
+  --dim:     #272f24;
+  --cream:   #dde0d8;
+  --green:   #4d7a42;
+  --green2:  #6aad58;
+  --brass:   #9a8048;
+  --steel:   #5a7070;
+  --mono:    'DM Mono', monospace;
+  --disp:    'Syne', sans-serif;
+  --r:       2px;
 }
 
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{
-  font-family:'IBM Plex Sans',sans-serif;
-  background:var(--bg);color:var(--fg);
-  overflow-x:hidden;line-height:1.6;
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
 }
 
-/* ─── STAR FIELD + UNIVERSE ─── */
-#universe-canvas{
-  position:fixed;inset:0;
-  width:100%;height:100%;
-  z-index:0;pointer-events:none;
+/* ── Globe Canvas ── */
+#globe-canvas {
+  position: fixed;
+  top: 0; right: 0;
+  width: 60vw; height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
 }
 
-/* ─── NAV ─── */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:200;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 2.5rem;height:52px;
-  background:rgba(6,7,13,0.88);
-  backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--border);
+/* ── Nav ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
 }
-.nav-logo{
-  font-family:'IBM Plex Mono',monospace;
-  font-size:0.78rem;font-weight:600;letter-spacing:0.1em;
-  color:var(--fg);text-decoration:none;
-  display:flex;align-items:center;gap:0.5rem;
+nav.scrolled {
+  background: rgba(11,13,11,0.92);
+  backdrop-filter: blur(16px);
+  border-color: var(--border);
 }
-.nav-logo-dot{
-  width:7px;height:7px;border-radius:50%;
-  background:var(--red);
-  box-shadow:0 0 10px var(--red);
-  animation:pulse-dot 2s ease-in-out infinite;
+.logo {
+  font-family: var(--disp);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--cream);
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
 }
-@keyframes pulse-dot{
-  0%,100%{opacity:1;transform:scale(1);}
-  50%{opacity:0.4;transform:scale(0.7);}
+.logo-mark {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--green2);
+  box-shadow: 0 0 10px var(--green2);
+  animation: breathe 3s ease-in-out infinite;
+  flex-shrink: 0;
 }
-.nav-links{display:flex;align-items:center;gap:0.2rem;}
-.nav-link{
-  font-family:'IBM Plex Mono',monospace;font-size:0.6rem;
-  letter-spacing:0.12em;text-transform:uppercase;
-  color:var(--fg2);text-decoration:none;
-  padding:0.35rem 0.8rem;border:1px solid transparent;border-radius:2px;
-  transition:color 0.15s,border-color 0.15s;
+@keyframes breathe {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.5; transform: scale(0.7); }
 }
-.nav-link:hover{color:var(--fg);border-color:var(--border2);}
-.nav-cta{
-  font-family:'IBM Plex Mono',monospace;font-size:0.6rem;
-  letter-spacing:0.12em;text-transform:uppercase;
-  background:var(--red);color:#fff;text-decoration:none;
-  padding:0.35rem 0.9rem;border-radius:2px;border:1px solid var(--red);
-  transition:background 0.15s,color 0.15s;
+.nav-links { display: flex; align-items: center; gap: 0.1rem; }
+.nav-link {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--r);
+  transition: color 0.15s;
 }
-.nav-cta:hover{background:transparent;color:var(--red);}
-
-/* ─── RECON STRIP ─── */
-#recon-strip{
-  position:fixed;top:52px;left:0;right:0;z-index:190;
-  height:28px;
-  background:rgba(6,7,13,0.7);
-  backdrop-filter:blur(8px);
-  border-bottom:1px solid rgba(29,233,182,0.08);
-  display:flex;align-items:center;
-  padding:0 2.5rem;
-  gap:0;
-  overflow:hidden;
+.nav-link:hover { color: var(--text); }
+.nav-btn {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text);
+  text-decoration: none;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  margin-left: 0.5rem;
+  transition: border-color 0.15s, color 0.15s;
 }
-.recon-item{
-  display:flex;align-items:center;gap:0.4rem;
-  font-family:'IBM Plex Mono',monospace;
-  font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;
-  color:var(--fg3);white-space:nowrap;
-  padding:0 1.2rem 0 0;
-  border-right:1px solid var(--border);
-  margin-right:1.2rem;
+.nav-btn:hover { border-color: var(--text); }
+.nav-btn.primary {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--cream);
 }
-.recon-item:last-child{border-right:none;margin-right:0;}
-.recon-label{color:var(--fg3);}
-.recon-val{color:var(--cyan);font-weight:500;}
-.recon-val.red{color:var(--red);}
-.recon-val.amber{color:var(--amber);}
-.recon-badge{
-  display:inline-flex;align-items:center;gap:0.25rem;
-  background:rgba(29,233,182,0.06);
-  border:1px solid rgba(29,233,182,0.15);
-  border-radius:2px;padding:0.1rem 0.35rem;
-  font-size:0.5rem;color:var(--cyan);
-}
-.recon-dot{
-  width:4px;height:4px;border-radius:50%;
-  background:var(--cyan);
-  animation:pulse-dot 1.8s ease-in-out infinite;
-}
-.recon-spacer{flex:1;}
-.recon-ts{
-  font-family:'IBM Plex Mono',monospace;
-  font-size:0.5rem;letter-spacing:0.08em;
-  color:var(--fg3);
+.nav-btn.primary:hover {
+  background: transparent;
+  color: var(--green2);
+  border-color: var(--green2);
 }
 
-/* ─── HERO ─── */
-.hero{
-  position:relative;z-index:10;
-  min-height:100vh;
-  display:flex;flex-direction:column;justify-content:center;
-  padding:9rem 2.5rem 6rem;
-  max-width:700px;
+/* ── Hero ── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8rem 2.5rem 5rem;
+  z-index: 1;
 }
-.hero-eyebrow{
-  font-family:'IBM Plex Mono',monospace;font-size:0.6rem;
-  letter-spacing:0.2em;text-transform:uppercase;
-  color:var(--red);margin-bottom:1.4rem;
-  display:flex;align-items:center;gap:0.7rem;
-  opacity:0;animation:fadein 0.6s 0.1s ease both;
+.hero-content {
+  position: relative;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
 }
-.hero-eyebrow-slash{color:var(--fg3);}
+.hero-label {
+  font-family: var(--mono);
+  font-size: 0.57rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--green2);
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0;
+  animation: rise 0.6s 0.1s ease both;
+}
+.hero-label span { color: var(--dim); }
+h1 {
+  font-family: var(--disp);
+  font-size: clamp(3rem, 7vw, 5.6rem);
+  font-weight: 800;
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+  color: var(--cream);
+  max-width: 640px;
+  margin-bottom: 1.75rem;
+  opacity: 0;
+  animation: rise 0.7s 0.18s ease both;
+}
+h1 em {
+  font-style: normal;
+  color: var(--muted);
+  font-weight: 400;
+}
+.hero-sub {
+  font-size: 0.78rem;
+  color: var(--muted);
+  max-width: 400px;
+  line-height: 1.85;
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: rise 0.7s 0.26s ease both;
+}
+.hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 4.5rem;
+  opacity: 0;
+  animation: rise 0.7s 0.34s ease both;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 0.65rem 1.4rem;
+  border-radius: var(--r);
+  border: 1px solid;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.btn-green  { background: var(--green); border-color: var(--green); color: var(--cream); }
+.btn-green:hover { background: transparent; color: var(--green2); border-color: var(--green2); }
+.btn-ghost  { background: transparent; border-color: var(--border2); color: var(--muted); }
+.btn-ghost:hover  { border-color: var(--text); color: var(--text); }
 
-h1{
-  font-family:'IBM Plex Sans',sans-serif;
-  font-size:clamp(2.6rem,5.5vw,4.6rem);
-  font-weight:200;line-height:1.05;letter-spacing:-0.025em;
-  color:#fff;margin-bottom:1.6rem;
-  opacity:0;animation:fadein 0.7s 0.2s ease both;
+.hero-stats {
+  display: flex;
+  gap: 3.5rem;
+  flex-wrap: wrap;
+  padding-top: 2.25rem;
+  border-top: 1px solid var(--border);
+  opacity: 0;
+  animation: rise 0.7s 0.42s ease both;
 }
-h1 strong{font-weight:600;color:var(--red);}
-h1 em{font-style:normal;font-weight:300;color:rgba(255,255,255,0.5);}
-
-.hero-sub{
-  font-size:0.85rem;color:var(--fg2);max-width:460px;
-  line-height:1.8;margin-bottom:2.2rem;
-  opacity:0;animation:fadein 0.7s 0.3s ease both;
+.stat-val {
+  font-family: var(--disp);
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--cream);
+  line-height: 1;
+  display: block;
 }
-.hero-actions{
-  display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:3.5rem;
-  opacity:0;animation:fadein 0.7s 0.4s ease both;
-}
-
-.btn{
-  display:inline-flex;align-items:center;gap:0.45rem;
-  font-family:'IBM Plex Mono',monospace;font-size:0.6rem;
-  font-weight:500;letter-spacing:0.12em;text-transform:uppercase;
-  padding:0.6rem 1.3rem;border-radius:2px;
-  text-decoration:none;cursor:pointer;border:1px solid;
-  transition:background 0.15s,color 0.15s,border-color 0.15s;
-}
-.btn-primary{background:var(--red);border-color:var(--red);color:#fff;}
-.btn-primary:hover{background:transparent;color:var(--red);}
-.btn-ghost{background:transparent;border-color:var(--border2);color:var(--fg2);}
-.btn-ghost:hover{border-color:var(--fg);color:var(--fg);}
-.btn-discord{background:transparent;border-color:rgba(88,101,242,0.3);color:#7289da;}
-.btn-discord:hover{border-color:#5865f2;background:rgba(88,101,242,0.06);color:#fff;}
-
-.hero-metrics{
-  display:flex;gap:2.5rem;flex-wrap:wrap;
-  padding-top:2rem;border-top:1px solid var(--border);
-  opacity:0;animation:fadein 0.7s 0.5s ease both;
-}
-.metric-val{
-  font-family:'IBM Plex Mono',monospace;
-  font-size:1.5rem;font-weight:600;
-  color:#fff;display:block;line-height:1;
-}
-.metric-val.r{color:var(--red);}
-.metric-val.c{color:var(--cyan);}
-.metric-val.a{color:var(--amber);}
-.metric-val.v{color:var(--violet);}
-.metric-lbl{font-size:0.55rem;color:var(--fg3);letter-spacing:0.14em;text-transform:uppercase;margin-top:0.3rem;}
-
-/* ─── TICKER ─── */
-.ticker{
-  position:relative;z-index:10;
-  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
-  overflow:hidden;height:32px;background:var(--bg1);
-}
-.ticker-track{
-  display:flex;width:max-content;
-  animation:tick 50s linear infinite;
-  height:100%;align-items:center;
-}
-.ticker-item{
-  font-family:'IBM Plex Mono',monospace;font-size:0.55rem;
-  letter-spacing:0.14em;text-transform:uppercase;
-  color:var(--fg3);white-space:nowrap;
-  padding:0 1.8rem;
-  border-right:1px solid var(--border);
-  height:100%;display:flex;align-items:center;gap:0.5rem;
-}
-.ticker-item span{color:var(--red);}
-@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-
-/* ─── SECTIONS ─── */
-section{position:relative;z-index:10;}
-.inner{max-width:1160px;margin:0 auto;padding:5rem 2.5rem;}
-.section-label{
-  font-family:'IBM Plex Mono',monospace;font-size:0.55rem;
-  font-weight:500;letter-spacing:0.22em;text-transform:uppercase;
-  color:var(--red);margin-bottom:0.4rem;
-}
-h2{
-  font-family:'IBM Plex Sans',sans-serif;
-  font-size:clamp(1.5rem,3vw,2.2rem);
-  font-weight:200;letter-spacing:-0.02em;
-  color:#fff;line-height:1.1;margin-bottom:0.6rem;
-}
-h2 strong{font-weight:600;}
-.section-sub{
-  font-size:0.78rem;color:var(--fg2);max-width:460px;line-height:1.8;
-}
-
-/* ─── PROJECTS ─── */
-.projects-bar{
-  display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:1rem;margin-bottom:2rem;
-}
-.projects-bar-right{display:flex;gap:0.5rem;align-items:center;}
-
-.shuffle-btn{
-  font-family:'IBM Plex Mono',monospace;font-size:0.56rem;
-  letter-spacing:0.12em;text-transform:uppercase;
-  padding:0.45rem 0.9rem;border-radius:2px;
-  border:1px solid var(--border2);color:var(--fg2);
-  background:var(--bg1);cursor:pointer;
-  transition:border-color 0.15s,color 0.15s;
-  display:flex;align-items:center;gap:0.4rem;
-}
-.shuffle-btn:hover{border-color:var(--cyan);color:var(--cyan);}
-.spin-icon{display:inline-block;transition:transform 0.35s;}
-.shuffle-btn:active .spin-icon{transform:rotate(360deg);}
-
-.docs-wrap{position:relative;}
-.docs-menu{
-  position:absolute;top:calc(100% + 5px);right:0;
-  background:var(--bg2);border:1px solid var(--border2);
-  border-radius:3px;min-width:190px;
-  opacity:0;visibility:hidden;transform:translateY(-3px);
-  transition:all 0.15s;z-index:300;overflow:hidden;
-}
-.docs-wrap:hover .docs-menu,
-.docs-wrap:focus-within .docs-menu{opacity:1;visibility:visible;transform:none;}
-.docs-item{
-  display:block;padding:0.55rem 1rem;
-  font-family:'IBM Plex Mono',monospace;font-size:0.58rem;
-  letter-spacing:0.09em;text-transform:uppercase;
-  color:var(--fg2);text-decoration:none;cursor:pointer;
-  border:none;background:none;width:100%;text-align:left;
-  border-bottom:1px solid var(--border);transition:background 0.12s,color 0.12s;
-}
-.docs-item:last-child{border-bottom:none;}
-.docs-item:hover{background:var(--bg1);color:var(--fg);}
-
-/* project grid */
-.pgrid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
-  gap:1px;background:var(--border);border:1px solid var(--border);
-}
-.pcard{
-  background:var(--bg);padding:1.4rem;
-  position:relative;overflow:hidden;
-  transition:background 0.2s;
-}
-.pcard::before{
-  content:'';position:absolute;left:0;top:0;
-  width:2px;height:100%;
-  background:var(--card-accent,var(--red));
-  opacity:0;transition:opacity 0.2s;
-}
-.pcard:hover{background:var(--bg1);}
-.pcard:hover::before{opacity:1;}
-.pcard.entering{animation:cin 0.28s ease both;}
-.pcard.exiting{animation:cout 0.18s ease both;}
-@keyframes cin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-@keyframes cout{from{opacity:1}to{opacity:0;transform:translateY(-3px)}}
-
-.pcard-cat{
-  font-family:'IBM Plex Mono',monospace;font-size:0.5rem;
-  font-weight:500;letter-spacing:0.14em;text-transform:uppercase;
-  margin-bottom:0.7rem;display:inline-block;
-  padding:0.15rem 0.45rem;border-radius:2px;
-}
-.cat-active{background:rgba(232,51,74,0.1);color:var(--red);}
-.cat-recon{background:rgba(29,233,182,0.07);color:var(--cyan);}
-.cat-web{background:rgba(255,128,152,0.07);color:#ff8098;}
-.cat-mobile{background:rgba(245,158,11,0.07);color:var(--amber);}
-.cat-exploit{background:rgba(255,120,60,0.07);color:#ff783c;}
-.cat-network{background:rgba(147,112,255,0.07);color:var(--violet);}
-.cat-forensic{background:rgba(40,200,120,0.07);color:#28c878;}
-.cat-auto{background:rgba(245,158,11,0.07);color:var(--amber);}
-.cat-misc{background:rgba(106,115,144,0.07);color:var(--fg2);}
-
-.pcard-name{font-size:0.9rem;font-weight:500;color:#fff;margin-bottom:0.35rem;}
-.pcard-desc{font-size:0.68rem;color:var(--fg2);line-height:1.65;}
-.pcard-status{
-  display:inline-flex;align-items:center;gap:0.35rem;
-  font-family:'IBM Plex Mono',monospace;font-size:0.5rem;
-  font-weight:500;letter-spacing:0.12em;text-transform:uppercase;margin-top:0.9rem;
-}
-.st-active{color:var(--red);}
-.st-ready{color:var(--cyan);}
-.st-dev{color:var(--amber);}
-.st-plan{color:var(--fg3);}
-.st-dot{width:4px;height:4px;border-radius:50%;background:currentColor;}
-.st-active .st-dot{animation:pulse-dot 1.5s infinite;}
-
-/* ─── MISSION ─── */
-.mission-grid{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:4rem;align-items:start;
-}
-.mission-props{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:1px;background:var(--border);border:1px solid var(--border);
-}
-.mprop{padding:1.4rem;background:var(--bg);}
-.mprop-num{
-  font-family:'IBM Plex Mono',monospace;font-size:0.7rem;
-  color:var(--red);letter-spacing:0.08em;
-  display:block;margin-bottom:0.4rem;
-}
-.mprop-title{font-size:0.78rem;font-weight:500;color:#fff;margin-bottom:0.25rem;}
-.mprop-desc{font-size:0.65rem;color:var(--fg2);line-height:1.6;}
-
-/* ─── TEAM ─── */
-.team-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
-  gap:1px;background:var(--border);border:1px solid var(--border);
-  margin-top:2rem;
-}
-.tcard{background:var(--bg);padding:1.4rem;transition:background 0.15s;}
-.tcard:hover{background:var(--bg1);}
-.tcard-role{
-  font-family:'IBM Plex Mono',monospace;font-size:0.5rem;
-  letter-spacing:0.15em;text-transform:uppercase;
-  color:var(--red);margin-bottom:0.55rem;
-}
-.tcard-name{font-size:0.88rem;font-weight:500;color:#fff;margin-bottom:0.25rem;}
-.tcard-desc{font-size:0.65rem;color:var(--fg2);line-height:1.65;}
-
-/* ─── CONTRIBUTE ─── */
-.contribute-inner{max-width:600px;margin:0 auto;text-align:center;}
-.checklist{
-  text-align:left;margin:1.5rem 0 2rem;
-  background:var(--bg1);border:1px solid var(--border);
-  padding:1.1rem 1.4rem;
-}
-.check-label{
-  font-family:'IBM Plex Mono',monospace;font-size:0.52rem;
-  letter-spacing:0.18em;text-transform:uppercase;
-  color:var(--fg3);margin-bottom:0.7rem;
-}
-.check-item{
-  display:flex;align-items:flex-start;gap:0.5rem;
-  font-size:0.68rem;color:var(--fg2);
-  padding:0.28rem 0;border-bottom:1px solid var(--border);line-height:1.5;
-}
-.check-item:last-child{border-bottom:none;}
-.check-icon{color:var(--cyan);flex-shrink:0;font-size:0.6rem;margin-top:0.05rem;}
-
-/* ─── DOCS MODAL ─── */
-.modal-overlay{
-  position:fixed;inset:0;z-index:1000;
-  background:rgba(6,7,13,0.96);
-  display:flex;flex-direction:column;
-  opacity:0;visibility:hidden;transition:all 0.2s;
-}
-.modal-overlay.open{opacity:1;visibility:visible;}
-.modal-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0.9rem 1.4rem;
-  border-bottom:1px solid var(--border);background:var(--bg1);flex-shrink:0;
-}
-.modal-title{
-  font-family:'IBM Plex Mono',monospace;font-size:0.65rem;
-  letter-spacing:0.12em;text-transform:uppercase;color:var(--fg);
-}
-.modal-close{
-  background:none;border:1px solid var(--border2);color:var(--fg2);cursor:pointer;
-  font-family:'IBM Plex Mono',monospace;font-size:0.58rem;letter-spacing:0.08em;
-  padding:0.28rem 0.65rem;border-radius:2px;transition:border-color 0.15s,color 0.15s;
-}
-.modal-close:hover{border-color:var(--red);color:var(--red);}
-.modal-body{flex:1;overflow:auto;}
-.modal-body iframe{width:100%;height:100%;border:none;background:#fff;}
-.modal-loading{
-  display:flex;align-items:center;justify-content:center;
-  height:100%;font-family:'IBM Plex Mono',monospace;
-  font-size:0.65rem;color:var(--fg2);letter-spacing:0.1em;
+.stat-val.g { color: var(--green2); }
+.stat-val.b { color: var(--brass); }
+.stat-val.s { color: var(--steel); }
+.stat-key {
+  font-family: var(--mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 0.35rem;
+  display: block;
 }
 
-/* ─── FOOTER ─── */
-footer{
-  position:relative;z-index:10;
-  border-top:1px solid var(--border);
+/* ── Layout ── */
+section { position: relative; z-index: 1; }
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 5rem 2.5rem;
 }
-.footer-inner{
-  max-width:1160px;margin:0 auto;
-  padding:1.8rem 2.5rem;
-  display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:1.5rem;
+.rule { border: none; border-top: 1px solid var(--border); position: relative; z-index: 1; }
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.53rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--green2);
+  margin-bottom: 0.5rem;
 }
-.footer-logo{
-  font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:0.75rem;color:var(--fg2);
+h2 {
+  font-family: var(--disp);
+  font-size: clamp(1.6rem, 3vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--cream);
+  line-height: 1.05;
 }
-.footer-links{display:flex;gap:2rem;flex-wrap:wrap;}
-.footer-link{
-  font-family:'IBM Plex Mono',monospace;font-size:0.56rem;
-  letter-spacing:0.12em;text-transform:uppercase;
-  color:var(--fg3);text-decoration:none;transition:color 0.15s;
-  background:none;border:none;cursor:pointer;
+.subdesc {
+  font-size: 0.74rem;
+  color: var(--muted);
+  line-height: 1.8;
+  max-width: 440px;
 }
-.footer-link:hover{color:var(--fg);}
-.footer-note{font-family:'IBM Plex Mono',monospace;font-size:0.54rem;color:var(--fg3);letter-spacing:0.06em;}
 
-.divider{height:1px;background:var(--border);position:relative;z-index:10;}
+/* ── Projects ── */
+.proj-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.filters {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+.ftab {
+  font-family: var(--mono);
+  font-size: 0.53rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  background: none;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.ftab:hover { color: var(--text); border-color: var(--border2); }
+.ftab.on {
+  color: var(--green2);
+  border-color: rgba(106,173,88,0.35);
+  background: rgba(106,173,88,0.06);
+}
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(285px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+.tool-card {
+  background: var(--bg);
+  padding: 1.5rem;
+  position: relative;
+  transition: background 0.15s;
+  overflow: hidden;
+}
+.tool-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--cc, var(--green));
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.tool-card:hover { background: var(--bg1); }
+.tool-card:hover::before { opacity: 1; }
 
-@keyframes fadein{to{opacity:1;transform:none}}
+.badge {
+  font-family: var(--mono);
+  font-size: 0.48rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.13rem 0.38rem;
+  border-radius: 1px;
+  display: inline-block;
+  margin-bottom: 0.75rem;
+}
+.bc-recon   { color: var(--green2); background: rgba(106,173,88,0.08); }
+.bc-vuln    { color: var(--steel);  background: rgba(90,112,112,0.1); }
+.bc-web     { color: #8ab870;       background: rgba(138,184,112,0.08); }
+.bc-exploit { color: var(--brass);  background: rgba(154,128,72,0.1); }
+.bc-mobile  { color: #7a9890;       background: rgba(122,152,144,0.08); }
+.bc-forensic{ color: #6a9060;       background: rgba(106,144,96,0.08); }
+.bc-auto    { color: var(--steel);  background: rgba(90,112,112,0.1); }
+.bc-misc    { color: var(--muted);  background: rgba(78,92,72,0.1); }
 
-@media(max-width:900px){
-  .hero{padding:8rem 1.5rem 4rem;max-width:none;}
-  .mission-grid{grid-template-columns:1fr;}
-  nav,#recon-strip{padding-left:1.5rem;padding-right:1.5rem;}
-  .inner{padding:4rem 1.5rem;}
-  .nav-links .nav-link:nth-child(n+3){display:none;}
-  #recon-strip{gap:0;}
-  .recon-item:nth-child(n+4){display:none;}
+.tool-name {
+  font-family: var(--disp);
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--cream);
+  margin-bottom: 0.4rem;
+  letter-spacing: -0.01em;
+}
+.tool-desc {
+  font-size: 0.68rem;
+  color: var(--muted);
+  line-height: 1.68;
+}
+.tool-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--mono);
+  font-size: 0.48rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 1rem;
+}
+.sdot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.s-ready { color: var(--green2); }
+.s-dev   { color: var(--brass); }
+.s-plan  { color: var(--dim); }
+.s-plan .sdot { background: var(--muted); }
+
+/* ── Mission ── */
+.mission-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: start;
+}
+.mission-copy h2  { margin-bottom: 1rem; }
+.mission-copy .subdesc + .subdesc { margin-top: 0.75rem; }
+.mission-ctas { margin-top: 2rem; display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.principles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+.principle { background: var(--bg); padding: 1.5rem; }
+.p-num {
+  font-family: var(--mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  color: var(--green2);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.p-title {
+  font-family: var(--disp);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--cream);
+  margin-bottom: 0.35rem;
+}
+.p-desc { font-size: 0.66rem; color: var(--muted); line-height: 1.6; }
+
+/* ── Contribute ── */
+.contrib-wrap {
+  max-width: 540px;
+  margin: 0 auto;
+  text-align: center;
+}
+.contrib-wrap h2 { margin-bottom: 0.75rem; }
+.contrib-wrap .subdesc { margin: 0 auto; text-align: center; }
+.checklist {
+  text-align: left;
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1.1rem 1.4rem;
+  margin: 2rem 0;
+}
+.chk {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-size: 0.68rem;
+  color: var(--muted);
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.5;
+}
+.chk:last-child { border-bottom: none; }
+.chk-mark { font-size: 0.56rem; color: var(--green2); flex-shrink: 0; margin-top: 0.12rem; }
+.cta-row { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+
+/* ── Footer ── */
+footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
+.foot-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.75rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.foot-brand {
+  font-family: var(--disp);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-decoration: none;
+}
+.foot-links { display: flex; gap: 1.75rem; }
+.foot-link {
+  font-family: var(--mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.foot-link:hover { color: var(--text); }
+.foot-note { font-family: var(--mono); font-size: 0.5rem; color: var(--dim); letter-spacing: 0.06em; }
+
+/* ── Animations ── */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  nav { padding: 0 1.5rem; }
+  .nav-link { display: none; }
+  .hero { padding: 7rem 1.5rem 4rem; }
+  h1 { font-size: 2.8rem; }
+  .hero-stats { gap: 2rem; }
+  .wrap { padding: 3.5rem 1.5rem; }
+  .mission-layout { grid-template-columns: 1fr; gap: 2.5rem; }
+  .principles { grid-template-columns: 1fr; }
+  #globe-canvas { width: 100vw; opacity: 0.25; }
 }
 </style>
 </head>
 <body>
 
-<!-- UNIVERSE CANVAS (stars + globe) -->
-<canvas id="universe-canvas"></canvas>
+<!-- Globe -->
+<canvas id="globe-canvas"></canvas>
 
-<!-- NAV -->
-<nav>
-  <a href="#" class="nav-logo">
-    <span class="nav-logo-dot"></span>
+<!-- Nav -->
+<nav id="nav">
+  <a class="logo" href="#">
+    <span class="logo-mark"></span>
     SecVulnHub
   </a>
   <div class="nav-links">
-    <a href="#projects" class="nav-link">Projects</a>
-    <a href="#mission" class="nav-link">Mission</a>
-    <a href="#team" class="nav-link">Team</a>
-    <a href="https://github.com/secvulnhub/secvulnhub/" target="_blank" class="nav-link">GitHub</a>
-    <a href="https://discord.gg/SecVulnHub" target="_blank" class="nav-cta">Discord</a>
+    <a class="nav-link" href="#projects">Projects</a>
+    <a class="nav-link" href="#mission">Mission</a>
+    <a class="nav-link" href="#contribute">Contribute</a>
+    <a class="nav-btn" href="https://github.com/secvulnhub/secvulnhub/" target="_blank">GitHub</a>
+    <a class="nav-btn primary" href="https://discord.gg/SecVulnHub" target="_blank">Discord</a>
   </div>
 </nav>
 
-<!-- VISITOR RECON STRIP -->
-<div id="recon-strip">
-  <div class="recon-item">
-    <span class="recon-label">visitor</span>
-    <span class="recon-badge"><span class="recon-dot"></span>live</span>
-  </div>
-  <div class="recon-item">
-    <span class="recon-label">ip&nbsp;</span>
-    <span class="recon-val" id="r-ip">resolving…</span>
-  </div>
-  <div class="recon-item">
-    <span class="recon-label">loc&nbsp;</span>
-    <span class="recon-val amber" id="r-loc">—</span>
-  </div>
-  <div class="recon-item">
-    <span class="recon-label">ua&nbsp;</span>
-    <span class="recon-val red" id="r-ua">—</span>
-  </div>
-  <div class="recon-item">
-    <span class="recon-label">browser&nbsp;</span>
-    <span class="recon-val" id="r-browser">—</span>
-  </div>
-  <div class="recon-item">
-    <span class="recon-label">os&nbsp;</span>
-    <span class="recon-val" id="r-os">—</span>
-  </div>
-  <div class="recon-spacer"></div>
-  <div class="recon-item">
-    <span class="recon-label">session&nbsp;</span>
-    <span class="recon-val" id="r-ts">—</span>
-  </div>
-</div>
-
-<!-- HERO -->
+<!-- Hero -->
 <section class="hero">
-  <div class="hero-eyebrow">
-    <span class="hero-eyebrow-slash">//</span>
-    Est. 2025 · Open Source · MIT
-  </div>
-  <h1>
-    Forge the<br>
-    Future of <strong>Ethical</strong><br>
-    <em>Security</em>
-  </h1>
-  <p class="hero-sub">
-    A collective of cybersecurity practitioners building battle-tested tools for the security community. No gatekeeping. Code that matters.
-  </p>
-  <div class="hero-actions">
-    <a href="https://github.com/secvulnhub/secvulnhub/" target="_blank" class="btn btn-primary">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-      View on GitHub
-    </a>
-    <a href="https://discord.gg/SecVulnHub" target="_blank" class="btn btn-discord">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
-      Join Discord
-    </a>
-    <a href="#projects" class="btn btn-ghost">Explore Arsenal</a>
-  </div>
-  <div class="hero-metrics">
-    <div class="metric">
-      <span class="metric-val r">100</span>
-      <span class="metric-lbl">Day Gauntlet</span>
+  <div class="hero-content">
+    <p class="hero-label">Est. 2025 <span>/</span> Open Source <span>/</span> MIT</p>
+    <h1>Security tools<br>built by<br><em>practitioners.</em></h1>
+    <p class="hero-sub">A collective building battle-tested offensive security tooling. No bloat, no gatekeeping. Code that solves real problems in the field.</p>
+    <div class="hero-actions">
+      <a class="btn btn-green" href="#projects">Explore Arsenal</a>
+      <a class="btn btn-ghost" href="https://github.com/secvulnhub/secvulnhub/" target="_blank">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+        View on GitHub
+      </a>
     </div>
-    <div class="metric">
-      <span class="metric-val c">20+</span>
-      <span class="metric-lbl">Tools Incoming</span>
-    </div>
-    <div class="metric">
-      <span class="metric-val a">8</span>
-      <span class="metric-lbl">Domains</span>
-    </div>
-    <div class="metric">
-      <span class="metric-val v">MIT</span>
-      <span class="metric-lbl">Licensed</span>
+    <div class="hero-stats">
+      <div><span class="stat-val g">100</span><span class="stat-key">Day Gauntlet</span></div>
+      <div><span class="stat-val">20+</span><span class="stat-key">Tools</span></div>
+      <div><span class="stat-val b">8</span><span class="stat-key">Domains</span></div>
+      <div><span class="stat-val s">MIT</span><span class="stat-key">Licensed</span></div>
     </div>
   </div>
 </section>
 
-<!-- TICKER -->
-<div class="ticker">
-  <div class="ticker-track">
-    <div class="ticker-item"><span>Phase 1</span> Recon &amp; Intel</div>
-    <div class="ticker-item"><span>Phase 2</span> Vulnerability Detection</div>
-    <div class="ticker-item"><span>Phase 3</span> Exploitation</div>
-    <div class="ticker-item"><span>Phase 4</span> Automation</div>
-    <div class="ticker-item"><span>Phase 5</span> Forensics &amp; Analysis</div>
-    <div class="ticker-item"><span>Active</span> SecV Toolkit</div>
-    <div class="ticker-item"><span>100 Days</span> 20 Tools</div>
-    <div class="ticker-item"><span>Open Source</span> MIT</div>
-    <div class="ticker-item"><span>Phase 1</span> Recon &amp; Intel</div>
-    <div class="ticker-item"><span>Phase 2</span> Vulnerability Detection</div>
-    <div class="ticker-item"><span>Phase 3</span> Exploitation</div>
-    <div class="ticker-item"><span>Phase 4</span> Automation</div>
-    <div class="ticker-item"><span>Phase 5</span> Forensics &amp; Analysis</div>
-    <div class="ticker-item"><span>Active</span> SecV Toolkit</div>
-    <div class="ticker-item"><span>100 Days</span> 20 Tools</div>
-    <div class="ticker-item"><span>Open Source</span> MIT</div>
-  </div>
-</div>
+<hr class="rule">
 
-<!-- PROJECTS -->
+<!-- Projects -->
 <section id="projects">
-  <div class="inner">
-    <div class="projects-bar">
+  <div class="wrap">
+    <div class="proj-head">
       <div>
-        <p class="section-label">The Arsenal</p>
-        <h2><strong>Security</strong> Tools</h2>
+        <p class="eyebrow">The Arsenal</p>
+        <h2>Security Tools</h2>
       </div>
-      <div class="projects-bar-right">
-        <button class="shuffle-btn" onclick="shuffleProjects()">
-          <span class="spin-icon">⟳</span> Shuffle
-        </button>
-        <div class="docs-wrap">
-          <button class="btn btn-ghost" style="cursor:pointer;">Documentation ▾</button>
-          <div class="docs-menu">
-            <button class="docs-item" onclick="openDoc('hosted')">SecV Docs (Live)</button>
-            <button class="docs-item" onclick="openDoc('readme')">README (GitHub)</button>
-          </div>
-        </div>
-        <a href="https://discord.gg/SecVulnHub" target="_blank" class="btn btn-discord">All Projects</a>
+      <div class="filters" id="filters">
+        <button class="ftab on" data-f="all">All</button>
+        <button class="ftab" data-f="recon">Recon</button>
+        <button class="ftab" data-f="vuln">Vuln Assessment</button>
+        <button class="ftab" data-f="web">Web App</button>
+        <button class="ftab" data-f="exploit">Exploitation</button>
+        <button class="ftab" data-f="mobile">Mobile</button>
+        <button class="ftab" data-f="forensic">Forensics</button>
+        <button class="ftab" data-f="auto">Automation</button>
+        <button class="ftab" data-f="misc">Utilities</button>
       </div>
     </div>
-    <div class="pgrid" id="projectGrid"></div>
+    <div class="tool-grid" id="toolGrid"></div>
   </div>
 </section>
 
-<div class="divider"></div>
+<hr class="rule">
 
-<!-- MISSION -->
+<!-- Mission -->
 <section id="mission">
-  <div class="inner">
-    <div class="mission-grid">
-      <div>
-        <p class="section-label">Why We Exist</p>
-        <h2>Built by hunters,<br><strong>for hunters.</strong></h2>
-        <p class="section-sub" style="margin-top:1rem">
-          Every framework ships with bloat. Every security tool has three layers of abstraction that do nothing except look impressive. SecVulnHub exists to ship clean, purposeful tools that practitioners actually reach for.
-        </p>
-        <p class="section-sub" style="margin-top:0.75rem">
-          Quality over quantity. Tested in the field. Maintained by the community. If it doesn't solve a real problem, it doesn't ship.
-        </p>
+  <div class="wrap">
+    <div class="mission-layout">
+      <div class="mission-copy">
+        <p class="eyebrow">Why We Exist</p>
+        <h2>Built in the field.<br>Maintained by<br>the community.</h2>
+        <p class="subdesc" style="margin-top:1rem">Every tool is real-world tested before it ships. We don't publish theory or demo code — only tools practitioners reach for when it counts.</p>
+        <p class="subdesc">Quality over quantity. If it doesn't solve a real problem, it doesn't ship.</p>
+        <div class="mission-ctas">
+          <a class="btn btn-green" href="https://discord.gg/SecVulnHub" target="_blank">Join Discord</a>
+          <a class="btn btn-ghost" href="https://github.com/secvulnhub/secvulnhub/" target="_blank">GitHub →</a>
+        </div>
       </div>
-      <div class="mission-props">
-        <div class="mprop">
-          <span class="mprop-num">01</span>
-          <div class="mprop-title">Quality First</div>
-          <div class="mprop-desc">Real-world testing before every release. No vaporware, no theory-only code.</div>
+      <div class="principles">
+        <div class="principle">
+          <span class="p-num">01</span>
+          <div class="p-title">Quality First</div>
+          <div class="p-desc">Real-world testing before every release. No theory-only code.</div>
         </div>
-        <div class="mprop">
-          <span class="mprop-num" style="color:var(--cyan)">02</span>
-          <div class="mprop-title">Any Language</div>
-          <div class="mprop-desc">Python, Go, Bash, Rust. Write what performs. Write what you know.</div>
+        <div class="principle">
+          <span class="p-num" style="color:var(--steel)">02</span>
+          <div class="p-title">Any Language</div>
+          <div class="p-desc">Python, Go, Bash, Rust. Use what performs. Use what you know.</div>
         </div>
-        <div class="mprop">
-          <span class="mprop-num" style="color:var(--amber)">03</span>
-          <div class="mprop-title">Open Source</div>
-          <div class="mprop-desc">MIT license. Fork it. Improve it. Ship it back. No gatekeeping.</div>
+        <div class="principle">
+          <span class="p-num" style="color:var(--brass)">03</span>
+          <div class="p-title">Open Source</div>
+          <div class="p-desc">MIT license. Fork it, improve it, ship it back. No gatekeeping.</div>
         </div>
-        <div class="mprop">
-          <span class="mprop-num" style="color:var(--violet)">04</span>
-          <div class="mprop-title">Ethical Only</div>
-          <div class="mprop-desc">Authorized testing only. Always. No exceptions. Ever.</div>
+        <div class="principle">
+          <span class="p-num" style="color:var(--muted)">04</span>
+          <div class="p-title">Ethical Only</div>
+          <div class="p-desc">Authorized testing. Always. No exceptions. Ever.</div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<div class="divider"></div>
+<hr class="rule">
 
-<!-- TEAM -->
-<section id="team">
-  <div class="inner">
-    <p class="section-label">The Collective</p>
-    <h2>Meet the <strong>Team</strong></h2>
-    <p class="section-sub">A distributed crew of security obsessives. Red teamers, bug bounty hunters, vulnerability researchers, and tool developers.</p>
-    <div class="team-grid">
-      <div class="tcard">
-        <div class="tcard-role">Offensive Ops</div>
-        <div class="tcard-name">Red Team</div>
-        <div class="tcard-desc">Advanced penetration testing, red team operations, and attack simulation. Testing defenses before attackers do.</div>
-      </div>
-      <div class="tcard">
-        <div class="tcard-role">Bug Bounty</div>
-        <div class="tcard-name">Active Hunters</div>
-        <div class="tcard-desc">Active on HackerOne and Bugcrowd. Critical CVE disclosures. Finding what others miss consistently.</div>
-      </div>
-      <div class="tcard">
-        <div class="tcard-role">Vulnerability Research</div>
-        <div class="tcard-name">0day Discovery</div>
-        <div class="tcard-desc">Novel attack vectors, responsible disclosure, and vulnerability research that shapes the field.</div>
-      </div>
-      <div class="tcard">
-        <div class="tcard-role">Tool Development</div>
-        <div class="tcard-name">Toolsmiths</div>
-        <div class="tcard-desc">Full-stack security tooling. Automation, workflow integration, and frameworks that tie it together.</div>
-      </div>
-    </div>
-    <div style="margin-top:2rem;display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;">
-      <a href="https://discord.gg/SecVulnHub" target="_blank" class="btn btn-primary">Meet the Team on Discord</a>
-      <span style="font-size:0.68rem;color:var(--fg3)">Connect with contributors and the core team.</span>
-    </div>
-  </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- CONTRIBUTE -->
+<!-- Contribute -->
 <section id="contribute">
-  <div class="inner">
-    <div class="contribute-inner">
-      <p class="section-label">Contribute</p>
-      <h2>Become a<br><strong>Weaponsmith</strong></h2>
-      <p style="font-size:0.78rem;color:var(--fg2);line-height:1.8;margin-top:0.75rem">
-        We're looking for contributors who share our obsession with building tools that matter. Your language. Your specialization. Our arsenal.
-      </p>
+  <div class="wrap">
+    <div class="contrib-wrap">
+      <p class="eyebrow">Contribute</p>
+      <h2>Become a contributor.</h2>
+      <p class="subdesc" style="margin-top:0.75rem">Build tools practitioners actually use. Your language, your specialization — our arsenal.</p>
       <div class="checklist">
-        <div class="check-label">Submission Checklist</div>
-        <div class="check-item"><span class="check-icon">✓</span> Solves a real cybersecurity challenge</div>
-        <div class="check-item"><span class="check-icon">✓</span> 5-minute deployment from docs</div>
-        <div class="check-item"><span class="check-icon">✓</span> Passes security review</div>
-        <div class="check-item"><span class="check-icon">✓</span> Comprehensive tests and documentation</div>
-        <div class="check-item"><span class="check-icon">✓</span> Adds unique value to the arsenal</div>
+        <div class="chk"><span class="chk-mark">✓</span>Solves a real cybersecurity challenge</div>
+        <div class="chk"><span class="chk-mark">✓</span>Deployable in under 5 minutes from docs</div>
+        <div class="chk"><span class="chk-mark">✓</span>Passes security review and audit</div>
+        <div class="chk"><span class="chk-mark">✓</span>Comprehensive tests and documentation</div>
+        <div class="chk"><span class="chk-mark">✓</span>Has install.sh and test.sh scripts</div>
+        <div class="chk"><span class="chk-mark">✓</span>Adds unique value — no duplicates</div>
       </div>
-      <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
-        <a href="https://github.com/secvulnhub/secvulnhub/" target="_blank" class="btn btn-primary">Fork on GitHub</a>
-        <a href="https://discord.gg/SecVulnHub" target="_blank" class="btn btn-discord">Ask in Discord</a>
+      <div class="cta-row">
+        <a class="btn btn-green" href="https://github.com/secvulnhub/secvulnhub/" target="_blank">Fork on GitHub</a>
+        <a class="btn btn-ghost" href="https://discord.gg/SecVulnHub" target="_blank">Ask in Discord</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
+<hr class="rule">
+
 <footer>
-  <div class="footer-inner">
-    <div class="footer-logo">SecVulnHub</div>
-    <div class="footer-links">
-      <a href="https://github.com/secvulnhub/secvulnhub/" target="_blank" class="footer-link">GitHub</a>
-      <a href="https://discord.gg/SecVulnHub" target="_blank" class="footer-link">Discord</a>
-      <button class="footer-link" onclick="openDoc('hosted')">SecV Docs</button>
+  <div class="foot-inner">
+    <a class="foot-brand" href="#">SecVulnHub</a>
+    <div class="foot-links">
+      <a class="foot-link" href="https://github.com/secvulnhub/secvulnhub/" target="_blank">GitHub</a>
+      <a class="foot-link" href="https://discord.gg/SecVulnHub" target="_blank">Discord</a>
+      <a class="foot-link" href="#projects">Arsenal</a>
     </div>
-    <div class="footer-note">MIT License · Made by hackers, for hackers.</div>
+    <span class="foot-note">MIT License · Built by practitioners, for practitioners.</span>
   </div>
 </footer>
 
-<!-- DOCS MODAL -->
-<div class="modal-overlay" id="docsModal">
-  <div class="modal-header">
-    <span class="modal-title" id="modalTitle">Documentation</span>
-    <button class="modal-close" onclick="closeDoc()">✕ Close</button>
-  </div>
-  <div class="modal-body" id="modalBody">
-    <div class="modal-loading">// Fetching documentation…</div>
-  </div>
-</div>
-
+<!-- Three.js Globe -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-/* ═══════════════════════════════════════════════
-   UNIVERSE — stars + rotating globe
-═══════════════════════════════════════════════ */
+/* ── Globe ── */
 (function () {
-  const canvas = document.getElementById('universe-canvas');
+  const canvas = document.getElementById('globe-canvas');
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 2000);
-  camera.position.z = 5;
+  const W = canvas.clientWidth, H = canvas.clientHeight;
+  const camera = new THREE.PerspectiveCamera(42, W / H, 0.1, 1000);
+  camera.position.z = 4.8;
 
-  function resize() {
-    const W = canvas.clientWidth, H = canvas.clientHeight;
-    renderer.setSize(W, H, false);
-    camera.aspect = W / H;
+  function onResize() {
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
     camera.updateProjectionMatrix();
   }
-  resize();
-  new ResizeObserver(resize).observe(canvas);
+  onResize();
+  new ResizeObserver(onResize).observe(canvas);
 
-  /* ── STAR FIELD ── */
-  const STAR_COUNT = 2200;
-  const starPositions = new Float32Array(STAR_COUNT * 3);
-  const starSizes = new Float32Array(STAR_COUNT);
-  for (let i = 0; i < STAR_COUNT; i++) {
-    const r = 80 + Math.random() * 600;
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos(2 * Math.random() - 1);
-    starPositions[i * 3]     = r * Math.sin(phi) * Math.cos(theta);
-    starPositions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-    starPositions[i * 3 + 2] = r * Math.cos(phi);
-    starSizes[i] = Math.random() * 1.8 + 0.4;
-  }
-  const starGeo = new THREE.BufferGeometry();
-  starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-  starGeo.setAttribute('size', new THREE.BufferAttribute(starSizes, 1));
-  const starMat = new THREE.PointsMaterial({
-    color: 0xc8cdd8, size: 0.6, sizeAttenuation: true,
-    transparent: true, opacity: 0.55,
-  });
-  scene.add(new THREE.Points(starGeo, starMat));
+  /* ── Earth texture (green-grey brutal palette) ── */
+  const tex = document.createElement('canvas');
+  tex.width = 2048; tex.height = 1024;
+  const ctx = tex.getContext('2d');
 
-  /* a few brighter accent stars */
-  const accentPositions = new Float32Array(120 * 3);
-  for (let i = 0; i < 120; i++) {
-    const r = 100 + Math.random() * 500;
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos(2 * Math.random() - 1);
-    accentPositions[i * 3]     = r * Math.sin(phi) * Math.cos(theta);
-    accentPositions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-    accentPositions[i * 3 + 2] = r * Math.cos(phi);
-  }
-  const accentGeo = new THREE.BufferGeometry();
-  accentGeo.setAttribute('position', new THREE.BufferAttribute(accentPositions, 3));
-  const accentMat = new THREE.PointsMaterial({
-    color: 0x1de9b6, size: 1.1, sizeAttenuation: true,
-    transparent: true, opacity: 0.35,
-  });
-  scene.add(new THREE.Points(accentGeo, accentMat));
-
-  /* red accent stars */
-  const redPositions = new Float32Array(60 * 3);
-  for (let i = 0; i < 60; i++) {
-    const r = 80 + Math.random() * 450;
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos(2 * Math.random() - 1);
-    redPositions[i * 3]     = r * Math.sin(phi) * Math.cos(theta);
-    redPositions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-    redPositions[i * 3 + 2] = r * Math.cos(phi);
-  }
-  const redGeo = new THREE.BufferGeometry();
-  redGeo.setAttribute('position', new THREE.BufferAttribute(redPositions, 3));
-  const redMat = new THREE.PointsMaterial({
-    color: 0xe8334a, size: 0.9, sizeAttenuation: true,
-    transparent: true, opacity: 0.28,
-  });
-  scene.add(new THREE.Points(redGeo, redMat));
-
-  /* ── EARTH TEXTURE ── */
-  const texCanvas = document.createElement('canvas');
-  texCanvas.width = 2048; texCanvas.height = 1024;
-  const ctx = texCanvas.getContext('2d');
-
-  // Ocean base
-  ctx.fillStyle = '#040d1e';
+  /* ocean — near-black teal-grey */
+  ctx.fillStyle = '#060c0a';
   ctx.fillRect(0, 0, 2048, 1024);
 
-  // Ocean gradient layers
-  const og = ctx.createRadialGradient(1024, 512, 0, 1024, 512, 900);
-  og.addColorStop(0, 'rgba(0,30,80,0.5)');
-  og.addColorStop(1, 'rgba(0,5,25,0.8)');
-  ctx.fillStyle = og;
-  ctx.fillRect(0, 0, 2048, 1024);
+  /* subtle ocean depth gradient */
+  const og = ctx.createRadialGradient(1024, 512, 0, 1024, 512, 1000);
+  og.addColorStop(0, 'rgba(20,40,30,0.4)');
+  og.addColorStop(1, 'rgba(0,0,0,0.5)');
+  ctx.fillStyle = og; ctx.fillRect(0, 0, 2048, 1024);
 
-  // Continents — more detailed shapes
-  const landColor = '#0d2318';
-  const landHighlight = '#112a20';
+  /* continents — dark forest grey-green */
+  const land   = '#1a2618';
+  const landHi = '#222e1e';
+  const landLo = '#141e12';
 
-  function landBlob(x, y, rx, ry, angle = 0, detail = []) {
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(angle);
-    ctx.beginPath();
-    ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
-    ctx.fillStyle = landColor;
-    ctx.fill();
-    detail.forEach(d => {
-      ctx.beginPath();
-      ctx.ellipse(d[0], d[1], d[2], d[3], 0, 0, Math.PI * 2);
-      ctx.fillStyle = landHighlight;
-      ctx.fill();
+  function blob(x, y, rx, ry, rot, detail) {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(rot || 0);
+    ctx.beginPath(); ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+    ctx.fillStyle = land; ctx.fill();
+    if (detail) detail.forEach(d => {
+      ctx.beginPath(); ctx.ellipse(d[0], d[1], d[2], d[3], d[4] || 0, 0, Math.PI * 2);
+      ctx.fillStyle = Math.random() > 0.5 ? landHi : landLo; ctx.fill();
     });
     ctx.restore();
   }
 
-  // North America
-  landBlob(360, 290, 150, 120, 0.1, [[20, 30, 60, 40], [-40, 80, 50, 55]]);
-  landBlob(300, 180, 60, 40, 0.05, []); // Alaska-ish
-  // Central America
-  ctx.beginPath(); ctx.ellipse(350, 430, 35, 50, 0.2, 0, Math.PI * 2);
-  ctx.fillStyle = landColor; ctx.fill();
-  // South America
-  landBlob(430, 590, 75, 130, 0.08, [[20, 40, 30, 50]]);
-  // Greenland
-  landBlob(600, 140, 55, 45, 0, []);
-  // Europe
-  landBlob(940, 235, 65, 55, 0, [[30, -10, 25, 20]]);
-  // UK
-  ctx.beginPath(); ctx.ellipse(875, 205, 18, 28, -0.3, 0, Math.PI * 2);
-  ctx.fillStyle = landColor; ctx.fill();
-  // Africa
-  landBlob(970, 480, 95, 165, 0.03, [[-10, -60, 50, 40], [10, 60, 60, 70]]);
-  // Madagascar
-  ctx.beginPath(); ctx.ellipse(1110, 600, 16, 35, 0.1, 0, Math.PI * 2);
-  ctx.fillStyle = landColor; ctx.fill();
-  // Russia / Asia
-  landBlob(1260, 230, 290, 160, 0.04, [[50, 30, 100, 80], [-80, 50, 80, 60]]);
-  // India
-  ctx.beginPath(); ctx.ellipse(1200, 450, 50, 75, 0.05, 0, Math.PI * 2);
-  ctx.fillStyle = landColor; ctx.fill();
-  // Southeast Asia islands
-  [1380, 1420, 1450, 1480, 1500].forEach((x, i) => {
-    ctx.beginPath(); ctx.ellipse(x, 520 + i * 12, 18 - i * 2, 12, 0.1 * i, 0, Math.PI * 2);
-    ctx.fillStyle = landColor; ctx.fill();
+  /* North America */
+  blob(360, 290, 148, 118, 0.08, [[25,30,55,38],[−35,80,48,52],[10,−20,40,28]]);
+  blob(308, 182, 58, 38, 0.05);
+  /* Central America */
+  ctx.save(); ctx.translate(360, 430); ctx.beginPath();
+  ctx.ellipse(0, 0, 32, 48, 0.2, 0, Math.PI*2); ctx.fillStyle = land; ctx.fill(); ctx.restore();
+  /* South America */
+  blob(428, 590, 74, 128, 0.06, [[18,40,28,48]]);
+  /* Greenland */
+  blob(605, 145, 52, 42);
+  /* Europe */
+  blob(942, 238, 62, 52, 0, [[28,−8,22,18],[−10,20,18,14]]);
+  /* UK */
+  ctx.save(); ctx.translate(878, 208); ctx.beginPath();
+  ctx.ellipse(0, 0, 16, 26, −0.3, 0, Math.PI*2); ctx.fillStyle = land; ctx.fill(); ctx.restore();
+  /* Africa */
+  blob(972, 480, 92, 162, 0.02, [[−8,−58,48,38],[12,58,58,68]]);
+  /* Madagascar */
+  ctx.save(); ctx.translate(1112, 602); ctx.beginPath();
+  ctx.ellipse(0, 0, 14, 33, 0.1, 0, Math.PI*2); ctx.fillStyle = land; ctx.fill(); ctx.restore();
+  /* Russia/Asia */
+  blob(1255, 228, 288, 158, 0.03, [[55,28,95,75],[−75,48,75,55]]);
+  /* India */
+  ctx.save(); ctx.translate(1200, 455); ctx.beginPath();
+  ctx.ellipse(0, 0, 48, 72, 0.04, 0, Math.PI*2); ctx.fillStyle = land; ctx.fill(); ctx.restore();
+  /* SE Asia */
+  [1382,1422,1452,1480].forEach((x,i) => {
+    ctx.save(); ctx.translate(x, 522+i*10); ctx.beginPath();
+    ctx.ellipse(0,0,16-i,10,0.1*i,0,Math.PI*2); ctx.fillStyle=land; ctx.fill(); ctx.restore();
   });
-  // Japan
-  ctx.beginPath(); ctx.ellipse(1510, 310, 14, 45, 0.3, 0, Math.PI * 2);
-  ctx.fillStyle = landColor; ctx.fill();
-  // Australia
-  landBlob(1580, 640, 105, 75, 0, [[20, 20, 40, 30]]);
-  // New Zealand
-  ctx.beginPath(); ctx.ellipse(1690, 730, 14, 30, 0.3, 0, Math.PI * 2);
-  ctx.fillStyle = landColor; ctx.fill();
-  // Antarctica
-  ctx.beginPath(); ctx.ellipse(1024, 980, 520, 50, 0, 0, Math.PI * 2);
-  ctx.fillStyle = '#1a2a3a'; ctx.fill();
+  /* Japan */
+  ctx.save(); ctx.translate(1512, 312); ctx.beginPath();
+  ctx.ellipse(0, 0, 12, 42, 0.3, 0, Math.PI*2); ctx.fillStyle = land; ctx.fill(); ctx.restore();
+  /* Australia */
+  blob(1582, 642, 102, 72, 0, [[18,18,38,28]]);
+  /* New Zealand */
+  ctx.save(); ctx.translate(1692, 732); ctx.beginPath();
+  ctx.ellipse(0, 0, 12, 28, 0.3, 0, Math.PI*2); ctx.fillStyle = land; ctx.fill(); ctx.restore();
+  /* Antarctica */
+  ctx.save(); ctx.translate(1024, 990); ctx.beginPath();
+  ctx.ellipse(0, 0, 530, 45, 0, 0, Math.PI*2);
+  ctx.fillStyle = '#1a2420'; ctx.fill(); ctx.restore();
 
-  // Latitude/longitude grid
-  ctx.strokeStyle = 'rgba(29,233,182,0.05)';
+  /* latitude/longitude grid — very subtle green */
+  ctx.strokeStyle = 'rgba(80,160,100,0.06)';
   ctx.lineWidth = 1;
-  for (let lat = -80; lat <= 80; lat += 20) {
+  for (let lat = −80; lat <= 80; lat += 20) {
     const y = ((lat + 90) / 180) * 1024;
     ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(2048, y); ctx.stroke();
   }
@@ -903,307 +755,190 @@ footer{
     ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 1024); ctx.stroke();
   }
 
-  // City glow dots
-  const cities = [
-    [380, 290], [940, 235], [1260, 230], [1080, 360], [1580, 640],
-    [430, 400], [970, 400], [820, 300], [1450, 290], [500, 250],
-    [620, 240], [1200, 340], [1510, 340], [350, 430],
+  /* major parallels slightly brighter */
+  ctx.strokeStyle = 'rgba(80,160,100,0.11)';
+  [0, −23.5, 23.5, −66.5, 66.5].forEach(lat => {
+    const y = ((lat + 90) / 180) * 1024;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(2048, y); ctx.stroke();
+  });
+
+  /* city/node dots — muted sage green */
+  const nodes = [
+    [380,290],[942,238],[1255,228],[1090,365],[1582,642],
+    [432,402],[972,402],[825,305],[1452,295],[502,252],
+    [622,242],[1202,342],[1512,342],[355,432],[1090,455],
   ];
-  cities.forEach(([x, y]) => {
-    const grd = ctx.createRadialGradient(x, y, 0, x, y, 12);
-    grd.addColorStop(0, 'rgba(232,51,74,0.9)');
-    grd.addColorStop(0.3, 'rgba(232,51,74,0.3)');
-    grd.addColorStop(1, 'rgba(232,51,74,0)');
-    ctx.fillStyle = grd;
-    ctx.beginPath(); ctx.arc(x, y, 12, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#e8334a';
-    ctx.beginPath(); ctx.arc(x, y, 2.5, 0, Math.PI * 2); ctx.fill();
+  nodes.forEach(([x, y]) => {
+    const g = ctx.createRadialGradient(x, y, 0, x, y, 10);
+    g.addColorStop(0, 'rgba(90,160,80,0.85)');
+    g.addColorStop(0.4,'rgba(90,160,80,0.25)');
+    g.addColorStop(1, 'rgba(90,160,80,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#6ab850';
+    ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI*2); ctx.fill();
   });
 
-  const earthTex = new THREE.CanvasTexture(texCanvas);
+  const earthTex = new THREE.CanvasTexture(tex);
 
-  /* ── GLOBE MESH ── */
-  const globeGeo = new THREE.SphereGeometry(1.4, 80, 80);
-  const globeMat = new THREE.MeshPhongMaterial({
+  /* ── Globe mesh ── */
+  const geo = new THREE.SphereGeometry(1.6, 72, 72);
+  const mat = new THREE.MeshPhongMaterial({
     map: earthTex,
-    specular: new THREE.Color(0x0a3a2a),
-    shininess: 12,
+    specular: new THREE.Color(0x0a1a10),
+    shininess: 8,
     transparent: true,
-    opacity: 0.94,
+    opacity: 0.92,
   });
-  const globe = new THREE.Mesh(globeGeo, globeMat);
-  globe.position.set(2.2, -0.2, -1.2);
+  const globe = new THREE.Mesh(geo, mat);
+  globe.position.set(1.4, −0.1, 0);
   scene.add(globe);
 
-  /* atmosphere */
-  const atmGeo = new THREE.SphereGeometry(1.48, 64, 64);
-  const atmMat = new THREE.MeshPhongMaterial({
-    color: 0x1de9b6, transparent: true, opacity: 0.03,
-    side: THREE.FrontSide,
-  });
-  scene.add(new THREE.Mesh(atmGeo, atmMat).position.copy && (() => {
-    const m = new THREE.Mesh(atmGeo, atmMat);
-    m.position.copy(globe.position);
-    scene.add(m);
-    return m;
-  })());
-
-  /* outer glow ring */
-  const glowGeo = new THREE.SphereGeometry(1.55, 64, 64);
-  const glowMat = new THREE.MeshBasicMaterial({
-    color: 0x1de9b6, transparent: true, opacity: 0.015,
-    side: THREE.BackSide,
-  });
-  const glow = new THREE.Mesh(glowGeo, glowMat);
-  glow.position.copy(globe.position);
-  scene.add(glow);
-
-  /* wireframe overlay */
-  const wireGeo = new THREE.SphereGeometry(1.42, 36, 36);
+  /* thin wireframe overlay */
+  const wireGeo = new THREE.SphereGeometry(1.615, 38, 38);
   const wireMat = new THREE.MeshBasicMaterial({
-    color: 0x1de9b6, wireframe: true,
-    transparent: true, opacity: 0.028,
+    color: 0x4a9040, wireframe: true, transparent: true, opacity: 0.022,
   });
   const wire = new THREE.Mesh(wireGeo, wireMat);
   wire.position.copy(globe.position);
   scene.add(wire);
 
-  /* orbit ring */
-  const ringGeo = new THREE.TorusGeometry(1.9, 0.004, 8, 120);
+  /* atmosphere rim glow */
+  const atmGeo = new THREE.SphereGeometry(1.72, 48, 48);
+  const atmMat = new THREE.MeshBasicMaterial({
+    color: 0x2a5028, transparent: true, opacity: 0.04, side: THREE.BackSide,
+  });
+  const atm = new THREE.Mesh(atmGeo, atmMat);
+  atm.position.copy(globe.position);
+  scene.add(atm);
+
+  /* subtle orbit ring */
+  const ringGeo = new THREE.TorusGeometry(2.1, 0.003, 8, 140);
   const ringMat = new THREE.MeshBasicMaterial({
-    color: 0xe8334a, transparent: true, opacity: 0.18,
+    color: 0x3a6035, transparent: true, opacity: 0.22,
   });
   const ring = new THREE.Mesh(ringGeo, ringMat);
   ring.position.copy(globe.position);
-  ring.rotation.x = Math.PI / 2.4;
+  ring.rotation.x = Math.PI / 2.6;
   scene.add(ring);
 
-  /* lights */
-  scene.add(new THREE.AmbientLight(0x0a0e20, 0.7));
-  const sun = new THREE.DirectionalLight(0x2244aa, 1.4);
-  sun.position.set(-4, 2, 5);
-  scene.add(sun);
-  const redPt = new THREE.PointLight(0xe8334a, 0.4, 20);
-  redPt.position.set(5, -2, 3);
-  scene.add(redPt);
-  const cyanPt = new THREE.PointLight(0x1de9b6, 0.25, 20);
-  cyanPt.position.set(-3, 3, 2);
-  scene.add(cyanPt);
+  /* lighting — cool and earthy */
+  scene.add(new THREE.AmbientLight(0x0d1810, 0.8));
+  const keyLight = new THREE.DirectionalLight(0x203c28, 1.2);
+  keyLight.position.set(−5, 2, 4);
+  scene.add(keyLight);
+  const fillLight = new THREE.PointLight(0x2a5838, 0.5, 25);
+  fillLight.position.set(4, −1, 2);
+  scene.add(fillLight);
+  const rimLight = new THREE.PointLight(0x6a9060, 0.18, 20);
+  rimLight.position.set(−2, 3, −2);
+  scene.add(rimLight);
 
-  /* ── ANIMATION ── */
+  /* sparse dim star field */
+  const starPos = new Float32Array(800 * 3);
+  for (let i = 0; i < 800; i++) {
+    const r = 60 + Math.random() * 300;
+    const th = Math.random() * Math.PI * 2;
+    const ph = Math.acos(2 * Math.random() − 1);
+    starPos[i*3]   = r * Math.sin(ph) * Math.cos(th);
+    starPos[i*3+1] = r * Math.sin(ph) * Math.sin(th);
+    starPos[i*3+2] = r * Math.cos(ph);
+  }
+  const sg = new THREE.BufferGeometry();
+  sg.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+  scene.add(new THREE.Points(sg, new THREE.PointsMaterial({
+    color: 0x5a7058, size: 0.4, sizeAttenuation: true, transparent: true, opacity: 0.4,
+  })));
+
+  /* ── Animate ── */
   let t = 0;
   function animate() {
     requestAnimationFrame(animate);
-    t += 0.004;
-
-    // Globe self-rotation — smooth, steady
+    t += 0.003;
     globe.rotation.y = t;
-    wire.rotation.y = t * 0.96;
-    wire.rotation.x = Math.sin(t * 0.12) * 0.04;
-
-    // Orbit ring tilts slightly
-    ring.rotation.z = t * 0.15;
-
-    // Star field very slow drift
-    scene.children[0].rotation.y = t * 0.008;
-    scene.children[0].rotation.x = t * 0.003;
-
+    wire.rotation.y  = t * 0.94;
+    ring.rotation.z  = t * 0.12;
     renderer.render(scene, camera);
   }
   animate();
 })();
 
-/* ═══════════════════════════════════════════════
-   VISITOR RECON
-═══════════════════════════════════════════════ */
-(function () {
-  // Detect browser & OS from UA
-  function parseBrowser(ua) {
-    if (/Edg\//.test(ua)) return 'Edge';
-    if (/OPR\/|Opera/.test(ua)) return 'Opera';
-    if (/Firefox\//.test(ua)) return 'Firefox';
-    if (/SamsungBrowser/.test(ua)) return 'Samsung';
-    if (/Chrome\//.test(ua)) return 'Chrome';
-    if (/Safari\//.test(ua)) return 'Safari';
-    return 'Unknown';
-  }
-  function parseOS(ua) {
-    if (/Windows NT 10/.test(ua)) return 'Win 10/11';
-    if (/Windows NT/.test(ua)) return 'Windows';
-    if (/Android/.test(ua)) return 'Android';
-    if (/iPhone/.test(ua)) return 'iOS';
-    if (/iPad/.test(ua)) return 'iPadOS';
-    if (/Macintosh/.test(ua)) return 'macOS';
-    if (/Linux/.test(ua)) return 'Linux';
-    return 'Unknown';
-  }
-  function truncate(s, n) { return s.length > n ? s.slice(0, n) + '…' : s; }
+/* ── Nav scroll ── */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', scrollY > 20);
+}, { passive: true });
 
-  const ua = navigator.userAgent;
-  document.getElementById('r-ua').textContent = truncate(ua.split(') ')[0].replace('Mozilla/5.0 (', ''), 28);
-  document.getElementById('r-browser').textContent = parseBrowser(ua);
-  document.getElementById('r-os').textContent = parseOS(ua);
-
-  // Clock
-  function tick() {
-    const now = new Date();
-    const ts = now.toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
-    document.getElementById('r-ts').textContent = ts;
-  }
-  tick();
-  setInterval(tick, 1000);
-
-  // IP + geo via ipapi.co
-  fetch('https://ipapi.co/json/')
-    .then(r => r.json())
-    .then(d => {
-      document.getElementById('r-ip').textContent = d.ip || '—';
-      const loc = [d.city, d.country_code].filter(Boolean).join(', ');
-      document.getElementById('r-loc').textContent = loc || '—';
-    })
-    .catch(() => {
-      document.getElementById('r-ip').textContent = 'blocked';
-      document.getElementById('r-loc').textContent = '—';
-    });
-})();
-
-/* ═══════════════════════════════════════════════
-   PROJECTS
-═══════════════════════════════════════════════ */
-const PROJECTS = [
-  {name:'SecV',cat:'active',catLabel:'Active · v2.3.1',desc:'Compiled Go shell that loads security modules written in any language. The core framework powering the arsenal.',status:'active',accent:'#e8334a'},
-  {name:'Port Scanner Plus',cat:'recon',catLabel:'Recon',desc:'Advanced port enumeration with multi-engine scanning and service fingerprinting.',status:'ready',accent:'#1de9b6'},
-  {name:'Subdomain Hunter',cat:'recon',catLabel:'Recon',desc:'Comprehensive subdomain discovery and validation with multiple resolution strategies.',status:'ready',accent:'#1de9b6'},
-  {name:'DNS Enum Suite',cat:'recon',catLabel:'Recon',desc:'Deep DNS analysis with zone transfer detection and record enumeration.',status:'dev',accent:'#1de9b6'},
-  {name:'OSINT Gatherer',cat:'recon',catLabel:'Recon',desc:'Automated open-source intelligence collection — people, domains, and infrastructure.',status:'ready',accent:'#1de9b6'},
-  {name:'Network Mapper',cat:'network',catLabel:'Network',desc:'Advanced network topology discovery with host profiling and CVE correlation.',status:'dev',accent:'#9370ff'},
-  {name:'Web Fuzzer Pro',cat:'web',catLabel:'Web App',desc:'Intelligent fuzzing with adaptive payload optimization for web applications.',status:'ready',accent:'#ff8098'},
-  {name:'Config Auditor',cat:'web',catLabel:'Web App',desc:'Systematic configuration security analysis across web stacks and frameworks.',status:'ready',accent:'#ff8098'},
-  {name:'SSL/TLS Scanner',cat:'web',catLabel:'Web App',desc:'Comprehensive certificate and protocol testing — ciphers, chain validation, known issues.',status:'ready',accent:'#ff8098'},
-  {name:'CMS Vuln Scanner',cat:'web',catLabel:'Web App',desc:'Specialized security testing for WordPress, Joomla, Drupal and other CMS platforms.',status:'dev',accent:'#ff8098'},
-  {name:'API Security Tester',cat:'web',catLabel:'Web App',desc:'REST and GraphQL API security validation — auth, injection, rate limiting.',status:'plan',accent:'#ff8098'},
-  {name:'XSS Payload Gen',cat:'exploit',catLabel:'Exploitation',desc:'Context-aware cross-site scripting payload generation for modern defenses.',status:'ready',accent:'#ff783c'},
-  {name:'SQL Injection Tester',cat:'exploit',catLabel:'Exploitation',desc:'Advanced database injection with time-based, blind, and error-based techniques.',status:'ready',accent:'#ff783c'},
-  {name:'CSRF Token Analyzer',cat:'exploit',catLabel:'Exploitation',desc:'Cross-site request forgery analysis and token entropy validation.',status:'dev',accent:'#ff783c'},
-  {name:'Payload Generators',cat:'exploit',catLabel:'Exploitation',desc:'Custom payload creation for multiple attack vectors with encoding support.',status:'ready',accent:'#ff783c'},
-  {name:'Reverse Shell Kit',cat:'exploit',catLabel:'Exploitation',desc:'Multi-platform reverse connection utilities with obfuscation options.',status:'ready',accent:'#ff783c'},
-  {name:'PrivEsc Checker',cat:'exploit',catLabel:'Exploitation',desc:'Automated privilege escalation enumeration for Linux and Windows systems.',status:'dev',accent:'#ff783c'},
-  {name:'APK Analyzer',cat:'mobile',catLabel:'Mobile',desc:'Comprehensive Android app security testing — manifest, permissions, CVE checks, secret scan.',status:'plan',accent:'#f59e0b'},
-  {name:'iOS Security Tester',cat:'mobile',catLabel:'Mobile',desc:'iPhone application vulnerability assessment via libimobiledevice. No Mac required.',status:'plan',accent:'#f59e0b'},
-  {name:'Log Analyzer',cat:'forensic',catLabel:'Forensics',desc:'Intelligent log parsing with anomaly detection and pattern correlation.',status:'dev',accent:'#28c878'},
-  {name:'Traffic Analyzer',cat:'forensic',catLabel:'Forensics',desc:'Deep packet inspection and protocol analysis for network forensics.',status:'dev',accent:'#28c878'},
-  {name:'Hash Cracker',cat:'misc',catLabel:'Utilities',desc:'Multi-algorithm hash cracking with wordlist and rule-based attack modes.',status:'ready',accent:'#7a8299'},
-  {name:'Encoding Decoder',cat:'misc',catLabel:'Utilities',desc:'Universal encoding and decoding toolkit — Base64, URL, hex, HTML, and more.',status:'ready',accent:'#7a8299'},
-  {name:'Report Generator',cat:'auto',catLabel:'Automation',desc:'Automated security assessment report generation with customizable templates.',status:'ready',accent:'#f59e0b'},
+/* ── Tool data — sourced from README ── */
+const TOOLS = [
+  /* Recon */
+  { name:'Port Scanner Plus',   cat:'recon',   label:'Recon',           desc:'Advanced port enumeration with multi-engine scanning and service fingerprinting.', s:'ready', c:'var(--green2)' },
+  { name:'Subdomain Hunter',    cat:'recon',   label:'Recon',           desc:'Comprehensive subdomain discovery and validation with multiple DNS resolver strategies.', s:'ready', c:'var(--green2)' },
+  { name:'DNS Enum Suite',      cat:'recon',   label:'Recon',           desc:'Deep DNS analysis with zone transfer detection and record enumeration.', s:'dev', c:'var(--green2)' },
+  { name:'OSINT Gatherer',      cat:'recon',   label:'Recon',           desc:'Automated open-source intelligence collection — people, domains, infrastructure.', s:'ready', c:'var(--green2)' },
+  { name:'Network Mapper',      cat:'recon',   label:'Recon',           desc:'Advanced network topology discovery with host profiling.', s:'dev', c:'var(--green2)' },
+  /* Vulnerability Assessment */
+  { name:'Web Fuzzer Pro',      cat:'vuln',    label:'Vuln Assessment', desc:'Intelligent fuzzing with adaptive payload optimization for web applications.', s:'ready', c:'var(--steel)' },
+  { name:'Config Auditor',      cat:'vuln',    label:'Vuln Assessment', desc:'Systematic configuration security analysis across web stacks and frameworks.', s:'ready', c:'var(--steel)' },
+  { name:'SSL/TLS Scanner',     cat:'vuln',    label:'Vuln Assessment', desc:'Comprehensive certificate and protocol testing — ciphers, chain validation, known weaknesses.', s:'ready', c:'var(--steel)' },
+  { name:'CMS Vuln Scanner',    cat:'vuln',    label:'Vuln Assessment', desc:'Specialized security testing for WordPress, Joomla, and Drupal.', s:'dev', c:'var(--steel)' },
+  { name:'API Security Tester', cat:'vuln',    label:'Vuln Assessment', desc:'REST and GraphQL API security validation — auth, injection, rate limiting.', s:'plan', c:'var(--steel)' },
+  /* Web App */
+  { name:'XSS Payload Gen',     cat:'web',     label:'Web App',         desc:'Context-aware cross-site scripting payload generation for modern defenses.', s:'ready', c:'#8ab870' },
+  { name:'SQL Injection Tester',cat:'web',     label:'Web App',         desc:'Advanced database injection with time-based, blind, and error-based techniques.', s:'ready', c:'#8ab870' },
+  { name:'CSRF Token Analyzer', cat:'web',     label:'Web App',         desc:'Cross-site request forgery analysis and token entropy validation.', s:'dev', c:'#8ab870' },
+  { name:'Param Pollution',     cat:'web',     label:'Web App',         desc:'HTTP parameter manipulation and injection testing.', s:'plan', c:'#8ab870' },
+  /* Exploitation */
+  { name:'Payload Generators',  cat:'exploit', label:'Exploitation',    desc:'Custom payload creation for various attack vectors with encoding support.', s:'ready', c:'var(--brass)' },
+  { name:'Reverse Shell Kit',   cat:'exploit', label:'Exploitation',    desc:'Multi-platform reverse connection utilities with obfuscation options.', s:'ready', c:'var(--brass)' },
+  { name:'PrivEsc Checker',     cat:'exploit', label:'Exploitation',    desc:'Automated privilege escalation enumeration for Linux and Windows.', s:'dev', c:'var(--brass)' },
+  /* Mobile */
+  { name:'APK Analyzer',        cat:'mobile',  label:'Mobile',          desc:'Comprehensive Android app security testing — manifest, permissions, CVE checks.', s:'plan', c:'#7a9890' },
+  { name:'iOS Security Tester', cat:'mobile',  label:'Mobile',          desc:'iPhone application vulnerability assessment via libimobiledevice.', s:'plan', c:'#7a9890' },
+  { name:'Mobile API Interceptor',cat:'mobile',label:'Mobile',          desc:'Mobile application traffic interception and analysis.', s:'plan', c:'#7a9890' },
+  /* Forensics */
+  { name:'Log Analyzer',        cat:'forensic',label:'Forensics',       desc:'Intelligent log parsing with anomaly detection and pattern correlation.', s:'dev', c:'#6a9060' },
+  { name:'Memory Dump Parser',  cat:'forensic',label:'Forensics',       desc:'Advanced memory analysis and artifact extraction.', s:'plan', c:'#6a9060' },
+  { name:'Traffic Analyzer',    cat:'forensic',label:'Forensics',       desc:'Deep packet inspection and protocol analysis for network forensics.', s:'dev', c:'#6a9060' },
+  /* Automation */
+  { name:'Scanner Orchestrator',cat:'auto',    label:'Automation',      desc:'Multi-tool integration framework for automated security workflows.', s:'dev', c:'var(--steel)' },
+  { name:'Report Generator',    cat:'auto',    label:'Automation',      desc:'Automated security assessment report generation with customizable templates.', s:'ready', c:'var(--steel)' },
+  { name:'Notification System', cat:'auto',    label:'Automation',      desc:'Real-time security event alerting and notification routing.', s:'ready', c:'var(--steel)' },
+  /* Utilities */
+  { name:'Hash Cracker',        cat:'misc',    label:'Utilities',       desc:'Multi-algorithm hash cracking with wordlist and rule-based attack modes.', s:'ready', c:'var(--muted)' },
+  { name:'Encoding Decoder',    cat:'misc',    label:'Utilities',       desc:'Universal encoding and decoding toolkit — Base64, URL, hex, HTML, and more.', s:'ready', c:'var(--muted)' },
+  { name:'Payload Encoder',     cat:'misc',    label:'Utilities',       desc:'Advanced payload obfuscation techniques for WAF and filter bypass.', s:'dev', c:'var(--muted)' },
 ];
 
 const STATUS = {
-  active:['st-active','● Active'],
-  ready: ['st-ready','● Ready'],
-  dev:   ['st-dev',  '○ In Dev'],
-  plan:  ['st-plan', '· Planned'],
+  ready: ['s-ready', '● Ready'],
+  dev:   ['s-dev',   '○ In Development'],
+  plan:  ['s-plan',  '· Planned'],
 };
 
-function shuffle(a) {
-  const b = [...a];
-  for (let i = b.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [b[i], b[j]] = [b[j], b[i]];
-  }
-  return b;
+function render(filter) {
+  const grid = document.getElementById('toolGrid');
+  const list = filter === 'all' ? TOOLS : TOOLS.filter(t => t.cat === filter);
+  grid.innerHTML = list.map(t => {
+    const [sc, sl] = STATUS[t.s];
+    return `<div class="tool-card" style="--cc:${t.c}">
+      <span class="badge bc-${t.cat}">${t.label}</span>
+      <div class="tool-name">${t.name}</div>
+      <div class="tool-desc">${t.desc}</div>
+      <div class="tool-status ${sc}"><span class="sdot"></span>${sl}</div>
+    </div>`;
+  }).join('');
 }
 
-function renderCards(cards) {
-  const grid = document.getElementById('projectGrid');
-  Array.from(grid.children).forEach(c => { c.classList.remove('entering'); c.classList.add('exiting'); });
-  setTimeout(() => {
-    grid.innerHTML = '';
-    cards.forEach((p, i) => {
-      const [sc, st] = STATUS[p.status];
-      const el = document.createElement('div');
-      el.className = 'pcard entering';
-      el.style.setProperty('--card-accent', p.accent);
-      el.style.animationDelay = (i * 28) + 'ms';
-      el.innerHTML = `<span class="pcard-cat cat-${p.cat}">${p.catLabel}</span>
-<div class="pcard-name">${p.name}</div>
-<div class="pcard-desc">${p.desc}</div>
-<div class="pcard-status ${sc}"><span class="st-dot"></span>${st}</div>`;
-      grid.appendChild(el);
-    });
-  }, 180);
-}
+document.getElementById('filters').addEventListener('click', e => {
+  const btn = e.target.closest('.ftab');
+  if (!btn) return;
+  document.querySelectorAll('.ftab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  render(btn.dataset.f);
+});
 
-function shuffleProjects() {
-  const rest = shuffle(PROJECTS.filter(p => p.name !== 'SecV')).slice(0, 7);
-  renderCards([PROJECTS[0], ...rest]);
-}
-
-(function init() {
-  const rest = shuffle(PROJECTS.filter(p => p.name !== 'SecV')).slice(0, 7);
-  renderCards([PROJECTS[0], ...rest]);
-})();
-
-/* ═══════════════════════════════════════════════
-   DOCS MODAL
-═══════════════════════════════════════════════ */
-const DOC_SOURCES = {
-  hosted: {
-    title: 'SecV Docs — Live',
-    url: 'https://raw.githubusercontent.com/0xb0rn3/0xb0rn3.github.io/main/Blog/secv.html',
-    render: 'html',
-  },
-  readme: {
-    title: 'README — SecVulnHub',
-    url: 'https://raw.githubusercontent.com/secvulnhub/secvulnhub/main/README.md',
-    render: 'md',
-  },
-};
-
-function openDoc(key) {
-  const modal = document.getElementById('docsModal');
-  const body  = document.getElementById('modalBody');
-  const title = document.getElementById('modalTitle');
-  const src   = DOC_SOURCES[key];
-  title.textContent = src.title;
-  modal.classList.add('open');
-  body.innerHTML = '<div class="modal-loading">// Fetching documentation…</div>';
-
-  fetch(src.url)
-    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
-    .then(text => {
-      if (src.render === 'html') {
-        const blob = new Blob([text], { type: 'text/html' });
-        const url  = URL.createObjectURL(blob);
-        body.innerHTML = `<iframe src="${url}" onload="URL.revokeObjectURL('${url}')"></iframe>`;
-      } else {
-        const safe = text
-          .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-          .replace(/^# (.+)$/gm,'<h1>$1</h1>')
-          .replace(/^## (.+)$/gm,'<h2>$1</h2>')
-          .replace(/^### (.+)$/gm,'<h3>$1</h3>')
-          .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-          .replace(/`([^`]+)`/g,'<code>$1</code>')
-          .replace(/\n/g,'<br>');
-        body.innerHTML = `<div style="padding:2rem 3rem;max-width:860px;margin:0 auto;font-family:'IBM Plex Mono',monospace;font-size:0.76rem;line-height:1.75;color:#c2c8d8;background:#06070d;min-height:100%">
-          <style>h1{font-size:1.3rem;color:#fff;margin:1.4rem 0 0.4rem}h2{font-size:0.95rem;color:#e8334a;margin:1.1rem 0 0.35rem}h3{font-size:0.82rem;color:#1de9b6;margin:0.9rem 0 0.25rem}strong{color:#fff}code{background:#0a0c14;padding:0.1em 0.3em;border-radius:2px;color:#f59e0b}</style>
-          ${safe}</div>`;
-      }
-    })
-    .catch(err => {
-      body.innerHTML = `<div class="modal-loading" style="flex-direction:column;gap:1rem">
-        <span style="color:#e8334a">// fetch error</span>
-        <span style="font-size:0.62rem;color:#6a7390">${err.message}</span>
-        <a href="${src.url}" target="_blank" style="color:#1de9b6;font-size:0.62rem">Open source directly →</a>
-      </div>`;
-    });
-}
-
-function closeDoc() {
-  document.getElementById('docsModal').classList.remove('open');
-  document.getElementById('modalBody').innerHTML = '<div class="modal-loading">// Fetching documentation…</div>';
-}
-
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDoc(); });
+render('all');
 </script>
 </body>
 </html>
