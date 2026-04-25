@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecVulnHub — Security Tools for Practitioners</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+/* ── Palette: dark grey-green, brutal ── */
+:root {
+  --bg:      #0b0d0b;
+  --bg1:     #101210;
+  --bg2:     #161918;
+  --border:  rgba(110,170,100,0.07);
+  --border2: rgba(110,170,100,0.15);
+  --text:    #b4bfae;
+  --muted:   #4e5c48;
+  --dim:     #272f24;
+  --cream:   #dde0d8;
+  --green:   #4d7a42;
+  --green2:  #6aad58;
+  --brass:   #9a8048;
+  --steel:   #5a7070;
+  --mono:    'DM Mono', monospace;
+  --disp:    'Syne', sans-serif;
+  --r:       2px;
+}
+
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── Globe Canvas ── */
+#globe-canvas {
+  position: fixed;
+  top: 0; right: 0;
+  width: 60vw; height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+/* ── Nav ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
+}
+nav.scrolled {
+  background: rgba(11,13,11,0.92);
+  backdrop-filter: blur(16px);
+  border-color: var(--border);
+}
+.logo {
+  font-family: var(--disp);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--cream);
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.logo-mark {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--green2);
+  box-shadow: 0 0 10px var(--green2);
+  animation: breathe 3s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes breathe {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.5; transform: scale(0.7); }
+}
+.nav-links { display: flex; align-items: center; gap: 0.1rem; }
+.nav-link {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--r);
+  transition: color 0.15s;
+}
+.nav-link:hover { color: var(--text); }
+.nav-btn {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text);
+  text-decoration: none;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  margin-left: 0.5rem;
+  transition: border-color 0.15s, color 0.15s;
+}
+.nav-btn:hover { border-color: var(--text); }
+.nav-btn.primary {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--cream);
+}
+.nav-btn.primary:hover {
+  background: transparent;
+  color: var(--green2);
+  border-color: var(--green2);
+}
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8rem 2.5rem 5rem;
+  z-index: 1;
+}
+.hero-content {
+  position: relative;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+.hero-label {
+  font-family: var(--mono);
+  font-size: 0.57rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--green2);
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0;
+  animation: rise 0.6s 0.1s ease both;
+}
+.hero-label span { color: var(--dim); }
+h1 {
+  font-family: var(--disp);
+  font-size: clamp(3rem, 7vw, 5.6rem);
+  font-weight: 800;
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+  color: var(--cream);
+  max-width: 640px;
+  margin-bottom: 1.75rem;
+  opacity: 0;
+  animation: rise 0.7s 0.18s ease both;
+}
+h1 em {
+  font-style: normal;
+  color: var(--muted);
+  font-weight: 400;
+}
+.hero-sub {
+  font-size: 0.78rem;
+  color: var(--muted);
+  max-width: 400px;
+  line-height: 1.85;
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: rise 0.7s 0.26s ease both;
+}
+.hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 4.5rem;
+  opacity: 0;
+  animation: rise 0.7s 0.34s ease both;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 0.65rem 1.4rem;
+  border-radius: var(--r);
+  border: 1px solid;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.btn-green  { background: var(--green); border-color: var(--green); color: var(--cream); }
+.btn-green:hover { background: transparent; color: var(--green2); border-color: var(--green2); }
+.btn-ghost  { background: transparent; border-color: var(--border2); color: var(--muted); }
+.btn-ghost:hover  { border-color: var(--text); color: var(--text); }
+
+.hero-stats {
+  display: flex;
+  gap: 3.5rem;
+  flex-wrap: wrap;
+  padding-top: 2.25rem;
+  border-top: 1px solid var(--border);
+  opacity: 0;
+  animation: rise 0.7s 0.42s ease both;
+}
+.stat-val {
+  font-family: var(--disp);
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--cream);
+  line-height: 1;
+  display: block;
+}
+.stat-val.g { color: var(--green2); }
+.stat-val.b { color: var(--brass); }
+.stat-val.s { color: var(--steel); }
+.stat-key {
+  font-family: var(--mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 0.35rem;
+  display: block;
+}
+
+/* ── Layout ── */
+section { position: relative; z-index: 1; }
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 5rem 2.5rem;
+}
+.rule { border: none; border-top: 1px solid var(--border); position: relative; z-index: 1; }
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.53rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--green2);
+  margin-bottom: 0.5rem;
+}
+h2 {
+  font-family: var(--disp);
+  font-size: clamp(1.6rem, 3vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--cream);
+  line-height: 1.05;
+}
+.subdesc {
+  font-size: 0.74rem;
+  color: var(--muted);
+  line-height: 1.8;
+  max-width: 440px;
+}
+
+/* ── Projects ── */
+.proj-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.filters {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+.ftab {
+  font-family: var(--mono);
+  font-size: 0.53rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  background: none;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.ftab:hover { color: var(--text); border-color: var(--border2); }
+.ftab.on {
+  color: var(--green2);
+  border-color: rgba(106,173,88,0.35);
+  background: rgba(106,173,88,0.06);
+}
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(285px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+.tool-card {
+  background: var(--bg);
+  padding: 1.5rem;
+  position: relative;
+  transition: background 0.15s;
+  overflow: hidden;
+}
+.tool-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--cc, var(--green));
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.tool-card:hover { background: var(--bg1); }
+.tool-card:hover::before { opacity: 1; }
+
+.badge {
+  font-family: var(--mono);
+  font-size: 0.48rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.13rem 0.38rem;
+  border-radius: 1px;
+  display: inline-block;
+  margin-bottom: 0.75rem;
+}
+.bc-recon   { color: var(--green2); background: rgba(106,173,88,0.08); }
+.bc-vuln    { color: var(--steel);  background: rgba(90,112,112,0.1); }
+.bc-web     { color: #8ab870;       background: rgba(138,184,112,0.08); }
+.bc-exploit { color: var(--brass);  background: rgba(154,128,72,0.1); }
+.bc-mobile  { color: #7a9890;       background: rgba(122,152,144,0.08); }
+.bc-forensic{ color: #6a9060;       background: rgba(106,144,96,0.08); }
+.bc-auto    { color: var(--steel);  background: rgba(90,112,112,0.1); }
+.bc-misc    { color: var(--muted);  background: rgba(78,92,72,0.1); }
+
+.tool-name {
+  font-family: var(--disp);
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--cream);
+  margin-bottom: 0.4rem;
+  letter-spacing: -0.01em;
+}
+.tool-desc {
+  font-size: 0.68rem;
+  color: var(--muted);
+  line-height: 1.68;
+}
+.tool-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--mono);
+  font-size: 0.48rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 1rem;
+}
+.sdot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.s-ready { color: var(--green2); }
+.s-dev   { color: var(--brass); }
+.s-plan  { color: var(--dim); }
+.s-plan .sdot { background: var(--muted); }
+
+/* ── Mission ── */
+.mission-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: start;
+}
+.mission-copy h2  { margin-bottom: 1rem; }
+.mission-copy .subdesc + .subdesc { margin-top: 0.75rem; }
+.mission-ctas { margin-top: 2rem; display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.principles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+.principle { background: var(--bg); padding: 1.5rem; }
+.p-num {
+  font-family: var(--mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  color: var(--green2);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.p-title {
+  font-family: var(--disp);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--cream);
+  margin-bottom: 0.35rem;
+}
+.p-desc { font-size: 0.66rem; color: var(--muted); line-height: 1.6; }
+
+/* ── Contribute ── */
+.contrib-wrap {
+  max-width: 540px;
+  margin: 0 auto;
+  text-align: center;
+}
+.contrib-wrap h2 { margin-bottom: 0.75rem; }
+.contrib-wrap .subdesc { margin: 0 auto; text-align: center; }
+.checklist {
+  text-align: left;
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1.1rem 1.4rem;
+  margin: 2rem 0;
+}
+.chk {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-size: 0.68rem;
+  color: var(--muted);
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.5;
+}
+.chk:last-child { border-bottom: none; }
+.chk-mark { font-size: 0.56rem; color: var(--green2); flex-shrink: 0; margin-top: 0.12rem; }
+.cta-row { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+
+/* ── Footer ── */
+footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
+.foot-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.75rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.foot-brand {
+  font-family: var(--disp);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-decoration: none;
+}
+.foot-links { display: flex; gap: 1.75rem; }
+.foot-link {
+  font-family: var(--mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.foot-link:hover { color: var(--text); }
+.foot-note { font-family: var(--mono); font-size: 0.5rem; color: var(--dim); letter-spacing: 0.06em; }
+
+/* ── Animations ── */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  nav { padding: 0 1.5rem; }
+  .nav-link { display: none; }
+  .hero { padding: 7rem 1.5rem 4rem; }
+  h1 { font-size: 2.8rem; }
+  .hero-stats { gap: 2rem; }
+  .wrap { padding: 3.5rem 1.5rem; }
+  .mission-layout { grid-template-columns: 1fr; gap: 2.5rem; }
+  .principles { grid-template-columns: 1fr; }
+  #globe-canvas { width: 100vw; opacity: 0.25; }
+}
+</style>
+</head>
+<body>
+
+<!-- Globe -->
+<canvas id="globe-canvas"></canvas>
+
+<!-- Nav -->
+<nav id="nav">
+  <a class="logo" href="#">
+    <span class="logo-mark"></span>
+    SecVulnHub
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="#projects">Projects</a>
+    <a class="nav-link" href="#mission">Mission</a>
+    <a class="nav-link" href="#contribute">Contribute</a>
+    <a class="nav-link" href="Documentations/secV/index.html">Docs</a>
+    <a class="nav-btn" href="https://github.com/secvulnhub" target="_blank">GitHub</a>
+    <a class="nav-btn primary" href="https://discord.gg/SecVulnHub" target="_blank">Discord</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-content">
+    <p class="hero-label">Est. 2025 <span>/</span> Open Source <span>/</span> MIT</p>
+    <h1>Security tools<br>built by<br><em>practitioners.</em></h1>
+    <p class="hero-sub">A collective building battle-tested offensive security tooling. No bloat, no gatekeeping. Code that solves real problems in the field.</p>
+    <div class="hero-actions">
+      <a class="btn btn-green" href="#projects">Explore Arsenal</a>
+      <a class="btn btn-ghost" href="Documentations/secV/index.html">Documentation →</a>
+      <a class="btn btn-ghost" href="https://github.com/secvulnhub" target="_blank">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+        View on GitHub
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div><span class="stat-val g">100</span><span class="stat-key">Day Gauntlet</span></div>
+      <div><span class="stat-val">20+</span><span class="stat-key">Tools</span></div>
+      <div><span class="stat-val b">8</span><span class="stat-key">Domains</span></div>
+      <div><span class="stat-val s">MIT</span><span class="stat-key">Licensed</span></div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- Projects -->
+<section id="projects">
+  <div class="wrap">
+    <div class="proj-head">
+      <div>
+        <p class="eyebrow">The Arsenal</p>
+        <h2>Security Tools</h2>
+      </div>
+      <div class="filters" id="filters">
+        <button class="ftab on" data-f="all">All</button>
+        <button class="ftab" data-f="recon">Recon</button>
+        <button class="ftab" data-f="vuln">Vuln Assessment</button>
+        <button class="ftab" data-f="web">Web App</button>
+        <button class="ftab" data-f="exploit">Exploitation</button>
+        <button class="ftab" data-f="mobile">Mobile</button>
+        <button class="ftab" data-f="forensic">Forensics</button>
+        <button class="ftab" data-f="auto">Automation</button>
+        <button class="ftab" data-f="misc">Utilities</button>
+      </div>
+    </div>
+    <div class="tool-grid" id="toolGrid"></div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- Mission -->
+<section id="mission">
+  <div class="wrap">
+    <div class="mission-layout">
+      <div class="mission-copy">
+        <p class="eyebrow">Why We Exist</p>
+        <h2>Built in the field.<br>Maintained by<br>the community.</h2>
+        <p class="subdesc" style="margin-top:1rem">Every tool is real-world tested before it ships. We don't publish theory or demo code — only tools practitioners reach for when it counts.</p>
+        <p class="subdesc">Quality over quantity. If it doesn't solve a real problem, it doesn't ship.</p>
+        <div class="mission-ctas">
+          <a class="btn btn-green" href="https://discord.gg/SecVulnHub" target="_blank">Join Discord</a>
+          <a class="btn btn-ghost" href="https://github.com/secvulnhub/secvulnhub/" target="_blank">GitHub →</a>
+        </div>
+      </div>
+      <div class="principles">
+        <div class="principle">
+          <span class="p-num">01</span>
+          <div class="p-title">Quality First</div>
+          <div class="p-desc">Real-world testing before every release. No theory-only code.</div>
+        </div>
+        <div class="principle">
+          <span class="p-num" style="color:var(--steel)">02</span>
+          <div class="p-title">Any Language</div>
+          <div class="p-desc">Python, Go, Bash, Rust. Use what performs. Use what you know.</div>
+        </div>
+        <div class="principle">
+          <span class="p-num" style="color:var(--brass)">03</span>
+          <div class="p-title">Open Source</div>
+          <div class="p-desc">MIT license. Fork it, improve it, ship it back. No gatekeeping.</div>
+        </div>
+        <div class="principle">
+          <span class="p-num" style="color:var(--muted)">04</span>
+          <div class="p-title">Ethical Only</div>
+          <div class="p-desc">Authorized testing. Always. No exceptions. Ever.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- Contribute -->
+<section id="contribute">
+  <div class="wrap">
+    <div class="contrib-wrap">
+      <p class="eyebrow">Contribute</p>
+      <h2>Become a contributor.</h2>
+      <p class="subdesc" style="margin-top:0.75rem">Build tools practitioners actually use. Your language, your specialization — our arsenal.</p>
+      <div class="checklist">
+        <div class="chk"><span class="chk-mark">✓</span>Solves a real cybersecurity challenge</div>
+        <div class="chk"><span class="chk-mark">✓</span>Deployable in under 5 minutes from docs</div>
+        <div class="chk"><span class="chk-mark">✓</span>Passes security review and audit</div>
+        <div class="chk"><span class="chk-mark">✓</span>Comprehensive tests and documentation</div>
+        <div class="chk"><span class="chk-mark">✓</span>Has install.sh and test.sh scripts</div>
+        <div class="chk"><span class="chk-mark">✓</span>Adds unique value — no duplicates</div>
+      </div>
+      <div class="cta-row">
+        <a class="btn btn-green" href="https://github.com/secvulnhub/secvulnhub/" target="_blank">Fork on GitHub</a>
+        <a class="btn btn-ghost" href="https://discord.gg/SecVulnHub" target="_blank">Ask in Discord</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<footer>
+  <div class="foot-inner">
+    <a class="foot-brand" href="#">SecVulnHub</a>
+    <div class="foot-links">
+      <a class="foot-link" href="https://github.com/secvulnhub" target="_blank">GitHub</a>
+      <a class="foot-link" href="https://discord.gg/SecVulnHub" target="_blank">Discord</a>
+      <a class="foot-link" href="#projects">Arsenal</a>
+      <a class="foot-link" href="Documentations/secV/index.html">Docs</a>
+    </div>
+    <span class="foot-note">MIT License · Built by practitioners, for practitioners.</span>
+  </div>
+</footer>
+
+<!-- Three.js Globe -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ── Globe ── */
+(function () {
+  const canvas = document.getElementById('globe-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+
+  const scene = new THREE.Scene();
+  const W = canvas.clientWidth, H = canvas.clientHeight;
+  const camera = new THREE.PerspectiveCamera(42, W / H, 0.1, 1000);
+  camera.position.z = 4.8;
+
+  function onResize() {
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  onResize();
+  new ResizeObserver(onResize).observe(canvas);
+
+  /* ── Earth texture (green-grey brutal palette) ── */
+  const tex = document.createElement('canvas');
+  tex.width = 2048; tex.height = 1024;
+  const ctx = tex.getContext('2d');
+
+  /* ocean — near-black teal-grey */
+  ctx.fillStyle = '#060c0a';
+  ctx.fillRect(0, 0, 2048, 1024);
+
+  /* subtle ocean depth gradient */
+  const og = ctx.createRadialGradient(1024, 512, 0, 1024, 512, 1000);
+  og.addColorStop(0, 'rgba(20,40,30,0.4)');
+  og.addColorStop(1, 'rgba(0,0,0,0.5)');
+  ctx.fillStyle = og; ctx.fillRect(0, 0, 2048, 1024);
+
+  /* continents — dark forest grey-green */
+  const land   = '#1a2618';
+  const landHi = '#222e1e';
+  const landLo = '#141e12';
+
+  function blob(x, y, rx, ry, rot, detail) {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(rot || 0);
+    ctx.beginPath(); ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+    ctx.fillStyle = land; ctx.fill();
+    if (detail) detail.forEach(d => {
+      ctx.beginPath(); ctx.ellipse(d[0], d[1], d[2], d[3], d[4] || 0, 0, Math.PI * 2);
+      ctx.fillStyle = Math.random() > 0.5 ? landHi : landLo; ctx.fill();
+    });
+    ctx.restore();
+  }
+
+  /* North America */
+  blob(360, 290, 148, 118, 0.08, [[25,30,55,38],[−35,80,48,52],[10,−20,40,28]]);
+  blob(308, 182, 58, 38, 0.05);
+  /* Central America */
+  ctx.save(); ctx.translate(360, 430); ctx.beginPath();
+  ctx.ellipse(0, 0, 32, 48, 0.2, 0, Math.PI*2); ctx.fillStyle = land; ctx.fill(); ctx.restore();
+  /* South America */
+  blob(428, 590, 74, 128, 0.06, [[18,40,28,48]]);
+  /* Greenland */
+  blob(605, 145, 52, 42);
+  /* Europe */
+  blob(942, 238, 62, 52, 0, [[28,−8,22,18],[−10,20,18,14]]);
+  /* UK */
+  ctx.save(); ctx.translate(878, 208); ctx.beginPath();
+  ctx.ellipse(0, 0, 16, 26, −0.3, 0, Math.PI*2); ctx.fillStyle = land; ctx.fill(); ctx.restore();
+  /* Africa */
+  blob(972, 480, 92, 162, 0.02, [[−8,−58,48,38],[12,58,58,68]]);
+  /* Madagascar */
+  ctx.save(); ctx.translate(1112, 602); ctx.beginPath();
+  ctx.ellipse(0, 0, 14, 33, 0.1, 0, Math.PI*2); ctx.fillStyle = land; ctx.fill(); ctx.restore();
+  /* Russia/Asia */
+  blob(1255, 228, 288, 158, 0.03, [[55,28,95,75],[−75,48,75,55]]);
+  /* India */
+  ctx.save(); ctx.translate(1200, 455); ctx.beginPath();
+  ctx.ellipse(0, 0, 48, 72, 0.04, 0, Math.PI*2); ctx.fillStyle = land; ctx.fill(); ctx.restore();
+  /* SE Asia */
+  [1382,1422,1452,1480].forEach((x,i) => {
+    ctx.save(); ctx.translate(x, 522+i*10); ctx.beginPath();
+    ctx.ellipse(0,0,16-i,10,0.1*i,0,Math.PI*2); ctx.fillStyle=land; ctx.fill(); ctx.restore();
+  });
+  /* Japan */
+  ctx.save(); ctx.translate(1512, 312); ctx.beginPath();
+  ctx.ellipse(0, 0, 12, 42, 0.3, 0, Math.PI*2); ctx.fillStyle = land; ctx.fill(); ctx.restore();
+  /* Australia */
+  blob(1582, 642, 102, 72, 0, [[18,18,38,28]]);
+  /* New Zealand */
+  ctx.save(); ctx.translate(1692, 732); ctx.beginPath();
+  ctx.ellipse(0, 0, 12, 28, 0.3, 0, Math.PI*2); ctx.fillStyle = land; ctx.fill(); ctx.restore();
+  /* Antarctica */
+  ctx.save(); ctx.translate(1024, 990); ctx.beginPath();
+  ctx.ellipse(0, 0, 530, 45, 0, 0, Math.PI*2);
+  ctx.fillStyle = '#1a2420'; ctx.fill(); ctx.restore();
+
+  /* latitude/longitude grid — very subtle green */
+  ctx.strokeStyle = 'rgba(80,160,100,0.06)';
+  ctx.lineWidth = 1;
+  for (let lat = −80; lat <= 80; lat += 20) {
+    const y = ((lat + 90) / 180) * 1024;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(2048, y); ctx.stroke();
+  }
+  for (let lon = 0; lon < 360; lon += 20) {
+    const x = (lon / 360) * 2048;
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 1024); ctx.stroke();
+  }
+
+  /* major parallels slightly brighter */
+  ctx.strokeStyle = 'rgba(80,160,100,0.11)';
+  [0, −23.5, 23.5, −66.5, 66.5].forEach(lat => {
+    const y = ((lat + 90) / 180) * 1024;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(2048, y); ctx.stroke();
+  });
+
+  /* city/node dots — muted sage green */
+  const nodes = [
+    [380,290],[942,238],[1255,228],[1090,365],[1582,642],
+    [432,402],[972,402],[825,305],[1452,295],[502,252],
+    [622,242],[1202,342],[1512,342],[355,432],[1090,455],
+  ];
+  nodes.forEach(([x, y]) => {
+    const g = ctx.createRadialGradient(x, y, 0, x, y, 10);
+    g.addColorStop(0, 'rgba(90,160,80,0.85)');
+    g.addColorStop(0.4,'rgba(90,160,80,0.25)');
+    g.addColorStop(1, 'rgba(90,160,80,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#6ab850';
+    ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI*2); ctx.fill();
+  });
+
+  const earthTex = new THREE.CanvasTexture(tex);
+
+  /* ── Globe mesh ── */
+  const geo = new THREE.SphereGeometry(1.6, 72, 72);
+  const mat = new THREE.MeshPhongMaterial({
+    map: earthTex,
+    specular: new THREE.Color(0x0a1a10),
+    shininess: 8,
+    transparent: true,
+    opacity: 0.92,
+  });
+  const globe = new THREE.Mesh(geo, mat);
+  globe.position.set(1.4, −0.1, 0);
+  scene.add(globe);
+
+  /* thin wireframe overlay */
+  const wireGeo = new THREE.SphereGeometry(1.615, 38, 38);
+  const wireMat = new THREE.MeshBasicMaterial({
+    color: 0x4a9040, wireframe: true, transparent: true, opacity: 0.022,
+  });
+  const wire = new THREE.Mesh(wireGeo, wireMat);
+  wire.position.copy(globe.position);
+  scene.add(wire);
+
+  /* atmosphere rim glow */
+  const atmGeo = new THREE.SphereGeometry(1.72, 48, 48);
+  const atmMat = new THREE.MeshBasicMaterial({
+    color: 0x2a5028, transparent: true, opacity: 0.04, side: THREE.BackSide,
+  });
+  const atm = new THREE.Mesh(atmGeo, atmMat);
+  atm.position.copy(globe.position);
+  scene.add(atm);
+
+  /* subtle orbit ring */
+  const ringGeo = new THREE.TorusGeometry(2.1, 0.003, 8, 140);
+  const ringMat = new THREE.MeshBasicMaterial({
+    color: 0x3a6035, transparent: true, opacity: 0.22,
+  });
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  ring.position.copy(globe.position);
+  ring.rotation.x = Math.PI / 2.6;
+  scene.add(ring);
+
+  /* lighting — cool and earthy */
+  scene.add(new THREE.AmbientLight(0x0d1810, 0.8));
+  const keyLight = new THREE.DirectionalLight(0x203c28, 1.2);
+  keyLight.position.set(−5, 2, 4);
+  scene.add(keyLight);
+  const fillLight = new THREE.PointLight(0x2a5838, 0.5, 25);
+  fillLight.position.set(4, −1, 2);
+  scene.add(fillLight);
+  const rimLight = new THREE.PointLight(0x6a9060, 0.18, 20);
+  rimLight.position.set(−2, 3, −2);
+  scene.add(rimLight);
+
+  /* sparse dim star field */
+  const starPos = new Float32Array(800 * 3);
+  for (let i = 0; i < 800; i++) {
+    const r = 60 + Math.random() * 300;
+    const th = Math.random() * Math.PI * 2;
+    const ph = Math.acos(2 * Math.random() − 1);
+    starPos[i*3]   = r * Math.sin(ph) * Math.cos(th);
+    starPos[i*3+1] = r * Math.sin(ph) * Math.sin(th);
+    starPos[i*3+2] = r * Math.cos(ph);
+  }
+  const sg = new THREE.BufferGeometry();
+  sg.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+  scene.add(new THREE.Points(sg, new THREE.PointsMaterial({
+    color: 0x5a7058, size: 0.4, sizeAttenuation: true, transparent: true, opacity: 0.4,
+  })));
+
+  /* ── Animate ── */
+  let t = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    t += 0.003;
+    globe.rotation.y = t;
+    wire.rotation.y  = t * 0.94;
+    ring.rotation.z  = t * 0.12;
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+
+/* ── Nav scroll ── */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', scrollY > 20);
+}, { passive: true });
+
+/* ── GitHub repo → category mapping ── */
+const REPO_CATS = {
+  'secV':            { cat:'auto',    label:'Framework',       c:'var(--green2)' },
+  'secvulnhub':      { cat:'misc',    label:'Utilities',       c:'var(--muted)'  },
+  'netrecon':        { cat:'recon',   label:'Recon',           c:'var(--green2)' },
+  'android_pentest': { cat:'mobile',  label:'Mobile',          c:'#7a9890'       },
+  'ios_pentest':     { cat:'mobile',  label:'Mobile',          c:'#7a9890'       },
+  'Vader':           { cat:'recon',   label:'Recon',           c:'var(--green2)' },
+  'flock-back':      { cat:'recon',   label:'Recon',           c:'var(--green2)' },
+};
+
+function repoToCat(name) {
+  for (const key of Object.keys(REPO_CATS)) {
+    if (name.toLowerCase().includes(key.toLowerCase())) return REPO_CATS[key];
+  }
+  return { cat:'misc', label:'Tool', c:'var(--muted)' };
+}
+
+function repoCard(repo) {
+  const { cat, label, c } = repoToCat(repo.name);
+  const desc = repo.description || 'No description provided.';
+  const stars = repo.stargazers_count || 0;
+  const lang  = repo.language || '';
+  return `<a class="tool-card" href="${repo.html_url}" target="_blank" style="--cc:${c};text-decoration:none;display:block">
+    <span class="badge bc-${cat}">${label}</span>
+    <div class="tool-name">${repo.name}</div>
+    <div class="tool-desc">${desc}</div>
+    <div class="tool-status s-ready" style="margin-top:1rem;justify-content:space-between">
+      <span><span class="sdot"></span>${lang}</span>
+      <span style="color:var(--muted)">★ ${stars}</span>
+    </div>
+  </a>`;
+}
+
+let ALL_REPOS = [];
+let currentFilter = 'all';
+
+function renderRepos(filter) {
+  currentFilter = filter;
+  const grid = document.getElementById('toolGrid');
+  const list = filter === 'all' ? ALL_REPOS
+    : ALL_REPOS.filter(r => repoToCat(r.name).cat === filter);
+  if (list.length === 0) {
+    grid.innerHTML = `<div style="padding:2.5rem;color:var(--muted);font-size:0.72rem;grid-column:1/-1">No projects in this category yet.</div>`;
+    return;
+  }
+  grid.innerHTML = list.map(repoCard).join('');
+}
+
+function showRepoError() {
+  document.getElementById('toolGrid').innerHTML = `
+    <div style="padding:2.5rem;grid-column:1/-1;text-align:center">
+      <p style="color:var(--muted);font-size:0.72rem;margin-bottom:1.2rem">Could not load projects from GitHub API.</p>
+      <a class="btn btn-ghost" href="https://github.com/secvulnhub" target="_blank"
+         style="display:inline-flex;align-items:center;gap:0.5rem;font-family:var(--mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;padding:0.65rem 1.4rem;border:1px solid var(--border2);color:var(--muted);border-radius:var(--r)">
+        View all projects on GitHub →
+      </a>
+    </div>`;
+}
+
+(async () => {
+  try {
+    const r = await fetch('https://api.github.com/users/secvulnhub/repos?per_page=100&sort=updated', {
+      headers: { 'Accept': 'application/vnd.github+json' }
+    });
+    if (!r.ok) { showRepoError(); return; }
+    ALL_REPOS = (await r.json()).filter(r => !r.fork && !r.archived);
+    renderRepos(currentFilter);
+  } catch { showRepoError(); }
+})();
+
+document.getElementById('filters').addEventListener('click', e => {
+  const btn = e.target.closest('.ftab');
+  if (!btn) return;
+  document.querySelectorAll('.ftab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderRepos(btn.dataset.f);
+});
+</script>
+</body>
+</html>

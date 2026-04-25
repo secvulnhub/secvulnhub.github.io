@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>secV — Documentation Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+:root {
+  --bg:      #000000;
+  --bg1:     #0a0a0a;
+  --bg2:     #111111;
+  --bg3:     #1a1a1a;
+  --border:  rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.14);
+  --text:    #b0b0b0;
+  --muted:   #555555;
+  --dim:     #222222;
+  --white:   #ffffff;
+  --off:     #e0e0e0;
+  --grey:    #888888;
+  --acc:     #ffffff;
+  --mono:    'DM Mono', monospace;
+  --disp:    'Syne', sans-serif;
+}
+
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ── Nav ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
+}
+nav.scrolled {
+  background: rgba(0,0,0,0.94);
+  backdrop-filter: blur(16px);
+  border-color: var(--border);
+}
+.logo {
+  font-family: var(--disp);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--white);
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.logo-sub {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 0.78rem;
+}
+.nav-links { display: flex; align-items: center; gap: 0.5rem; }
+.nav-link {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.4rem 0.75rem;
+  transition: color 0.15s;
+}
+.nav-link:hover { color: var(--text); }
+.nav-btn {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text);
+  text-decoration: none;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--border2);
+  margin-left: 0.5rem;
+  transition: border-color 0.15s, color 0.15s;
+}
+.nav-btn:hover { border-color: var(--text); }
+
+/* ── Hero ── */
+.hero {
+  padding: 10rem 2.5rem 6rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.breadcrumb {
+  font-size: 0.56rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.breadcrumb a { color: var(--muted); text-decoration: none; }
+.breadcrumb a:hover { color: var(--text); }
+.breadcrumb span { color: var(--dim); }
+h1 {
+  font-family: var(--disp);
+  font-size: clamp(2.8rem, 6vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--white);
+  line-height: 0.96;
+  margin-bottom: 1.5rem;
+}
+h1 em {
+  font-style: normal;
+  color: var(--muted);
+}
+.hero-sub {
+  font-size: 0.78rem;
+  color: var(--muted);
+  max-width: 500px;
+  line-height: 1.85;
+  margin-bottom: 3rem;
+}
+
+/* ── Install block ── */
+.install-block {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--bg1);
+  border: 1px solid var(--border2);
+  max-width: 540px;
+  margin-bottom: 4rem;
+  overflow: hidden;
+}
+.install-label {
+  font-size: 0.52rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0.75rem 1rem;
+  border-right: 1px solid var(--border2);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.install-cmd {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--white);
+  padding: 0.75rem 1rem;
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.install-copy {
+  background: none;
+  border: none;
+  border-left: 1px solid var(--border2);
+  padding: 0.75rem 0.9rem;
+  cursor: pointer;
+  color: var(--muted);
+  transition: color 0.15s;
+  flex-shrink: 0;
+}
+.install-copy:hover { color: var(--white); }
+
+/* ── Section layout ── */
+.wrap { max-width: 1000px; margin: 0 auto; padding: 0 2.5rem 6rem; }
+.rule { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+.section-label {
+  font-size: 0.53rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.6rem;
+}
+h2 {
+  font-family: var(--disp);
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--white);
+  margin-bottom: 2.5rem;
+}
+
+/* ── Module cards ── */
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+.module-card {
+  background: var(--bg);
+  padding: 1.8rem;
+  position: relative;
+  transition: background 0.15s;
+  text-decoration: none;
+  display: block;
+  overflow: hidden;
+}
+.module-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--white);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.module-card:hover { background: var(--bg1); }
+.module-card:hover::before { opacity: 1; }
+.module-card.wip::before { background: #a08040; }
+
+.mod-status {
+  font-size: 0.48rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.12rem 0.4rem;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+.status-stable { color: #88cc88; background: rgba(136,204,136,0.08); }
+.status-beta   { color: #c8a040; background: rgba(200,160,64,0.1); }
+.status-wip    { color: var(--muted); background: rgba(255,255,255,0.04); }
+
+.mod-name {
+  font-family: var(--disp);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.4rem;
+  letter-spacing: -0.01em;
+}
+.mod-category {
+  font-size: 0.54rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+.mod-desc {
+  font-size: 0.69rem;
+  color: var(--text);
+  line-height: 1.7;
+  margin-bottom: 1.25rem;
+}
+.mod-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+.tag {
+  font-size: 0.48rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0.12rem 0.5rem;
+  border: 1px solid var(--border);
+}
+.mod-arrow {
+  position: absolute;
+  right: 1.5rem; bottom: 1.5rem;
+  font-size: 0.7rem;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity 0.15s, transform 0.15s;
+}
+.module-card:hover .mod-arrow { opacity: 1; transform: translateX(3px); }
+
+/* ── Shell reference ── */
+.shell-section { margin-bottom: 5rem; }
+.shell-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.shell-title {
+  font-family: var(--disp);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--white);
+}
+.shell-version {
+  font-size: 0.52rem;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  padding: 0.12rem 0.5rem;
+  border: 1px solid var(--border);
+}
+
+.cmd-table { width: 100%; border-collapse: collapse; }
+.cmd-table tr { border-bottom: 1px solid var(--border); }
+.cmd-table tr:last-child { border-bottom: none; }
+.cmd-table td { padding: 0.65rem 0.8rem; font-size: 0.68rem; vertical-align: top; }
+.cmd-table td:first-child {
+  font-family: var(--mono);
+  color: var(--white);
+  white-space: nowrap;
+  width: 38%;
+}
+.cmd-table td:last-child { color: var(--muted); }
+.cmd-group-header td {
+  font-size: 0.5rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 1.25rem;
+  padding-bottom: 0.4rem;
+  border-bottom: none;
+  background: none;
+}
+
+.cmd-table tr:hover td { background: var(--bg1); }
+.cmd-table .cmd-group-header:hover td { background: transparent; }
+
+/* ── Quick start ── */
+.quickstart { margin-bottom: 5rem; }
+.steps { display: flex; flex-direction: column; gap: 0; }
+.step {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: 1rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--border);
+  align-items: start;
+}
+.step:last-child { border-bottom: none; }
+.step-num {
+  font-family: var(--disp);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--dim);
+  line-height: 1.2;
+}
+.step-content {}
+.step-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 0.35rem;
+}
+.step-body { font-size: 0.68rem; color: var(--muted); line-height: 1.7; margin-bottom: 0.5rem; }
+pre {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  padding: 0.75rem 1rem;
+  font-size: 0.68rem;
+  overflow-x: auto;
+  color: var(--text);
+  margin-top: 0.5rem;
+}
+code { font-family: var(--mono); }
+.hl { color: var(--white); }
+.cm { color: var(--muted); }
+
+/* ── Footer ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 1.75rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.foot-brand {
+  font-family: var(--disp);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-decoration: none;
+}
+.foot-links { display: flex; gap: 1.75rem; }
+.foot-link {
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.foot-link:hover { color: var(--text); }
+.foot-note { font-size: 0.5rem; color: var(--dim); letter-spacing: 0.06em; }
+
+/* ── Anim ── */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+.hero h1       { animation: rise 0.6s 0.08s ease both; opacity: 0; }
+.hero .hero-sub{ animation: rise 0.6s 0.18s ease both; opacity: 0; }
+.hero .install-block{ animation: rise 0.6s 0.28s ease both; opacity: 0; }
+
+@media (max-width: 760px) {
+  nav { padding: 0 1.25rem; }
+  .nav-link { display: none; }
+  .hero { padding: 7.5rem 1.25rem 4rem; }
+  h1 { font-size: 2.4rem; }
+  .wrap { padding: 0 1.25rem 4rem; }
+  footer { padding: 1.25rem; }
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a class="logo" href="../../index.html">
+    SecVulnHub <span class="logo-sub">/ docs</span>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="#modules">Modules</a>
+    <a class="nav-link" href="#shell">Shell</a>
+    <a class="nav-link" href="#quickstart">Quickstart</a>
+    <a class="nav-btn" href="https://github.com/secvulnhub" target="_blank">GitHub</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="breadcrumb">
+    <a href="../../index.html">SecVulnHub</a>
+    <span>/</span>
+    Docs
+    <span>/</span>
+    secV
+  </div>
+  <h1>secV<br><em>Documentation</em></h1>
+  <p class="hero-sub">
+    secV is a modular offensive security framework with a REPL shell,
+    tab-completion, and Linux-native navigation. Each module is a self-contained
+    tool loaded on demand.
+  </p>
+  <div class="install-block">
+    <span class="install-label">Install</span>
+    <span class="install-cmd" id="installCmd">git clone https://github.com/secvulnhub/secV && cd secV && bash install.sh</span>
+    <button class="install-copy" onclick="copyInstall()" title="Copy">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+    </button>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- Modules -->
+<div class="wrap" id="modules">
+  <p class="section-label">Available Modules</p>
+  <h2>Modules</h2>
+
+  <div class="module-grid">
+
+    <!-- netrecon -->
+    <a class="module-card" href="modules/netrecon.html">
+      <span class="mod-status status-stable">Stable</span>
+      <div class="mod-name">netrecon</div>
+      <div class="mod-category">Network · Recon</div>
+      <div class="mod-desc">
+        Multi-engine network reconnaissance. Combines nmap, masscan, rustscan
+        with host profiling, CVE mapping, IoT device detection, MQTT/RTSP probing,
+        ICS/SCADA identification, and geolocation.
+      </div>
+      <div class="mod-tags">
+        <span class="tag">nmap</span>
+        <span class="tag">masscan</span>
+        <span class="tag">rustscan</span>
+        <span class="tag">iot</span>
+        <span class="tag">ics/scada</span>
+        <span class="tag">cve</span>
+        <span class="tag">geo</span>
+      </div>
+      <span class="mod-arrow">→</span>
+    </a>
+
+    <!-- android_pentest -->
+    <a class="module-card" href="modules/android_pentest.html">
+      <span class="mod-status status-beta">Beta</span>
+      <div class="mod-name">android_pentest</div>
+      <div class="mod-category">Mobile · Android</div>
+      <div class="mod-desc">
+        Comprehensive Android security testing framework. APK analysis, static
+        analysis, backdoor injection, Metasploit handler management, ADB shell
+        access, and payload deployment via msfvenom.
+      </div>
+      <div class="mod-tags">
+        <span class="tag">adb</span>
+        <span class="tag">apktool</span>
+        <span class="tag">jadx</span>
+        <span class="tag">msfvenom</span>
+        <span class="tag">backdoor</span>
+        <span class="tag">static analysis</span>
+      </div>
+      <span class="mod-arrow">→</span>
+    </a>
+
+    <!-- ios_pentest (coming soon) -->
+    <div class="module-card wip" style="cursor:default">
+      <span class="mod-status status-wip">Coming Soon</span>
+      <div class="mod-name">ios_pentest</div>
+      <div class="mod-category">Mobile · iOS</div>
+      <div class="mod-desc">
+        iOS application and device security testing via libimobiledevice.
+        Jailbreak detection bypass, IPA analysis, and file system extraction.
+      </div>
+      <div class="mod-tags">
+        <span class="tag">ideviceinfo</span>
+        <span class="tag">libimobiledevice</span>
+        <span class="tag">ipa</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- Shell reference -->
+<div class="wrap" id="shell">
+  <p class="section-label">Shell Reference</p>
+  <h2>secV Shell</h2>
+
+  <div class="shell-section">
+    <div class="shell-header">
+      <span class="shell-title">Module Commands</span>
+      <span class="shell-version">v2.3+</span>
+    </div>
+    <table class="cmd-table">
+      <tr class="cmd-group-header"><td colspan="2">Loading Modules</td></tr>
+      <tr><td>use &lt;module&gt;</td><td>Load a module by name (e.g. <code>use netrecon</code>)</td></tr>
+      <tr><td>back</td><td>Unload the current module and clear params. Equivalent to <code>cd ..</code></td></tr>
+      <tr><td>reload</td><td>Rescan the tools directory for new or updated modules</td></tr>
+
+      <tr class="cmd-group-header"><td colspan="2">Configuration</td></tr>
+      <tr><td>set &lt;param&gt; &lt;value&gt;</td><td>Set a module parameter. <strong>First token after <code>set</code> is the key.</strong> Example: <code>set operation backdoor_apk</code></td></tr>
+      <tr><td>unset &lt;param&gt;</td><td>Clear a parameter</td></tr>
+      <tr><td>show options</td><td>List all parameters with types, required flags, and current values</td></tr>
+
+      <tr class="cmd-group-header"><td colspan="2">Execution</td></tr>
+      <tr><td>run &lt;target&gt;</td><td>Execute the loaded module against target (IP, hostname, device, etc.)</td></tr>
+
+      <tr class="cmd-group-header"><td colspan="2">Information</td></tr>
+      <tr><td>show modules</td><td>List all available modules grouped by category</td></tr>
+      <tr><td>info [module]</td><td>Module details, version, author, and dependency status</td></tr>
+      <tr><td>search &lt;keyword&gt;</td><td>Search modules by name, description, or category</td></tr>
+      <tr><td>help module</td><td>Show full help for the currently loaded module</td></tr>
+      <tr><td>sessions [list|interact &lt;id&gt;|kill &lt;id&gt;]</td><td>Manage active Meterpreter / shell sessions</td></tr>
+
+      <tr class="cmd-group-header"><td colspan="2">System</td></tr>
+      <tr><td>update</td><td>Pull the latest version from git (runs update.py)</td></tr>
+      <tr><td>clear</td><td>Clear the terminal screen</td></tr>
+      <tr><td>exit / quit</td><td>Exit secV</td></tr>
+    </table>
+  </div>
+
+  <div class="shell-section">
+    <div class="shell-header">
+      <span class="shell-title">Linux Navigation</span>
+      <span class="shell-version">native passthrough</span>
+    </div>
+    <p style="font-size:0.69rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.7">
+      All standard Linux commands work natively inside secV. The shell tracks a working directory
+      so commands like <code>ls</code>, <code>cat</code>, and <code>find</code> operate on the
+      correct path. Use <code>cd ..</code> to navigate up — if a module is loaded, this unloads it
+      (same as <code>back</code>).
+    </p>
+    <table class="cmd-table">
+      <tr class="cmd-group-header"><td colspan="2">Directory Navigation</td></tr>
+      <tr><td>cd &lt;dir&gt;</td><td>Change working directory</td></tr>
+      <tr><td>cd .. / cd ../</td><td>Go up one level. If a module is loaded, acts as <code>back</code></td></tr>
+      <tr><td>cd ~</td><td>Change to home directory</td></tr>
+      <tr><td>pwd</td><td>Print current working directory</td></tr>
+
+      <tr class="cmd-group-header"><td colspan="2">File Operations</td></tr>
+      <tr><td>ls [path]</td><td>List directory contents</td></tr>
+      <tr><td>ll / la</td><td>Long listing with hidden files</td></tr>
+      <tr><td>mkdir &lt;dir&gt;</td><td>Create a directory</td></tr>
+      <tr><td>mv &lt;src&gt; &lt;dst&gt;</td><td>Move or rename a file</td></tr>
+      <tr><td>cp &lt;src&gt; &lt;dst&gt;</td><td>Copy a file</td></tr>
+      <tr><td>rm &lt;file&gt;</td><td>Remove a file</td></tr>
+      <tr><td>touch &lt;file&gt;</td><td>Create an empty file or update timestamp</td></tr>
+
+      <tr class="cmd-group-header"><td colspan="2">Viewing Files</td></tr>
+      <tr><td>cat &lt;file&gt;</td><td>Print file contents</td></tr>
+      <tr><td>less &lt;file&gt;</td><td>Page through file contents</td></tr>
+      <tr><td>head / tail</td><td>View beginning or end of a file</td></tr>
+
+      <tr class="cmd-group-header"><td colspan="2">Search &amp; Info</td></tr>
+      <tr><td>find &lt;path&gt; -name "…"</td><td>Find files by name or pattern</td></tr>
+      <tr><td>grep "&lt;pattern&gt;" &lt;file&gt;</td><td>Search file contents</td></tr>
+      <tr><td>file &lt;path&gt;</td><td>Identify file type</td></tr>
+      <tr><td>stat &lt;path&gt;</td><td>Detailed file/directory metadata</td></tr>
+      <tr><td>which &lt;binary&gt;</td><td>Find the path of a command</td></tr>
+      <tr><td>whoami / id</td><td>Current user identity</td></tr>
+
+      <tr class="cmd-group-header"><td colspan="2">Permissions</td></tr>
+      <tr><td>chmod &lt;mode&gt; &lt;file&gt;</td><td>Change file permissions</td></tr>
+      <tr><td>chown &lt;user&gt;:&lt;group&gt; &lt;file&gt;</td><td>Change file ownership</td></tr>
+    </table>
+  </div>
+
+  <div class="shell-section">
+    <div class="shell-header">
+      <span class="shell-title">Prompt Reference</span>
+    </div>
+    <p style="font-size:0.69rem;color:var(--muted);margin-bottom:1rem;line-height:1.7">
+      The prompt adapts to show what is loaded and how many parameters are currently set.
+    </p>
+    <pre><code><span class="cm"># No module loaded</span>
+<span class="hl">secV</span> ❯
+
+<span class="cm"># Module loaded, no params</span>
+<span class="hl">secV</span> <span style="color:#60a0c0">android_pentest</span> ❯
+
+<span class="cm"># Module loaded, operation set</span>
+<span class="hl">secV</span> <span style="color:#60a0c0">android_pentest</span> <span style="color:#888">›</span> <span style="color:#c0a040">backdoor_apk</span> [2 params] ❯
+
+<span class="cm"># Module loaded, custom operation</span>
+<span class="hl">secV</span> <span style="color:#60a0c0">netrecon</span> <span style="color:#888">›</span> <span style="color:#c0a040">full</span> [3 params] ❯</code></pre>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- Quick start -->
+<div class="wrap" id="quickstart">
+  <p class="section-label">Getting Started</p>
+  <h2>Quickstart</h2>
+
+  <div class="quickstart">
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <div class="step-title">Install secV</div>
+          <div class="step-body">Clone the repo and run the install script. It detects your distro and offers to install missing dependencies automatically.</div>
+          <pre><code><span class="hl">git clone</span> https://github.com/secvulnhub/secV
+<span class="hl">cd</span> secV
+<span class="hl">bash</span> install.sh</code></pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <div class="step-title">Launch the shell</div>
+          <div class="step-body">Run the <code>secV</code> binary. It auto-scans the tools directory and loads all modules.</div>
+          <pre><code><span class="hl">./secV</span>        <span class="cm"># from the repo directory</span>
+<span class="hl">secV</span>          <span class="cm"># if installed system-wide</span></code></pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <div class="step-title">Load a module</div>
+          <div class="step-body">Use <code>use &lt;name&gt;</code> to load any module. Tab completes module names.</div>
+          <pre><code><span class="hl">use</span> netrecon
+<span class="hl">show</span> options</code></pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <div class="step-title">Configure and run</div>
+          <div class="step-body">Set parameters with <code>set &lt;param&gt; &lt;value&gt;</code>. The first token after <code>set</code> is always the parameter name — not the module name.</div>
+          <pre><code><span class="cm"># Network scan example</span>
+<span class="hl">set</span> mode full
+<span class="hl">set</span> scanner nmap
+<span class="hl">run</span> 192.168.1.0/24
+
+<span class="cm"># Android backdoor example</span>
+<span class="hl">use</span> android_pentest
+<span class="hl">set</span> operation backdoor_apk
+<span class="hl">set</span> package com.instagram.android
+<span class="hl">run</span> connected</code></pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">05</div>
+        <div class="step-content">
+          <div class="step-title">Navigate like Linux</div>
+          <div class="step-body">Use <code>back</code> or <code>cd ..</code> to unload a module. Regular Linux commands like <code>ls</code>, <code>cat</code>, <code>grep</code>, <code>mkdir</code> work natively.</div>
+          <pre><code><span class="hl">ls</span> tools/network/
+<span class="hl">cat</span> tools/network/netrecon/module.json
+<span class="hl">back</span>            <span class="cm"># or: cd ..</span></code></pre>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<footer>
+  <a class="foot-brand" href="../../index.html">SecVulnHub</a>
+  <div class="foot-links">
+    <a class="foot-link" href="../../index.html">Home</a>
+    <a class="foot-link" href="https://github.com/secvulnhub" target="_blank">GitHub</a>
+    <a class="foot-link" href="#modules">Modules</a>
+    <a class="foot-link" href="#shell">Shell</a>
+  </div>
+  <span class="foot-note">MIT License · secV by 0xb0rn3</span>
+</footer>
+
+<script>
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', scrollY > 20);
+}, { passive: true });
+
+function copyInstall() {
+  const text = document.getElementById('installCmd').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.install-copy');
+    btn.style.color = '#88cc88';
+    setTimeout(() => btn.style.color = '', 1200);
+  });
+}
+</script>
+</body>
+</html>

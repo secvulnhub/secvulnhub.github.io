@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>netrecon — SecV Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+:root {
+  --bg:      #000000;
+  --bg1:     #0a0a0a;
+  --bg2:     #111111;
+  --bg3:     #1a1a1a;
+  --border:  rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.14);
+  --text:    #b0b0b0;
+  --muted:   #555555;
+  --dim:     #222222;
+  --white:   #ffffff;
+  --off:     #e0e0e0;
+  --grey:    #888888;
+  --acc:     #ffffff;
+  --mono:    'DM Mono', monospace;
+  --disp:    'Syne', sans-serif;
+}
+
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+/* ── Nav ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
+}
+nav.scrolled {
+  background: rgba(0,0,0,0.94);
+  backdrop-filter: blur(16px);
+  border-color: var(--border);
+}
+.logo {
+  font-family: var(--disp);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--off);
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.logo-mark {
+  width: 6px; height: 6px;
+  background: var(--white);
+  flex-shrink: 0;
+}
+.nav-links { display: flex; align-items: center; gap: 0.1rem; }
+.nav-link {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.4rem 0.75rem;
+  transition: color 0.15s;
+}
+.nav-link:hover { color: var(--text); }
+.nav-btn {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text);
+  text-decoration: none;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--border2);
+  margin-left: 0.5rem;
+  transition: border-color 0.15s, color 0.15s;
+}
+.nav-btn:hover { border-color: var(--white); color: var(--white); }
+.nav-btn.primary {
+  background: var(--white);
+  border-color: var(--white);
+  color: var(--bg);
+}
+.nav-btn.primary:hover {
+  background: transparent;
+  color: var(--white);
+}
+
+/* ── Layout ── */
+.page {
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+}
+
+/* ── Doc Header ── */
+.doc-header {
+  padding-top: 100px;
+  padding-bottom: 3.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.breadcrumb {
+  font-size: 0.52rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.breadcrumb a { color: var(--muted); text-decoration: none; }
+.breadcrumb a:hover { color: var(--text); }
+.breadcrumb span { color: var(--dim); }
+.module-meta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+}
+.module-title {
+  font-family: var(--disp);
+  font-size: clamp(2.8rem, 6vw, 4.8rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--white);
+  line-height: 0.95;
+  margin-bottom: 0.85rem;
+}
+.module-title span { color: var(--grey); font-weight: 400; }
+.module-sub {
+  font-size: 0.74rem;
+  color: var(--muted);
+  line-height: 1.8;
+  max-width: 480px;
+  margin-bottom: 1.5rem;
+}
+.module-tags {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.tag {
+  font-size: 0.48rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.5rem;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+}
+.tag.hi { color: var(--white); border-color: rgba(255,255,255,0.3); }
+.module-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 200px;
+}
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.6rem;
+  gap: 2rem;
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-lbl { letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.stat-v { color: var(--white); font-weight: 500; }
+
+/* ── Sidebar + Content ── */
+.doc-body {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 4rem;
+  padding: 3.5rem 0;
+  align-items: start;
+}
+.sidebar {
+  position: sticky;
+  top: 68px;
+}
+.sidebar-nav { list-style: none; }
+.sidebar-nav li { margin-bottom: 0.05rem; }
+.sidebar-nav a {
+  display: block;
+  font-size: 0.56rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.38rem 0;
+  border-left: 2px solid transparent;
+  padding-left: 0.75rem;
+  transition: color 0.15s, border-color 0.15s;
+}
+.sidebar-nav a:hover { color: var(--text); border-color: var(--border2); }
+.sidebar-nav a.active { color: var(--white); border-color: var(--white); }
+.sidebar-sep {
+  font-size: 0.46rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--dim);
+  padding: 0.6rem 0 0.2rem 0.75rem;
+  margin-top: 0.6rem;
+}
+
+/* ── Content sections ── */
+.content section {
+  padding-bottom: 3.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 3.5rem;
+}
+.content section:last-child {
+  border-bottom: none;
+}
+.sec-label {
+  font-size: 0.5rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 0.5rem;
+}
+h2 {
+  font-family: var(--disp);
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--white);
+  margin-bottom: 1.25rem;
+  line-height: 1.05;
+}
+h3 {
+  font-family: var(--disp);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--off);
+  margin: 1.75rem 0 0.75rem;
+  letter-spacing: -0.01em;
+}
+p {
+  font-size: 0.72rem;
+  color: var(--text);
+  line-height: 1.8;
+  margin-bottom: 0.9rem;
+}
+p:last-child { margin-bottom: 0; }
+a { color: var(--grey); }
+a:hover { color: var(--white); }
+
+/* ── Code blocks ── */
+pre {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--white);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+  font-size: 0.64rem;
+  line-height: 1.7;
+}
+code {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  padding: 0.08rem 0.35rem;
+  color: var(--off);
+}
+pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+}
+.comment { color: var(--muted); }
+.kw { color: var(--white); }
+.str { color: var(--grey); }
+
+/* ── Tables ── */
+.table-wrap { overflow-x: auto; margin: 1rem 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.63rem;
+}
+th {
+  font-family: var(--mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey);
+  text-align: left;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border2);
+  background: var(--bg1);
+}
+td {
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: top;
+  line-height: 1.6;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg1); }
+td:first-child { color: var(--off); font-weight: 500; white-space: nowrap; }
+td code { font-size: 0.6rem; }
+
+/* ── Feature grid ── */
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+.feat-cell {
+  background: var(--bg);
+  padding: 1.1rem;
+  position: relative;
+}
+.feat-cell:hover { background: var(--bg1); }
+.feat-icon {
+  font-size: 0.52rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 0.4rem;
+}
+.feat-name {
+  font-family: var(--disp);
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.25rem;
+}
+.feat-desc {
+  font-size: 0.62rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+/* ── Callouts ── */
+.callout {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--border2);
+  border-left-width: 3px;
+  margin: 1.25rem 0;
+  font-size: 0.67rem;
+  line-height: 1.65;
+  color: var(--text);
+}
+.callout.warn { border-left-color: var(--grey); }
+.callout.crit { border-left-color: var(--white); background: rgba(255,255,255,0.02); }
+.callout.info { border-left-color: var(--dim); }
+.callout-mark { font-size: 0.58rem; color: var(--grey); flex-shrink: 0; margin-top: 0.1rem; }
+
+/* ── Scan mode cards ── */
+.mode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+.mode-card {
+  background: var(--bg);
+  padding: 1.1rem;
+  cursor: default;
+}
+.mode-card:hover { background: var(--bg1); }
+.mode-key {
+  font-family: var(--disp);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.mode-badge {
+  font-size: 0.44rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.12rem 0.35rem;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+}
+.mode-badge.dflt { color: var(--white); border-color: rgba(255,255,255,0.3); }
+.mode-desc {
+  font-size: 0.62rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+/* ── Author card ── */
+.author-card {
+  display: flex;
+  gap: 1.75rem;
+  align-items: flex-start;
+  padding: 1.75rem;
+  border: 1px solid var(--border2);
+  background: var(--bg1);
+  margin-top: 1.5rem;
+}
+.author-avatar {
+  width: 52px; height: 52px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--disp);
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--white);
+  flex-shrink: 0;
+}
+.author-name {
+  font-family: var(--disp);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.2rem;
+}
+.author-role {
+  font-size: 0.54rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 0.75rem;
+}
+.author-bio {
+  font-size: 0.66rem;
+  color: var(--muted);
+  line-height: 1.65;
+  margin-bottom: 0.85rem;
+}
+.author-links { display: flex; gap: 1rem; flex-wrap: wrap; }
+.author-link {
+  font-size: 0.54rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--grey);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: color 0.15s;
+}
+.author-link:hover { color: var(--white); }
+
+/* ── Device category indicators ── */
+.dev-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+.dev-cat {
+  background: var(--bg);
+  padding: 1rem;
+}
+.dev-cat:hover { background: var(--bg1); }
+.dev-cat-label {
+  font-size: 0.5rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 0.3rem;
+}
+.dev-cat-name {
+  font-family: var(--disp);
+  font-weight: 700;
+  color: var(--white);
+  font-size: 0.88rem;
+  margin-bottom: 0.3rem;
+}
+.dev-cat-ports {
+  font-size: 0.58rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* ── Footer ── */
+footer { border-top: 1px solid var(--border); margin-top: 2rem; }
+.foot-inner {
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 1.5rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.foot-brand {
+  font-family: var(--disp);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-decoration: none;
+}
+.foot-links { display: flex; gap: 1.75rem; }
+.foot-link {
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.foot-link:hover { color: var(--text); }
+.foot-note { font-size: 0.5rem; color: var(--dim); letter-spacing: 0.06em; }
+
+/* ── Animations ── */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+.doc-header { animation: rise 0.5s ease both; }
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  nav { padding: 0 1.5rem; }
+  .nav-link { display: none; }
+  .page { padding: 0 1.5rem; }
+  .doc-body { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .dev-cat-grid { grid-template-columns: 1fr 1fr; }
+  .module-title { font-size: 2.6rem; }
+  .author-card { flex-direction: column; gap: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav id="nav">
+  <a class="logo" href="../index.html">
+    <span class="logo-mark"></span>
+    SecVulnHub
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="../index.html#projects">Arsenal</a>
+    <a class="nav-link" href="../index.html#mission">Mission</a>
+    <a class="nav-link" href="../index.html#contribute">Contribute</a>
+    <a class="nav-btn" href="https://github.com/0xb0rn3" target="_blank">GitHub</a>
+    <a class="nav-btn primary" href="https://discord.gg/SecVulnHub" target="_blank">Discord</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- Doc Header -->
+  <div class="doc-header">
+    <div class="breadcrumb">
+      <a href="../index.html">SecVulnHub</a>
+      <span>/</span>
+      <a href="../index.html#projects">Arsenal</a>
+      <span>/</span>
+      Docs
+      <span>/</span>
+      netrecon
+    </div>
+    <div class="module-meta">
+      <div>
+        <h1 class="module-title">netrecon<span>.</span></h1>
+        <p class="module-sub">Concurrent multi-engine network reconnaissance. nmap, masscan, rustscan, arp-scan, Shodan, gobuster, whatweb, searchsploit — all in one pass. Built-in IoT/camera/ICS device detection and firewall evasion.</p>
+        <div class="module-tags">
+          <span class="tag hi">secV Module</span>
+          <span class="tag">Network Recon</span>
+          <span class="tag">IoT Detection</span>
+          <span class="tag">ICS/SCADA</span>
+          <span class="tag">FW Evasion</span>
+          <span class="tag">Python 3.8+</span>
+          <span class="tag">v2.0</span>
+        </div>
+      </div>
+      <div class="module-stats">
+        <div class="stat-row"><span class="stat-lbl">Category</span><span class="stat-v">Network Recon</span></div>
+        <div class="stat-row"><span class="stat-lbl">Language</span><span class="stat-v">Python 3</span></div>
+        <div class="stat-row"><span class="stat-lbl">Location</span><span class="stat-v">tools/network/netrecon/</span></div>
+        <div class="stat-row"><span class="stat-lbl">Author</span><span class="stat-v">0xb0rn3</span></div>
+        <div class="stat-row"><span class="stat-lbl">Version</span><span class="stat-v">2.0</span></div>
+        <div class="stat-row"><span class="stat-lbl">License</span><span class="stat-v">MIT</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="doc-body">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <ul class="sidebar-nav">
+        <li><div class="sidebar-sep">Overview</div></li>
+        <li><a href="#overview" class="active">What it does</a></li>
+        <li><a href="#quickstart">Quick Start</a></li>
+        <li><div class="sidebar-sep">Reference</div></li>
+        <li><a href="#modes">Scan Modes</a></li>
+        <li><a href="#params">Parameters</a></li>
+        <li><a href="#ports">Port Presets</a></li>
+        <li><a href="#devices">Device Detection</a></li>
+        <li><a href="#evasion">Evasion</a></li>
+        <li><a href="#web">Web Enumeration</a></li>
+        <li><a href="#output">Output Format</a></li>
+        <li><div class="sidebar-sep">More</div></li>
+        <li><a href="#examples">Examples</a></li>
+        <li><a href="#requirements">Requirements</a></li>
+        <li><a href="#author">Author</a></li>
+      </ul>
+    </aside>
+
+    <!-- Content -->
+    <div class="content">
+
+      <!-- Overview -->
+      <section id="overview">
+        <p class="sec-label">Overview</p>
+        <h2>What netrecon does</h2>
+        <p>netrecon is a concurrent multi-engine network reconnaissance module inside SecV. It runs nmap, masscan, rustscan, arp-scan, Shodan, gobuster, ffuf, whatweb, and searchsploit all in a single scan pass, building a full profile for every host discovered. Every engine runs in parallel — scan time scales with host count, not tool count.</p>
+        <p>On top of standard port scanning, the module adds automatic device category classification for IoT hardware, IP cameras, routers, NAS devices, ICS/SCADA systems, and Flock Safety LPR surveillance cameras. Each category triggers the relevant protocol probes, CVE correlations, and vulnerability flags automatically.</p>
+
+        <div class="feat-grid">
+          <div class="feat-cell">
+            <div class="feat-icon">Engines</div>
+            <div class="feat-name">Multi-Engine</div>
+            <div class="feat-desc">nmap + masscan + rustscan + arp-scan all concurrent. First result wins.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Intelligence</div>
+            <div class="feat-name">CVE Correlation</div>
+            <div class="feat-desc">100+ services + version-specific CVE lookup from VERSIONED_CVE_DB. NVD live enrichment optional.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Detection</div>
+            <div class="feat-name">Device Classify</div>
+            <div class="feat-desc">Auto-detects camera, router, NAS, IoT, ICS/SCADA, surveillance. Protocol probes included.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Evasion</div>
+            <div class="feat-name">FW Bypass</div>
+            <div class="feat-desc">Packet frags, random decoys, source-port spoof, data padding, proxychains wrapping.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Web</div>
+            <div class="feat-name">Web Profiling</div>
+            <div class="feat-desc">gobuster/ffuf dir brute-force + whatweb + TLS cert + security header audit + cookie analysis.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Output</div>
+            <div class="feat-name">Multi-Format</div>
+            <div class="feat-desc">JSON host profiles + nmap XML + HTML report (xsltproc) + Metasploit RC file.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Start -->
+      <section id="quickstart">
+        <p class="sec-label">Quick Start</p>
+        <h2>Running a scan</h2>
+        <p>netrecon reads JSON from stdin and writes JSON to stdout. The input structure takes a target and a params object.</p>
+
+        <pre><code><span class="comment"># Quick scan of a single host</span>
+echo '{"target": "192.168.1.1", "params": {"mode": "normal"}}' \
+  | python3 netrecon.py | jq .
+
+<span class="comment"># Full network sweep — deep mode with output directory</span>
+echo '{
+  "target": "192.168.1.0/24",
+  "params": {
+    "mode": "deep",
+    "threads": 30,
+    "output_dir": "/tmp/scan",
+    "web_enum": true,
+    "searchsploit": true
+  }
+}' | python3 netrecon.py
+
+<span class="comment"># IoT sweep — MQTT, RTSP, camera, ICS protocols</span>
+echo '{"target": "10.0.0.0/24", "params": {"ports": "device"}}' \
+  | python3 netrecon.py | jq '.data.hosts[] | {ip, device_category}'
+
+<span class="comment"># Evasion mode through proxychains</span>
+echo '{
+  "target": "10.10.10.5",
+  "params": {
+    "mode": "evasion",
+    "proxychains": true,
+    "decoys": 10,
+    "source_port": 53
+  }
+}' | python3 netrecon.py</code></pre>
+
+        <div class="callout info">
+          <span class="callout-mark">ℹ</span>
+          Run as root for SYN scans (faster, stealthier). TCP connect fallback works without root but is noisier and slower.
+        </div>
+      </section>
+
+      <!-- Scan Modes -->
+      <section id="modes">
+        <p class="sec-label">Reference</p>
+        <h2>Scan modes</h2>
+        <p>The <code>mode</code> parameter controls the overall behaviour — timeouts, rate limits, which scripts run, and whether evasion flags are active.</p>
+
+        <div class="mode-grid">
+          <div class="mode-card">
+            <div class="mode-key">quick <span class="mode-badge">fast</span></div>
+            <div class="mode-desc">Top ports only. No vuln scripts. Minimal service detection. Use for initial triage on large ranges.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">normal <span class="mode-badge dflt">default</span></div>
+            <div class="mode-desc">top-1000 ports. Full service/version detection. HTTP profiling. CVE correlation. Balanced speed.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">deep <span class="mode-badge">thorough</span></div>
+            <div class="mode-desc">All ports. vuln NSE scripts. OS fingerprinting. Deeper timeouts. Use for single hosts.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">stealth <span class="mode-badge">quiet</span></div>
+            <div class="mode-desc">Low rate (&le;200pps). Extended timeouts. Slower but less likely to trip rate-based IDS.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">evasion <span class="mode-badge">bypass</span></div>
+            <div class="mode-desc">Full IDS/FW bypass: fragmented packets, RND decoys, source-port spoof, padding, banner/firewalk NSE.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Parameters -->
+      <section id="params">
+        <h2>Parameters</h2>
+        <p>All parameters go inside the <code>params</code> object of the JSON input.</p>
+
+        <h3>Core</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Parameter</th><th>Values</th><th>Default</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>mode</td><td>quick | normal | deep | stealth | evasion</td><td>normal</td><td>Scan profile — controls speed, depth, and evasion posture</td></tr>
+              <tr><td>ports</td><td>preset name or custom (see Port Presets)</td><td>top-1000</td><td>Ports to scan</td></tr>
+              <tr><td>threads</td><td>integer</td><td>20</td><td>Max concurrent host threads</td></tr>
+              <tr><td>rate</td><td>integer</td><td>1000</td><td>Masscan packets/sec</td></tr>
+              <tr><td>timeout</td><td>integer (seconds)</td><td>5</td><td>Per-host base timeout</td></tr>
+              <tr><td>os_detection</td><td>true | false</td><td>false</td><td>Enable OS fingerprinting via nmap -O</td></tr>
+              <tr><td>vuln_scripts</td><td>true | false</td><td>false</td><td>Run nmap default,vuln NSE scripts</td></tr>
+              <tr><td>nse_profile</td><td>string (e.g. vuln,exploit,auth)</td><td>""</td><td>Custom NSE script list</td></tr>
+              <tr><td>passive_only</td><td>true | false</td><td>false</td><td>DNS/WHOIS/Shodan only — no active scanning</td></tr>
+              <tr><td>interface</td><td>string (e.g. eth0)</td><td>""</td><td>NIC for ARP scan</td></tr>
+              <tr><td>exclude</td><td>comma-separated IPs</td><td>""</td><td>IPs to skip entirely</td></tr>
+              <tr><td>shodan_key</td><td>string</td><td>""</td><td>Shodan API key for external intel</td></tr>
+              <tr><td>nvd_api_key</td><td>string</td><td>env: NVD_API_KEY</td><td>NVD API key for live CVE enrichment</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Evasion / Anonymity</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Parameter</th><th>Values</th><th>Default</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>evasion</td><td>true | false</td><td>false</td><td>Enable all IDS/FW bypass flags on any mode</td></tr>
+              <tr><td>decoys</td><td>integer</td><td>5</td><td>Number of random decoy IPs in nmap -D RND:N</td></tr>
+              <tr><td>mtu</td><td>integer (8, 16, 24…)</td><td>8</td><td>Packet fragment MTU — smaller = harder to reassemble</td></tr>
+              <tr><td>source_port</td><td>integer</td><td>53</td><td>Spoof source port (53=DNS, 80=HTTP, 443=HTTPS)</td></tr>
+              <tr><td>data_length</td><td>integer (bytes)</td><td>32</td><td>Append random bytes to packets to confuse signatures</td></tr>
+              <tr><td>proxychains</td><td>true | false</td><td>false</td><td>Wrap nmap/gobuster through proxychains4</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Web Enumeration &amp; Output</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Parameter</th><th>Values</th><th>Default</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>web_enum</td><td>true | false</td><td>true</td><td>Run gobuster/ffuf + whatweb on discovered web ports</td></tr>
+              <tr><td>web_wordlist</td><td>path string</td><td>auto-detect</td><td>Custom wordlist path for gobuster/ffuf</td></tr>
+              <tr><td>searchsploit</td><td>true | false</td><td>false</td><td>Run searchsploit against each discovered service</td></tr>
+              <tr><td>output_dir</td><td>path string</td><td>""</td><td>Save nmap XML, HTML report, MSF RC, gobuster results here</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Port Presets -->
+      <section id="ports">
+        <h2>Port presets</h2>
+        <p>Pass any preset name as the <code>ports</code> parameter, or provide a custom comma-separated list or range like <code>80,443,8080-8090</code>.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Preset</th><th>Ports covered</th><th>Use case</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>quick</td><td>21,22,23,25,53,80,443,445,3389,62078</td><td>Fast triage — critical ports only</td></tr>
+              <tr><td>top-20</td><td>Top 20 common service ports</td><td>Rapid sweep of standard services</td></tr>
+              <tr><td>top-100</td><td>–top-ports 100</td><td>Broader quick sweep</td></tr>
+              <tr><td>top-1000</td><td>–top-ports 1000 (default)</td><td>Standard full scan</td></tr>
+              <tr><td>web</td><td>80,443,8000–8091,8443,8888,9000,9090,9200</td><td>Web application focused</td></tr>
+              <tr><td>database</td><td>1433,1521,3306,5432,6379,9200,11211,27017</td><td>Database exposure audit</td></tr>
+              <tr><td>common</td><td>All standard service ports including auth, mail, SMB</td><td>Broad enterprise sweep</td></tr>
+              <tr><td>ios</td><td>62078,5000,7000,548,3689,49152,88,5353</td><td>Apple iOS/macOS device discovery</td></tr>
+              <tr><td><strong>iot</strong></td><td>80,443,1883,8883,5683,5353,8080,8443,5000</td><td>MQTT, MQTT-TLS, CoAP, mDNS IoT sweep</td></tr>
+              <tr><td><strong>camera</strong></td><td>80,443,554,8000,8080,8443,37777,34567,3702</td><td>IP cameras — RTSP, Hikvision, Dahua, ONVIF</td></tr>
+              <tr><td><strong>router</strong></td><td>80,443,8080,8443,22,23,7547,8291</td><td>Routers — TR-069, MikroTik Winbox, management</td></tr>
+              <tr><td><strong>nas</strong></td><td>80,443,5000,5001,9000,445,139,22</td><td>NAS — Synology DSM, SMB, management</td></tr>
+              <tr><td><strong>ics</strong></td><td>80,443,502,20000,102,47808,1911,161,22</td><td>ICS/SCADA — Modbus, DNP3, S7, BACnet, Niagara Fox</td></tr>
+              <tr><td><strong>device</strong></td><td>All IoT + camera + router + NAS + ICS ports combined</td><td>Full embedded device sweep</td></tr>
+              <tr><td>all</td><td>1–65535</td><td>Complete port space — use with care on large nets</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Device Detection -->
+      <section id="devices">
+        <h2>Device detection &amp; IoT profiling</h2>
+        <p>netrecon automatically classifies each host into a device category based on open ports, HTTP server headers, page content, favicon hashes, and active protocol probes. No manual configuration required — it runs on every scan.</p>
+
+        <div class="dev-cat-grid">
+          <div class="dev-cat">
+            <div class="dev-cat-label">Category</div>
+            <div class="dev-cat-name">camera</div>
+            <div class="dev-cat-ports">RTSP 554 · Hikvision 8000 · Dahua 37777/34567 · ONVIF 3702 · Favicon hash (17 models)</div>
+          </div>
+          <div class="dev-cat">
+            <div class="dev-cat-label">Category</div>
+            <div class="dev-cat-name">iot</div>
+            <div class="dev-cat-ports">MQTT 1883/8883 · CoAP 5683 · mDNS 5353 · MQTT CONNECT probe</div>
+          </div>
+          <div class="dev-cat">
+            <div class="dev-cat-label">Category</div>
+            <div class="dev-cat-name">ics</div>
+            <div class="dev-cat-ports">Modbus 502 · DNP3 20000 · Siemens S7 102 · BACnet 47808 · Niagara Fox 1911</div>
+          </div>
+          <div class="dev-cat">
+            <div class="dev-cat-label">Category</div>
+            <div class="dev-cat-name">router</div>
+            <div class="dev-cat-ports">TR-069 7547 · MikroTik Winbox 8291 · Admin panel detection</div>
+          </div>
+          <div class="dev-cat">
+            <div class="dev-cat-label">Category</div>
+            <div class="dev-cat-name">nas</div>
+            <div class="dev-cat-ports">Synology DSM 5000/5001 · Shared storage port 9000 · SMB 445/139</div>
+          </div>
+          <div class="dev-cat">
+            <div class="dev-cat-label">Category</div>
+            <div class="dev-cat-name">surveillance</div>
+            <div class="dev-cat-ports">Flock Safety &amp; LPR camera MAC OUI prefixes from flock-back signatures (20 prefixes)</div>
+          </div>
+        </div>
+
+        <h3>Camera fingerprinting</h3>
+        <p>When a host is identified as a camera, netrecon fetches <code>/favicon.ico</code> from each web port and computes an mmh3 hash. It matches against 17 known camera vendor hashes to identify the exact model family. Identified models include: Axis, Hikvision, D-Link, Panasonic, Foscam, Vivotek, TP-Link, Logitech Circle, NETGEAR Arlo, Samsung SmartCam, Sony, Dahua, Amcrest, Toshiba, Sricam, Reolink, and Zmodo.</p>
+        <p>Server header signatures (<code>boa</code>, <code>goahead</code>, <code>uc-httpd</code>, <code>dahua</code>, <code>hikvision-webs</code>, etc.) and page title keywords are also checked as a fallback when mmh3 is not installed.</p>
+
+        <h3>MQTT probe</h3>
+        <p>On port 1883, netrecon sends a real MQTT v3.1.1 CONNECT packet and reads the CONNACK. A return code of 0x00 in the CONNACK means the broker accepted the connection without credentials — flagged as <code>MQTT-NO-AUTH</code> CRITICAL severity.</p>
+
+        <h3>RTSP probe</h3>
+        <p>On port 554, an RTSP OPTIONS request is sent. A 200 OK response without a 401 challenge indicates the stream is unauthenticated — flagged as <code>RTSP-NO-AUTH</code> HIGH severity.</p>
+
+        <h3>ICS/SCADA</h3>
+        <p>ICS ports have the highest detection priority. Any host with an open ICS port immediately gets <code>device_category: "ics"</code> and a CRITICAL-severity vulnerability finding for each exposed protocol. The known absence of authentication in Modbus, DNP3, and BACnet is flagged directly without any further probing needed.</p>
+
+        <div class="callout crit">
+          <span class="callout-mark">!</span>
+          ICS exposure findings are always CRITICAL regardless of other scan results. The presence of Modbus (502), DNP3 (20000), Siemens S7 (102), BACnet (47808), or Niagara Fox (1911) on a reachable host is itself a critical finding. The module adds +40 to the risk score automatically.
+        </div>
+      </section>
+
+      <!-- Evasion -->
+      <section id="evasion">
+        <h2>Firewall &amp; IDS evasion</h2>
+        <p>Use <code>mode: "evasion"</code> or set <code>evasion: true</code> on any mode to activate all bypass flags. The following nmap flags are applied:</p>
+
+        <pre><code>-f              <span class="comment"># Fragment packets into 8-byte chunks</span>
+--mtu 8         <span class="comment"># Force small MTU — stateless FW can't reassemble</span>
+-n              <span class="comment"># Skip DNS resolution (no PTR lookups that alert SOC)</span>
+-Pn             <span class="comment"># Treat all hosts as up — skip ICMP ping</span>
+-D RND:5        <span class="comment"># Inject 5 random decoy IPs in each probe</span>
+-g 53           <span class="comment"># Spoof source port as 53 (DNS) — passes some FW rules</span>
+--data-length 32 <span class="comment"># Pad each packet with 32 random bytes</span></code></pre>
+
+        <p>When <code>proxychains: true</code>, every nmap and gobuster call is prefixed with <code>proxychains4 -q</code>. Make sure your <code>/etc/proxychains4.conf</code> is configured before enabling this.</p>
+
+        <div class="callout warn">
+          <span class="callout-mark">⚠</span>
+          Evasion mode significantly increases scan time. The <code>evasion</code> timeout profile allows 480s for port scans and 720s for full host profiling. Combine with a low rate (<code>rate: 50</code>) for maximum stealth against deep packet inspection.
+        </div>
+
+        <h3>Recommended evasion configs</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Scenario</th><th>Config</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Basic IDS bypass</td><td><code>mode: "evasion"</code></td></tr>
+              <tr><td>Full anonymity</td><td><code>mode: "evasion", proxychains: true, decoys: 15, source_port: 443</code></td></tr>
+              <tr><td>Rate-limit aware</td><td><code>mode: "stealth", rate: 50, timeout: 20</code></td></tr>
+              <tr><td>Custom fragments</td><td><code>evasion: true, mtu: 16, data_length: 64</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Web Enumeration -->
+      <section id="web">
+        <h2>Web enumeration</h2>
+        <p>Web enumeration runs automatically after host profiling when <code>web_enum: true</code> (the default). It runs on all discovered HTTP/HTTPS ports.</p>
+
+        <h3>Tools used</h3>
+        <p><strong>gobuster</strong> is tried first for directory brute-force. If not available, <strong>ffuf</strong> is used as fallback. Found paths are stored in <code>svc.web_paths[]</code> in the JSON output.</p>
+        <p><strong>whatweb</strong> runs after HTTP probing on up to 4 web ports per host. It identifies CMS, frameworks, server software, and JavaScript libraries. Results are merged into <code>svc.http_technologies[]</code>.</p>
+
+        <h3>HTTP analysis</h3>
+        <p>For each web port, <code>http_probe</code> captures:</p>
+        <ul style="margin: 0.6rem 0 0.9rem 1rem; font-size: 0.68rem; color: var(--text); line-height: 1.9;">
+          <li>HTTP status code, page title, server header</li>
+          <li>Technology fingerprints (20+ patterns including WordPress, Joomla, Django, Flask, Spring, etc.)</li>
+          <li>Security header audit — HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, CORP</li>
+          <li>Missing headers list (actionable finding)</li>
+          <li>Cookie security flags — Secure, HttpOnly, SameSite per cookie</li>
+          <li>Full redirect chain</li>
+          <li>TLS: subject, issuer, expiry, not-before, signature algorithm, Subject Alternative Names (SANs)</li>
+        </ul>
+
+        <h3>Wordlist discovery</h3>
+        <p>If no <code>web_wordlist</code> is specified, the module searches these paths in order:</p>
+        <pre><code>/usr/share/wordlists/dirb/common.txt
+/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+/usr/share/seclists/Discovery/Web-Content/common.txt
+/usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt</code></pre>
+      </section>
+
+      <!-- Output -->
+      <section id="output">
+        <h2>Output format</h2>
+        <p>All output is JSON to stdout. The top-level structure is:</p>
+
+        <pre><code>{
+  "success": true,
+  "data": {
+    "target": "192.168.1.0/24",
+    "scan_start": "2025-01-01T00:00:00",
+    "scan_duration": 42.3,
+    "hosts_discovered": 12,
+    "engines_used": ["nmap", "masscan", "arp"],
+    "capabilities": { ... },
+    "hosts": [ ... ],       <span class="comment">// per-host profiles</span>
+    "summary": { ... },     <span class="comment">// aggregate stats</span>
+    "outputs": { ... }      <span class="comment">// file paths if output_dir set</span>
+  },
+  "errors": []
+}</code></pre>
+
+        <h3>Host profile</h3>
+        <pre><code>{
+  "ip": "192.168.1.100",
+  "hostname": "camera-01.local",
+  "mac": "ec:1b:bd:aa:bb:cc",
+  "mac_vendor": "Flock Safety",
+  "os_family": "Linux",
+  "device_type": "Hikvision",       <span class="comment">// specific model if identified</span>
+  "device_category": "camera",      <span class="comment">// camera|router|nas|iot|ics|surveillance</span>
+  "risk_score": 85,
+  "risk_level": "CRITICAL",
+  "services": [ ... ],
+  "vulnerabilities": [
+    {
+      "id": "RTSP-NO-AUTH",
+      "severity": "HIGH",
+      "desc": "RTSP stream accessible without authentication"
+    },
+    {
+      "id": "ICS-EXPOSED-MODBUS",
+      "severity": "CRITICAL",
+      "desc": "MODBUS port 502 is exposed — unauthenticated ICS/SCADA access possible"
+    }
+  ],
+  "asn": "AS12345",
+  "country": "US",
+  "shodan": { ... }
+}</code></pre>
+
+        <h3>Service entry</h3>
+        <pre><code>{
+  "port": 1883,
+  "service": "mqtt",
+  "version": "Mosquitto 2.0.15",
+  "banner": "MQTT CONNACK received",
+  "mqtt_no_auth": true,             <span class="comment">// present if broker has no auth</span>
+  "snmp_community": "public",       <span class="comment">// present if SNMP probed</span>
+  "smb_shares": ["ADMIN$", "C$"],  <span class="comment">// present if SMB enumerated</span>
+  "http_title": "",
+  "http_server": "",
+  "http_technologies": [],
+  "http_security_headers": {},
+  "http_missing_headers": ["Strict-Transport-Security", "CSP"],
+  "tls_subject": "",
+  "tls_expiry": "",
+  "tls_sans": [],
+  "web_paths": ["/admin", "/config"],
+  "cves": [
+    {
+      "id": "MQTT-NO-AUTH",
+      "cvss": 9.1,
+      "desc": "MQTT broker allows unauthenticated connections"
+    }
+  ],
+  "sources": ["nmap", "banner_grab"]
+}</code></pre>
+
+        <h3>Summary block</h3>
+        <pre><code>{
+  "hosts_alive": 12,
+  "total_open_ports": 87,
+  "top_services": [["http", 8], ["ssh", 6], ["mqtt", 3]],
+  "os_distribution": {"Linux": 9, "Windows": 2, "Unknown": 1},
+  "risk_distribution": {"CRITICAL": 2, "HIGH": 3, "MEDIUM": 5, "LOW": 2},
+  "vulnerabilities": {
+    "critical": 4,
+    "high": 11,
+    "medium": 8,
+    "total": 23,
+    "top_cves": ["CVE-2021-36260", "CVE-2019-0708", "MQTT-NO-AUTH"]
+  },
+  "high_risk_hosts": ["192.168.1.100", "192.168.1.142"],
+  "engines_used": ["nmap", "masscan", "arp", "tcp_connect"]
+}</code></pre>
+      </section>
+
+      <!-- Examples -->
+      <section id="examples">
+        <h2>Examples</h2>
+
+        <h3>Standard network recon</h3>
+        <pre><code>echo '{"target": "192.168.1.0/24", "params": {}}' | python3 netrecon.py</code></pre>
+
+        <h3>Deep single host with Shodan + output</h3>
+        <pre><code>echo '{
+  "target": "10.0.0.1",
+  "params": {
+    "mode": "deep",
+    "shodan_key": "YOUR_KEY",
+    "searchsploit": true,
+    "output_dir": "/tmp/scan"
+  }
+}' | python3 netrecon.py</code></pre>
+
+        <h3>IoT sweep — MQTT, CoAP, cameras</h3>
+        <pre><code>echo '{"target": "192.168.1.0/24", "params": {"ports": "device"}}' \
+  | python3 netrecon.py \
+  | jq '.data.hosts[] | select(.device_category != "") | {ip, device_category, device_type, risk_level}'</code></pre>
+
+        <h3>ICS/SCADA exposure audit</h3>
+        <pre><code>echo '{"target": "10.0.0.0/16", "params": {"ports": "ics", "threads": 50}}' \
+  | python3 netrecon.py \
+  | jq '.data.hosts[] | select(.device_category == "ics") | {ip, vulnerabilities}'</code></pre>
+
+        <h3>Evasion — fragmented packets through proxy</h3>
+        <pre><code>echo '{
+  "target": "10.10.10.5",
+  "params": {
+    "mode": "evasion",
+    "proxychains": true,
+    "decoys": 15,
+    "source_port": 443,
+    "mtu": 16,
+    "data_length": 64
+  }
+}' | python3 netrecon.py</code></pre>
+
+        <h3>Passive intel only</h3>
+        <pre><code>echo '{"target": "example.com", "params": {"passive_only": true, "shodan_key": "KEY"}}' \
+  | python3 netrecon.py</code></pre>
+
+        <h3>Camera sweep with HTML report</h3>
+        <pre><code>echo '{
+  "target": "192.168.0.0/24",
+  "params": {
+    "ports": "camera",
+    "output_dir": "/tmp/cam_scan"
+  }
+}' | python3 netrecon.py && open /tmp/cam_scan/netrecon_*.html</code></pre>
+      </section>
+
+      <!-- Requirements -->
+      <section id="requirements">
+        <h2>Requirements</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Tier</th><th>What to install</th><th>Adds</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Minimum</td><td>Python 3.8+</td><td>TCP connect fallback — always works</td></tr>
+              <tr><td>Standard</td><td><code>nmap</code></td><td>Service/version/OS detection, NSE scripts</td></tr>
+              <tr><td>Enhanced</td><td><code>masscan nmap arp-scan whatweb gobuster</code> + root</td><td>SYN scans, rapid discovery, web tech, dir brute</td></tr>
+              <tr><td>Python libs</td><td><code>pip3 install requests scapy dnspython shodan</code></td><td>HTTP probing, ARP, DNS, Shodan</td></tr>
+              <tr><td>IoT/Camera</td><td><code>pip3 install mmh3</code></td><td>Favicon hash fingerprinting (17 camera models)</td></tr>
+              <tr><td>SMB/SNMP</td><td><code>apt install nmblookup smbclient snmpwalk</code></td><td>NetBIOS names, share enum, SNMP community probe</td></tr>
+              <tr><td>Evasion</td><td><code>proxychains4</code> + configured proxy</td><td>Route scans through SOCKS proxy</td></tr>
+              <tr><td>Full output</td><td><code>apt install ffuf xsltproc exploitdb</code></td><td>ffuf fallback, HTML reports, searchsploit</td></tr>
+              <tr><td>NVD enrichment</td><td>NVD API key in <code>NVD_API_KEY</code> env var</td><td>Live CVSS scores and full CVE descriptions</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout info">
+          <span class="callout-mark">ℹ</span>
+          The module uses capability detection at startup. If a tool is missing, that engine is silently skipped. The scan still runs with whatever is available — you never get a hard failure from a missing optional dependency.
+        </div>
+      </section>
+
+      <!-- Author -->
+      <section id="author">
+        <p class="sec-label">Module Author</p>
+        <h2>Who built this</h2>
+        <p>netrecon is a community contribution to SecVulnHub by 0xb0rn3, a senior security researcher and tool developer. The module consolidates features from several prior projects: s3rp (evasion/FW bypass), r3cond0g (MAC/CVE/TLS enrichment), flock-back (IoT/surveillance detection), and Vader (device presets and IoT port profiles).</p>
+
+        <div class="author-card">
+          <div class="author-avatar">0x</div>
+          <div>
+            <div class="author-name">0xb0rn3</div>
+            <div class="author-role">Senior Module Developer &mdash; SecVulnHub</div>
+            <div class="author-bio">Security researcher focused on network reconnaissance, IoT security, and offensive tooling. Built and maintains netrecon, the secV framework's network module. Background in both red team operations and ICS/OT security.</div>
+            <div class="author-links">
+              <a class="author-link" href="https://github.com/0xb0rn3" target="_blank">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+                github.com/0xb0rn3
+              </a>
+              <a class="author-link" href="https://oxborn3.com" target="_blank">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                oxborn3.com
+              </a>
+              <a class="author-link" href="mailto:contact@oxborn3.com">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                contact@oxborn3.com
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /content -->
+  </div><!-- /doc-body -->
+
+</div><!-- /page -->
+
+<footer>
+  <div class="foot-inner">
+    <a class="foot-brand" href="../index.html">SecVulnHub</a>
+    <div class="foot-links">
+      <a class="foot-link" href="https://github.com/secvulnhub/secvulnhub/" target="_blank">GitHub</a>
+      <a class="foot-link" href="https://discord.gg/SecVulnHub" target="_blank">Discord</a>
+      <a class="foot-link" href="../index.html#projects">Arsenal</a>
+    </div>
+    <span class="foot-note">MIT License &middot; Built by practitioners, for practitioners.</span>
+  </div>
+</footer>
+
+<script>
+/* Nav scroll */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', scrollY > 20);
+}, { passive: true });
+
+/* Sidebar active link on scroll */
+const sections = document.querySelectorAll('.content section[id]');
+const navLinks = document.querySelectorAll('.sidebar-nav a[href^="#"]');
+
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-52px 0px -60% 0px' });
+
+sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
