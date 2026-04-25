@@ -621,7 +621,7 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
     <div class="module-meta">
       <div>
         <h1 class="module-title">netrecon<span>.</span></h1>
-        <p class="module-sub">Concurrent multi-engine network reconnaissance. nmap, masscan, rustscan, arp-scan, Shodan, gobuster, whatweb, searchsploit — all in one pass. Built-in IoT/camera/ICS device detection and firewall evasion.</p>
+        <p class="module-sub">Concurrent multi-engine network reconnaissance. nmap, masscan, rustscan, arp-scan, Shodan, gobuster, nikto, whatweb, searchsploit — all in one pass. Built-in IoT/camera/ICS device detection and full-stack firewall evasion.</p>
         <div class="module-tags">
           <span class="tag hi">secV Module</span>
           <span class="tag">Network Recon</span>
@@ -824,7 +824,7 @@ echo '{
           <table>
             <thead><tr><th>Parameter</th><th>Values</th><th>Default</th><th>Description</th></tr></thead>
             <tbody>
-              <tr><td>web_enum</td><td>true | false</td><td>true</td><td>Run gobuster/ffuf + whatweb on discovered web ports</td></tr>
+              <tr><td>web_enum</td><td>true | false</td><td>true</td><td>Run gobuster/ffuf + nikto + whatweb on discovered web ports</td></tr>
               <tr><td>web_wordlist</td><td>path string</td><td>auto-detect</td><td>Custom wordlist path for gobuster/ffuf</td></tr>
               <tr><td>searchsploit</td><td>true | false</td><td>false</td><td>Run searchsploit against each discovered service</td></tr>
               <tr><td>output_dir</td><td>path string</td><td>""</td><td>Save nmap XML, HTML report, MSF RC, gobuster results here</td></tr>
@@ -948,7 +948,22 @@ echo '{
         <p>Web enumeration runs automatically after host profiling when <code>web_enum: true</code> (the default). It runs on all discovered HTTP/HTTPS ports.</p>
         <h3>Tools used</h3>
         <p><strong>gobuster</strong> is tried first for directory brute-force. If not available, <strong>ffuf</strong> is used as fallback. Found paths are stored in <code>svc.web_paths[]</code> in the JSON output.</p>
-        <p><strong>whatweb</strong> runs after HTTP probing on up to 4 web ports per host. It identifies CMS, frameworks, server software, and JavaScript libraries. Results are merged into <code>svc.http_technologies[]</code>.</p>
+        <p><strong>nikto</strong> runs a full vulnerability scan on each web port after directory brute-force completes. Findings are stored in <code>svc.nikto_findings[]</code> and the <code>nikto</code> source tag is added to the service entry. Nikto detects outdated server versions, dangerous methods, default files, misconfigurations, and known CVEs.</p>
+        <p><strong>whatweb</strong> identifies CMS, frameworks, server software, and JavaScript libraries per-host. Results are merged into <code>svc.http_technologies[]</code>.</p>
+        <h3>Evasion in web tools</h3>
+        <p>When <code>evasion: true</code>, all web scanning tools receive anti-detection measures automatically:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Tool</th><th>Evasion applied</th></tr></thead>
+            <tbody>
+              <tr><td>gobuster</td><td>Thread cap 5, random browser User-Agent, 500ms inter-request delay</td></tr>
+              <tr><td>ffuf</td><td>Thread cap 5, random browser User-Agent, 0.5s delay between probes</td></tr>
+              <tr><td>nikto</td><td>Techniques <code>1,2,5,7</code> (URI encoding, self-reference, fake param, random case), random browser UA, 1s pause between probes</td></tr>
+              <tr><td>whatweb</td><td>Random browser User-Agent, 500ms throttle</td></tr>
+              <tr><td>RTSP probe</td><td>Random browser User-Agent instead of <code>secv-netrecon</code></td></tr>
+            </tbody>
+          </table>
+        </div>
         <h3>HTTP analysis</h3>
         <p>For each web port, <code>http_probe</code> captures:</p>
         <ul class="feature-list">
@@ -1113,7 +1128,7 @@ echo '{
             <tbody>
               <tr><td>Minimum</td><td>Python 3.8+</td><td>TCP connect fallback — always works</td></tr>
               <tr><td>Standard</td><td><code>nmap</code></td><td>Service/version/OS detection, NSE scripts</td></tr>
-              <tr><td>Enhanced</td><td><code>masscan nmap arp-scan whatweb gobuster</code> + root</td><td>SYN scans, rapid discovery, web tech, dir brute</td></tr>
+              <tr><td>Enhanced</td><td><code>masscan nmap arp-scan whatweb gobuster nikto</code> + root</td><td>SYN scans, rapid discovery, web tech, dir brute, vuln scan</td></tr>
               <tr><td>Python libs</td><td><code>pip3 install requests scapy dnspython shodan</code></td><td>HTTP probing, ARP, DNS, Shodan</td></tr>
               <tr><td>IoT/Camera</td><td><code>pip3 install mmh3</code></td><td>Favicon hash fingerprinting (17 camera models)</td></tr>
               <tr><td>SMB/SNMP</td><td><code>apt install nmblookup smbclient snmpwalk</code></td><td>NetBIOS names, share enum, SNMP community probe</td></tr>

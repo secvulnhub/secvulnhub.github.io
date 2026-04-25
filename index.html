@@ -10,21 +10,21 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
 
-/* ── Palette: dark grey-green, brutal ── */
+/* ── Palette: light grey-white, clean ── */
 :root {
-  --bg:      #0b0d0b;
-  --bg1:     #101210;
-  --bg2:     #161918;
-  --border:  rgba(110,170,100,0.07);
-  --border2: rgba(110,170,100,0.15);
-  --text:    #b4bfae;
-  --muted:   #4e5c48;
-  --dim:     #272f24;
-  --cream:   #dde0d8;
-  --green:   #4d7a42;
-  --green2:  #6aad58;
-  --brass:   #9a8048;
-  --steel:   #5a7070;
+  --bg:      #f6f6f4;
+  --bg1:     #eeeeec;
+  --bg2:     #e4e4e2;
+  --border:  rgba(0,0,0,0.07);
+  --border2: rgba(0,0,0,0.14);
+  --text:    #555550;
+  --muted:   #999994;
+  --dim:     #d4d4d0;
+  --cream:   #1a1c18;
+  --green:   #3d6835;
+  --green2:  #4d8a3f;
+  --brass:   #7a6030;
+  --steel:   #3a5858;
   --mono:    'DM Mono', monospace;
   --disp:    'Syne', sans-serif;
   --r:       2px;
@@ -45,7 +45,7 @@ body {
   width: 60vw; height: 100vh;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.55;
+  opacity: 0.38;
 }
 
 /* ── Nav ── */
@@ -62,7 +62,7 @@ nav {
   transition: border-color 0.3s, background 0.3s;
 }
 nav.scrolled {
-  background: rgba(11,13,11,0.92);
+  background: rgba(246,246,244,0.94);
   backdrop-filter: blur(16px);
   border-color: var(--border);
 }
@@ -376,7 +376,7 @@ h2 {
 .sdot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 .s-ready { color: var(--green2); }
 .s-dev   { color: var(--brass); }
-.s-plan  { color: var(--dim); }
+.s-plan  { color: var(--muted); }
 .s-plan .sdot { background: var(--muted); }
 
 /* ── Mission ── */
@@ -474,7 +474,7 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
   transition: color 0.15s;
 }
 .foot-link:hover { color: var(--text); }
-.foot-note { font-family: var(--mono); font-size: 0.5rem; color: var(--dim); letter-spacing: 0.06em; }
+.foot-note { font-family: var(--mono); font-size: 0.5rem; color: var(--muted); letter-spacing: 0.06em; }
 
 /* ── Animations ── */
 @keyframes rise {
@@ -492,7 +492,7 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
   .wrap { padding: 3.5rem 1.5rem; }
   .mission-layout { grid-template-columns: 1fr; gap: 2.5rem; }
   .principles { grid-template-columns: 1fr; }
-  #globe-canvas { width: 100vw; opacity: 0.25; }
+  #globe-canvas { width: 100vw; opacity: 0.18; }
 }
 </style>
 </head>
@@ -677,20 +677,20 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
   tex.width = 2048; tex.height = 1024;
   const ctx = tex.getContext('2d');
 
-  /* ocean — near-black teal-grey */
-  ctx.fillStyle = '#060c0a';
+  /* ocean — soft blue-grey on light bg */
+  ctx.fillStyle = '#b8c8cc';
   ctx.fillRect(0, 0, 2048, 1024);
 
   /* subtle ocean depth gradient */
   const og = ctx.createRadialGradient(1024, 512, 0, 1024, 512, 1000);
-  og.addColorStop(0, 'rgba(20,40,30,0.4)');
-  og.addColorStop(1, 'rgba(0,0,0,0.5)');
+  og.addColorStop(0, 'rgba(180,200,210,0.3)');
+  og.addColorStop(1, 'rgba(140,165,175,0.4)');
   ctx.fillStyle = og; ctx.fillRect(0, 0, 2048, 1024);
 
-  /* continents — dark forest grey-green */
-  const land   = '#1a2618';
-  const landHi = '#222e1e';
-  const landLo = '#141e12';
+  /* continents — warm grey-green */
+  const land   = '#6a8060';
+  const landHi = '#7a9070';
+  const landLo = '#5a7050';
 
   function blob(x, y, rx, ry, rot, detail) {
     ctx.save(); ctx.translate(x, y); ctx.rotate(rot || 0);
@@ -744,12 +744,12 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
   /* Antarctica */
   ctx.save(); ctx.translate(1024, 990); ctx.beginPath();
   ctx.ellipse(0, 0, 530, 45, 0, 0, Math.PI*2);
-  ctx.fillStyle = '#1a2420'; ctx.fill(); ctx.restore();
+  ctx.fillStyle = '#d0d8dc'; ctx.fill(); ctx.restore();
 
-  /* latitude/longitude grid — very subtle green */
-  ctx.strokeStyle = 'rgba(80,160,100,0.06)';
+  /* latitude/longitude grid — subtle */
+  ctx.strokeStyle = 'rgba(80,100,90,0.12)';
   ctx.lineWidth = 1;
-  for (let lat = −80; lat <= 80; lat += 20) {
+  for (let lat = -80; lat <= 80; lat += 20) {
     const y = ((lat + 90) / 180) * 1024;
     ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(2048, y); ctx.stroke();
   }
@@ -759,13 +759,13 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
   }
 
   /* major parallels slightly brighter */
-  ctx.strokeStyle = 'rgba(80,160,100,0.11)';
-  [0, −23.5, 23.5, −66.5, 66.5].forEach(lat => {
+  ctx.strokeStyle = 'rgba(60,90,70,0.18)';
+  [0, -23.5, 23.5, -66.5, 66.5].forEach(lat => {
     const y = ((lat + 90) / 180) * 1024;
     ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(2048, y); ctx.stroke();
   });
 
-  /* city/node dots — muted sage green */
+  /* city/node dots — deep green */
   const nodes = [
     [380,290],[942,238],[1255,228],[1090,365],[1582,642],
     [432,402],[972,402],[825,305],[1452,295],[502,252],
@@ -773,12 +773,12 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
   ];
   nodes.forEach(([x, y]) => {
     const g = ctx.createRadialGradient(x, y, 0, x, y, 10);
-    g.addColorStop(0, 'rgba(90,160,80,0.85)');
-    g.addColorStop(0.4,'rgba(90,160,80,0.25)');
-    g.addColorStop(1, 'rgba(90,160,80,0)');
+    g.addColorStop(0, 'rgba(40,100,60,0.8)');
+    g.addColorStop(0.4,'rgba(40,100,60,0.2)');
+    g.addColorStop(1, 'rgba(40,100,60,0)');
     ctx.fillStyle = g;
     ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#6ab850';
+    ctx.fillStyle = '#2a6040';
     ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI*2); ctx.fill();
   });
 
@@ -788,10 +788,10 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
   const geo = new THREE.SphereGeometry(1.6, 72, 72);
   const mat = new THREE.MeshPhongMaterial({
     map: earthTex,
-    specular: new THREE.Color(0x0a1a10),
-    shininess: 8,
+    specular: new THREE.Color(0xc0d0c8),
+    shininess: 12,
     transparent: true,
-    opacity: 0.92,
+    opacity: 0.95,
   });
   const globe = new THREE.Mesh(geo, mat);
   globe.position.set(1.4, −0.1, 0);
@@ -800,7 +800,7 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
   /* thin wireframe overlay */
   const wireGeo = new THREE.SphereGeometry(1.615, 38, 38);
   const wireMat = new THREE.MeshBasicMaterial({
-    color: 0x4a9040, wireframe: true, transparent: true, opacity: 0.022,
+    color: 0x406030, wireframe: true, transparent: true, opacity: 0.04,
   });
   const wire = new THREE.Mesh(wireGeo, wireMat);
   wire.position.copy(globe.position);
@@ -809,7 +809,7 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
   /* atmosphere rim glow */
   const atmGeo = new THREE.SphereGeometry(1.72, 48, 48);
   const atmMat = new THREE.MeshBasicMaterial({
-    color: 0x2a5028, transparent: true, opacity: 0.04, side: THREE.BackSide,
+    color: 0xa8c0b8, transparent: true, opacity: 0.06, side: THREE.BackSide,
   });
   const atm = new THREE.Mesh(atmGeo, atmMat);
   atm.position.copy(globe.position);
@@ -818,40 +818,24 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
   /* subtle orbit ring */
   const ringGeo = new THREE.TorusGeometry(2.1, 0.003, 8, 140);
   const ringMat = new THREE.MeshBasicMaterial({
-    color: 0x3a6035, transparent: true, opacity: 0.22,
+    color: 0x4a7040, transparent: true, opacity: 0.18,
   });
   const ring = new THREE.Mesh(ringGeo, ringMat);
   ring.position.copy(globe.position);
   ring.rotation.x = Math.PI / 2.6;
   scene.add(ring);
 
-  /* lighting — cool and earthy */
-  scene.add(new THREE.AmbientLight(0x0d1810, 0.8));
-  const keyLight = new THREE.DirectionalLight(0x203c28, 1.2);
-  keyLight.position.set(−5, 2, 4);
+  /* lighting — bright for light bg */
+  scene.add(new THREE.AmbientLight(0xd8e8e0, 1.2));
+  const keyLight = new THREE.DirectionalLight(0xffffff, 0.9);
+  keyLight.position.set(-5, 2, 4);
   scene.add(keyLight);
-  const fillLight = new THREE.PointLight(0x2a5838, 0.5, 25);
-  fillLight.position.set(4, −1, 2);
+  const fillLight = new THREE.PointLight(0xc8dcd0, 0.4, 25);
+  fillLight.position.set(4, -1, 2);
   scene.add(fillLight);
-  const rimLight = new THREE.PointLight(0x6a9060, 0.18, 20);
-  rimLight.position.set(−2, 3, −2);
+  const rimLight = new THREE.PointLight(0x90b090, 0.15, 20);
+  rimLight.position.set(-2, 3, -2);
   scene.add(rimLight);
-
-  /* sparse dim star field */
-  const starPos = new Float32Array(800 * 3);
-  for (let i = 0; i < 800; i++) {
-    const r = 60 + Math.random() * 300;
-    const th = Math.random() * Math.PI * 2;
-    const ph = Math.acos(2 * Math.random() − 1);
-    starPos[i*3]   = r * Math.sin(ph) * Math.cos(th);
-    starPos[i*3+1] = r * Math.sin(ph) * Math.sin(th);
-    starPos[i*3+2] = r * Math.cos(ph);
-  }
-  const sg = new THREE.BufferGeometry();
-  sg.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-  scene.add(new THREE.Points(sg, new THREE.PointsMaterial({
-    color: 0x5a7058, size: 0.4, sizeAttenuation: true, transparent: true, opacity: 0.4,
-  })));
 
   /* ── Animate ── */
   let t = 0;
