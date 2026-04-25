@@ -10,21 +10,21 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
 
-/* ── Palette: light grey-white, clean ── */
+/* ── Palette: dark grey ── */
 :root {
-  --bg:      #f6f6f4;
-  --bg1:     #eeeeec;
-  --bg2:     #e4e4e2;
-  --border:  rgba(0,0,0,0.07);
-  --border2: rgba(0,0,0,0.14);
-  --text:    #555550;
-  --muted:   #999994;
-  --dim:     #d4d4d0;
-  --cream:   #1a1c18;
+  --bg:      #181818;
+  --bg1:     #202020;
+  --bg2:     #2a2a2a;
+  --border:  rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.13);
+  --text:    #c0c0ba;
+  --muted:   #666660;
+  --dim:     #3a3a38;
+  --cream:   #e8e8e4;
   --green:   #3d6835;
-  --green2:  #4d8a3f;
-  --brass:   #7a6030;
-  --steel:   #3a5858;
+  --green2:  #5aab4a;
+  --brass:   #c8a055;
+  --steel:   #5a8888;
   --mono:    'DM Mono', monospace;
   --disp:    'Syne', sans-serif;
   --r:       2px;
@@ -62,7 +62,7 @@ nav {
   transition: border-color 0.3s, background 0.3s;
 }
 nav.scrolled {
-  background: rgba(246,246,244,0.94);
+  background: rgba(24,24,24,0.94);
   backdrop-filter: blur(16px);
   border-color: var(--border);
 }
@@ -677,20 +677,20 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
   tex.width = 2048; tex.height = 1024;
   const ctx = tex.getContext('2d');
 
-  /* ocean — soft blue-grey on light bg */
-  ctx.fillStyle = '#b8c8cc';
+  /* ocean — dark steel on dark bg */
+  ctx.fillStyle = '#1e2a2e';
   ctx.fillRect(0, 0, 2048, 1024);
 
   /* subtle ocean depth gradient */
   const og = ctx.createRadialGradient(1024, 512, 0, 1024, 512, 1000);
-  og.addColorStop(0, 'rgba(180,200,210,0.3)');
-  og.addColorStop(1, 'rgba(140,165,175,0.4)');
+  og.addColorStop(0, 'rgba(40,70,80,0.35)');
+  og.addColorStop(1, 'rgba(20,45,55,0.45)');
   ctx.fillStyle = og; ctx.fillRect(0, 0, 2048, 1024);
 
-  /* continents — warm grey-green */
-  const land   = '#6a8060';
-  const landHi = '#7a9070';
-  const landLo = '#5a7050';
+  /* continents — muted sage on dark bg */
+  const land   = '#3a5040';
+  const landHi = '#4a6450';
+  const landLo = '#2e4234';
 
   function blob(x, y, rx, ry, rot, detail) {
     ctx.save(); ctx.translate(x, y); ctx.rotate(rot || 0);
@@ -778,7 +778,7 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
     g.addColorStop(1, 'rgba(40,100,60,0)');
     ctx.fillStyle = g;
     ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#2a6040';
+    ctx.fillStyle = '#1a3828';
     ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI*2); ctx.fill();
   });
 
@@ -800,7 +800,7 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
   /* thin wireframe overlay */
   const wireGeo = new THREE.SphereGeometry(1.615, 38, 38);
   const wireMat = new THREE.MeshBasicMaterial({
-    color: 0x406030, wireframe: true, transparent: true, opacity: 0.04,
+    color: 0x4a6840, wireframe: true, transparent: true, opacity: 0.07,
   });
   const wire = new THREE.Mesh(wireGeo, wireMat);
   wire.position.copy(globe.position);
@@ -809,7 +809,7 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
   /* atmosphere rim glow */
   const atmGeo = new THREE.SphereGeometry(1.72, 48, 48);
   const atmMat = new THREE.MeshBasicMaterial({
-    color: 0xa8c0b8, transparent: true, opacity: 0.06, side: THREE.BackSide,
+    color: 0x5aab4a, transparent: true, opacity: 0.05, side: THREE.BackSide,
   });
   const atm = new THREE.Mesh(atmGeo, atmMat);
   atm.position.copy(globe.position);
@@ -818,22 +818,22 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
   /* subtle orbit ring */
   const ringGeo = new THREE.TorusGeometry(2.1, 0.003, 8, 140);
   const ringMat = new THREE.MeshBasicMaterial({
-    color: 0x4a7040, transparent: true, opacity: 0.18,
+    color: 0x5aab4a, transparent: true, opacity: 0.22,
   });
   const ring = new THREE.Mesh(ringGeo, ringMat);
   ring.position.copy(globe.position);
   ring.rotation.x = Math.PI / 2.6;
   scene.add(ring);
 
-  /* lighting — bright for light bg */
-  scene.add(new THREE.AmbientLight(0xd8e8e0, 1.2));
-  const keyLight = new THREE.DirectionalLight(0xffffff, 0.9);
+  /* lighting — subdued for dark bg */
+  scene.add(new THREE.AmbientLight(0x304040, 1.8));
+  const keyLight = new THREE.DirectionalLight(0x88bbaa, 1.1);
   keyLight.position.set(-5, 2, 4);
   scene.add(keyLight);
-  const fillLight = new THREE.PointLight(0xc8dcd0, 0.4, 25);
+  const fillLight = new THREE.PointLight(0x406858, 0.5, 25);
   fillLight.position.set(4, -1, 2);
   scene.add(fillLight);
-  const rimLight = new THREE.PointLight(0x90b090, 0.15, 20);
+  const rimLight = new THREE.PointLight(0x5aab4a, 0.2, 20);
   rimLight.position.set(-2, 3, -2);
   scene.add(rimLight);
 
