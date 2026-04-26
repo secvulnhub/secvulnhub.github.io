@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SecVulnHub — Security Tools for Practitioners</title>
+<title>SecVulnHub: Security Tools for Practitioners</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
@@ -709,7 +709,7 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
   .wrap { padding: 3.5rem 1.5rem; }
   .mission-layout { grid-template-columns: 1fr; gap: 2.5rem; }
   .principles { grid-template-columns: 1fr; }
-  #globe-canvas { width: 100vw; opacity: 0.12; }
+  #globe-canvas { width: 100vw; opacity: 0.12; right: auto; left: 50%; transform: translateX(-50%); }
   .spotlight-card { grid-template-columns: 1fr; gap: 1.5rem; }
   .spotlight-meta { align-items: flex-start; }
 }
@@ -860,7 +860,7 @@ SOFTWARE.</strong></div>
       <div class="mission-copy">
         <p class="eyebrow">Why We Exist</p>
         <h2>Built in the field.<br>Maintained by<br>the community.</h2>
-        <p class="subdesc" style="margin-top:1rem">Every tool is real-world tested before it ships. We don't publish theory or demo code — only tools practitioners reach for when it counts.</p>
+        <p class="subdesc" style="margin-top:1rem">Every tool is real-world tested before it ships. We don't publish theory or demo code. Only tools practitioners reach for when it counts.</p>
         <p class="subdesc">Quality over quantity. If it doesn't solve a real problem, it doesn't ship.</p>
         <div class="mission-ctas">
           <a class="btn btn-primary" href="https://discord.gg/SecVulnHub" target="_blank">Join Discord</a>
@@ -901,14 +901,14 @@ SOFTWARE.</strong></div>
     <div class="contrib-wrap">
       <p class="eyebrow" style="justify-content:center">Contribute</p>
       <h2>Become a contributor.</h2>
-      <p class="subdesc" style="margin-top:0.75rem">Build tools practitioners actually use. Your language, your specialization — our arsenal.</p>
+      <p class="subdesc" style="margin-top:0.75rem">Build tools practitioners actually use. Your language, your specialization. Our arsenal.</p>
       <div class="checklist">
         <div class="chk"><span class="chk-mark">✓</span>Solves a real cybersecurity challenge</div>
         <div class="chk"><span class="chk-mark">✓</span>Deployable in under 5 minutes from docs</div>
         <div class="chk"><span class="chk-mark">✓</span>Passes security review and audit</div>
         <div class="chk"><span class="chk-mark">✓</span>Comprehensive tests and documentation</div>
         <div class="chk"><span class="chk-mark">✓</span>Has install.sh and test.sh scripts</div>
-        <div class="chk"><span class="chk-mark">✓</span>Adds unique value — no duplicates</div>
+        <div class="chk"><span class="chk-mark">✓</span>Adds unique value, no duplicates</div>
       </div>
       <div class="cta-row">
         <a class="btn btn-primary" href="https://github.com/secvulnhub/secvulnhub/" target="_blank">Fork on GitHub</a>
@@ -1174,7 +1174,7 @@ function repoCard(repo) {
   const { cat, label, c } = repoToCat(repo.name);
   const desc = repo.description || 'No description provided.';
   const stars = repo.stargazers_count || 0;
-  const lang  = repo.language || '—';
+  const lang  = repo.language || 'N/A';
   return `<a class="tool-card" href="${repo.html_url}" target="_blank" style="--cc:${c};text-decoration:none;display:block">
     <span class="badge bc-${cat}">${label}</span>
     <div class="tool-name">${repo.name}</div>
