@@ -5,37 +5,43 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>secV — Documentation Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
 
 :root {
-  --bg:      #000000;
-  --bg1:     #0a0a0a;
-  --bg2:     #111111;
-  --bg3:     #1a1a1a;
-  --border:  rgba(255,255,255,0.07);
-  --border2: rgba(255,255,255,0.14);
-  --text:    #b0b0b0;
-  --muted:   #555555;
-  --dim:     #222222;
-  --white:   #ffffff;
-  --off:     #e0e0e0;
-  --grey:    #888888;
-  --acc:     #ffffff;
-  --mono:    'DM Mono', monospace;
+  --bg:      #060606;
+  --bg1:     #0e0e0e;
+  --bg2:     #161616;
+  --bg3:     #1e1e1e;
+  --bg4:     #282828;
+  --border:  rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --border3: rgba(255,255,255,0.22);
+  --text:    #a2a2a2;
+  --muted:   #4e4e4e;
+  --dim:     #242424;
+  --white:   #efefef;
+  --off:     #cccccc;
+  --grey:    #727272;
+  --mono:    'JetBrains Mono', monospace;
   --disp:    'Syne', sans-serif;
+  --t:       0.15s ease;
 }
 
 body {
   font-family: var(--mono);
   background: var(--bg);
   color: var(--text);
-  line-height: 1.65;
+  line-height: 1.7;
   overflow-x: hidden;
   min-height: 100vh;
 }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 2px; }
 
 /* ── Nav ── */
 nav {
@@ -51,41 +57,36 @@ nav {
   transition: border-color 0.3s, background 0.3s;
 }
 nav.scrolled {
-  background: rgba(0,0,0,0.94);
+  background: rgba(6,6,6,0.96);
   backdrop-filter: blur(16px);
   border-color: var(--border);
 }
 .logo {
   font-family: var(--disp);
-  font-size: 0.88rem;
-  font-weight: 700;
+  font-size: 0.92rem;
+  font-weight: 800;
   color: var(--white);
   text-decoration: none;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.02em;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem;
 }
-.logo-sub {
-  color: var(--muted);
-  font-weight: 400;
-  font-size: 0.78rem;
-}
-.nav-links { display: flex; align-items: center; gap: 0.5rem; }
+.logo-sep { color: var(--muted); font-weight: 400; }
+.logo-sub { color: var(--grey); font-weight: 400; font-size: 0.82rem; }
+.nav-links { display: flex; align-items: center; gap: 0.25rem; }
 .nav-link {
-  font-family: var(--mono);
-  font-size: 0.58rem;
+  font-size: 0.6rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted);
   text-decoration: none;
   padding: 0.4rem 0.75rem;
-  transition: color 0.15s;
+  transition: color var(--t);
 }
 .nav-link:hover { color: var(--text); }
 .nav-btn {
-  font-family: var(--mono);
-  font-size: 0.58rem;
+  font-size: 0.6rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text);
@@ -93,18 +94,34 @@ nav.scrolled {
   padding: 0.4rem 0.9rem;
   border: 1px solid var(--border2);
   margin-left: 0.5rem;
-  transition: border-color 0.15s, color 0.15s;
+  transition: border-color var(--t), color var(--t);
 }
-.nav-btn:hover { border-color: var(--text); }
+.nav-btn:hover { border-color: var(--border3); color: var(--white); }
+
+/* mobile burger */
+.burger {
+  display: none;
+  background: none;
+  border: 1px solid var(--border2);
+  padding: 0.38rem 0.55rem;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 4px;
+  border-radius: 2px;
+}
+.burger span { display: block; width: 18px; height: 1px; background: var(--text); transition: transform var(--t), opacity var(--t); }
+body.nav-open .burger span:nth-child(1) { transform: rotate(45deg) translate(3.5px,3.5px); }
+body.nav-open .burger span:nth-child(2) { opacity: 0; }
+body.nav-open .burger span:nth-child(3) { transform: rotate(-45deg) translate(3.5px,-3.5px); }
 
 /* ── Hero ── */
 .hero {
-  padding: 10rem 2.5rem 6rem;
-  max-width: 1000px;
+  padding: 9rem 2.5rem 5.5rem;
+  max-width: 1020px;
   margin: 0 auto;
 }
 .breadcrumb {
-  font-size: 0.56rem;
+  font-size: 0.54rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--muted);
@@ -112,57 +129,55 @@ nav.scrolled {
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  flex-wrap: wrap;
 }
-.breadcrumb a { color: var(--muted); text-decoration: none; }
+.breadcrumb a { color: var(--muted); text-decoration: none; transition: color var(--t); }
 .breadcrumb a:hover { color: var(--text); }
 .breadcrumb span { color: var(--dim); }
+
 h1 {
   font-family: var(--disp);
   font-size: clamp(2.8rem, 6vw, 4.5rem);
   font-weight: 800;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.05em;
   color: var(--white);
-  line-height: 0.96;
+  line-height: 0.95;
   margin-bottom: 1.5rem;
 }
-h1 em {
-  font-style: normal;
-  color: var(--muted);
-}
+h1 em { font-style: normal; color: var(--muted); }
+
 .hero-sub {
-  font-size: 0.78rem;
+  font-size: 0.84rem;
   color: var(--muted);
-  max-width: 500px;
-  line-height: 1.85;
-  margin-bottom: 3rem;
+  max-width: 520px;
+  line-height: 1.9;
+  margin-bottom: 2.75rem;
 }
 
 /* ── Install block ── */
 .install-block {
   display: flex;
   align-items: center;
-  gap: 0;
   background: var(--bg1);
   border: 1px solid var(--border2);
-  max-width: 540px;
-  margin-bottom: 4rem;
+  max-width: 580px;
+  margin-bottom: 3.5rem;
   overflow: hidden;
 }
 .install-label {
-  font-size: 0.52rem;
-  letter-spacing: 0.14em;
+  font-size: 0.5rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
-  padding: 0.75rem 1rem;
+  padding: 0.8rem 1rem;
   border-right: 1px solid var(--border2);
   white-space: nowrap;
   flex-shrink: 0;
 }
 .install-cmd {
-  font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   color: var(--white);
-  padding: 0.75rem 1rem;
+  padding: 0.8rem 1.1rem;
   flex: 1;
   overflow: hidden;
   white-space: nowrap;
@@ -172,38 +187,95 @@ h1 em {
   background: none;
   border: none;
   border-left: 1px solid var(--border2);
-  padding: 0.75rem 0.9rem;
+  padding: 0.8rem 1rem;
   cursor: pointer;
   color: var(--muted);
-  transition: color 0.15s;
+  transition: color var(--t), background var(--t);
   flex-shrink: 0;
 }
-.install-copy:hover { color: var(--white); }
+.install-copy:hover { color: var(--white); background: var(--bg2); }
 
 /* ── Section layout ── */
-.wrap { max-width: 1000px; margin: 0 auto; padding: 0 2.5rem 6rem; }
-.rule { border: none; border-top: 1px solid var(--border); margin: 0; }
+.wrap {
+  max-width: 1020px;
+  margin: 0 auto;
+  padding: 4rem 2.5rem 5rem;
+}
+.rule { border: none; border-top: 1px solid var(--border); }
 
 .section-label {
-  font-size: 0.53rem;
-  letter-spacing: 0.22em;
+  font-size: 0.5rem;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--muted);
   margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
+.section-label::before {
+  content: '';
+  display: inline-block;
+  width: 20px; height: 1px;
+  background: var(--muted);
+}
+
 h2 {
   font-family: var(--disp);
   font-size: clamp(1.5rem, 3vw, 2.2rem);
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
   color: var(--white);
   margin-bottom: 2.5rem;
 }
 
+/* ── Active project banner ── */
+.project-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1rem 1.4rem;
+  background: var(--bg1);
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--white);
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+.project-banner-left { display: flex; align-items: center; gap: 1rem; }
+.project-banner-dot {
+  width: 7px; height: 7px;
+  background: var(--white);
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: blink 2.5s ease infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.project-banner-label {
+  font-size: 0.52rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.project-banner-name {
+  font-family: var(--disp);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--white);
+}
+.project-banner-meta {
+  font-size: 0.62rem;
+  color: var(--muted);
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+.project-banner-meta span { display: flex; align-items: center; gap: 0.35rem; }
+
 /* ── Module cards ── */
 .module-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
@@ -213,7 +285,7 @@ h2 {
   background: var(--bg);
   padding: 1.8rem;
   position: relative;
-  transition: background 0.15s;
+  transition: background var(--t);
   text-decoration: none;
   display: block;
   overflow: hidden;
@@ -229,46 +301,68 @@ h2 {
 }
 .module-card:hover { background: var(--bg1); }
 .module-card:hover::before { opacity: 1; }
-.module-card.wip::before { background: #a08040; }
+.module-card.wip::before { background: var(--grey); }
 
+/* status badges — no green */
 .mod-status {
   font-size: 0.48rem;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  padding: 0.12rem 0.4rem;
-  display: inline-block;
+  padding: 0.12rem 0.45rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   margin-bottom: 1rem;
+  border: 1px solid transparent;
 }
-.status-stable { color: #88cc88; background: rgba(136,204,136,0.08); }
-.status-beta   { color: #c8a040; background: rgba(200,160,64,0.1); }
-.status-wip    { color: var(--muted); background: rgba(255,255,255,0.04); }
+.mod-status::before {
+  content: '';
+  display: inline-block;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-stable {
+  color: var(--off);
+  border-color: var(--border2);
+  background: rgba(255,255,255,0.04);
+}
+.status-stable::before { background: var(--white); }
+.status-beta {
+  color: #b89a48;
+  border-color: rgba(184,154,72,0.2);
+  background: rgba(184,154,72,0.06);
+}
+.status-beta::before { background: #b89a48; }
+.status-wip {
+  color: var(--muted);
+  border-color: var(--border);
+  background: transparent;
+}
+.status-wip::before { background: var(--muted); }
 
 .mod-name {
   font-family: var(--disp);
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--white);
   margin-bottom: 0.4rem;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 .mod-category {
   font-size: 0.54rem;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.85rem;
 }
 .mod-desc {
-  font-size: 0.69rem;
+  font-size: 0.76rem;
   color: var(--text);
-  line-height: 1.7;
-  margin-bottom: 1.25rem;
+  line-height: 1.75;
+  margin-bottom: 1.4rem;
 }
-.mod-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-}
+.mod-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
 .tag {
   font-size: 0.48rem;
   letter-spacing: 0.1em;
@@ -276,19 +370,21 @@ h2 {
   color: var(--muted);
   padding: 0.12rem 0.5rem;
   border: 1px solid var(--border);
+  transition: border-color var(--t), color var(--t);
 }
+.module-card:hover .tag { border-color: var(--border2); }
 .mod-arrow {
   position: absolute;
   right: 1.5rem; bottom: 1.5rem;
-  font-size: 0.7rem;
+  font-size: 0.78rem;
   color: var(--muted);
   opacity: 0;
   transition: opacity 0.15s, transform 0.15s;
 }
-.module-card:hover .mod-arrow { opacity: 1; transform: translateX(3px); }
+.module-card:hover .mod-arrow { opacity: 1; transform: translateX(4px); }
 
 /* ── Shell reference ── */
-.shell-section { margin-bottom: 5rem; }
+.shell-section { margin-bottom: 4.5rem; }
 .shell-header {
   display: flex;
   align-items: center;
@@ -299,82 +395,99 @@ h2 {
 }
 .shell-title {
   font-family: var(--disp);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: var(--white);
+  letter-spacing: -0.01em;
 }
 .shell-version {
-  font-size: 0.52rem;
-  letter-spacing: 0.12em;
+  font-size: 0.5rem;
+  letter-spacing: 0.14em;
   color: var(--muted);
-  padding: 0.12rem 0.5rem;
+  padding: 0.12rem 0.55rem;
   border: 1px solid var(--border);
 }
 
 .cmd-table { width: 100%; border-collapse: collapse; }
 .cmd-table tr { border-bottom: 1px solid var(--border); }
 .cmd-table tr:last-child { border-bottom: none; }
-.cmd-table td { padding: 0.65rem 0.8rem; font-size: 0.68rem; vertical-align: top; }
+.cmd-table td { padding: 0.7rem 0.85rem; font-size: 0.74rem; vertical-align: top; line-height: 1.65; }
 .cmd-table td:first-child {
-  font-family: var(--mono);
   color: var(--white);
   white-space: nowrap;
   width: 38%;
 }
 .cmd-table td:last-child { color: var(--muted); }
 .cmd-group-header td {
-  font-size: 0.5rem;
-  letter-spacing: 0.18em;
+  font-size: 0.48rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--muted);
-  padding-top: 1.25rem;
+  padding-top: 1.4rem;
   padding-bottom: 0.4rem;
   border-bottom: none;
   background: none;
 }
-
 .cmd-table tr:hover td { background: var(--bg1); }
 .cmd-table .cmd-group-header:hover td { background: transparent; }
+.cmd-table code {
+  font-size: 0.7rem;
+  color: var(--off);
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 0.05rem 0.3rem;
+}
 
-/* ── Quick start ── */
-.quickstart { margin-bottom: 5rem; }
-.steps { display: flex; flex-direction: column; gap: 0; }
+/* ── Prompt preview ── */
+pre {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border2);
+  padding: 1rem 1.25rem;
+  font-size: 0.78rem;
+  overflow-x: auto;
+  color: var(--text);
+  margin-top: 0.6rem;
+  line-height: 1.75;
+  border-radius: 0 2px 2px 0;
+}
+code { font-family: var(--mono); }
+.hl  { color: var(--white); }
+.cm  { color: var(--muted); font-style: italic; }
+
+/* ── Quickstart steps ── */
+.quickstart { margin-bottom: 2rem; }
+.steps { display: flex; flex-direction: column; }
 .step {
   display: grid;
-  grid-template-columns: 3rem 1fr;
-  gap: 1rem;
-  padding: 1.25rem 0;
+  grid-template-columns: 3.5rem 1fr;
+  gap: 1.25rem;
+  padding: 1.5rem 0;
   border-bottom: 1px solid var(--border);
   align-items: start;
 }
 .step:last-child { border-bottom: none; }
 .step-num {
   font-family: var(--disp);
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   font-weight: 800;
   color: var(--dim);
-  line-height: 1.2;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  padding-top: 0.1rem;
 }
-.step-content {}
 .step-title {
-  font-size: 0.78rem;
+  font-size: 0.84rem;
   font-weight: 600;
   color: var(--white);
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.4rem;
 }
-.step-body { font-size: 0.68rem; color: var(--muted); line-height: 1.7; margin-bottom: 0.5rem; }
-pre {
-  background: var(--bg1);
-  border: 1px solid var(--border);
-  padding: 0.75rem 1rem;
-  font-size: 0.68rem;
-  overflow-x: auto;
-  color: var(--text);
-  margin-top: 0.5rem;
+.step-body {
+  font-size: 0.74rem;
+  color: var(--muted);
+  line-height: 1.75;
+  margin-bottom: 0.6rem;
 }
-code { font-family: var(--mono); }
-.hl { color: var(--white); }
-.cm { color: var(--muted); }
 
 /* ── Footer ── */
 footer {
@@ -385,44 +498,60 @@ footer {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 1rem;
-  max-width: 1000px;
+  max-width: 1020px;
   margin: 0 auto;
 }
 .foot-brand {
   font-family: var(--disp);
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   font-weight: 700;
   color: var(--muted);
   text-decoration: none;
+  letter-spacing: -0.02em;
 }
 .foot-links { display: flex; gap: 1.75rem; }
 .foot-link {
-  font-size: 0.52rem;
+  font-size: 0.54rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted);
   text-decoration: none;
-  transition: color 0.15s;
+  transition: color var(--t);
 }
 .foot-link:hover { color: var(--text); }
 .foot-note { font-size: 0.5rem; color: var(--dim); letter-spacing: 0.06em; }
 
-/* ── Anim ── */
+/* ── Animations ── */
 @keyframes rise {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: none; }
 }
-.hero h1       { animation: rise 0.6s 0.08s ease both; opacity: 0; }
-.hero .hero-sub{ animation: rise 0.6s 0.18s ease both; opacity: 0; }
-.hero .install-block{ animation: rise 0.6s 0.28s ease both; opacity: 0; }
+.hero h1         { animation: rise 0.55s 0.06s ease both; }
+.hero .hero-sub  { animation: rise 0.55s 0.16s ease both; }
+.hero .install-block { animation: rise 0.55s 0.26s ease both; }
 
+/* ── Responsive ── */
 @media (max-width: 760px) {
   nav { padding: 0 1.25rem; }
   .nav-link { display: none; }
+  .burger { display: flex; }
+  body.nav-open .nav-links {
+    display: flex;
+    position: fixed;
+    top: 52px; left: 0; right: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    flex-direction: column;
+    padding: 1rem 1.5rem 1.5rem;
+    gap: 0.25rem;
+    z-index: 99;
+  }
   .hero { padding: 7.5rem 1.25rem 4rem; }
   h1 { font-size: 2.4rem; }
-  .wrap { padding: 0 1.25rem 4rem; }
+  .wrap { padding: 3rem 1.25rem 4rem; }
   footer { padding: 1.25rem; }
+  .module-grid { grid-template-columns: 1fr; }
+  .project-banner { flex-direction: column; align-items: flex-start; }
 }
 </style>
 </head>
@@ -430,7 +559,7 @@ footer {
 
 <nav id="nav">
   <a class="logo" href="../../index.html">
-    SecVulnHub <span class="logo-sub">/ docs</span>
+    SecVulnHub <span class="logo-sep">/</span> <span class="logo-sub">docs</span>
   </a>
   <div class="nav-links">
     <a class="nav-link" href="#modules">Modules</a>
@@ -438,6 +567,9 @@ footer {
     <a class="nav-link" href="#quickstart">Quickstart</a>
     <a class="nav-btn" href="https://github.com/secvulnhub" target="_blank">GitHub</a>
   </div>
+  <button class="burger" id="burger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
 <!-- Hero -->
@@ -458,7 +590,7 @@ footer {
   <div class="install-block">
     <span class="install-label">Install</span>
     <span class="install-cmd" id="installCmd">git clone https://github.com/secvulnhub/secV && cd secV && bash install.sh</span>
-    <button class="install-copy" onclick="copyInstall()" title="Copy">
+    <button class="install-copy" onclick="copyInstall()" title="Copy to clipboard">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
     </button>
   </div>
@@ -468,8 +600,33 @@ footer {
 
 <!-- Modules -->
 <div class="wrap" id="modules">
-  <p class="section-label">Available Modules</p>
-  <h2>Modules</h2>
+  <p class="section-label">Current Project</p>
+  <h2>secV Modules</h2>
+
+  <!-- Active project banner -->
+  <div class="project-banner">
+    <div class="project-banner-left">
+      <div class="project-banner-dot"></div>
+      <div>
+        <div class="project-banner-label">Active development</div>
+        <div class="project-banner-name">secV Framework</div>
+      </div>
+    </div>
+    <div class="project-banner-meta">
+      <span>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        v2.0 · active
+      </span>
+      <span>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        secvulnhub/secV
+      </span>
+      <span>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Python 3 · MIT
+      </span>
+    </div>
+  </div>
 
   <div class="module-grid">
 
@@ -511,7 +668,7 @@ footer {
         <span class="tag">jadx</span>
         <span class="tag">msfvenom</span>
         <span class="tag">backdoor</span>
-        <span class="tag">static analysis</span>
+        <span class="tag">frida</span>
       </div>
       <span class="mod-arrow">→</span>
     </a>
@@ -554,7 +711,7 @@ footer {
       <tr><td>reload</td><td>Rescan the tools directory for new or updated modules</td></tr>
 
       <tr class="cmd-group-header"><td colspan="2">Configuration</td></tr>
-      <tr><td>set &lt;param&gt; &lt;value&gt;</td><td>Set a module parameter. <strong>First token after <code>set</code> is the key.</strong> Example: <code>set operation backdoor_apk</code></td></tr>
+      <tr><td>set &lt;param&gt; &lt;value&gt;</td><td>Set a module parameter. <strong>First token after <code>set</code> is the key.</strong> E.g. <code>set operation backdoor_apk</code></td></tr>
       <tr><td>unset &lt;param&gt;</td><td>Clear a parameter</td></tr>
       <tr><td>show options</td><td>List all parameters with types, required flags, and current values</td></tr>
 
@@ -580,11 +737,13 @@ footer {
       <span class="shell-title">Linux Navigation</span>
       <span class="shell-version">native passthrough</span>
     </div>
-    <p style="font-size:0.69rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.7">
+    <p style="font-size:0.76rem;color:var(--muted);margin-bottom:1.4rem;line-height:1.8">
       All standard Linux commands work natively inside secV. The shell tracks a working directory
-      so commands like <code>ls</code>, <code>cat</code>, and <code>find</code> operate on the
-      correct path. Use <code>cd ..</code> to navigate up — if a module is loaded, this unloads it
-      (same as <code>back</code>).
+      so commands like <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">ls</code>,
+      <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">cat</code>, and
+      <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">find</code>
+      operate on the correct path. Use <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">cd ..</code>
+      to navigate up — if a module is loaded, this unloads it (same as <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">back</code>).
     </p>
     <table class="cmd-table">
       <tr class="cmd-group-header"><td colspan="2">Directory Navigation</td></tr>
@@ -625,20 +784,20 @@ footer {
     <div class="shell-header">
       <span class="shell-title">Prompt Reference</span>
     </div>
-    <p style="font-size:0.69rem;color:var(--muted);margin-bottom:1rem;line-height:1.7">
+    <p style="font-size:0.76rem;color:var(--muted);margin-bottom:1rem;line-height:1.8">
       The prompt adapts to show what is loaded and how many parameters are currently set.
     </p>
     <pre><code><span class="cm"># No module loaded</span>
 <span class="hl">secV</span> ❯
 
-<span class="cm"># Module loaded, no params</span>
-<span class="hl">secV</span> <span style="color:#60a0c0">android_pentest</span> ❯
+<span class="cm"># Module loaded, no params set</span>
+<span class="hl">secV</span> <span style="color:#8aabcc">android_pentest</span> ❯
 
 <span class="cm"># Module loaded, operation set</span>
-<span class="hl">secV</span> <span style="color:#60a0c0">android_pentest</span> <span style="color:#888">›</span> <span style="color:#c0a040">backdoor_apk</span> [2 params] ❯
+<span class="hl">secV</span> <span style="color:#8aabcc">android_pentest</span> <span style="color:#585858">›</span> <span style="color:#b09048">backdoor_apk</span> [2 params] ❯
 
 <span class="cm"># Module loaded, custom operation</span>
-<span class="hl">secV</span> <span style="color:#60a0c0">netrecon</span> <span style="color:#888">›</span> <span style="color:#c0a040">full</span> [3 params] ❯</code></pre>
+<span class="hl">secV</span> <span style="color:#8aabcc">netrecon</span> <span style="color:#585858">›</span> <span style="color:#b09048">full</span> [3 params] ❯</code></pre>
   </div>
 </div>
 
@@ -667,7 +826,7 @@ footer {
         <div class="step-num">02</div>
         <div class="step-content">
           <div class="step-title">Launch the shell</div>
-          <div class="step-body">Run the <code>secV</code> binary. It auto-scans the tools directory and loads all modules.</div>
+          <div class="step-body">Run the <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">secV</code> binary. It auto-scans the tools directory and loads all modules.</div>
           <pre><code><span class="hl">./secV</span>        <span class="cm"># from the repo directory</span>
 <span class="hl">secV</span>          <span class="cm"># if installed system-wide</span></code></pre>
         </div>
@@ -677,7 +836,7 @@ footer {
         <div class="step-num">03</div>
         <div class="step-content">
           <div class="step-title">Load a module</div>
-          <div class="step-body">Use <code>use &lt;name&gt;</code> to load any module. Tab completes module names.</div>
+          <div class="step-body">Use <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">use &lt;name&gt;</code> to load any module. Tab completes module names.</div>
           <pre><code><span class="hl">use</span> netrecon
 <span class="hl">show</span> options</code></pre>
         </div>
@@ -687,13 +846,13 @@ footer {
         <div class="step-num">04</div>
         <div class="step-content">
           <div class="step-title">Configure and run</div>
-          <div class="step-body">Set parameters with <code>set &lt;param&gt; &lt;value&gt;</code>. The first token after <code>set</code> is always the parameter name — not the module name.</div>
-          <pre><code><span class="cm"># Network scan example</span>
-<span class="hl">set</span> mode full
-<span class="hl">set</span> scanner nmap
+          <div class="step-body">Set parameters with <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">set &lt;param&gt; &lt;value&gt;</code>. The first token after <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">set</code> is always the parameter name — not the module name.</div>
+          <pre><code><span class="cm"># Network scan</span>
+<span class="hl">set</span> mode deep
+<span class="hl">set</span> threads 30
 <span class="hl">run</span> 192.168.1.0/24
 
-<span class="cm"># Android backdoor example</span>
+<span class="cm"># Android backdoor</span>
 <span class="hl">use</span> android_pentest
 <span class="hl">set</span> operation backdoor_apk
 <span class="hl">set</span> package com.instagram.android
@@ -705,10 +864,10 @@ footer {
         <div class="step-num">05</div>
         <div class="step-content">
           <div class="step-title">Navigate like Linux</div>
-          <div class="step-body">Use <code>back</code> or <code>cd ..</code> to unload a module. Regular Linux commands like <code>ls</code>, <code>cat</code>, <code>grep</code>, <code>mkdir</code> work natively.</div>
+          <div class="step-body">Use <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">back</code> or <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">cd ..</code> to unload a module. Regular Linux commands like <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">ls</code>, <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">cat</code>, <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">grep</code> work natively.</div>
           <pre><code><span class="hl">ls</span> tools/network/
 <span class="hl">cat</span> tools/network/netrecon/module.json
-<span class="hl">back</span>            <span class="cm"># or: cd ..</span></code></pre>
+<span class="hl">back</span>      <span class="cm"># or: cd ..</span></code></pre>
         </div>
       </div>
 
@@ -735,12 +894,18 @@ window.addEventListener('scroll', () => {
   nav.classList.toggle('scrolled', scrollY > 20);
 }, { passive: true });
 
+document.getElementById('burger').addEventListener('click', () => {
+  document.body.classList.toggle('nav-open');
+});
+
 function copyInstall() {
   const text = document.getElementById('installCmd').textContent;
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.querySelector('.install-copy');
-    btn.style.color = '#88cc88';
-    setTimeout(() => btn.style.color = '', 1200);
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
+    btn.style.color = 'var(--white)';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; }, 1400);
   });
 }
 </script>
