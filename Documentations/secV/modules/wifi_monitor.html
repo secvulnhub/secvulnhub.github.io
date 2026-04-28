@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>wifi_monitor — SecV Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+:root {
+  --bg:      #050505;
+  --bg1:     #0d0d0d;
+  --bg2:     #141414;
+  --bg3:     #1c1c1c;
+  --border:  rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.13);
+  --border3: rgba(255,255,255,0.2);
+  --text:    #a8a8a8;
+  --muted:   #505050;
+  --dim:     #252525;
+  --white:   #f0f0f0;
+  --off:     #d8d8d8;
+  --grey:    #787878;
+  --acc:     #88aacc;
+  --mono:    'JetBrains Mono', monospace;
+  --disp:    'Syne', sans-serif;
+  --nav-h:   52px;
+  --transition: 0.16s ease;
+}
+
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 2px; }
+
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
+}
+nav.scrolled {
+  background: rgba(5,5,5,0.96);
+  backdrop-filter: blur(16px);
+  border-color: var(--border);
+}
+.logo {
+  font-family: var(--disp);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--off);
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.logo-mark { width: 6px; height: 6px; background: var(--white); flex-shrink: 0; }
+.nav-links { display: flex; align-items: center; gap: 0.1rem; }
+.nav-link {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.4rem 0.75rem;
+  transition: color var(--transition);
+}
+.nav-link:hover { color: var(--text); }
+.nav-btn {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text);
+  text-decoration: none;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--border2);
+  margin-left: 0.5rem;
+  transition: border-color var(--transition), color var(--transition);
+}
+.nav-btn:hover { border-color: var(--white); color: var(--white); }
+.nav-btn.primary { background: var(--white); border-color: var(--white); color: var(--bg); }
+.nav-btn.primary:hover { background: transparent; color: var(--white); }
+
+.nav-burger {
+  display: none;
+  background: none;
+  border: 1px solid var(--border2);
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  border-radius: 3px;
+  flex-direction: column;
+  gap: 4px;
+}
+.nav-burger span { display: block; width: 18px; height: 1px; background: var(--text); transition: transform var(--transition), opacity var(--transition); }
+body.nav-open .nav-burger span:nth-child(1) { transform: rotate(45deg) translate(3.5px,3.5px); }
+body.nav-open .nav-burger span:nth-child(2) { opacity: 0; }
+body.nav-open .nav-burger span:nth-child(3) { transform: rotate(-45deg) translate(3.5px,-3.5px); }
+
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+}
+
+.doc-header {
+  padding-top: calc(var(--nav-h) + 3.5rem);
+  padding-bottom: 3.5rem;
+  border-bottom: 1px solid var(--border);
+  animation: rise 0.45s ease both;
+}
+@keyframes rise { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+
+.breadcrumb {
+  font-size: 0.56rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.breadcrumb a { color: var(--muted); text-decoration: none; transition: color var(--transition); }
+.breadcrumb a:hover { color: var(--text); }
+.breadcrumb span { color: var(--dim); }
+
+.module-meta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+}
+.module-title {
+  font-family: var(--disp);
+  font-size: clamp(2.8rem, 6vw, 4.8rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--white);
+  line-height: 0.95;
+  margin-bottom: 0.85rem;
+}
+.module-title span { color: var(--grey); font-weight: 400; }
+.module-sub {
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.85;
+  max-width: 500px;
+  margin-bottom: 1.5rem;
+}
+.module-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.tag {
+  font-size: 0.5rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.55rem;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+}
+.tag.hi { color: var(--white); border-color: rgba(255,255,255,0.28); }
+
+.module-stats { display: flex; flex-direction: column; gap: 1rem; min-width: 210px; }
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.68rem;
+  gap: 2rem;
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-lbl { letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.stat-v { color: var(--white); font-weight: 500; }
+
+.doc-body {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 4rem;
+  padding: 3.5rem 0;
+  align-items: start;
+}
+
+.sidebar { position: sticky; top: calc(var(--nav-h) + 1rem); }
+.sidebar-nav { list-style: none; }
+.sidebar-nav li { margin-bottom: 0.05rem; }
+.sidebar-nav a {
+  display: block;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.4rem 0;
+  border-left: 2px solid transparent;
+  padding-left: 0.75rem;
+  transition: color var(--transition), border-color var(--transition);
+}
+.sidebar-nav a:hover { color: var(--text); border-color: var(--border2); }
+.sidebar-nav a.active { color: var(--white); border-color: var(--white); }
+.sidebar-sep {
+  font-size: 0.48rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dim);
+  padding: 0.7rem 0 0.25rem 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.content section {
+  padding-bottom: 3.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 3.5rem;
+}
+.content section:last-child { border-bottom: none; }
+
+.sec-label {
+  font-size: 0.52rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 0.55rem;
+}
+
+h2 {
+  font-family: var(--disp);
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--white);
+  margin-bottom: 1.25rem;
+  line-height: 1.05;
+}
+
+h3 {
+  font-family: var(--disp);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--off);
+  margin: 2rem 0 0.8rem;
+  letter-spacing: -0.01em;
+}
+
+p {
+  font-size: 0.82rem;
+  color: var(--text);
+  line-height: 1.85;
+  margin-bottom: 0.9rem;
+}
+p:last-child { margin-bottom: 0; }
+
+a { color: var(--grey); }
+a:hover { color: var(--white); }
+
+pre {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border3);
+  padding: 1.1rem 1.35rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+  font-size: 0.76rem;
+  line-height: 1.75;
+  border-radius: 0 2px 2px 0;
+}
+code {
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  padding: 0.08rem 0.35rem;
+  color: var(--off);
+}
+pre code { background: none; border: none; padding: 0; font-size: inherit; }
+.comment { color: var(--muted); font-style: italic; }
+.kw { color: var(--white); }
+.str { color: var(--grey); }
+
+.table-wrap { overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 0.74rem; min-width: 420px; }
+th {
+  font-family: var(--mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey);
+  text-align: left;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border2);
+  background: var(--bg1);
+  white-space: nowrap;
+}
+td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: top;
+  line-height: 1.65;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg1); }
+td:first-child { color: var(--off); font-weight: 500; white-space: nowrap; }
+td code { font-size: 0.7rem; }
+
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+.feat-cell {
+  background: var(--bg);
+  padding: 1.1rem;
+  transition: background var(--transition);
+}
+.feat-cell:hover { background: var(--bg1); }
+.feat-icon {
+  font-size: 0.54rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 0.4rem;
+}
+.feat-name {
+  font-family: var(--disp);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.3rem;
+}
+.feat-desc { font-size: 0.72rem; color: var(--muted); line-height: 1.6; }
+
+.callout {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.95rem 1.15rem;
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--border2);
+  margin: 1.25rem 0;
+  font-size: 0.78rem;
+  line-height: 1.7;
+  color: var(--text);
+  border-radius: 0 2px 2px 0;
+}
+.callout.warn { border-left-color: var(--grey); }
+.callout.crit { border-left-color: var(--white); background: rgba(255,255,255,0.02); }
+.callout.info { border-left-color: var(--muted); }
+.callout-mark { font-size: 0.64rem; color: var(--grey); flex-shrink: 0; margin-top: 0.15rem; }
+
+.mode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+.mode-card {
+  background: var(--bg);
+  padding: 1.1rem;
+  transition: background var(--transition);
+  cursor: default;
+}
+.mode-card:hover { background: var(--bg1); }
+.mode-key {
+  font-family: var(--disp);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.mode-badge {
+  font-size: 0.46rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.12rem 0.38rem;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+}
+.mode-badge.dflt { color: var(--white); border-color: rgba(255,255,255,0.28); }
+.mode-desc { font-size: 0.71rem; color: var(--muted); line-height: 1.6; }
+
+.dev-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+.dev-cat {
+  background: var(--bg);
+  padding: 1rem;
+  transition: background var(--transition);
+}
+.dev-cat:hover { background: var(--bg1); }
+.dev-cat-label {
+  font-size: 0.5rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 0.3rem;
+}
+.dev-cat-name {
+  font-family: var(--disp);
+  font-weight: 700;
+  color: var(--white);
+  font-size: 0.92rem;
+  margin-bottom: 0.35rem;
+}
+.dev-cat-ports { font-size: 0.66rem; color: var(--muted); line-height: 1.6; }
+
+.threat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+.threat-card {
+  background: var(--bg);
+  padding: 1.1rem;
+  transition: background var(--transition);
+}
+.threat-card:hover { background: var(--bg1); }
+.threat-name {
+  font-family: var(--disp);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.3rem;
+}
+.threat-port { font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey); margin-bottom: 0.3rem; }
+.threat-desc { font-size: 0.7rem; color: var(--muted); line-height: 1.6; }
+
+.author-card {
+  display: flex;
+  gap: 1.75rem;
+  align-items: flex-start;
+  padding: 1.75rem;
+  border: 1px solid var(--border2);
+  background: var(--bg1);
+  margin-top: 1.5rem;
+}
+.author-avatar {
+  width: 52px; height: 52px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--disp);
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--white);
+  flex-shrink: 0;
+}
+.author-name {
+  font-family: var(--disp);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.2rem;
+}
+.author-role {
+  font-size: 0.56rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 0.75rem;
+}
+.author-bio {
+  font-size: 0.76rem;
+  color: var(--muted);
+  line-height: 1.75;
+  margin-bottom: 0.85rem;
+}
+.author-links { display: flex; gap: 1rem; flex-wrap: wrap; }
+.author-link {
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--grey);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: color var(--transition);
+}
+.author-link:hover { color: var(--white); }
+
+footer { border-top: 1px solid var(--border); margin-top: 2rem; }
+.foot-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 1.5rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.foot-brand {
+  font-family: var(--disp);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-decoration: none;
+}
+.foot-links { display: flex; gap: 1.75rem; }
+.foot-link {
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+.foot-link:hover { color: var(--text); }
+.foot-note { font-size: 0.52rem; color: var(--dim); letter-spacing: 0.06em; }
+
+@media (max-width: 860px) {
+  nav { padding: 0 1.5rem; }
+  .nav-links { display: none; }
+  .nav-burger { display: flex; }
+  body.nav-open .nav-links {
+    display: flex;
+    position: fixed;
+    top: var(--nav-h);
+    left: 0; right: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    flex-direction: column;
+    padding: 1rem 1.5rem 1.5rem;
+    gap: 0.25rem;
+    align-items: flex-start;
+    z-index: 99;
+  }
+  .page { padding: 0 1.5rem; }
+  .doc-body { grid-template-columns: 1fr; gap: 0; }
+  .sidebar { display: none; }
+  .dev-cat-grid { grid-template-columns: 1fr 1fr; }
+  .module-title { font-size: 2.6rem; }
+  .author-card { flex-direction: column; gap: 1rem; }
+  .module-stats { min-width: unset; width: 100%; }
+  pre { font-size: 0.7rem; }
+}
+
+@media (max-width: 540px) {
+  .dev-cat-grid { grid-template-columns: 1fr; }
+  .feat-grid { grid-template-columns: 1fr; }
+  .mode-grid { grid-template-columns: 1fr; }
+  .threat-grid { grid-template-columns: 1fr; }
+  .page { padding: 0 1rem; }
+  pre { padding: 0.85rem 1rem; }
+  .doc-header { padding-top: calc(var(--nav-h) + 2rem); }
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a class="logo" href="../index.html">
+    <span class="logo-mark"></span>
+    SecVulnHub
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="../index.html#projects">Arsenal</a>
+    <a class="nav-link" href="../index.html#mission">Mission</a>
+    <a class="nav-link" href="../index.html#contribute">Contribute</a>
+    <a class="nav-btn" href="https://github.com/0xb0rn3" target="_blank">GitHub</a>
+    <a class="nav-btn primary" href="https://discord.gg/SecVulnHub" target="_blank">Discord</a>
+  </div>
+  <button class="nav-burger" id="burger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="page">
+
+  <div class="doc-header">
+    <div class="breadcrumb">
+      <a href="../index.html">SecVulnHub</a>
+      <span>/</span>
+      <a href="../index.html#projects">Arsenal</a>
+      <span>/</span>
+      Docs
+      <span>/</span>
+      wifi_monitor
+    </div>
+    <div class="module-meta">
+      <div>
+        <h1 class="module-title">wifi_monitor<span>.</span></h1>
+        <p class="module-sub">Real-time WiFi network monitor and threat detector. ARP host discovery, async port scanning, SSL/HTTP/SSH banner grabbing, device fingerprinting, CIRCL CVE lookup, and automated threat flagging for exposed services.</p>
+        <div class="module-tags">
+          <span class="tag hi">secV Module</span>
+          <span class="tag">Network Monitor</span>
+          <span class="tag">ARP Scan</span>
+          <span class="tag">Device Fingerprint</span>
+          <span class="tag">CVE Lookup</span>
+          <span class="tag">Python 3.8+</span>
+          <span class="tag">v1.0.0</span>
+        </div>
+      </div>
+      <div class="module-stats">
+        <div class="stat-row"><span class="stat-lbl">Category</span><span class="stat-v">Network</span></div>
+        <div class="stat-row"><span class="stat-lbl">Language</span><span class="stat-v">Python 3</span></div>
+        <div class="stat-row"><span class="stat-lbl">Location</span><span class="stat-v">tools/network/wifi_monitor/</span></div>
+        <div class="stat-row"><span class="stat-lbl">Author</span><span class="stat-v">0xb0rn3</span></div>
+        <div class="stat-row"><span class="stat-lbl">Version</span><span class="stat-v">1.0.0</span></div>
+        <div class="stat-row"><span class="stat-lbl">License</span><span class="stat-v">MIT</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-body">
+
+    <aside class="sidebar">
+      <ul class="sidebar-nav">
+        <li><div class="sidebar-sep">Overview</div></li>
+        <li><a href="#overview" class="active">What it does</a></li>
+        <li><a href="#quickstart">Quick Start</a></li>
+        <li><div class="sidebar-sep">Reference</div></li>
+        <li><a href="#modes">Scan Modes</a></li>
+        <li><a href="#params">Parameters</a></li>
+        <li><a href="#devices">Device Detection</a></li>
+        <li><a href="#threats">Threat Detection</a></li>
+        <li><a href="#cve">CVE Lookup</a></li>
+        <li><a href="#output">Output Format</a></li>
+        <li><div class="sidebar-sep">More</div></li>
+        <li><a href="#examples">Examples</a></li>
+        <li><a href="#requirements">Requirements</a></li>
+        <li><a href="#author">Author</a></li>
+      </ul>
+    </aside>
+
+    <div class="content">
+
+      <!-- Overview -->
+      <section id="overview">
+        <p class="sec-label">Overview</p>
+        <h2>What wifi_monitor does</h2>
+        <p>wifi_monitor is SecV's real-time WiFi network monitoring module. It discovers all active hosts on a subnet using ARP broadcasts (scapy) with automatic TCP-ping fallback when running without root. For each discovered host it runs an async port scanner, grabs SSL certificates, HTTP headers, and SSH banners, fingerprints the device type, and cross-references open services against the CIRCL CVE API.</p>
+        <p>The threat detection engine automatically flags critical exposures — databases open to the network, cleartext protocols like Telnet and FTP, default credential services, and end-of-life SSH versions — giving you a prioritized risk picture without manual triage.</p>
+        <div class="feat-grid">
+          <div class="feat-cell">
+            <div class="feat-icon">Discovery</div>
+            <div class="feat-name">ARP + TCP</div>
+            <div class="feat-desc">ARP broadcast via scapy for fast L2 discovery. TCP-ping fallback for non-root environments.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Scanning</div>
+            <div class="feat-name">Async Ports</div>
+            <div class="feat-desc">Concurrent async port scanner. SSL cert grab, HTTP header pull, SSH version banner — per host.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Intel</div>
+            <div class="feat-name">CVE Lookup</div>
+            <div class="feat-desc">CIRCL CVE API with 24h local cache. Keyword search per detected service/vendor.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Classify</div>
+            <div class="feat-name">Device Types</div>
+            <div class="feat-desc">Auto-fingerprints IoT cameras, routers, NAS, databases, web servers, Linux hosts.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Risk</div>
+            <div class="feat-name">Threat Flags</div>
+            <div class="feat-desc">Critical: exposed DB, Telnet, FTP. Warning: EOL SSH, default-cred services, unencrypted admin.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Output</div>
+            <div class="feat-name">JSON Report</div>
+            <div class="feat-desc">Structured per-host JSON: ports, banners, device type, CVEs, threat flags, summary stats.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Start -->
+      <section id="quickstart">
+        <p class="sec-label">Quick Start</p>
+        <h2>Running a scan</h2>
+        <p>wifi_monitor reads a JSON context from stdin — target is the subnet CIDR or single IP, params controls scan depth and features.</p>
+        <pre><code><span class="comment"># Basic subnet scan — ARP discover + port scan + CVE lookup</span>
+sudo secV
+secV ❯ use wifi_monitor
+secV (wifi_monitor) ❯ run 192.168.1.0/24
+
+<span class="comment"># Deep scan with all CVE lookups</span>
+secV (wifi_monitor) ❯ set mode deep
+secV (wifi_monitor) ❯ set cve_lookup true
+secV (wifi_monitor) ❯ run 192.168.1.0/24
+
+<span class="comment"># Direct stdin invocation</span>
+echo '{
+  "target": "192.168.1.0/24",
+  "params": {
+    "mode": "monitor",
+    "ports": "top-20",
+    "port_scan": true,
+    "cve_lookup": true,
+    "concurrency": 50
+  }
+}' | python3 wifi_monitor.py | jq .
+
+<span class="comment"># Passive only — discovery no port scan</span>
+echo '{"target": "10.0.0.0/24", "params": {"mode": "passive", "port_scan": false}}' \
+  | python3 wifi_monitor.py</code></pre>
+        <div class="callout warn">
+          <span class="callout-mark">!</span>
+          Run as root for ARP scanning (required for scapy L2 broadcasts). Without root, TCP-ping fallback is used — slower and may miss some hosts.
+        </div>
+      </section>
+
+      <!-- Scan Modes -->
+      <section id="modes">
+        <p class="sec-label">Reference</p>
+        <h2>Scan modes</h2>
+        <p>The <code>mode</code> parameter controls what runs — discovery only, port scanning, banner grabbing, and CVE enrichment depth.</p>
+        <div class="mode-grid">
+          <div class="mode-card">
+            <div class="mode-key">monitor <span class="mode-badge dflt">default</span></div>
+            <div class="mode-desc">ARP discovery + top-20 port scan + SSL/HTTP/SSH banners + device fingerprint. Balanced.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">passive <span class="mode-badge">quiet</span></div>
+            <div class="mode-desc">ARP discovery only — no port scanning, no banners. Just which hosts are alive and their MACs.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">deep <span class="mode-badge">thorough</span></div>
+            <div class="mode-desc">Full discovery + top-100 ports + banners + CVE lookup for every detected service. Slower.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Parameters -->
+      <section id="params">
+        <h2>Parameters</h2>
+        <p>All parameters go in the <code>params</code> object of the JSON stdin input.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>mode</code></td><td>string</td><td>monitor</td><td>Scan profile: <code>monitor</code>, <code>passive</code>, <code>deep</code></td></tr>
+              <tr><td><code>ports</code></td><td>string</td><td>top-20</td><td>Port preset: <code>top-20</code>, <code>top-100</code>, <code>full</code>, or custom range like <code>80,443,8080</code></td></tr>
+              <tr><td><code>port_scan</code></td><td>boolean</td><td>true</td><td>Enable per-host port scanning after discovery</td></tr>
+              <tr><td><code>cve_lookup</code></td><td>boolean</td><td>true</td><td>Query CIRCL CVE API for detected service keywords (24h cache)</td></tr>
+              <tr><td><code>timeout</code></td><td>integer</td><td>3</td><td>Per-host/port connection timeout in seconds</td></tr>
+              <tr><td><code>concurrency</code></td><td>integer</td><td>50</td><td>Max concurrent async scan workers</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Port Presets</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Preset</th><th>Ports</th><th>Use case</th></tr></thead>
+            <tbody>
+              <tr><td><code>top-20</code></td><td>21, 22, 23, 25, 53, 80, 110, 139, 443, 445, 3306, 3389, 5432, 5900, 6379, 8080, 8443, 8888, 27017</td><td>Quick triage — most exposed services</td></tr>
+              <tr><td><code>top-100</code></td><td>Extended common service ports</td><td>Thorough scan for pentesting</td></tr>
+              <tr><td><code>full</code></td><td>1–65535</td><td>Complete sweep — slow, noisy</td></tr>
+              <tr><td>custom</td><td>e.g. <code>80,443,8080-8090</code></td><td>Targeted scan of specific ports</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Device Detection -->
+      <section id="devices">
+        <h2>Device fingerprinting</h2>
+        <p>wifi_monitor classifies each host into a device category based on open ports, HTTP headers, SSL certificate subjects, and SSH banners. This determines which CVE keywords are searched and which threat checks run.</p>
+        <div class="dev-cat-grid">
+          <div class="dev-cat">
+            <div class="dev-cat-label">Category</div>
+            <div class="dev-cat-name">IoT Camera</div>
+            <div class="dev-cat-ports">Ports: 554 (RTSP), 8080, 8888<br>Signals: RTSP stream headers, IP cam HTTP UI</div>
+          </div>
+          <div class="dev-cat">
+            <div class="dev-cat-label">Category</div>
+            <div class="dev-cat-name">Router / Gateway</div>
+            <div class="dev-cat-ports">Ports: 80, 443, 53, 23<br>Signals: Router/DD-WRT/OpenWrt headers, Telnet</div>
+          </div>
+          <div class="dev-cat">
+            <div class="dev-cat-label">Category</div>
+            <div class="dev-cat-name">NAS Device</div>
+            <div class="dev-cat-ports">Ports: 445, 139, 548, 2049<br>Signals: Samba, AFP, NFS service banners</div>
+          </div>
+          <div class="dev-cat">
+            <div class="dev-cat-label">Category</div>
+            <div class="dev-cat-name">Database Server</div>
+            <div class="dev-cat-ports">Ports: 3306, 5432, 27017, 6379, 1433<br>Signals: MySQL, PostgreSQL, MongoDB, Redis, MSSQL banners</div>
+          </div>
+          <div class="dev-cat">
+            <div class="dev-cat-label">Category</div>
+            <div class="dev-cat-name">Web Server</div>
+            <div class="dev-cat-ports">Ports: 80, 443, 8080, 8443<br>Signals: Apache, nginx, IIS, lighttpd headers</div>
+          </div>
+          <div class="dev-cat">
+            <div class="dev-cat-label">Category</div>
+            <div class="dev-cat-name">Linux Host</div>
+            <div class="dev-cat-ports">Ports: 22, 80<br>Signals: OpenSSH banner, default web pages</div>
+          </div>
+        </div>
+        <p>Unmatched hosts are labeled <code>unknown</code>. The fingerprint is based on banner content and port combinations — no active OS fingerprinting probes are sent.</p>
+      </section>
+
+      <!-- Threat Detection -->
+      <section id="threats">
+        <h2>Threat detection</h2>
+        <p>After scanning, the engine automatically evaluates each host against a set of threat rules. Findings are categorized as <code>critical</code>, <code>warning</code>, or <code>info</code> and included in the output report.</p>
+        <div class="threat-grid">
+          <div class="threat-card">
+            <div class="threat-port">critical · port 23</div>
+            <div class="threat-name">Telnet Exposed</div>
+            <div class="threat-desc">Cleartext remote access. Credential sniffing trivial on-LAN. Should be disabled.</div>
+          </div>
+          <div class="threat-card">
+            <div class="threat-port">critical · port 21</div>
+            <div class="threat-name">FTP Exposed</div>
+            <div class="threat-desc">Cleartext file transfer and credentials. Often misconfigured with anonymous login.</div>
+          </div>
+          <div class="threat-card">
+            <div class="threat-port">critical · port 3306/5432/27017</div>
+            <div class="threat-name">Database Open</div>
+            <div class="threat-desc">Database port exposed directly on the network. No app-layer boundary. Auth bypass risk.</div>
+          </div>
+          <div class="threat-card">
+            <div class="threat-port">critical · port 6379</div>
+            <div class="threat-name">Redis Exposed</div>
+            <div class="threat-desc">Redis default config has no auth. Remote code execution via <code>CONFIG SET dir</code> / cron writes.</div>
+          </div>
+          <div class="threat-card">
+            <div class="threat-port">warning · port 22</div>
+            <div class="threat-name">EOL SSH Version</div>
+            <div class="threat-desc">OpenSSH below 8.x or other EOL versions. Known vulns unpatched. Check banner.</div>
+          </div>
+          <div class="threat-card">
+            <div class="threat-port">warning · port 80</div>
+            <div class="threat-name">Unencrypted Admin</div>
+            <div class="threat-desc">Admin/management UI over HTTP (no TLS). Credentials sent in cleartext.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CVE Lookup -->
+      <section id="cve">
+        <h2>CVE lookup</h2>
+        <p>When <code>cve_lookup</code> is enabled, wifi_monitor queries the <a href="https://cve.circl.lu" target="_blank">CIRCL CVE API</a> for each detected service keyword — e.g. <code>openssh</code>, <code>apache</code>, <code>nginx</code>, <code>mysql</code> — and includes matching CVEs in the per-host output.</p>
+        <p>Results are cached locally for 24 hours to avoid hammering the API on repeated scans of the same network.</p>
+        <pre><code><span class="comment"># CVE lookup endpoint used</span>
+https://cve.circl.lu/api/search/{keyword}
+
+<span class="comment"># Example keywords derived from banner grabbing</span>
+openssh 7.4       → search: openssh
+Apache/2.4.51     → search: apache
+nginx/1.18.0      → search: nginx
+MySQL 5.7.36      → search: mysql
+Redis 6.2.6       → search: redis</code></pre>
+        <div class="callout info">
+          <span class="callout-mark">ℹ</span>
+          CVE results are keyword-matched, not version-specific. Review CVE details manually to confirm applicability to the exact version found.
+        </div>
+      </section>
+
+      <!-- Output -->
+      <section id="output">
+        <h2>Output format</h2>
+        <p>wifi_monitor returns structured JSON — a top-level <code>data</code> object with a hosts array and a summary block.</p>
+        <pre><code>{
+  "success": true,
+  "data": {
+    "hosts": [
+      {
+        "ip": "192.168.1.1",
+        "mac": "aa:bb:cc:dd:ee:ff",
+        "hostname": "router.local",
+        "device_type": "router",
+        "open_ports": [80, 443, 23],
+        "services": {
+          "80":  { "banner": "Apache/2.4.51", "http_title": "Router Admin" },
+          "443": { "ssl_subject": "CN=router.local" },
+          "23":  { "banner": "DD-WRT v3.0" }
+        },
+        "cves": [
+          { "id": "CVE-2021-41773", "summary": "Apache path traversal...", "cvss": 9.8 }
+        ],
+        "threats": [
+          { "level": "critical", "type": "telnet_exposed", "port": 23,
+            "detail": "Telnet exposed — cleartext remote access" },
+          { "level": "warning", "type": "unencrypted_admin", "port": 80,
+            "detail": "Admin interface over HTTP" }
+        ]
+      }
+    ],
+    "summary": {
+      "total_hosts": 12,
+      "hosts_with_threats": 4,
+      "critical_threats": 2,
+      "warning_threats": 6,
+      "scan_time_s": 8.3
+    }
+  }
+}</code></pre>
+      </section>
+
+      <!-- Examples -->
+      <section id="examples">
+        <p class="sec-label">Examples</p>
+        <h2>Common usage patterns</h2>
+
+        <h3>Passive host discovery only</h3>
+        <pre><code>secV ❯ use wifi_monitor
+secV (wifi_monitor) ❯ set mode passive
+secV (wifi_monitor) ❯ run 192.168.1.0/24</code></pre>
+
+        <h3>Deep scan with CVE lookup</h3>
+        <pre><code>sudo secV
+secV ❯ use wifi_monitor
+secV (wifi_monitor) ❯ set mode deep
+secV (wifi_monitor) ❯ set cve_lookup true
+secV (wifi_monitor) ❯ set concurrency 100
+secV (wifi_monitor) ❯ run 10.0.0.0/24</code></pre>
+
+        <h3>Single host banner grab</h3>
+        <pre><code>echo '{
+  "target": "192.168.1.1",
+  "params": { "ports": "top-20", "cve_lookup": false }
+}' | python3 wifi_monitor.py | jq '.data.hosts[0]'</code></pre>
+
+        <h3>Extract only hosts with critical threats</h3>
+        <pre><code>echo '{"target": "192.168.1.0/24", "params": {}}' \
+  | python3 wifi_monitor.py \
+  | jq '.data.hosts[] | select(.threats[] | .level == "critical")'</code></pre>
+
+        <h3>Custom port range</h3>
+        <pre><code>secV (wifi_monitor) ❯ set ports 80,443,8080,8443,3000,5000,9200
+secV (wifi_monitor) ❯ run 192.168.1.0/24</code></pre>
+      </section>
+
+      <!-- Requirements -->
+      <section id="requirements">
+        <p class="sec-label">Requirements</p>
+        <h2>Installation tiers</h2>
+        <p>wifi_monitor is tiered — basic mode works with just Python stdlib, full mode adds scapy for ARP and aiohttp for async CVE requests.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Tier</th><th>Package</th><th>Feature</th></tr></thead>
+            <tbody>
+              <tr><td>Basic</td><td>stdlib only</td><td>TCP-ping discovery, sync port scan</td></tr>
+              <tr><td>Standard</td><td><code>scapy</code></td><td>ARP broadcast host discovery (faster, more accurate)</td></tr>
+              <tr><td>Full</td><td><code>scapy</code> + <code>aiohttp</code></td><td>+ async CVE API lookups (required for <code>cve_lookup</code>)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <pre><code><span class="comment"># Standard install (recommended)</span>
+pip3 install scapy aiohttp
+
+<span class="comment"># Or via install.sh which handles everything</span>
+./install.sh</code></pre>
+        <div class="callout info">
+          <span class="callout-mark">ℹ</span>
+          Scapy requires root for ARP scans. Run <code>sudo secV</code> or use the TCP-ping fallback without root (set <code>mode: passive</code> or drop scapy).
+        </div>
+      </section>
+
+      <!-- Author -->
+      <section id="author">
+        <p class="sec-label">Author</p>
+        <h2>Built by</h2>
+        <div class="author-card">
+          <div class="author-avatar">0x</div>
+          <div>
+            <div class="author-name">0xb0rn3</div>
+            <div class="author-role">SecVulnHub · Security Research</div>
+            <div class="author-bio">Security researcher and tool developer. wifi_monitor was built to give pentesters and defenders a fast, self-contained network situational awareness tool that works on any subnet without heavy external dependencies.</div>
+            <div class="author-links">
+              <a class="author-link" href="https://github.com/0xb0rn3" target="_blank">↗ GitHub</a>
+              <a class="author-link" href="https://github.com/secvulnhub/SecV" target="_blank">↗ SecV Repo</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /content -->
+  </div><!-- /doc-body -->
+</div><!-- /page -->
+
+<footer>
+  <div class="foot-inner">
+    <a class="foot-brand" href="../index.html">SecVulnHub</a>
+    <div class="foot-links">
+      <a class="foot-link" href="netrecon.html">netrecon</a>
+      <a class="foot-link" href="android_pentest.html">android_pentest</a>
+      <a class="foot-link" href="wifi_monitor.html">wifi_monitor</a>
+      <a class="foot-link" href="https://github.com/secvulnhub/SecV" target="_blank">GitHub</a>
+    </div>
+    <span class="foot-note">MIT © 2024–2026 SecVulnHub</span>
+  </div>
+</footer>
+
+<script>
+  const nav = document.getElementById('nav');
+  const burger = document.getElementById('burger');
+
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 10);
+  });
+
+  burger.addEventListener('click', () => {
+    document.body.classList.toggle('nav-open');
+  });
+
+  const sections = document.querySelectorAll('.content section[id]');
+  const navLinks = document.querySelectorAll('.sidebar-nav a[href^="#"]');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(a => {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
