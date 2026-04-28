@@ -615,7 +615,7 @@ footer {
     <div class="project-banner-meta">
       <span>
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        v2.0 · active
+        v2.4.0 · active
       </span>
       <span>
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
@@ -673,21 +673,44 @@ footer {
       <span class="mod-arrow">→</span>
     </a>
 
-    <!-- ios_pentest (coming soon) -->
-    <div class="module-card wip" style="cursor:default">
-      <span class="mod-status status-wip">Coming Soon</span>
+    <!-- ios_pentest -->
+    <a class="module-card" href="modules/ios_pentest.html">
+      <span class="mod-status status-beta">Beta</span>
       <div class="mod-name">ios_pentest</div>
       <div class="mod-category">Mobile · iOS</div>
       <div class="mod-desc">
-        iOS application and device security testing via libimobiledevice.
-        Jailbreak detection bypass, IPA analysis, and file system extraction.
+        iOS security testing via libimobiledevice and Frida. IPA static analysis,
+        binary protection checks, ATS audit, SSL bypass, keychain dumping,
+        and live CVE assessment via NVD.
       </div>
       <div class="mod-tags">
         <span class="tag">ideviceinfo</span>
         <span class="tag">libimobiledevice</span>
+        <span class="tag">frida</span>
         <span class="tag">ipa</span>
+        <span class="tag">cve</span>
       </div>
-    </div>
+      <span class="mod-arrow">→</span>
+    </a>
+
+    <!-- mac_spoof -->
+    <a class="module-card" href="modules/mac_spoof.html">
+      <span class="mod-status status-stable">Stable</span>
+      <div class="mod-name">mac_spoof</div>
+      <div class="mod-category">Network · Anonymity</div>
+      <div class="mod-desc">
+        Per-interface MAC address rotation with active connection tracking.
+        Smart, session, periodic, and aggressive rotation modes.
+        Graceful DHCP renewal and state persistence.
+      </div>
+      <div class="mod-tags">
+        <span class="tag">mac</span>
+        <span class="tag">spoofing</span>
+        <span class="tag">anonymity</span>
+        <span class="tag">network</span>
+      </div>
+      <span class="mod-arrow">→</span>
+    </a>
 
   </div>
 </div>
@@ -702,13 +725,13 @@ footer {
   <div class="shell-section">
     <div class="shell-header">
       <span class="shell-title">Module Commands</span>
-      <span class="shell-version">v2.3+</span>
+      <span class="shell-version">v2.4.0+</span>
     </div>
     <table class="cmd-table">
       <tr class="cmd-group-header"><td colspan="2">Loading Modules</td></tr>
       <tr><td>use &lt;module&gt;</td><td>Load a module by name (e.g. <code>use netrecon</code>)</td></tr>
       <tr><td>back</td><td>Unload the current module and clear params. Equivalent to <code>cd ..</code></td></tr>
-      <tr><td>reload</td><td>Rescan the tools directory for new or updated modules</td></tr>
+      <tr><td>reload</td><td>Rescan the tools directory for new modules</td></tr>
 
       <tr class="cmd-group-header"><td colspan="2">Configuration</td></tr>
       <tr><td>set &lt;param&gt; &lt;value&gt;</td><td>Set a module parameter. <strong>First token after <code>set</code> is the key.</strong> E.g. <code>set operation backdoor_apk</code></td></tr>

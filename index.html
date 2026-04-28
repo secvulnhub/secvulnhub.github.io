@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SecVulnHub: Security Tools for Practitioners</title>
+<title>SecVulnHub — Security Tools for Practitioners</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
@@ -404,54 +404,6 @@ h2 {
   transition: color var(--t), border-color var(--t);
 }
 .spotlight-link:hover { color: var(--white); border-color: var(--border2); }
-.spotlight-link.view-project-btn {
-  cursor: pointer;
-  background: none;
-  font-family: var(--mono);
-  position: relative;
-  user-select: none;
-}
-.vp-wrap {
-  position: relative;
-  display: inline-block;
-}
-.vp-popup {
-  display: none;
-  position: absolute;
-  top: calc(100% + 6px);
-  right: 0;
-  background: var(--bg2);
-  border: 1px solid var(--border2);
-  border-radius: var(--r);
-  min-width: 148px;
-  z-index: 50;
-  overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-}
-.vp-popup.open { display: block; }
-.vp-popup a,
-.vp-popup-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.52rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
-  text-decoration: none;
-  padding: 0.6rem 0.85rem;
-  border-bottom: 1px solid var(--border);
-  transition: color var(--t), background var(--t);
-  background: none;
-  border-bottom: 1px solid var(--border);
-  width: 100%;
-  cursor: pointer;
-  font-family: var(--mono);
-}
-.vp-popup a:last-child,
-.vp-popup-btn:last-child { border-bottom: none; }
-.vp-popup a:hover,
-.vp-popup-btn:hover { color: var(--white); background: var(--bg3); }
 .spotlight-link.hi {
   background: var(--white);
   border-color: var(--white);
@@ -635,211 +587,7 @@ h2 {
 }
 .modal-body strong { color: var(--off); font-weight: 500; }
 
-/* ── Commit History Modal ── */
-#commitModal .modal { max-width: 680px; padding: 0; overflow: hidden; display: flex; flex-direction: column; max-height: 88vh; }
-.cm-head {
-  padding: 1.5rem 1.75rem 1.25rem;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-.cm-head-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-}
-.cm-title {
-  font-family: var(--disp);
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: var(--white);
-  letter-spacing: -0.03em;
-}
-.cm-repo {
-  font-size: 0.52rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-top: 0.2rem;
-}
-.cm-datepicker {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-.cm-datepicker label {
-  font-size: 0.5rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.cm-datepicker input[type="date"] {
-  background: var(--bg2);
-  border: 1px solid var(--border2);
-  border-radius: var(--r);
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 0.62rem;
-  padding: 0.3rem 0.6rem;
-  outline: none;
-  cursor: pointer;
-  color-scheme: dark;
-  transition: border-color var(--t);
-}
-.cm-datepicker input[type="date"]:focus { border-color: var(--border3); }
-.cm-datepicker button {
-  font-size: 0.5rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 0.3rem 0.6rem;
-  cursor: pointer;
-  font-family: var(--mono);
-  transition: color var(--t), border-color var(--t);
-}
-.cm-datepicker button:hover { color: var(--text); border-color: var(--border2); }
-
-.cm-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 0 1.75rem;
-}
-.cm-body::-webkit-scrollbar { width: 3px; }
-.cm-body::-webkit-scrollbar-thumb { background: var(--bg3); }
-
-.cm-day-label {
-  font-size: 0.5rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding: 1rem 0 0.6rem;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 0;
-  position: sticky;
-  top: 0;
-  background: var(--bg1);
-  z-index: 2;
-}
-.cm-commit {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  padding: 0.85rem 0;
-  border-bottom: 1px solid var(--border);
-}
-.cm-commit:last-child { border-bottom: none; }
-.cm-avatar {
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  background: var(--bg3);
-  border: 1px solid var(--border2);
-  flex-shrink: 0;
-  overflow: hidden;
-  margin-top: 2px;
-}
-.cm-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.cm-avatar-placeholder {
-  width: 100%; height: 100%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.6rem;
-  color: var(--muted);
-  font-family: var(--disp);
-  font-weight: 700;
-}
-.cm-info { flex: 1; min-width: 0; }
-.cm-msg {
-  font-size: 0.74rem;
-  color: var(--off);
-  line-height: 1.5;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-bottom: 0.3rem;
-}
-.cm-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-.cm-author {
-  font-size: 0.58rem;
-  color: var(--steel);
-  letter-spacing: 0.04em;
-}
-.cm-dot { color: var(--dim); font-size: 0.5rem; }
-.cm-time {
-  font-size: 0.56rem;
-  color: var(--muted);
-}
-.cm-sha {
-  font-size: 0.52rem;
-  color: var(--dim);
-  font-family: var(--mono);
-  letter-spacing: 0.04em;
-  text-decoration: none;
-  border: 1px solid var(--border);
-  border-radius: 1px;
-  padding: 0.08rem 0.32rem;
-  transition: color var(--t), border-color var(--t);
-  flex-shrink: 0;
-  margin-top: 3px;
-}
-.cm-sha:hover { color: var(--text); border-color: var(--border2); }
-
-.cm-empty {
-  padding: 3rem 0;
-  text-align: center;
-  font-size: 0.72rem;
-  color: var(--muted);
-}
-.cm-loading {
-  padding: 3rem 0;
-  text-align: center;
-  font-size: 0.65rem;
-  color: var(--muted);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-.cm-loading span {
-  display: inline-block;
-  animation: breathe 1.2s ease-in-out infinite;
-}
-
-/* ── Pagination ── */
-.cm-footer {
-  padding: 1rem 1.75rem;
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-}
-.cm-page-info {
-  font-size: 0.52rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.cm-nav { display: flex; gap: 0.4rem; }
-.cm-nav button {
-  font-size: 0.52rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-  background: none;
-  border: 1px solid var(--border2);
-  border-radius: var(--r);
-  padding: 0.32rem 0.7rem;
-  cursor: pointer;
-  font-family: var(--mono);
-  transition: color var(--t), border-color var(--t), background var(--t);
-}
-.cm-nav button:hover:not(:disabled) { color: var(--white); border-color: var(--border3); }
-.cm-nav button:disabled { opacity: 0.28; cursor: not-allowed; }
+/* ── Mission ── */
 .mission-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -961,7 +709,7 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
   .wrap { padding: 3.5rem 1.5rem; }
   .mission-layout { grid-template-columns: 1fr; gap: 2.5rem; }
   .principles { grid-template-columns: 1fr; }
-  #globe-canvas { width: 100vw; opacity: 0.12; right: auto; left: 50%; transform: translateX(-50%); }
+  #globe-canvas { width: 100vw; opacity: 0.12; }
   .spotlight-card { grid-template-columns: 1fr; gap: 1.5rem; }
   .spotlight-meta { align-items: flex-start; }
 }
@@ -976,37 +724,7 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
 
 <canvas id="globe-canvas"></canvas>
 
-<!-- Commit History Modal -->
-<div class="modal-overlay" id="commitModal" role="dialog" aria-modal="true" aria-labelledby="cmTitle">
-  <div class="modal">
-    <div class="cm-head">
-      <div class="cm-head-top">
-        <div>
-          <div class="cm-title" id="cmTitle">Commit History</div>
-          <div class="cm-repo">secvulnhub / secV</div>
-        </div>
-        <button class="modal-close" id="cmClose" aria-label="Close">✕</button>
-      </div>
-      <div class="cm-datepicker">
-        <label for="cmDate">Filter by date</label>
-        <input type="date" id="cmDate">
-        <button id="cmClearDate">Clear</button>
-      </div>
-    </div>
-    <div class="cm-body" id="cmBody">
-      <div class="cm-loading"><span>Loading commits...</span></div>
-    </div>
-    <div class="cm-footer">
-      <span class="cm-page-info" id="cmPageInfo">Page 1</span>
-      <div class="cm-nav">
-        <button id="cmPrev" disabled>&#8592; Prev</button>
-        <button id="cmNext">Next &#8594;</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
+<!-- MIT License Modal -->
 <div class="modal-overlay" id="licenseModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal">
     <div class="modal-header">
@@ -1066,6 +784,7 @@ SOFTWARE.</strong></div>
     <p class="hero-sub">A collective building battle-tested offensive security tooling. No bloat, no gatekeeping. Code that solves real problems in the field.</p>
     <div class="hero-actions">
       <a class="btn btn-primary" href="#projects">Explore Arsenal</a>
+      <a class="btn btn-ghost" href="Documentations/secV/index.html">Documentation →</a>
       <a class="btn btn-ghost" href="https://github.com/secvulnhub" target="_blank">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
         View on GitHub
@@ -1105,20 +824,7 @@ SOFTWARE.</strong></div>
           <span class="spotlight-badge">Active development</span>
           <div class="spotlight-links">
             <a class="spotlight-link hi" href="Documentations/secV/index.html">Docs →</a>
-            <button class="spotlight-link" id="cmOpenBtn">Commit History</button>
-            <div class="vp-wrap">
-              <button class="spotlight-link view-project-btn" id="vpBtn">View Project ▾</button>
-              <div class="vp-popup" id="vpPopup">
-                <button class="vp-popup-btn" id="cmOpenBtn2">
-                  <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0z"/></svg>
-                  Commit History
-                </button>
-                <a href="https://github.com/secvulnhub/secV" target="_blank">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-                  Explore Repo
-                </a>
-              </div>
-            </div>
+            <a class="spotlight-link" href="https://github.com/secvulnhub/secV" target="_blank">GitHub</a>
           </div>
         </div>
       </div>
@@ -1154,7 +860,7 @@ SOFTWARE.</strong></div>
       <div class="mission-copy">
         <p class="eyebrow">Why We Exist</p>
         <h2>Built in the field.<br>Maintained by<br>the community.</h2>
-        <p class="subdesc" style="margin-top:1rem">Every tool is real-world tested before it ships. We don't publish theory or demo code. Only tools practitioners reach for when it counts.</p>
+        <p class="subdesc" style="margin-top:1rem">Every tool is real-world tested before it ships. We don't publish theory or demo code — only tools practitioners reach for when it counts.</p>
         <p class="subdesc">Quality over quantity. If it doesn't solve a real problem, it doesn't ship.</p>
         <div class="mission-ctas">
           <a class="btn btn-primary" href="https://discord.gg/SecVulnHub" target="_blank">Join Discord</a>
@@ -1195,14 +901,14 @@ SOFTWARE.</strong></div>
     <div class="contrib-wrap">
       <p class="eyebrow" style="justify-content:center">Contribute</p>
       <h2>Become a contributor.</h2>
-      <p class="subdesc" style="margin-top:0.75rem">Build tools practitioners actually use. Your language, your specialization. Our arsenal.</p>
+      <p class="subdesc" style="margin-top:0.75rem">Build tools practitioners actually use. Your language, your specialization — our arsenal.</p>
       <div class="checklist">
         <div class="chk"><span class="chk-mark">✓</span>Solves a real cybersecurity challenge</div>
         <div class="chk"><span class="chk-mark">✓</span>Deployable in under 5 minutes from docs</div>
         <div class="chk"><span class="chk-mark">✓</span>Passes security review and audit</div>
         <div class="chk"><span class="chk-mark">✓</span>Comprehensive tests and documentation</div>
         <div class="chk"><span class="chk-mark">✓</span>Has install.sh and test.sh scripts</div>
-        <div class="chk"><span class="chk-mark">✓</span>Adds unique value, no duplicates</div>
+        <div class="chk"><span class="chk-mark">✓</span>Adds unique value — no duplicates</div>
       </div>
       <div class="cta-row">
         <a class="btn btn-primary" href="https://github.com/secvulnhub/secvulnhub/" target="_blank">Fork on GitHub</a>
@@ -1468,7 +1174,7 @@ function repoCard(repo) {
   const { cat, label, c } = repoToCat(repo.name);
   const desc = repo.description || 'No description provided.';
   const stars = repo.stargazers_count || 0;
-  const lang  = repo.language || 'N/A';
+  const lang  = repo.language || '—';
   return `<a class="tool-card" href="${repo.html_url}" target="_blank" style="--cc:${c};text-decoration:none;display:block">
     <span class="badge bc-${cat}">${label}</span>
     <div class="tool-name">${repo.name}</div>
@@ -1530,172 +1236,6 @@ document.getElementById('filters').addEventListener('click', e => {
   btn.classList.add('on');
   renderRepos(btn.dataset.f);
 });
-
-/* ── Commit History Modal ── */
-(function () {
-  const OWNER = 'secvulnhub', REPO = 'secV', PER_PAGE = 15;
-  let currentPage = 1, filterDate = '', totalPages = 1, cache = {};
-
-  const overlay  = document.getElementById('commitModal');
-  const body     = document.getElementById('cmBody');
-  const pageInfo = document.getElementById('cmPageInfo');
-  const prevBtn  = document.getElementById('cmPrev');
-  const nextBtn  = document.getElementById('cmNext');
-  const dateInput= document.getElementById('cmDate');
-  const clearBtn = document.getElementById('cmClearDate');
-
-  function openModal() {
-    overlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    if (!cache[cacheKey()]) loadCommits();
-    else renderPage();
-  }
-  function closeModal() {
-    overlay.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  document.getElementById('cmClose').addEventListener('click', closeModal);
-  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
-  });
-
-  document.getElementById('cmOpenBtn').addEventListener('click', openModal);
-  document.getElementById('cmOpenBtn2').addEventListener('click', () => {
-    document.getElementById('vpPopup').classList.remove('open');
-    openModal();
-  });
-
-  clearBtn.addEventListener('click', () => {
-    dateInput.value = '';
-    filterDate = '';
-    currentPage = 1;
-    cache = {};
-    loadCommits();
-  });
-  dateInput.addEventListener('change', () => {
-    filterDate = dateInput.value;
-    currentPage = 1;
-    cache = {};
-    loadCommits();
-  });
-  prevBtn.addEventListener('click', () => { if (currentPage > 1) { currentPage--; loadCommits(); } });
-  nextBtn.addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; loadCommits(); } });
-
-  function cacheKey() { return `${currentPage}_${filterDate}`; }
-
-  function timeAgo(dateStr) {
-    const diff = Date.now() - new Date(dateStr);
-    const m = Math.floor(diff / 60000);
-    if (m < 1)   return 'just now';
-    if (m < 60)  return `${m}m ago`;
-    const h = Math.floor(m / 60);
-    if (h < 24)  return `${h}h ago`;
-    const d = Math.floor(h / 24);
-    if (d === 1) return 'yesterday';
-    if (d < 30)  return `${d}d ago`;
-    const mo = Math.floor(d / 30);
-    if (mo < 12) return `${mo}mo ago`;
-    return `${Math.floor(mo / 12)}y ago`;
-  }
-
-  function formatDay(dateStr) {
-    return new Date(dateStr).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  }
-
-  async function loadCommits() {
-    body.innerHTML = '<div class="cm-loading"><span>Loading commits...</span></div>';
-    prevBtn.disabled = true; nextBtn.disabled = true;
-
-    const key = cacheKey();
-    if (cache[key]) { renderFromCache(cache[key]); return; }
-
-    try {
-      let url = `https://api.github.com/repos/${OWNER}/${REPO}/commits?per_page=${PER_PAGE}&page=${currentPage}`;
-      if (filterDate) {
-        const until = new Date(filterDate);
-        until.setDate(until.getDate() + 1);
-        url += `&until=${until.toISOString()}`;
-      }
-      const res = await fetch(url, { headers: { Accept: 'application/vnd.github+json' } });
-      if (!res.ok) throw new Error('API error');
-
-      const link = res.headers.get('Link') || '';
-      const hasNext = link.includes('rel="next"');
-      const lastMatch = link.match(/page=(\d+)>; rel="last"/);
-      totalPages = lastMatch ? parseInt(lastMatch[1]) : (hasNext ? currentPage + 1 : currentPage);
-
-      const data = await res.json();
-      cache[key] = { data, totalPages };
-      renderFromCache(cache[key]);
-    } catch {
-      body.innerHTML = '<div class="cm-empty">Failed to load commits. Check your connection.</div>';
-    }
-  }
-
-  function renderFromCache({ data, totalPages: tp }) {
-    totalPages = tp;
-    if (!data.length) {
-      body.innerHTML = '<div class="cm-empty">No commits found.</div>';
-      updateNav(); return;
-    }
-
-    // Group by day
-    const groups = {};
-    data.forEach(c => {
-      const day = formatDay(c.commit.author.date);
-      if (!groups[day]) groups[day] = [];
-      groups[day].push(c);
-    });
-
-    body.innerHTML = Object.entries(groups).map(([day, commits]) => `
-      <div class="cm-day-label">Commits on ${day}</div>
-      ${commits.map(c => {
-        const login  = c.author?.login || c.commit.author.name;
-        const avatar = c.author?.avatar_url || '';
-        const msg    = c.commit.message.split('\n')[0];
-        const sha    = c.sha.slice(0, 7);
-        const shaUrl = c.html_url;
-        const initials = login.slice(0, 2).toUpperCase();
-        return `
-        <div class="cm-commit">
-          <div class="cm-avatar">
-            ${avatar
-              ? `<img src="${avatar}" alt="${login}" loading="lazy">`
-              : `<div class="cm-avatar-placeholder">${initials}</div>`}
-          </div>
-          <div class="cm-info">
-            <div class="cm-msg" title="${msg}">${msg}</div>
-            <div class="cm-meta">
-              <span class="cm-author">${login}</span>
-              <span class="cm-dot">·</span>
-              <span class="cm-time">${timeAgo(c.commit.author.date)}</span>
-            </div>
-          </div>
-          <a class="cm-sha" href="${shaUrl}" target="_blank" title="View commit">${sha}</a>
-        </div>`;
-      }).join('')}
-    `).join('');
-
-    updateNav();
-  }
-
-  function updateNav() {
-    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-    prevBtn.disabled = currentPage <= 1;
-    nextBtn.disabled = currentPage >= totalPages;
-  }
-})();
-
-/* ── View Project dropdown ── */
-const vpBtn   = document.getElementById('vpBtn');
-const vpPopup = document.getElementById('vpPopup');
-vpBtn.addEventListener('click', e => {
-  e.stopPropagation();
-  vpPopup.classList.toggle('open');
-});
-document.addEventListener('click', () => vpPopup.classList.remove('open'));
 </script>
 </body>
 </html>
