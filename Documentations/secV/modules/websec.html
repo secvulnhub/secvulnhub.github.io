@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>websec - SecV Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+:root {
+  --bg:      #050505;
+  --bg1:     #0d0d0d;
+  --bg2:     #141414;
+  --bg3:     #1c1c1c;
+  --border:  rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.13);
+  --border3: rgba(255,255,255,0.2);
+  --text:    #a8a8a8;
+  --muted:   #505050;
+  --dim:     #252525;
+  --white:   #f0f0f0;
+  --off:     #d8d8d8;
+  --grey:    #787878;
+  --acc:     #88aacc;
+  --mono:    'JetBrains Mono', monospace;
+  --disp:    'Syne', sans-serif;
+  --nav-h:   52px;
+  --transition: 0.16s ease;
+}
+
+body { font-family: var(--mono); background: var(--bg); color: var(--text); line-height: 1.7; overflow-x: hidden; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 2px; }
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--nav-h); display: flex; align-items: center;
+  justify-content: space-between; padding: 0 2.5rem;
+  border-bottom: 1px solid transparent; transition: border-color 0.3s, background 0.3s;
+}
+nav.scrolled { background: rgba(5,5,5,0.96); backdrop-filter: blur(16px); border-color: var(--border); }
+.logo { font-family: var(--disp); font-size: 0.9rem; font-weight: 700; color: var(--off); text-decoration: none; letter-spacing: 0.01em; display: flex; align-items: center; gap: 0.55rem; }
+.logo-mark { width: 6px; height: 6px; background: var(--white); flex-shrink: 0; }
+.nav-links { display: flex; align-items: center; gap: 0.1rem; }
+.nav-link { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-decoration: none; padding: 0.4rem 0.75rem; transition: color var(--transition); }
+.nav-link:hover { color: var(--text); }
+.nav-btn { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); text-decoration: none; padding: 0.4rem 0.9rem; border: 1px solid var(--border2); margin-left: 0.5rem; transition: border-color var(--transition), color var(--transition); }
+.nav-btn:hover { border-color: var(--white); color: var(--white); }
+.nav-btn.primary { background: var(--white); border-color: var(--white); color: var(--bg); }
+.nav-btn.primary:hover { background: transparent; color: var(--white); }
+.nav-burger { display: none; background: none; border: 1px solid var(--border2); padding: 0.4rem 0.6rem; cursor: pointer; border-radius: 3px; flex-direction: column; gap: 4px; }
+.nav-burger span { display: block; width: 18px; height: 1px; background: var(--text); transition: transform var(--transition), opacity var(--transition); }
+body.nav-open .nav-burger span:nth-child(1) { transform: rotate(45deg) translate(3.5px,3.5px); }
+body.nav-open .nav-burger span:nth-child(2) { opacity: 0; }
+body.nav-open .nav-burger span:nth-child(3) { transform: rotate(-45deg) translate(3.5px,-3.5px); }
+
+.page { max-width: 1080px; margin: 0 auto; padding: 0 2.5rem; }
+.doc-header { padding-top: calc(var(--nav-h) + 3.5rem); padding-bottom: 3.5rem; border-bottom: 1px solid var(--border); animation: rise 0.45s ease both; }
+@keyframes rise { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+
+.breadcrumb { font-size: 0.56rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.75rem; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.breadcrumb a { color: var(--muted); text-decoration: none; transition: color var(--transition); }
+.breadcrumb a:hover { color: var(--text); }
+.breadcrumb span { color: var(--dim); }
+
+.module-meta { display: flex; align-items: flex-start; justify-content: space-between; gap: 2.5rem; flex-wrap: wrap; }
+.module-title { font-family: var(--disp); font-size: clamp(2.8rem, 6vw, 4.8rem); font-weight: 800; letter-spacing: -0.04em; color: var(--white); line-height: 0.95; margin-bottom: 0.85rem; }
+.module-title span { color: var(--grey); font-weight: 400; }
+.module-sub { font-size: 0.84rem; color: var(--muted); line-height: 1.85; max-width: 500px; margin-bottom: 1.5rem; }
+.module-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.tag { font-size: 0.5rem; letter-spacing: 0.14em; text-transform: uppercase; padding: 0.18rem 0.55rem; border: 1px solid var(--border2); color: var(--muted); }
+.tag.hi { color: var(--white); border-color: rgba(255,255,255,0.28); }
+.module-stats { display: flex; flex-direction: column; gap: 1rem; min-width: 210px; }
+.stat-row { display: flex; justify-content: space-between; align-items: center; padding: 0.55rem 0; border-bottom: 1px solid var(--border); font-size: 0.68rem; gap: 2rem; }
+.stat-row:last-child { border-bottom: none; }
+.stat-lbl { letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.stat-v { color: var(--white); font-weight: 500; }
+
+.doc-body { display: grid; grid-template-columns: 200px 1fr; gap: 4rem; padding: 3.5rem 0; align-items: start; }
+.sidebar { position: sticky; top: calc(var(--nav-h) + 1rem); }
+.sidebar-nav { list-style: none; }
+.sidebar-nav li { margin-bottom: 0.05rem; }
+.sidebar-nav a { display: block; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-decoration: none; padding: 0.4rem 0; border-left: 2px solid transparent; padding-left: 0.75rem; transition: color var(--transition), border-color var(--transition); }
+.sidebar-nav a:hover { color: var(--text); border-color: var(--border2); }
+.sidebar-nav a.active { color: var(--white); border-color: var(--white); }
+.sidebar-sep { font-size: 0.48rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); padding: 0.7rem 0 0.25rem 0.75rem; margin-top: 0.5rem; }
+
+.content section { padding-bottom: 3.5rem; border-bottom: 1px solid var(--border); margin-bottom: 3.5rem; }
+.content section:last-child { border-bottom: none; }
+.sec-label { font-size: 0.52rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--grey); margin-bottom: 0.55rem; }
+
+h2 { font-family: var(--disp); font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 800; letter-spacing: -0.03em; color: var(--white); margin-bottom: 1.25rem; line-height: 1.05; }
+h3 { font-family: var(--disp); font-size: 1.05rem; font-weight: 700; color: var(--off); margin: 2rem 0 0.8rem; letter-spacing: -0.01em; }
+p { font-size: 0.82rem; color: var(--text); line-height: 1.85; margin-bottom: 0.9rem; }
+p:last-child { margin-bottom: 0; }
+a { color: var(--grey); }
+a:hover { color: var(--white); }
+
+pre { background: var(--bg1); border: 1px solid var(--border); border-left: 3px solid var(--border3); padding: 1.1rem 1.35rem; overflow-x: auto; margin: 1rem 0; font-size: 0.76rem; line-height: 1.75; border-radius: 0 2px 2px 0; }
+code { font-family: var(--mono); font-size: 0.76rem; background: var(--bg1); border: 1px solid var(--border); padding: 0.08rem 0.35rem; color: var(--off); }
+pre code { background: none; border: none; padding: 0; font-size: inherit; }
+.comment { color: var(--muted); font-style: italic; }
+.kw { color: var(--white); }
+.str { color: var(--grey); }
+
+.table-wrap { overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 0.74rem; min-width: 420px; }
+th { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey); text-align: left; padding: 0.6rem 1rem; border-bottom: 1px solid var(--border2); background: var(--bg1); white-space: nowrap; }
+td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; line-height: 1.65; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg1); }
+td:first-child { color: var(--off); font-weight: 500; white-space: nowrap; }
+td code { font-size: 0.7rem; }
+
+.feat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); margin: 1.25rem 0; }
+.feat-cell { background: var(--bg); padding: 1.1rem; transition: background var(--transition); }
+.feat-cell:hover { background: var(--bg1); }
+.feat-icon { font-size: 0.54rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey); margin-bottom: 0.4rem; }
+.feat-name { font-family: var(--disp); font-size: 0.88rem; font-weight: 700; color: var(--white); margin-bottom: 0.3rem; }
+.feat-desc { font-size: 0.72rem; color: var(--muted); line-height: 1.6; }
+
+.op-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); margin: 1.25rem 0; }
+.op-card { background: var(--bg); padding: 1.2rem; transition: background var(--transition); }
+.op-card:hover { background: var(--bg1); }
+.op-name { font-family: var(--disp); font-size: 0.92rem; font-weight: 700; color: var(--white); margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.op-badge { font-size: 0.44rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.1rem 0.38rem; border: 1px solid var(--border2); color: var(--muted); }
+.op-desc { font-size: 0.7rem; color: var(--muted); line-height: 1.6; }
+
+.tier-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin: 1.25rem 0; }
+.tier-card { background: var(--bg); padding: 1.2rem; }
+.tier-label { font-size: 0.52rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey); margin-bottom: 0.5rem; }
+.tier-name { font-family: var(--disp); font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.5rem; }
+.tier-desc { font-size: 0.7rem; color: var(--muted); line-height: 1.6; }
+
+.callout { display: flex; gap: 0.75rem; padding: 0.95rem 1.15rem; border: 1px solid var(--border2); border-left: 3px solid var(--border2); margin: 1.25rem 0; font-size: 0.78rem; line-height: 1.7; color: var(--text); border-radius: 0 2px 2px 0; }
+.callout.warn { border-left-color: var(--grey); }
+.callout.crit { border-left-color: var(--white); background: rgba(255,255,255,0.02); }
+.callout-mark { font-size: 0.64rem; color: var(--grey); flex-shrink: 0; margin-top: 0.15rem; }
+
+.author-card { display: flex; gap: 1.75rem; align-items: flex-start; padding: 1.75rem; border: 1px solid var(--border2); background: var(--bg1); margin-top: 1.5rem; }
+.author-avatar { width: 52px; height: 52px; background: var(--bg3); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-family: var(--disp); font-size: 1.2rem; font-weight: 800; color: var(--white); flex-shrink: 0; }
+.author-name { font-family: var(--disp); font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.2rem; }
+.author-role { font-size: 0.56rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--grey); margin-bottom: 0.75rem; }
+.author-bio { font-size: 0.76rem; color: var(--muted); line-height: 1.75; margin-bottom: 0.85rem; }
+.author-links { display: flex; gap: 1rem; flex-wrap: wrap; }
+.author-link { font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--grey); text-decoration: none; display: flex; align-items: center; gap: 0.3rem; transition: color var(--transition); }
+.author-link:hover { color: var(--white); }
+
+footer { border-top: 1px solid var(--border); margin-top: 2rem; }
+.foot-inner { max-width: 1080px; margin: 0 auto; padding: 1.5rem 2.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.foot-brand { font-family: var(--disp); font-size: 0.88rem; font-weight: 700; color: var(--muted); text-decoration: none; }
+.foot-links { display: flex; gap: 1.75rem; }
+.foot-link { font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color var(--transition); }
+.foot-link:hover { color: var(--text); }
+.foot-note { font-size: 0.52rem; color: var(--dim); letter-spacing: 0.06em; }
+
+@media (max-width: 860px) {
+  nav { padding: 0 1.5rem; }
+  .nav-links { display: none; }
+  .nav-burger { display: flex; }
+  body.nav-open .nav-links { display: flex; position: fixed; top: var(--nav-h); left: 0; right: 0; background: var(--bg); border-bottom: 1px solid var(--border); flex-direction: column; padding: 1rem 1.5rem 1.5rem; gap: 0.25rem; align-items: flex-start; z-index: 99; }
+  .page { padding: 0 1.5rem; }
+  .doc-body { grid-template-columns: 1fr; gap: 0; }
+  .sidebar { display: none; }
+  .module-title { font-size: 2.6rem; }
+  .author-card { flex-direction: column; gap: 1rem; }
+  .module-stats { min-width: unset; width: 100%; }
+  .tier-grid { grid-template-columns: 1fr; }
+  pre { font-size: 0.7rem; }
+}
+@media (max-width: 540px) {
+  .feat-grid, .op-grid { grid-template-columns: 1fr; }
+  .page { padding: 0 1rem; }
+  pre { padding: 0.85rem 1rem; }
+  .doc-header { padding-top: calc(var(--nav-h) + 2rem); }
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a class="logo" href="../index.html">
+    <span class="logo-mark"></span>
+    SecVulnHub
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="../index.html">Docs</a>
+    <a class="nav-link" href="netrecon.html">netrecon</a>
+    <a class="nav-link" href="android_pentest.html">android</a>
+    <a class="nav-link" href="wifi_monitor.html">wifi_monitor</a>
+    <a class="nav-link" href="mac_spoof.html">mac_spoof</a>
+    <a class="nav-btn" href="https://github.com/secvulnhub/SecV" target="_blank">GitHub</a>
+  </div>
+  <button class="nav-burger" id="burger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="page">
+
+  <div class="doc-header">
+    <div class="breadcrumb">
+      <a href="../index.html">SecVulnHub</a>
+      <span>/</span>
+      <a href="../index.html#modules">Modules</a>
+      <span>/</span>
+      websec
+    </div>
+    <div class="module-meta">
+      <div>
+        <h1 class="module-title">websec<span>.</span></h1>
+        <p class="module-sub">Web security research and bug bounty tool. OSINT, header auditing, CORS testing, cookie analysis, directory discovery, SQLi, XSS, spidering, Google dorks, WAF detection, and built-in OWASP knowledge base.</p>
+        <div class="module-tags">
+          <span class="tag hi">secV Module</span>
+          <span class="tag">Web Security</span>
+          <span class="tag">Bug Bounty</span>
+          <span class="tag">OSINT</span>
+          <span class="tag">OWASP</span>
+          <span class="tag">Python 3</span>
+          <span class="tag">v1.0.0</span>
+        </div>
+      </div>
+      <div class="module-stats">
+        <div class="stat-row"><span class="stat-lbl">Category</span><span class="stat-v">Web · Security Research</span></div>
+        <div class="stat-row"><span class="stat-lbl">Language</span><span class="stat-v">Python 3</span></div>
+        <div class="stat-row"><span class="stat-lbl">Location</span><span class="stat-v">tools/web/websec.py</span></div>
+        <div class="stat-row"><span class="stat-lbl">Author</span><span class="stat-v">dezthejackal</span></div>
+        <div class="stat-row"><span class="stat-lbl">Privileges</span><span class="stat-v">None required</span></div>
+        <div class="stat-row"><span class="stat-lbl">License</span><span class="stat-v">MIT</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-body">
+
+    <aside class="sidebar">
+      <ul class="sidebar-nav">
+        <li><div class="sidebar-sep">Overview</div></li>
+        <li><a href="#overview" class="active">What it does</a></li>
+        <li><a href="#quickstart">Quick Start</a></li>
+        <li><div class="sidebar-sep">Reference</div></li>
+        <li><a href="#operations">Operations</a></li>
+        <li><a href="#params">Parameters</a></li>
+        <li><a href="#tiers">Install Tiers</a></li>
+        <li><div class="sidebar-sep">More</div></li>
+        <li><a href="#examples">Examples</a></li>
+        <li><a href="#notes">Notes</a></li>
+        <li><a href="#author">Author</a></li>
+      </ul>
+    </aside>
+
+    <div class="content">
+
+      <!-- Overview -->
+      <section id="overview">
+        <p class="sec-label">Overview</p>
+        <h2>What websec does</h2>
+        <p>websec is a terminal-based web security research tool for bug bounty hunters and security researchers. It covers the full recon-to-exploitation workflow: passive OSINT, security posture auditing, misconfiguration testing, and lightweight vulnerability probing. Every operation prints a <code>[LEARN]</code> section explaining what the check is, why it matters, and where to go deeper.</p>
+        <p>The tool works out of the box with Python stdlib only. Optional dependencies (<code>requests</code>, <code>beautifulsoup4</code>, <code>dnspython</code>) unlock additional capabilities without breaking anything if absent.</p>
+
+        <div class="feat-grid">
+          <div class="feat-cell">
+            <div class="feat-icon">OSINT</div>
+            <div class="feat-name">Web Recon</div>
+            <div class="feat-desc">DNS records, WHOIS, SSL cert transparency (crt.sh), robots.txt, Wayback Machine, and tech stack fingerprinting.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Headers</div>
+            <div class="feat-name">Security Headers</div>
+            <div class="feat-desc">Audit HSTS, Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, and server version disclosure.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">CORS</div>
+            <div class="feat-name">CORS Testing</div>
+            <div class="feat-desc">Detect wildcard origins, reflected Origin headers, and credential-enabled CORS misconfigurations that enable cross-origin attacks.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Cookies</div>
+            <div class="feat-name">Cookie Audit</div>
+            <div class="feat-desc">Check Secure, HttpOnly, and SameSite flags on all cookies. Flags session cookies missing protection against theft and CSRF.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Discovery</div>
+            <div class="feat-name">Directory Brute</div>
+            <div class="feat-desc">100+ built-in paths covering admin panels, config files, backups, and exposed version files. Custom wordlist support.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">SQLi</div>
+            <div class="feat-name">SQL Injection</div>
+            <div class="feat-desc">Error-based detection across 15+ database error patterns (MySQL, PostgreSQL, MSSQL, Oracle, SQLite). Safe payloads only.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">XSS</div>
+            <div class="feat-name">Reflected XSS</div>
+            <div class="feat-desc">Test input parameters for reflection without HTML encoding. Detects contexts where a payload would execute.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Spider</div>
+            <div class="feat-name">Web Crawler</div>
+            <div class="feat-desc">Crawl the site up to a configurable page limit. Maps URLs, forms, JS file references, and external links.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">WAF</div>
+            <div class="feat-name">WAF Fingerprint</div>
+            <div class="feat-desc">Detect Cloudflare, AWS WAF, ModSecurity, Akamai, Imperva, F5 BigIP, and Sucuri from response headers and body patterns.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Start -->
+      <section id="quickstart">
+        <p class="sec-label">Quick Start</p>
+        <h2>Running websec</h2>
+
+        <pre><code><span class="comment"># Start with recon - passive, non-intrusive</span>
+secV ❯ <span class="kw">use</span> websec
+secV (websec) ❯ <span class="kw">set</span> operation recon
+secV (websec) ❯ <span class="kw">run</span> https://example.com
+
+<span class="comment"># Security headers audit</span>
+secV (websec) ❯ <span class="kw">set</span> operation headers
+secV (websec) ❯ <span class="kw">run</span> https://example.com
+
+<span class="comment"># SQLi on a parameterized URL</span>
+secV (websec) ❯ <span class="kw">set</span> operation sqli
+secV (websec) ❯ <span class="kw">set</span> test_url https://example.com/search?q=test
+secV (websec) ❯ <span class="kw">run</span> https://example.com
+
+<span class="comment"># Full assessment - all non-intrusive checks</span>
+secV (websec) ❯ <span class="kw">set</span> operation full
+secV (websec) ❯ <span class="kw">run</span> https://example.com</code></pre>
+
+        <div class="callout crit">
+          <span class="callout-mark">!</span>
+          <span>Authorization required. Only test systems you own or have explicit written permission to test. Bug bounty hunters must read and respect scope before running any checks.</span>
+        </div>
+      </section>
+
+      <!-- Operations -->
+      <section id="operations">
+        <p class="sec-label">Reference</p>
+        <h2>Operations</h2>
+        <p>Set via <code>set operation &lt;name&gt;</code>. Default is <code>recon</code>.</p>
+
+        <div class="op-grid">
+          <div class="op-card">
+            <div class="op-name">recon <span class="op-badge">default</span></div>
+            <div class="op-desc">Full passive OSINT: DNS A/MX/NS/TXT records, WHOIS registrant data, SSL certificate inspection (crt.sh subdomains), robots.txt, Wayback Machine snapshots, and technology stack fingerprinting.</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">headers</div>
+            <div class="op-desc">Audit HTTP security headers. Checks HSTS, Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy. Flags server version disclosure via Server and X-Powered-By headers.</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">cors</div>
+            <div class="op-desc">Test for CORS misconfigurations by probing with a null origin, attacker origin, and subdomain origin. Detects wildcard <code>Access-Control-Allow-Origin</code>, reflected origins, and <code>Access-Control-Allow-Credentials: true</code> with unsafe origins.</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">cookies</div>
+            <div class="op-desc">Parse all Set-Cookie headers and check each for Secure flag (sent only over HTTPS), HttpOnly flag (no JS access), and SameSite attribute (CSRF protection). Reports cookies missing each flag with severity context.</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">dirs <span class="op-badge">wordlist</span></div>
+            <div class="op-desc">Brute-force paths using 100+ built-in entries covering <code>.env</code>, <code>.git</code>, admin panels, backup files, config endpoints, and debug routes. Supply a custom wordlist via <code>wordlist_file</code> for larger sweeps.</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">sqli <span class="op-badge">test_url</span></div>
+            <div class="op-desc">Error-based SQL injection detection. Tests each query parameter with payloads for 15+ database error patterns (MySQL, PostgreSQL, MSSQL, Oracle, SQLite, DB2). Uses safe detection-only payloads - no data modification.</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">xss <span class="op-badge">test_url</span></div>
+            <div class="op-desc">Reflected XSS detection. Tests query parameters for unencoded reflection of a probe string. Detects HTML context injection and identifies parameters where a payload would execute in the browser.</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">spider <span class="op-badge">max_pages</span></div>
+            <div class="op-desc">Crawl the site breadth-first up to <code>max_pages</code> (default 50). Collects all internal URLs, form actions, JS file references, and external links. Stays within the same domain - no cross-origin crawling.</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">dork</div>
+            <div class="op-desc">Generate 18+ Google dork queries for the target domain: exposed configs, login pages, sensitive file types, cached content, and related subdomains. Also links to Shodan, crt.sh, Wayback Machine, and other OSINT resources.</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">ssl</div>
+            <div class="op-desc">Deep SSL/TLS analysis: negotiated protocol version, cipher suite, certificate subject/issuer/SANs, expiry, and whether the site enforces HTTPS redirect. Flags TLS 1.0/1.1 and weak cipher usage.</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">waf</div>
+            <div class="op-desc">Fingerprint WAF presence and type from response headers (<code>cf-ray</code>, <code>x-amzn-requestid</code>, <code>x-sucuri-id</code>, etc.) and body patterns. Detects Cloudflare, AWS WAF, ModSecurity, Akamai, Imperva, F5 BigIP, and Sucuri.</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">full</div>
+            <div class="op-desc">Run all non-intrusive operations: recon + headers + cors + cookies + dirs + ssl + waf in one pass. Output is combined into a single findings report with severity-sorted results.</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">vulnlib</div>
+            <div class="op-desc">Browse the built-in OWASP vulnerability knowledge base. Covers OWASP Top 10 entries with descriptions, impact, detection approach, fix recommendations, and links to PortSwigger Web Security Academy and OWASP resources.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Parameters -->
+      <section id="params">
+        <p class="sec-label">Reference</p>
+        <h2>Parameters</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>recon</td>
+              <td>Operation to run. See Operations section above.</td>
+            </tr>
+            <tr>
+              <td><code>test_url</code></td>
+              <td>string</td>
+              <td>—</td>
+              <td>Full URL including query parameters for SQLi and XSS testing. E.g. <code>https://example.com/search?q=test</code>. Required for <code>sqli</code> and <code>xss</code> operations.</td>
+            </tr>
+            <tr>
+              <td><code>threads</code></td>
+              <td>integer</td>
+              <td>10</td>
+              <td>Concurrent threads for directory discovery. Range 1-50. Higher values are faster but more detectable.</td>
+            </tr>
+            <tr>
+              <td><code>timeout</code></td>
+              <td>number</td>
+              <td>10.0</td>
+              <td>HTTP request timeout in seconds. Range 3.0-30.0.</td>
+            </tr>
+            <tr>
+              <td><code>max_pages</code></td>
+              <td>integer</td>
+              <td>50</td>
+              <td>Maximum pages to crawl in the <code>spider</code> operation. Range 1-500.</td>
+            </tr>
+            <tr>
+              <td><code>wordlist_file</code></td>
+              <td>string</td>
+              <td>—</td>
+              <td>Path to a custom wordlist file for directory discovery. One path per line. Falls back to the built-in list if not set.</td>
+            </tr>
+            <tr>
+              <td><code>verbose</code></td>
+              <td>boolean</td>
+              <td>false</td>
+              <td>Enable verbose output. Shows all requests, including negative results, during discovery operations.</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </section>
+
+      <!-- Install Tiers -->
+      <section id="tiers">
+        <p class="sec-label">Reference</p>
+        <h2>Installation Tiers</h2>
+        <p>websec degrades gracefully. Core operations work with Python stdlib only. Install optional packages to unlock the full feature set.</p>
+
+        <div class="tier-grid">
+          <div class="tier-card">
+            <div class="tier-label">Basic</div>
+            <div class="tier-name">stdlib only</div>
+            <div class="tier-desc">DNS lookup, WHOIS, SSL inspection, security headers, robots.txt, directory brute-force, WAF detection, Google dorks, vulnlib. No install required.</div>
+          </div>
+          <div class="tier-card">
+            <div class="tier-label">Standard</div>
+            <div class="tier-name">+ requests</div>
+            <div class="tier-desc">Full HTTP session handling, CORS testing, cookie analysis, SQLi detection, XSS detection, WAF fingerprinting. <code>pip3 install requests</code></div>
+          </div>
+          <div class="tier-card">
+            <div class="tier-label">Full</div>
+            <div class="tier-name">+ beautifulsoup4</div>
+            <div class="tier-desc">HTML parsing for spider/form detection, JS file enumeration, link extraction, XSS in form inputs. <code>pip3 install beautifulsoup4</code></div>
+          </div>
+        </div>
+
+        <pre><code><span class="comment"># Full install</span>
+pip3 install requests beautifulsoup4 dnspython</code></pre>
+      </section>
+
+      <!-- Examples -->
+      <section id="examples">
+        <p class="sec-label">Examples</p>
+        <h2>Usage Examples</h2>
+
+        <h3>OSINT - passive recon only</h3>
+        <pre><code>secV (websec) ❯ <span class="kw">set</span> operation recon
+secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
+
+        <h3>Directory discovery with SecLists</h3>
+        <pre><code>secV (websec) ❯ <span class="kw">set</span> operation dirs
+secV (websec) ❯ <span class="kw">set</span> threads 20
+secV (websec) ❯ <span class="kw">set</span> wordlist_file /usr/share/seclists/Discovery/Web-Content/common.txt
+secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
+
+        <h3>SQLi on a parameterized endpoint</h3>
+        <pre><code>secV (websec) ❯ <span class="kw">set</span> operation sqli
+secV (websec) ❯ <span class="kw">set</span> test_url https://target.com/product?id=1
+secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
+
+        <h3>CORS misconfiguration test</h3>
+        <pre><code>secV (websec) ❯ <span class="kw">set</span> operation cors
+secV (websec) ❯ <span class="kw">run</span> https://api.target.com</code></pre>
+
+        <h3>Generate dorks without touching the server</h3>
+        <pre><code>secV (websec) ❯ <span class="kw">set</span> operation dork
+secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
+
+        <h3>Crawl and map the site</h3>
+        <pre><code>secV (websec) ❯ <span class="kw">set</span> operation spider
+secV (websec) ❯ <span class="kw">set</span> max_pages 100
+secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
+
+        <h3>Learn about a vulnerability before testing it</h3>
+        <pre><code>secV (websec) ❯ <span class="kw">set</span> operation vulnlib
+secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
+
+        <h3>Full assessment</h3>
+        <pre><code>secV (websec) ❯ <span class="kw">set</span> operation full
+secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
+      </section>
+
+      <!-- Notes -->
+      <section id="notes">
+        <p class="sec-label">Notes</p>
+        <h2>Notes</h2>
+
+        <div class="callout crit">
+          <span class="callout-mark">!</span>
+          <span>Authorization required. Unauthorized testing may violate the CFAA, Computer Misuse Act, and equivalent laws globally. Always get explicit written permission. For bug bounty work, read the program scope before running any checks.</span>
+        </div>
+
+        <p>SQLi and XSS tests use safe detection payloads only. They send crafted strings to detect error messages or unencoded reflection - no data is modified, deleted, or exfiltrated. Time-based blind SQLi is not included.</p>
+        <p>The <code>dork</code> operation generates query strings for manual use in Google - it does not interact with Google's servers. Copy the output and run searches manually.</p>
+        <p>For deep SSL analysis, pair with <a href="https://www.ssllabs.com/ssltest/" target="_blank">ssllabs.com/ssltest</a>. For manual testing after automated checks, Burp Suite Community (free) provides a proxy and repeater for inspecting requests and responses directly.</p>
+        <p>The <code>[LEARN]</code> context printed by each operation references <a href="https://portswigger.net/web-security" target="_blank">PortSwigger Web Security Academy</a> and the <a href="https://owasp.org/www-project-top-ten/" target="_blank">OWASP Top 10</a> for deeper reading on each vulnerability class.</p>
+      </section>
+
+      <!-- Author -->
+      <section id="author">
+        <p class="sec-label">Author</p>
+        <h2>About</h2>
+
+        <div class="author-card">
+          <div class="author-avatar">dj</div>
+          <div>
+            <div class="author-name">dezthejackal</div>
+            <div class="author-role">SecV Contributor · Web Security</div>
+            <div class="author-bio">Wrote websec for secV. Focused on web security research, OSINT, and bug bounty tooling.</div>
+            <div class="author-links">
+              <a class="author-link" href="https://github.com/secvulnhub/SecV" target="_blank">GitHub</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="foot-inner">
+    <a class="foot-brand" href="../index.html">secV docs</a>
+    <div class="foot-links">
+      <a class="foot-link" href="android_pentest.html">android_pentest</a>
+      <a class="foot-link" href="netrecon.html">netrecon</a>
+      <a class="foot-link" href="wifi_monitor.html">wifi_monitor</a>
+      <a class="foot-link" href="https://github.com/secvulnhub/SecV" target="_blank">GitHub</a>
+    </div>
+    <span class="foot-note">secV by 0xb0rn3 · MIT License</span>
+  </div>
+</footer>
+
+<script>
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 10), { passive: true });
+document.getElementById('burger').addEventListener('click', () => document.body.classList.toggle('nav-open'));
+
+const links = document.querySelectorAll('.sidebar-nav a');
+const sections = document.querySelectorAll('.content section[id]');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+    }
+  });
+}, { rootMargin: '-20% 0px -60% 0px' });
+sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
