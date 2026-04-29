@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>netrecon — SecV Documentation</title>
+<title>netrecon - SecV Documentation</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
@@ -621,7 +621,7 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
     <div class="module-meta">
       <div>
         <h1 class="module-title">netrecon<span>.</span></h1>
-        <p class="module-sub">Concurrent multi-engine network reconnaissance. nmap, masscan, rustscan, arp-scan, Shodan, gobuster, nikto, whatweb, searchsploit — all in one pass. Built-in IoT/camera/ICS device detection and full-stack firewall evasion.</p>
+        <p class="module-sub">Concurrent multi-engine network reconnaissance. nmap, masscan, rustscan, arp-scan, Shodan, gobuster, nikto, whatweb, searchsploit - all in one pass. Built-in IoT/camera/ICS device detection and full-stack firewall evasion.</p>
         <div class="module-tags">
           <span class="tag hi">secV Module</span>
           <span class="tag">Network Recon</span>
@@ -674,7 +674,7 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
       <section id="overview">
         <p class="sec-label">Overview</p>
         <h2>What netrecon does</h2>
-        <p>netrecon is a concurrent multi-engine network reconnaissance module inside SecV. It runs nmap, masscan, rustscan, arp-scan, Shodan, gobuster, ffuf, whatweb, and searchsploit all in a single scan pass, building a full profile for every host discovered. Every engine runs in parallel — scan time scales with host count, not tool count.</p>
+        <p>netrecon is a concurrent multi-engine network reconnaissance module inside SecV. It runs nmap, masscan, rustscan, arp-scan, Shodan, gobuster, ffuf, whatweb, and searchsploit all in a single scan pass, building a full profile for every host discovered. Every engine runs in parallel - scan time scales with host count, not tool count.</p>
         <p>On top of standard port scanning, the module adds automatic device category classification for IoT hardware, IP cameras, routers, NAS devices, ICS/SCADA systems, and Flock Safety LPR surveillance cameras. Each category triggers the relevant protocol probes, CVE correlations, and vulnerability flags automatically.</p>
         <div class="feat-grid">
           <div class="feat-cell">
@@ -719,7 +719,7 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
 echo '{"target": "192.168.1.1", "params": {"mode": "normal"}}' \
   | python3 netrecon.py | jq .
 
-<span class="comment"># Full network sweep — deep mode with output directory</span>
+<span class="comment"># Full network sweep - deep mode with output directory</span>
 echo '{
   "target": "192.168.1.0/24",
   "params": {
@@ -731,7 +731,7 @@ echo '{
   }
 }' | python3 netrecon.py
 
-<span class="comment"># IoT sweep — MQTT, RTSP, camera, ICS protocols</span>
+<span class="comment"># IoT sweep - MQTT, RTSP, camera, ICS protocols</span>
 echo '{"target": "10.0.0.0/24", "params": {"ports": "device"}}' \
   | python3 netrecon.py | jq '.data.hosts[] | {ip, device_category}'
 
@@ -755,7 +755,7 @@ echo '{
       <section id="modes">
         <p class="sec-label">Reference</p>
         <h2>Scan modes</h2>
-        <p>The <code>mode</code> parameter controls the overall behaviour — timeouts, rate limits, which scripts run, and whether evasion flags are active.</p>
+        <p>The <code>mode</code> parameter controls the overall behaviour - timeouts, rate limits, which scripts run, and whether evasion flags are active.</p>
         <div class="mode-grid">
           <div class="mode-card">
             <div class="mode-key">quick <span class="mode-badge">fast</span></div>
@@ -789,7 +789,7 @@ echo '{
           <table>
             <thead><tr><th>Parameter</th><th>Values</th><th>Default</th><th>Description</th></tr></thead>
             <tbody>
-              <tr><td>mode</td><td>quick | normal | deep | stealth | evasion</td><td>normal</td><td>Scan profile — controls speed, depth, and evasion posture</td></tr>
+              <tr><td>mode</td><td>quick | normal | deep | stealth | evasion</td><td>normal</td><td>Scan profile - controls speed, depth, and evasion posture</td></tr>
               <tr><td>ports</td><td>preset name or custom</td><td>top-1000</td><td>Ports to scan. See Port Presets section.</td></tr>
               <tr><td>threads</td><td>integer</td><td>20</td><td>Max concurrent host threads</td></tr>
               <tr><td>rate</td><td>integer</td><td>1000</td><td>Masscan packets/sec</td></tr>
@@ -797,7 +797,7 @@ echo '{
               <tr><td>os_detection</td><td>true | false</td><td>false</td><td>Enable OS fingerprinting via nmap -O</td></tr>
               <tr><td>vuln_scripts</td><td>true | false</td><td>false</td><td>Run nmap default,vuln NSE scripts</td></tr>
               <tr><td>nse_profile</td><td>string (e.g. vuln,exploit,auth)</td><td>""</td><td>Custom NSE script list</td></tr>
-              <tr><td>passive_only</td><td>true | false</td><td>false</td><td>DNS/WHOIS/Shodan only — no active scanning</td></tr>
+              <tr><td>passive_only</td><td>true | false</td><td>false</td><td>DNS/WHOIS/Shodan only - no active scanning</td></tr>
               <tr><td>interface</td><td>string (e.g. eth0)</td><td>""</td><td>NIC for ARP scan</td></tr>
               <tr><td>exclude</td><td>comma-separated IPs</td><td>""</td><td>IPs to skip entirely</td></tr>
               <tr><td>shodan_key</td><td>string</td><td>""</td><td>Shodan API key for external intel</td></tr>
@@ -812,7 +812,7 @@ echo '{
             <tbody>
               <tr><td>evasion</td><td>true | false</td><td>false</td><td>Enable all IDS/FW bypass flags on any mode</td></tr>
               <tr><td>decoys</td><td>integer</td><td>5</td><td>Number of random decoy IPs in nmap -D RND:N</td></tr>
-              <tr><td>mtu</td><td>integer (8, 16, 24…)</td><td>8</td><td>Packet fragment MTU — smaller = harder to reassemble</td></tr>
+              <tr><td>mtu</td><td>integer (8, 16, 24…)</td><td>8</td><td>Packet fragment MTU - smaller = harder to reassemble</td></tr>
               <tr><td>source_port</td><td>integer</td><td>53</td><td>Spoof source port (53=DNS, 80=HTTP, 443=HTTPS)</td></tr>
               <tr><td>data_length</td><td>integer (bytes)</td><td>32</td><td>Append random bytes to packets to confuse signatures</td></tr>
               <tr><td>proxychains</td><td>true | false</td><td>false</td><td>Wrap nmap/gobuster through proxychains4</td></tr>
@@ -841,7 +841,7 @@ echo '{
           <table>
             <thead><tr><th>Preset</th><th>Ports covered</th><th>Use case</th></tr></thead>
             <tbody>
-              <tr><td>quick</td><td>21,22,23,25,53,80,443,445,3389,62078</td><td>Fast triage — critical ports only</td></tr>
+              <tr><td>quick</td><td>21,22,23,25,53,80,443,445,3389,62078</td><td>Fast triage - critical ports only</td></tr>
               <tr><td>top-20</td><td>Top 20 common service ports</td><td>Rapid sweep of standard services</td></tr>
               <tr><td>top-100</td><td>–top-ports 100</td><td>Broader quick sweep</td></tr>
               <tr><td>top-1000</td><td>–top-ports 1000 (default)</td><td>Standard full scan</td></tr>
@@ -850,12 +850,12 @@ echo '{
               <tr><td>common</td><td>All standard service ports including auth, mail, SMB</td><td>Broad enterprise sweep</td></tr>
               <tr><td>ios</td><td>62078,5000,7000,548,3689,49152,88,5353</td><td>Apple iOS/macOS device discovery</td></tr>
               <tr><td>iot</td><td>80,443,1883,8883,5683,5353,8080,8443,5000</td><td>MQTT, MQTT-TLS, CoAP, mDNS IoT sweep</td></tr>
-              <tr><td>camera</td><td>80,443,554,8000,8080,8443,37777,34567,3702</td><td>IP cameras — RTSP, Hikvision, Dahua, ONVIF</td></tr>
-              <tr><td>router</td><td>80,443,8080,8443,22,23,7547,8291</td><td>Routers — TR-069, MikroTik Winbox, management</td></tr>
-              <tr><td>nas</td><td>80,443,5000,5001,9000,445,139,22</td><td>NAS — Synology DSM, SMB, management</td></tr>
-              <tr><td>ics</td><td>80,443,502,20000,102,47808,1911,161,22</td><td>ICS/SCADA — Modbus, DNP3, S7, BACnet, Niagara Fox</td></tr>
+              <tr><td>camera</td><td>80,443,554,8000,8080,8443,37777,34567,3702</td><td>IP cameras - RTSP, Hikvision, Dahua, ONVIF</td></tr>
+              <tr><td>router</td><td>80,443,8080,8443,22,23,7547,8291</td><td>Routers - TR-069, MikroTik Winbox, management</td></tr>
+              <tr><td>nas</td><td>80,443,5000,5001,9000,445,139,22</td><td>NAS - Synology DSM, SMB, management</td></tr>
+              <tr><td>ics</td><td>80,443,502,20000,102,47808,1911,161,22</td><td>ICS/SCADA - Modbus, DNP3, S7, BACnet, Niagara Fox</td></tr>
               <tr><td>device</td><td>All IoT + camera + router + NAS + ICS ports combined</td><td>Full embedded device sweep</td></tr>
-              <tr><td>all</td><td>1–65535</td><td>Complete port space — use with care on large nets</td></tr>
+              <tr><td>all</td><td>1–65535</td><td>Complete port space - use with care on large nets</td></tr>
             </tbody>
           </table>
         </div>
@@ -864,7 +864,7 @@ echo '{
       <!-- Device Detection -->
       <section id="devices">
         <h2>Device detection &amp; IoT profiling</h2>
-        <p>netrecon automatically classifies each host into a device category based on open ports, HTTP server headers, page content, favicon hashes, and active protocol probes. No manual configuration required — it runs on every scan.</p>
+        <p>netrecon automatically classifies each host into a device category based on open ports, HTTP server headers, page content, favicon hashes, and active protocol probes. No manual configuration required - it runs on every scan.</p>
         <div class="dev-cat-grid">
           <div class="dev-cat">
             <div class="dev-cat-label">Category</div>
@@ -901,9 +901,9 @@ echo '{
         <p>When a host is identified as a camera, netrecon fetches <code>/favicon.ico</code> from each web port and computes an mmh3 hash against 17 known camera vendor hashes. Identified models include: Axis, Hikvision, D-Link, Panasonic, Foscam, Vivotek, TP-Link, Logitech Circle, NETGEAR Arlo, Samsung SmartCam, Sony, Dahua, Amcrest, Toshiba, Sricam, Reolink, and Zmodo.</p>
         <p>Server header signatures (<code>boa</code>, <code>goahead</code>, <code>uc-httpd</code>, <code>dahua</code>, <code>hikvision-webs</code>) and page title keywords are also checked as a fallback when mmh3 is not installed.</p>
         <h3>MQTT probe</h3>
-        <p>On port 1883, netrecon sends a real MQTT v3.1.1 CONNECT packet and reads the CONNACK. A return code of 0x00 in the CONNACK means the broker accepted the connection without credentials — flagged as <code>MQTT-NO-AUTH</code> CRITICAL severity.</p>
+        <p>On port 1883, netrecon sends a real MQTT v3.1.1 CONNECT packet and reads the CONNACK. A return code of 0x00 in the CONNACK means the broker accepted the connection without credentials - flagged as <code>MQTT-NO-AUTH</code> CRITICAL severity.</p>
         <h3>RTSP probe</h3>
-        <p>On port 554, an RTSP OPTIONS request is sent. A 200 OK response without a 401 challenge indicates the stream is unauthenticated — flagged as <code>RTSP-NO-AUTH</code> HIGH severity.</p>
+        <p>On port 554, an RTSP OPTIONS request is sent. A 200 OK response without a 401 challenge indicates the stream is unauthenticated - flagged as <code>RTSP-NO-AUTH</code> HIGH severity.</p>
         <h3>ICS/SCADA</h3>
         <p>ICS ports have the highest detection priority. Any host with an open ICS port immediately gets <code>device_category: "ics"</code> and a CRITICAL-severity vulnerability finding for each exposed protocol. The known absence of authentication in Modbus, DNP3, and BACnet is flagged directly without any further probing needed.</p>
         <div class="callout crit">
@@ -917,11 +917,11 @@ echo '{
         <h2>Firewall &amp; IDS evasion</h2>
         <p>Use <code>mode: "evasion"</code> or set <code>evasion: true</code> on any mode to activate all bypass flags. The following nmap flags are applied:</p>
         <pre><code>-f               <span class="comment"># Fragment packets into 8-byte chunks</span>
---mtu 8          <span class="comment"># Force small MTU — stateless FW can't reassemble</span>
+--mtu 8          <span class="comment"># Force small MTU - stateless FW can't reassemble</span>
 -n               <span class="comment"># Skip DNS resolution (no PTR lookups that alert SOC)</span>
--Pn              <span class="comment"># Treat all hosts as up — skip ICMP ping</span>
+-Pn              <span class="comment"># Treat all hosts as up - skip ICMP ping</span>
 -D RND:5         <span class="comment"># Inject 5 random decoy IPs in each probe</span>
--g 53            <span class="comment"># Spoof source port as 53 (DNS) — passes some FW rules</span>
+-g 53            <span class="comment"># Spoof source port as 53 (DNS) - passes some FW rules</span>
 --data-length 32 <span class="comment"># Pad each packet with 32 random bytes</span></code></pre>
         <p>When <code>proxychains: true</code>, every nmap and gobuster call is prefixed with <code>proxychains4 -q</code>. Make sure your <code>/etc/proxychains4.conf</code> is configured before enabling this.</p>
         <div class="callout warn">
@@ -969,9 +969,9 @@ echo '{
         <ul class="feature-list">
           <li>HTTP status code, page title, server header</li>
           <li>Technology fingerprints (20+ patterns including WordPress, Joomla, Django, Flask, Spring)</li>
-          <li>Security header audit — HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, CORP</li>
+          <li>Security header audit - HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, CORP</li>
           <li>Missing headers list (actionable finding)</li>
-          <li>Cookie security flags — Secure, HttpOnly, SameSite per cookie</li>
+          <li>Cookie security flags - Secure, HttpOnly, SameSite per cookie</li>
           <li>Full redirect chain</li>
           <li>TLS: subject, issuer, expiry, not-before, signature algorithm, Subject Alternative Names (SANs)</li>
         </ul>
@@ -1023,7 +1023,7 @@ echo '{
     {
       "id": "ICS-EXPOSED-MODBUS",
       "severity": "CRITICAL",
-      "desc": "MODBUS port 502 is exposed — unauthenticated ICS/SCADA access possible"
+      "desc": "MODBUS port 502 is exposed - unauthenticated ICS/SCADA access possible"
     }
   ],
   "asn": "AS12345",
@@ -1088,7 +1088,7 @@ echo '{
     "output_dir": "/tmp/scan"
   }
 }' | python3 netrecon.py</code></pre>
-        <h3>IoT sweep — MQTT, CoAP, cameras</h3>
+        <h3>IoT sweep - MQTT, CoAP, cameras</h3>
         <pre><code>echo '{"target": "192.168.1.0/24", "params": {"ports": "device"}}' \
   | python3 netrecon.py \
   | jq '.data.hosts[] | select(.device_category != "")
@@ -1097,7 +1097,7 @@ echo '{
         <pre><code>echo '{"target": "10.0.0.0/16", "params": {"ports": "ics", "threads": 50}}' \
   | python3 netrecon.py \
   | jq '.data.hosts[] | select(.device_category == "ics") | {ip, vulnerabilities}'</code></pre>
-        <h3>Evasion — fragmented packets through proxy</h3>
+        <h3>Evasion - fragmented packets through proxy</h3>
         <pre><code>echo '{
   "target": "10.10.10.5",
   "params": {
@@ -1126,7 +1126,7 @@ echo '{
           <table>
             <thead><tr><th>Tier</th><th>What to install</th><th>Adds</th></tr></thead>
             <tbody>
-              <tr><td>Minimum</td><td>Python 3.8+</td><td>TCP connect fallback — always works</td></tr>
+              <tr><td>Minimum</td><td>Python 3.8+</td><td>TCP connect fallback - always works</td></tr>
               <tr><td>Standard</td><td><code>nmap</code></td><td>Service/version/OS detection, NSE scripts</td></tr>
               <tr><td>Full</td><td><code>masscan nmap arp-scan whatweb gobuster nikto</code> + root</td><td>SYN scans, rapid discovery, web tech, directory brute, vuln scan</td></tr>
               <tr><td>Python libs</td><td><code>pip3 install requests scapy dnspython shodan</code></td><td>HTTP probing, ARP, DNS, Shodan</td></tr>
@@ -1140,7 +1140,7 @@ echo '{
         </div>
         <div class="callout info">
           <span class="callout-mark">ℹ</span>
-          The module uses capability detection at startup. If a tool is missing, that engine is silently skipped. The scan still runs with whatever is available — you never get a hard failure from a missing optional dependency.
+          The module uses capability detection at startup. If a tool is missing, that engine is silently skipped. The scan still runs with whatever is available - you never get a hard failure from a missing optional dependency.
         </div>
       </section>
 
@@ -1153,7 +1153,7 @@ echo '{
           <div class="author-avatar">0x</div>
           <div>
             <div class="author-name">0xb0rn3</div>
-            <div class="author-role">Senior Module Developer &mdash; SecVulnHub</div>
+            <div class="author-role">Senior Module Developer  -  SecVulnHub</div>
             <div class="author-bio">Security researcher focused on network reconnaissance, IoT security, and offensive tooling. Built and maintains netrecon, the secV framework's network module. Background in both red team operations and ICS/OT security.</div>
             <div class="author-links">
               <a class="author-link" href="https://github.com/0xb0rn3" target="_blank">
@@ -1181,11 +1181,12 @@ echo '{
   <div class="foot-inner">
     <a class="foot-brand" href="../index.html">SecVulnHub</a>
     <div class="foot-links">
-      <a class="foot-link" href="https://github.com/secvulnhub/secvulnhub/" target="_blank">GitHub</a>
-      <a class="foot-link" href="https://discord.gg/SecVulnHub" target="_blank">Discord</a>
-      <a class="foot-link" href="../index.html#projects">Arsenal</a>
+      <a class="foot-link" href="android_pentest.html">android_pentest</a>
+      <a class="foot-link" href="wifi_monitor.html">wifi_monitor</a>
+      <a class="foot-link" href="mac_spoof.html">mac_spoof</a>
+      <a class="foot-link" href="https://github.com/secvulnhub/SecV" target="_blank">GitHub</a>
     </div>
-    <span class="foot-note">MIT License &middot; Built by practitioners, for practitioners.</span>
+    <span class="foot-note">MIT © 2024–2026 SecVulnHub</span>
   </div>
 </footer>
 

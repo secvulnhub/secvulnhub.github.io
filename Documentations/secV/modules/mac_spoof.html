@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mac_spoof - SecV Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+:root {
+  --bg:      #050505;
+  --bg1:     #0d0d0d;
+  --bg2:     #141414;
+  --bg3:     #1c1c1c;
+  --border:  rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.13);
+  --border3: rgba(255,255,255,0.2);
+  --text:    #a8a8a8;
+  --muted:   #505050;
+  --dim:     #252525;
+  --white:   #f0f0f0;
+  --off:     #d8d8d8;
+  --grey:    #787878;
+  --acc:     #88aacc;
+  --mono:    'JetBrains Mono', monospace;
+  --disp:    'Syne', sans-serif;
+  --nav-h:   52px;
+  --transition: 0.16s ease;
+}
+
+body { font-family: var(--mono); background: var(--bg); color: var(--text); line-height: 1.7; overflow-x: hidden; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 2px; }
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--nav-h); display: flex; align-items: center;
+  justify-content: space-between; padding: 0 2.5rem;
+  border-bottom: 1px solid transparent; transition: border-color 0.3s, background 0.3s;
+}
+nav.scrolled { background: rgba(5,5,5,0.96); backdrop-filter: blur(16px); border-color: var(--border); }
+.logo { font-family: var(--disp); font-size: 0.9rem; font-weight: 700; color: var(--off); text-decoration: none; letter-spacing: 0.01em; display: flex; align-items: center; gap: 0.55rem; }
+.logo-mark { width: 6px; height: 6px; background: var(--white); flex-shrink: 0; }
+.nav-links { display: flex; align-items: center; gap: 0.1rem; }
+.nav-link { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-decoration: none; padding: 0.4rem 0.75rem; transition: color var(--transition); }
+.nav-link:hover { color: var(--text); }
+.nav-btn { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); text-decoration: none; padding: 0.4rem 0.9rem; border: 1px solid var(--border2); margin-left: 0.5rem; transition: border-color var(--transition), color var(--transition); }
+.nav-btn:hover { border-color: var(--white); color: var(--white); }
+.nav-btn.primary { background: var(--white); border-color: var(--white); color: var(--bg); }
+.nav-btn.primary:hover { background: transparent; color: var(--white); }
+.nav-burger { display: none; background: none; border: 1px solid var(--border2); padding: 0.4rem 0.6rem; cursor: pointer; border-radius: 3px; flex-direction: column; gap: 4px; }
+.nav-burger span { display: block; width: 18px; height: 1px; background: var(--text); transition: transform var(--transition), opacity var(--transition); }
+body.nav-open .nav-burger span:nth-child(1) { transform: rotate(45deg) translate(3.5px,3.5px); }
+body.nav-open .nav-burger span:nth-child(2) { opacity: 0; }
+body.nav-open .nav-burger span:nth-child(3) { transform: rotate(-45deg) translate(3.5px,-3.5px); }
+
+.page { max-width: 1080px; margin: 0 auto; padding: 0 2.5rem; }
+.doc-header { padding-top: calc(var(--nav-h) + 3.5rem); padding-bottom: 3.5rem; border-bottom: 1px solid var(--border); animation: rise 0.45s ease both; }
+@keyframes rise { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+
+.breadcrumb { font-size: 0.56rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.75rem; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.breadcrumb a { color: var(--muted); text-decoration: none; transition: color var(--transition); }
+.breadcrumb a:hover { color: var(--text); }
+.breadcrumb span { color: var(--dim); }
+
+.module-meta { display: flex; align-items: flex-start; justify-content: space-between; gap: 2.5rem; flex-wrap: wrap; }
+.module-title { font-family: var(--disp); font-size: clamp(2.8rem, 6vw, 4.8rem); font-weight: 800; letter-spacing: -0.04em; color: var(--white); line-height: 0.95; margin-bottom: 0.85rem; }
+.module-title span { color: var(--grey); font-weight: 400; }
+.module-sub { font-size: 0.84rem; color: var(--muted); line-height: 1.85; max-width: 500px; margin-bottom: 1.5rem; }
+.module-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.tag { font-size: 0.5rem; letter-spacing: 0.14em; text-transform: uppercase; padding: 0.18rem 0.55rem; border: 1px solid var(--border2); color: var(--muted); }
+.tag.hi { color: var(--white); border-color: rgba(255,255,255,0.28); }
+.module-stats { display: flex; flex-direction: column; gap: 1rem; min-width: 210px; }
+.stat-row { display: flex; justify-content: space-between; align-items: center; padding: 0.55rem 0; border-bottom: 1px solid var(--border); font-size: 0.68rem; gap: 2rem; }
+.stat-row:last-child { border-bottom: none; }
+.stat-lbl { letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.stat-v { color: var(--white); font-weight: 500; }
+
+.doc-body { display: grid; grid-template-columns: 200px 1fr; gap: 4rem; padding: 3.5rem 0; align-items: start; }
+.sidebar { position: sticky; top: calc(var(--nav-h) + 1rem); }
+.sidebar-nav { list-style: none; }
+.sidebar-nav li { margin-bottom: 0.05rem; }
+.sidebar-nav a { display: block; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-decoration: none; padding: 0.4rem 0; border-left: 2px solid transparent; padding-left: 0.75rem; transition: color var(--transition), border-color var(--transition); }
+.sidebar-nav a:hover { color: var(--text); border-color: var(--border2); }
+.sidebar-nav a.active { color: var(--white); border-color: var(--white); }
+.sidebar-sep { font-size: 0.48rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); padding: 0.7rem 0 0.25rem 0.75rem; margin-top: 0.5rem; }
+
+.content section { padding-bottom: 3.5rem; border-bottom: 1px solid var(--border); margin-bottom: 3.5rem; }
+.content section:last-child { border-bottom: none; }
+.sec-label { font-size: 0.52rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--grey); margin-bottom: 0.55rem; }
+
+h2 { font-family: var(--disp); font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 800; letter-spacing: -0.03em; color: var(--white); margin-bottom: 1.25rem; line-height: 1.05; }
+h3 { font-family: var(--disp); font-size: 1.05rem; font-weight: 700; color: var(--off); margin: 2rem 0 0.8rem; letter-spacing: -0.01em; }
+p { font-size: 0.82rem; color: var(--text); line-height: 1.85; margin-bottom: 0.9rem; }
+p:last-child { margin-bottom: 0; }
+a { color: var(--grey); }
+a:hover { color: var(--white); }
+
+pre { background: var(--bg1); border: 1px solid var(--border); border-left: 3px solid var(--border3); padding: 1.1rem 1.35rem; overflow-x: auto; margin: 1rem 0; font-size: 0.76rem; line-height: 1.75; border-radius: 0 2px 2px 0; }
+code { font-family: var(--mono); font-size: 0.76rem; background: var(--bg1); border: 1px solid var(--border); padding: 0.08rem 0.35rem; color: var(--off); }
+pre code { background: none; border: none; padding: 0; font-size: inherit; }
+.comment { color: var(--muted); font-style: italic; }
+.kw { color: var(--white); }
+.str { color: var(--grey); }
+
+.table-wrap { overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 0.74rem; min-width: 420px; }
+th { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey); text-align: left; padding: 0.6rem 1rem; border-bottom: 1px solid var(--border2); background: var(--bg1); white-space: nowrap; }
+td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; line-height: 1.65; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg1); }
+td:first-child { color: var(--off); font-weight: 500; white-space: nowrap; }
+td code { font-size: 0.7rem; }
+
+.feat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); margin: 1.25rem 0; }
+.feat-cell { background: var(--bg); padding: 1.1rem; transition: background var(--transition); }
+.feat-cell:hover { background: var(--bg1); }
+.feat-icon { font-size: 0.54rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey); margin-bottom: 0.4rem; }
+.feat-name { font-family: var(--disp); font-size: 0.88rem; font-weight: 700; color: var(--white); margin-bottom: 0.3rem; }
+.feat-desc { font-size: 0.72rem; color: var(--muted); line-height: 1.6; }
+
+.mode-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); margin: 1.25rem 0; }
+.mode-card { background: var(--bg); padding: 1.25rem; transition: background var(--transition); }
+.mode-card:hover { background: var(--bg1); }
+.mode-key { font-family: var(--disp); font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.4rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; }
+.mode-badge { font-size: 0.46rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.12rem 0.38rem; border: 1px solid var(--border2); color: var(--muted); }
+.mode-badge.dflt { color: var(--white); border-color: rgba(255,255,255,0.28); }
+.mode-desc { font-size: 0.71rem; color: var(--muted); line-height: 1.6; }
+
+.callout { display: flex; gap: 0.75rem; padding: 0.95rem 1.15rem; border: 1px solid var(--border2); border-left: 3px solid var(--border2); margin: 1.25rem 0; font-size: 0.78rem; line-height: 1.7; color: var(--text); border-radius: 0 2px 2px 0; }
+.callout.warn { border-left-color: var(--grey); }
+.callout.crit { border-left-color: var(--white); background: rgba(255,255,255,0.02); }
+.callout-mark { font-size: 0.64rem; color: var(--grey); flex-shrink: 0; margin-top: 0.15rem; }
+
+.process-chain { display: flex; flex-direction: column; border: 1px solid var(--border); margin: 1.25rem 0; }
+.pc-step { display: grid; grid-template-columns: 2.5rem 1fr; gap: 0.85rem; padding: 1rem 1.15rem; border-bottom: 1px solid var(--border); align-items: start; background: var(--bg); transition: background var(--transition); }
+.pc-step:last-child { border-bottom: none; }
+.pc-step:hover { background: var(--bg1); }
+.pc-num { font-family: var(--disp); font-size: 0.72rem; font-weight: 800; color: var(--muted); }
+.pc-title { font-size: 0.76rem; font-weight: 600; color: var(--white); margin-bottom: 0.25rem; }
+.pc-body { font-size: 0.68rem; color: var(--muted); line-height: 1.65; }
+
+.author-card { display: flex; gap: 1.75rem; align-items: flex-start; padding: 1.75rem; border: 1px solid var(--border2); background: var(--bg1); margin-top: 1.5rem; }
+.author-avatar { width: 52px; height: 52px; background: var(--bg3); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-family: var(--disp); font-size: 1.2rem; font-weight: 800; color: var(--white); flex-shrink: 0; }
+.author-name { font-family: var(--disp); font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.2rem; }
+.author-role { font-size: 0.56rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--grey); margin-bottom: 0.75rem; }
+.author-bio { font-size: 0.76rem; color: var(--muted); line-height: 1.75; margin-bottom: 0.85rem; }
+.author-links { display: flex; gap: 1rem; flex-wrap: wrap; }
+.author-link { font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--grey); text-decoration: none; display: flex; align-items: center; gap: 0.3rem; transition: color var(--transition); }
+.author-link:hover { color: var(--white); }
+
+footer { border-top: 1px solid var(--border); margin-top: 2rem; }
+.foot-inner { max-width: 1080px; margin: 0 auto; padding: 1.5rem 2.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.foot-brand { font-family: var(--disp); font-size: 0.88rem; font-weight: 700; color: var(--muted); text-decoration: none; }
+.foot-links { display: flex; gap: 1.75rem; }
+.foot-link { font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color var(--transition); }
+.foot-link:hover { color: var(--text); }
+.foot-note { font-size: 0.52rem; color: var(--dim); letter-spacing: 0.06em; }
+
+@media (max-width: 860px) {
+  nav { padding: 0 1.5rem; }
+  .nav-links { display: none; }
+  .nav-burger { display: flex; }
+  body.nav-open .nav-links { display: flex; position: fixed; top: var(--nav-h); left: 0; right: 0; background: var(--bg); border-bottom: 1px solid var(--border); flex-direction: column; padding: 1rem 1.5rem 1.5rem; gap: 0.25rem; align-items: flex-start; z-index: 99; }
+  .page { padding: 0 1.5rem; }
+  .doc-body { grid-template-columns: 1fr; gap: 0; }
+  .sidebar { display: none; }
+  .module-title { font-size: 2.6rem; }
+  .author-card { flex-direction: column; gap: 1rem; }
+  .module-stats { min-width: unset; width: 100%; }
+  pre { font-size: 0.7rem; }
+}
+@media (max-width: 540px) {
+  .feat-grid { grid-template-columns: 1fr; }
+  .mode-grid { grid-template-columns: 1fr; }
+  .page { padding: 0 1rem; }
+  pre { padding: 0.85rem 1rem; }
+  .doc-header { padding-top: calc(var(--nav-h) + 2rem); }
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a class="logo" href="../index.html">
+    <span class="logo-mark"></span>
+    SecVulnHub
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="../index.html">Docs</a>
+    <a class="nav-link" href="netrecon.html">netrecon</a>
+    <a class="nav-link" href="android_pentest.html">android</a>
+    <a class="nav-link" href="wifi_monitor.html">wifi_monitor</a>
+    <a class="nav-btn" href="https://github.com/0xb0rn3" target="_blank">GitHub</a>
+    <a class="nav-btn primary" href="https://discord.gg/SecVulnHub" target="_blank">Discord</a>
+  </div>
+  <button class="nav-burger" id="burger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="page">
+
+  <div class="doc-header">
+    <div class="breadcrumb">
+      <a href="../index.html">SecVulnHub</a>
+      <span>/</span>
+      <a href="../index.html#modules">Modules</a>
+      <span>/</span>
+      mac_spoof
+    </div>
+    <div class="module-meta">
+      <div>
+        <h1 class="module-title">mac_spoof<span>.</span></h1>
+        <p class="module-sub">Per-interface MAC address rotation daemon for Linux. Background per-interface processes, locally-administered OUI prefix, automatic original MAC restoration, dry-run preview, and multi-interface support.</p>
+        <div class="module-tags">
+          <span class="tag hi">secV Module</span>
+          <span class="tag">Network Anonymity</span>
+          <span class="tag">MAC Spoofing</span>
+          <span class="tag">Daemon Mode</span>
+          <span class="tag">iproute2</span>
+          <span class="tag">Python 3.6+</span>
+          <span class="tag">v2.0.0</span>
+        </div>
+      </div>
+      <div class="module-stats">
+        <div class="stat-row"><span class="stat-lbl">Category</span><span class="stat-v">Network · Anonymity</span></div>
+        <div class="stat-row"><span class="stat-lbl">Language</span><span class="stat-v">Python 3</span></div>
+        <div class="stat-row"><span class="stat-lbl">Location</span><span class="stat-v">tools/network/mac_spoof/</span></div>
+        <div class="stat-row"><span class="stat-lbl">Author</span><span class="stat-v">0xb0rn3</span></div>
+        <div class="stat-row"><span class="stat-lbl">Privileges</span><span class="stat-v">Root required</span></div>
+        <div class="stat-row"><span class="stat-lbl">License</span><span class="stat-v">MIT</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-body">
+
+    <aside class="sidebar">
+      <ul class="sidebar-nav">
+        <li><div class="sidebar-sep">Overview</div></li>
+        <li><a href="#overview" class="active">What it does</a></li>
+        <li><a href="#quickstart">Quick Start</a></li>
+        <li><div class="sidebar-sep">Reference</div></li>
+        <li><a href="#actions">Actions</a></li>
+        <li><a href="#params">Parameters</a></li>
+        <li><a href="#internals">Internals</a></li>
+        <li><a href="#mac-format">MAC Format</a></li>
+        <li><div class="sidebar-sep">More</div></li>
+        <li><a href="#examples">Examples</a></li>
+        <li><a href="#troubleshoot">Troubleshooting</a></li>
+        <li><a href="#author">Author</a></li>
+      </ul>
+    </aside>
+
+    <div class="content">
+
+      <!-- Overview -->
+      <section id="overview">
+        <p class="sec-label">Overview</p>
+        <h2>What mac_spoof does</h2>
+        <p>mac_spoof is secV's network anonymity module. It manages background MAC address rotation daemons - one per interface - that continuously change the hardware address at a configurable interval. When stopped, each daemon restores the original vendor MAC automatically, leaving no trace of spoofing in the interface state.</p>
+        <p>Unlike simple one-shot MAC changers, mac_spoof uses a persistent process model with state files so you can check, pause, and resume spoofing across secV sessions without losing track of original addresses.</p>
+
+        <div class="feat-grid">
+          <div class="feat-cell">
+            <div class="feat-icon">Process</div>
+            <div class="feat-name">Per-Interface Daemons</div>
+            <div class="feat-desc">Each interface gets its own detached background process - independent rotation speeds, no cross-interference.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">State</div>
+            <div class="feat-name">Persistent State</div>
+            <div class="feat-desc">Original MAC and PID stored in <code style="font-size:0.64rem">~/.secv/mac_spoof/</code>. Survives shell restarts. Stop any time and restore cleanly.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Format</div>
+            <div class="feat-name">Locally-Admin MACs</div>
+            <div class="feat-desc">Generated addresses use <code style="font-size:0.64rem">02:00:00:xx:xx:xx</code> - locally-administered unicast prefix avoids vendor OUI conflicts and DHCP weirdness.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Scope</div>
+            <div class="feat-name">Multi-Interface</div>
+            <div class="feat-desc">Spoof a single interface, a comma-separated list, or all UP non-loopback interfaces in one command.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Safety</div>
+            <div class="feat-name">Dry Run Mode</div>
+            <div class="feat-desc">Preview every action - shows what would change, what original MACs would be saved - without touching any interface.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Restore</div>
+            <div class="feat-name">Auto-Restoration</div>
+            <div class="feat-desc">Stop action always brings the interface back to its original vendor MAC. State file is cleaned up automatically.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Start -->
+      <section id="quickstart">
+        <p class="sec-label">Quick Start</p>
+        <h2>Running mac_spoof</h2>
+        <p>mac_spoof requires root. Run secV with <code>sudo</code> or use <code>sudo secV</code>.</p>
+
+        <pre><code><span class="comment"># Start spoofing wlan0 (default 0.5s interval)</span>
+sudo secV
+secV ❯ <span class="kw">use</span> mac_spoof
+secV (mac_spoof) ❯ <span class="kw">set</span> iface wlan0
+secV (mac_spoof) ❯ <span class="kw">run</span> target
+
+<span class="comment"># Check status</span>
+secV (mac_spoof) ❯ <span class="kw">set</span> action status
+secV (mac_spoof) ❯ <span class="kw">run</span> target
+
+<span class="comment"># Stop and restore original MAC</span>
+secV (mac_spoof) ❯ <span class="kw">set</span> action stop
+secV (mac_spoof) ❯ <span class="kw">run</span> target</code></pre>
+
+        <h3>Spoof all UP interfaces</h3>
+        <pre><code>secV (mac_spoof) ❯ <span class="kw">set</span> all_up true
+secV (mac_spoof) ❯ <span class="kw">run</span> target</code></pre>
+
+        <h3>Dry run preview</h3>
+        <pre><code>secV (mac_spoof) ❯ <span class="kw">set</span> iface eth0,wlan0
+secV (mac_spoof) ❯ <span class="kw">set</span> dry_run true
+secV (mac_spoof) ❯ <span class="kw">run</span> target   <span class="comment"># shows plan without executing</span></code></pre>
+      </section>
+
+      <!-- Actions -->
+      <section id="actions">
+        <p class="sec-label">Reference</p>
+        <h2>Actions</h2>
+        <p>The <code>action</code> parameter controls what mac_spoof does when <code>run</code> is called.</p>
+
+        <div class="mode-grid">
+          <div class="mode-card">
+            <div class="mode-key">start <span class="mode-badge dflt">default</span></div>
+            <div class="mode-desc">Start a background rotation daemon for each selected interface. Saves original MAC to state file before first change.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">stop</div>
+            <div class="mode-desc">Kill the daemon and restore the original vendor MAC from the state file. Cleans up state on success.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">status</div>
+            <div class="mode-desc">Report daemon PID, uptime, current MAC, original MAC, and rotation interval for each tracked interface.</div>
+          </div>
+        </div>
+
+        <div class="callout crit">
+          <span class="callout-mark">!</span>
+          <span>Always stop daemons before system shutdown. If the process is killed without a clean stop, run <code>set action stop</code> on next boot - the state file still holds the original MAC and will restore it correctly.</span>
+        </div>
+      </section>
+
+      <!-- Parameters -->
+      <section id="params">
+        <p class="sec-label">Reference</p>
+        <h2>Parameters</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>iface</code></td>
+              <td>string</td>
+              <td>—</td>
+              <td>Interface name or comma-separated list. E.g. <code>wlan0</code> or <code>eth0,wlan0</code>. Required if <code>all_up</code> is false.</td>
+            </tr>
+            <tr>
+              <td><code>all_up</code></td>
+              <td>boolean</td>
+              <td>false</td>
+              <td>Auto-select all non-loopback interfaces that are currently UP. Takes precedence over <code>iface</code>.</td>
+            </tr>
+            <tr>
+              <td><code>action</code></td>
+              <td>string</td>
+              <td>start</td>
+              <td>Operation to perform: <code>start</code>, <code>stop</code>, or <code>status</code>.</td>
+            </tr>
+            <tr>
+              <td><code>interval</code></td>
+              <td>number</td>
+              <td>0.5</td>
+              <td>Seconds between MAC address changes. Range: 0.1–60. Use 5+ for stable connections.</td>
+            </tr>
+            <tr>
+              <td><code>dry_run</code></td>
+              <td>boolean</td>
+              <td>false</td>
+              <td>Preview all actions without executing. Prints what would change and what original MACs would be saved.</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </section>
+
+      <!-- Internals -->
+      <section id="internals">
+        <p class="sec-label">How It Works</p>
+        <h2>Process internals</h2>
+        <p>Understanding the daemon lifecycle helps when debugging or integrating mac_spoof into scripts.</p>
+
+        <h3>Daemon startup</h3>
+        <div class="process-chain">
+          <div class="pc-step">
+            <div class="pc-num">01</div>
+            <div>
+              <div class="pc-title">Save original MAC</div>
+              <div class="pc-body">Reads current MAC via <code>ip link show &lt;iface&gt;</code> and writes it to <code>~/.secv/mac_spoof/&lt;iface&gt;.json</code> along with the process PID and start timestamp. This happens before any changes are made.</div>
+            </div>
+          </div>
+          <div class="pc-step">
+            <div class="pc-num">02</div>
+            <div>
+              <div class="pc-title">Fork and detach</div>
+              <div class="pc-body">The daemon forks via <code>os.fork()</code>, creates a new session with <code>os.setsid()</code>, and redirects stdin/stdout/stderr to <code>/dev/null</code>. The parent exits immediately - secV returns control to the user.</div>
+            </div>
+          </div>
+          <div class="pc-step">
+            <div class="pc-num">03</div>
+            <div>
+              <div class="pc-title">Rotation loop</div>
+              <div class="pc-body">Child enters an infinite loop: generate random locally-administered MAC → <code>ip link set &lt;iface&gt; down</code> → <code>ip link set &lt;iface&gt; address &lt;mac&gt;</code> → <code>ip link set &lt;iface&gt; up</code> → sleep(interval). Each change takes ~100ms during which the interface is briefly down.</div>
+            </div>
+          </div>
+          <div class="pc-step">
+            <div class="pc-num">04</div>
+            <div>
+              <div class="pc-title">Signal handling</div>
+              <div class="pc-body">SIGTERM causes the daemon to restore the original MAC from the state file before exiting. This is what the <code>stop</code> action triggers via <code>os.kill(pid, signal.SIGTERM)</code>.</div>
+            </div>
+          </div>
+        </div>
+
+        <h3>State file structure</h3>
+        <p>State files live at <code>~/.secv/mac_spoof/&lt;iface&gt;.json</code>. The <code>status</code> action reads these to report on running daemons.</p>
+        <pre><code>{
+  "interface":    "wlan0",
+  "pid":          12345,
+  "original_mac": "aa:bb:cc:dd:ee:ff",
+  "started":      1696512345.678
+}</code></pre>
+
+        <h3>How <code>ip link</code> is used</h3>
+        <pre><code><span class="comment"># Bring interface down before MAC change (required by most drivers)</span>
+ip link set wlan0 down
+
+<span class="comment"># Apply new randomly-generated MAC</span>
+ip link set wlan0 address 02:00:00:1a:2b:3c
+
+<span class="comment"># Bring back up - DHCP client reconnects automatically</span>
+ip link set wlan0 up</code></pre>
+      </section>
+
+      <!-- MAC format -->
+      <section id="mac-format">
+        <p class="sec-label">MAC Address</p>
+        <h2>Generated MAC format</h2>
+        <p>All generated MACs use the locally-administered unicast format:</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Octets</th><th>Value</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>Octet 1</td><td><code>02</code></td><td>Bit 1 set → locally administered. Bit 0 clear → unicast (not multicast).</td></tr>
+            <tr><td>Octets 2–3</td><td><code>00:00</code></td><td>Consistent prefix - makes it easy to identify spoofed addresses in logs or Wireshark captures.</td></tr>
+            <tr><td>Octets 4–6</td><td><code>random</code></td><td>3 bytes of cryptographically random data - 16.7 million unique values per rotation cycle.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p>Example: <code>02:00:00:1a:2b:3c</code></p>
+
+        <div class="callout warn">
+          <span class="callout-mark">i</span>
+          <span>Locally-administered MACs are easy to spot. If your goal is to blend in with real device traffic, consider using a known vendor OUI prefix instead and generating random last 3 bytes. That requires a custom <code>iface</code> script - mac_spoof's built-in format prioritises avoiding conflicts over fingerprint evasion.</span>
+        </div>
+
+        <h3>Detection risk</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Detection vector</th><th>Risk</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>ARP cache churn</td><td>Medium</td><td>Rapid ARP announcement pattern is unusual</td></tr>
+            <tr><td>OUI mismatch</td><td>High</td><td><code>02:00:00</code> prefix is not a real vendor - obvious to any network scanner</td></tr>
+            <tr><td>DHCP request storm</td><td>Medium</td><td>Each MAC change triggers a new DHCP request on most systems</td></tr>
+            <tr><td>Switch port security</td><td>High</td><td>Managed switches with MAC-limit policies will trigger port shutdown</td></tr>
+            <tr><td>WiFi re-association</td><td>Low</td><td>802.11 association uses the MAC - spoofing while connected causes brief disconnection only</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </section>
+
+      <!-- Examples -->
+      <section id="examples">
+        <p class="sec-label">Usage</p>
+        <h2>Examples</h2>
+
+        <h3>Single interface, fast rotation</h3>
+        <pre><code>sudo secV
+secV ❯ <span class="kw">use</span> mac_spoof
+secV (mac_spoof) ❯ <span class="kw">set</span> iface wlan0
+secV (mac_spoof) ❯ <span class="kw">run</span> target
+
+<span class="comment"># Output</span>
+[+] Started spoofer for wlan0  (pid 12345, interval 0.5s)
+[+] Original MAC: aa:bb:cc:dd:ee:ff → saved</code></pre>
+
+        <h3>Multiple interfaces simultaneously</h3>
+        <pre><code>secV (mac_spoof) ❯ <span class="kw">set</span> iface eth0,wlan0
+secV (mac_spoof) ❯ <span class="kw">set</span> interval 2.0
+secV (mac_spoof) ❯ <span class="kw">run</span> target</code></pre>
+
+        <h3>All UP interfaces - one command</h3>
+        <pre><code>secV (mac_spoof) ❯ <span class="kw">set</span> all_up true
+secV (mac_spoof) ❯ <span class="kw">run</span> target</code></pre>
+
+        <h3>Status check</h3>
+        <pre><code>secV (mac_spoof) ❯ <span class="kw">set</span> action status
+secV (mac_spoof) ❯ <span class="kw">set</span> all_up true
+secV (mac_spoof) ❯ <span class="kw">run</span> target
+
+<span class="comment"># JSON output per interface</span>
+{
+  "interface":      "wlan0",
+  "running":        true,
+  "pid":            12345,
+  "original_mac":   "aa:bb:cc:dd:ee:ff",
+  "current_mac":    "02:00:00:1a:2b:3c",
+  "uptime_seconds": 120
+}</code></pre>
+
+        <h3>Stop and restore original MAC</h3>
+        <pre><code>secV (mac_spoof) ❯ <span class="kw">set</span> action stop
+secV (mac_spoof) ❯ <span class="kw">set</span> iface wlan0
+secV (mac_spoof) ❯ <span class="kw">run</span> target
+
+<span class="comment"># Restores aa:bb:cc:dd:ee:ff, removes state file</span></code></pre>
+
+        <h3>Slower interval for stable WiFi</h3>
+        <pre><code>secV (mac_spoof) ❯ <span class="kw">set</span> iface wlan0
+secV (mac_spoof) ❯ <span class="kw">set</span> interval 5.0   <span class="comment"># 5 seconds - keeps connection alive longer</span>
+secV (mac_spoof) ❯ <span class="kw">run</span> target</code></pre>
+      </section>
+
+      <!-- Troubleshooting -->
+      <section id="troubleshoot">
+        <p class="sec-label">Troubleshooting</p>
+        <h2>Common issues</h2>
+
+        <h3>Root privileges required</h3>
+        <pre><code><span class="comment"># Run secV with sudo</span>
+sudo secV</code></pre>
+
+        <h3>Interface goes down and stays down</h3>
+        <pre><code><span class="comment"># Some drivers need a manual bring-up after MAC change</span>
+sudo ip link set wlan0 up
+
+<span class="comment"># Increase interval to give driver time to recover</span>
+secV (mac_spoof) ❯ <span class="kw">set</span> interval 5.0</code></pre>
+
+        <h3>Daemon died unexpectedly</h3>
+        <pre><code><span class="comment"># Check kernel messages for driver errors</span>
+dmesg | tail -20
+journalctl -n 50
+
+<span class="comment"># Check if process is still alive</span>
+cat ~/.secv/mac_spoof/wlan0.json   # read the PID
+ps -p &lt;pid&gt;</code></pre>
+
+        <h3>Manual cleanup if state is corrupted</h3>
+        <pre><code><span class="comment"># Kill any stray processes</span>
+pkill -f mac_spoof.py
+
+<span class="comment"># Remove state files</span>
+rm -rf ~/.secv/mac_spoof/*.json
+
+<span class="comment"># Manually restore original MAC</span>
+sudo ip link set wlan0 down
+sudo ip link set wlan0 address AA:BB:CC:DD:EE:FF
+sudo ip link set wlan0 up</code></pre>
+
+        <h3>Real-time monitoring</h3>
+        <pre><code><span class="comment"># Watch MAC changes live</span>
+watch -n 1 'ip link show wlan0 | grep link/ether'
+
+<span class="comment"># Check NetworkManager logs</span>
+journalctl -u NetworkManager -f</code></pre>
+      </section>
+
+      <!-- Author -->
+      <section id="author">
+        <p class="sec-label">About</p>
+        <h2>Author</h2>
+        <div class="author-card">
+          <div class="author-avatar">0x</div>
+          <div>
+            <div class="author-name">0xb0rn3</div>
+            <div class="author-role">Security Researcher · secV Developer</div>
+            <div class="author-bio">Security researcher and tool builder. mac_spoof is part of the secV offensive security framework - a modular Go shell with Python-driven modules for network recon, mobile pentesting, and C2 operations. Background in network security, red team operations, and Linux internals.</div>
+            <div class="author-links">
+              <a class="author-link" href="https://github.com/0xb0rn3" target="_blank">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                GitHub
+              </a>
+              <a class="author-link" href="../index.html">
+                secV docs
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- .content -->
+  </div><!-- .doc-body -->
+</div><!-- .page -->
+
+<footer>
+  <div class="foot-inner">
+    <a class="foot-brand" href="../index.html">SecVulnHub</a>
+    <div class="foot-links">
+      <a class="foot-link" href="../index.html">Docs Hub</a>
+      <a class="foot-link" href="netrecon.html">netrecon</a>
+      <a class="foot-link" href="wifi_monitor.html">wifi_monitor</a>
+      <a class="foot-link" href="android_pentest.html">android</a>
+      <a class="foot-link" href="https://github.com/secvulnhub" target="_blank">GitHub</a>
+    </div>
+    <span class="foot-note">MIT License · secV by 0xb0rn3</span>
+  </div>
+</footer>
+
+<script>
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', scrollY > 20);
+}, { passive: true });
+
+document.getElementById('burger').addEventListener('click', () => {
+  document.body.classList.toggle('nav-open');
+});
+
+const sections = document.querySelectorAll('.content section[id]');
+const navLinks = document.querySelectorAll('.sidebar-nav a[href^="#"]');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-52px 0px -60% 0px' });
+sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
