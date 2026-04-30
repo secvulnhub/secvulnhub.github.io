@@ -43,19 +43,7 @@ body {
   min-height: 100vh;
 }
 
-/* ── Animated grid background ── */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
-  background-size: 48px 48px;
-  animation: gridDrift 28s linear infinite;
-  pointer-events: none;
-}
+/* ── Subtle background glow ── */
 body::after {
   content: '';
   position: fixed;
@@ -63,10 +51,6 @@ body::after {
   z-index: 0;
   background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,255,255,0.025) 0%, transparent 70%);
   pointer-events: none;
-}
-@keyframes gridDrift {
-  from { background-position: 0 0, 0 0; }
-  to   { background-position: 48px 48px, 48px 48px; }
 }
 
 /* ensure content stacks above bg layers */
