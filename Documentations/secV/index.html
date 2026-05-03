@@ -907,7 +907,7 @@ footer {
       <span class="mod-status status-stable">Stable</span>
       <div class="mod-name">android_pentest</div>
       <div class="mod-category">Mobile · Android</div>
-      <div class="mod-desc">Full Android security testing suite — APK static analysis, smali patching, boot persistence via Termux:Boot, WAN C2 with DexClassLoader staging, Frida/Objection instrumentation, and QR-based payload delivery.</div>
+      <div class="mod-desc">Full Android security testing suite — APK static analysis, smali patching, boot receiver persistence, WAN C2 with DexClassLoader staging, Frida/Objection instrumentation, and QR-based payload delivery.</div>
       <div class="mod-tags">
         <span class="tag">adb</span><span class="tag">apktool</span><span class="tag">dexclassloader</span><span class="tag">bore</span><span class="tag">frida</span><span class="tag">qr</span>
       </div>
@@ -950,21 +950,10 @@ footer {
     <a class="module-card reveal" href="modules/websec.html">
       <span class="mod-status status-beta">Beta</span>
       <div class="mod-name">websec</div>
-      <div class="mod-category">Web · Security Research</div>
-      <div class="mod-desc">Burp Suite-style terminal research tool. DNS/WHOIS/SSL OSINT, headers, CORS, cookies, directory discovery, SQLi, XSS, spider, Google dorks, WAF detection, and built-in OWASP knowledge base.</div>
+      <div class="mod-category">Web · Offensive</div>
+      <div class="mod-desc">Full-stack web attack surface tool. DNS/WHOIS/SSL OSINT, security headers, CORS, cookies, directory brute-force, SQLi (error + time-blind), XSS, CSRF, 403 bypass, open redirect, framework CVEs (Jira/AEM/Confluence), WAF fingerprinting, web spidering, and Google dorks.</div>
       <div class="mod-tags">
-        <span class="tag">osint</span><span class="tag">headers</span><span class="tag">cors</span><span class="tag">sqli</span><span class="tag">xss</span><span class="tag">waf</span>
-      </div>
-      <span class="mod-arrow">→</span>
-    </a>
-
-    <a class="module-card reveal" href="modules/webscan.html">
-      <span class="mod-status status-stable">Stable</span>
-      <div class="mod-name">webscan</div>
-      <div class="mod-category">Web · Vulnerability</div>
-      <div class="mod-desc">OWASP Top 10 scanner: error-based and time-based SQLi, reflected XSS, CSRF, 403 bypass, open redirect, Jira/AEM/Confluence CVEs, security headers, file upload detection. Authenticated scanning via cookies.</div>
-      <div class="mod-tags">
-        <span class="tag">sqli</span><span class="tag">xss</span><span class="tag">csrf</span><span class="tag">403bypass</span><span class="tag">cve</span>
+        <span class="tag">osint</span><span class="tag">sqli</span><span class="tag">xss</span><span class="tag">csrf</span><span class="tag">403bypass</span><span class="tag">cve</span><span class="tag">waf</span>
       </div>
       <span class="mod-arrow">→</span>
     </a>
@@ -1102,25 +1091,25 @@ footer {
 <pre class="reveal"><code><span class="cm">// Example module.json (android_pentest, abbreviated)</span>
 {
   <span class="st">"name"</span>:        <span class="st">"android_pentest"</span>,
-  <span class="st">"version"</span>:     <span class="st">"2.0"</span>,
-  <span class="st">"description"</span>: <span class="st">"Android security testing suite"</span>,
-  <span class="st">"entry"</span>:       <span class="st">"android_pentest.py"</span>,
-  <span class="st">"author"</span>:      <span class="st">"0xb0rn3"</span>,
-  <span class="st">"parameters"</span>: {
+  <span class="st">"version"</span>:     <span class="st">"1.0.0"</span>,
+  <span class="st">"category"</span>:   <span class="st">"mobile"</span>,
+  <span class="st">"description"</span>: <span class="st">"Complete Android penetration testing suite"</span>,
+  <span class="st">"author"</span>:      <span class="st">"SecVulnHub Team | 0xb0rn3"</span>,
+  <span class="st">"executable"</span>:  <span class="st">"python3 android_pentest.py"</span>,
+  <span class="st">"dependencies"</span>: [<span class="st">"python3"</span>, <span class="st">"adb"</span>],
+  <span class="st">"inputs"</span>: {
     <span class="st">"operation"</span>: {
       <span class="st">"type"</span>:     <span class="st">"string"</span>,
-      <span class="st">"required"</span>: true,
-      <span class="st">"options"</span>:  [<span class="st">"recon"</span>, <span class="st">"static_analysis"</span>, <span class="st">"backdoor_apk"</span>, <span class="st">"rebuild"</span>],
-      <span class="st">"help"</span>:     <span class="st">"Operation to perform"</span>
-    },
-    <span class="st">"msf"</span>: {
-      <span class="st">"type"</span>:     <span class="st">"boolean"</span>,
       <span class="st">"required"</span>: false,
-      <span class="st">"default"</span>:  false,
-      <span class="st">"help"</span>:     <span class="st">"Inject DexClassLoader Meterpreter payload"</span>
+      <span class="st">"default"</span>:  <span class="st">"recon"</span>,
+      <span class="st">"description"</span>: <span class="st">"Operation: recon, app_scan, vuln_scan, rebuild, full_pwn ..."</span>
+    },
+    <span class="st">"package"</span>: {
+      <span class="st">"type"</span>:     <span class="st">"string"</span>,
+      <span class="st">"required"</span>: false,
+      <span class="st">"description"</span>: <span class="st">"Target package name for app-specific operations"</span>
     }
-  },
-  <span class="st">"dependencies"</span>: [<span class="st">"adb"</span>, <span class="st">"apktool"</span>, <span class="st">"java"</span>, <span class="st">"msfvenom"</span>]
+  }
 }</code></pre>
 
   <h3>The stdin/stdout Protocol</h3>

@@ -213,10 +213,10 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
     <div class="module-meta">
       <div>
         <h1 class="module-title">websec<span>.</span></h1>
-        <p class="module-sub">Web security research and bug bounty tool. OSINT, header auditing, CORS testing, cookie analysis, directory discovery, SQLi, XSS, spidering, Google dorks, WAF detection, and built-in OWASP knowledge base.</p>
+        <p class="module-sub">Full-stack web offensive tool. DNS/WHOIS/SSL OSINT, security headers, CORS, cookies, directory brute-force, SQLi (error + time-blind), XSS, CSRF, 403 bypass, open redirect, framework CVEs, WAF fingerprinting, web spidering, and Google dorks.</p>
         <div class="module-tags">
           <span class="tag hi">secV Module</span>
-          <span class="tag">Web Security</span>
+          <span class="tag">Web Offensive</span>
           <span class="tag">Bug Bounty</span>
           <span class="tag">OSINT</span>
           <span class="tag">OWASP</span>
@@ -225,7 +225,7 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
         </div>
       </div>
       <div class="module-stats">
-        <div class="stat-row"><span class="stat-lbl">Category</span><span class="stat-v">Web · Security Research</span></div>
+        <div class="stat-row"><span class="stat-lbl">Category</span><span class="stat-v">Web · Offensive</span></div>
         <div class="stat-row"><span class="stat-lbl">Language</span><span class="stat-v">Python 3</span></div>
         <div class="stat-row"><span class="stat-lbl">Location</span><span class="stat-v">tools/web/websec.py</span></div>
         <div class="stat-row"><span class="stat-lbl">Author</span><span class="stat-v">dezthejackal</span></div>
@@ -259,8 +259,8 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
       <section id="overview">
         <p class="sec-label">Overview</p>
         <h2>What websec does</h2>
-        <p>websec is a terminal-based web security research tool for bug bounty hunters and security researchers. It covers the full recon-to-exploitation workflow: passive OSINT, security posture auditing, misconfiguration testing, and lightweight vulnerability probing. Every operation prints a <code>[LEARN]</code> section explaining what the check is, why it matters, and where to go deeper.</p>
-        <p>The tool works out of the box with Python stdlib only. Optional dependencies (<code>requests</code>, <code>beautifulsoup4</code>, <code>dnspython</code>) unlock additional capabilities without breaking anything if absent.</p>
+        <p>websec is the single web offensive tool in secV. It covers the full attack chain from passive OSINT to active vulnerability testing: DNS/WHOIS/SSL reconnaissance, security posture auditing, injection testing, access control bypass, and framework CVE probing. No educational commentary — just results.</p>
+        <p>Works with Python stdlib only for recon. Add <code>requests</code> for full injection and active testing capabilities. <code>beautifulsoup4</code> enables HTML-aware spidering and form detection.</p>
 
         <div class="feat-grid">
           <div class="feat-cell">
@@ -308,6 +308,26 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
             <div class="feat-name">WAF Fingerprint</div>
             <div class="feat-desc">Detect Cloudflare, AWS WAF, ModSecurity, Akamai, Imperva, F5 BigIP, and Sucuri from response headers and body patterns.</div>
           </div>
+          <div class="feat-cell">
+            <div class="feat-icon">CSRF</div>
+            <div class="feat-name">CSRF Detection</div>
+            <div class="feat-desc">Crawl forms on the target page and flag those missing anti-CSRF tokens across 5 token name patterns.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">403</div>
+            <div class="feat-name">403 Bypass</div>
+            <div class="feat-desc">Header injection and path manipulation techniques to bypass 403 access controls: X-Forwarded-For, path doubling, URL encoding, trailing variations.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Redirect</div>
+            <div class="feat-name">Open Redirect</div>
+            <div class="feat-desc">Test 12+ common redirect parameters with external URL payloads. Detects protocol-relative and absolute external redirects.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">CVE</div>
+            <div class="feat-name">Framework CVEs</div>
+            <div class="feat-desc">Auto-detect and probe Jira, AEM, and Confluence for known CVE paths. 15+ paths covering SSRF, SSTI, info disclosure, and file read.</div>
+          </div>
         </div>
       </section>
 
@@ -316,22 +336,24 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
         <p class="sec-label">Quick Start</p>
         <h2>Running websec</h2>
 
-        <pre><code><span class="comment"># Start with recon - passive, non-intrusive</span>
+        <pre><code><span class="comment"># Passive recon — no active probing</span>
 secV ❯ <span class="kw">use</span> websec
 secV (websec) ❯ <span class="kw">set</span> operation recon
 secV (websec) ❯ <span class="kw">run</span> https://example.com
 
-<span class="comment"># Security headers audit</span>
-secV (websec) ❯ <span class="kw">set</span> operation headers
-secV (websec) ❯ <span class="kw">run</span> https://example.com
-
-<span class="comment"># SQLi on a parameterized URL</span>
+<span class="comment"># SQLi: error-based + time-blind</span>
 secV (websec) ❯ <span class="kw">set</span> operation sqli
 secV (websec) ❯ <span class="kw">set</span> test_url https://example.com/search?q=test
 secV (websec) ❯ <span class="kw">run</span> https://example.com
 
-<span class="comment"># Full assessment - all non-intrusive checks</span>
+<span class="comment"># 403 bypass on admin path</span>
+secV (websec) ❯ <span class="kw">set</span> operation bypass_403
+secV (websec) ❯ <span class="kw">set</span> bypass_path /admin
+secV (websec) ❯ <span class="kw">run</span> https://example.com
+
+<span class="comment"># Full scan with injection testing</span>
 secV (websec) ❯ <span class="kw">set</span> operation full
+secV (websec) ❯ <span class="kw">set</span> test_url https://example.com/search?q=test
 secV (websec) ❯ <span class="kw">run</span> https://example.com</code></pre>
 
         <div class="callout crit">
@@ -349,55 +371,75 @@ secV (websec) ❯ <span class="kw">run</span> https://example.com</code></pre>
         <div class="op-grid">
           <div class="op-card">
             <div class="op-name">recon <span class="op-badge">default</span></div>
-            <div class="op-desc">Full passive OSINT: DNS A/MX/NS/TXT records, WHOIS registrant data, SSL certificate inspection (crt.sh subdomains), robots.txt, Wayback Machine snapshots, and technology stack fingerprinting.</div>
+            <div class="op-desc">Passive OSINT: DNS A/MX/NS/TXT records, WHOIS, SSL certificate (crt.sh subdomains), robots.txt, Wayback Machine, and tech stack fingerprinting.</div>
           </div>
           <div class="op-card">
             <div class="op-name">headers</div>
-            <div class="op-desc">Audit HTTP security headers. Checks HSTS, Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy. Flags server version disclosure via Server and X-Powered-By headers.</div>
+            <div class="op-desc">Security header audit: HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy. Flags server/framework version disclosure.</div>
           </div>
           <div class="op-card">
             <div class="op-name">cors</div>
-            <div class="op-desc">Test for CORS misconfigurations by probing with a null origin, attacker origin, and subdomain origin. Detects wildcard <code>Access-Control-Allow-Origin</code>, reflected origins, and <code>Access-Control-Allow-Credentials: true</code> with unsafe origins.</div>
+            <div class="op-desc">CORS misconfiguration testing — probes null origin, attacker origin, subdomain origin. Detects wildcard, reflected origins, and credentials with unsafe origins.</div>
           </div>
           <div class="op-card">
             <div class="op-name">cookies</div>
-            <div class="op-desc">Parse all Set-Cookie headers and check each for Secure flag (sent only over HTTPS), HttpOnly flag (no JS access), and SameSite attribute (CSRF protection). Reports cookies missing each flag with severity context.</div>
+            <div class="op-desc">Cookie flag audit: Secure, HttpOnly, SameSite. Reports every cookie missing each flag with CWE mapping and severity.</div>
           </div>
           <div class="op-card">
             <div class="op-name">dirs <span class="op-badge">wordlist</span></div>
-            <div class="op-desc">Brute-force paths using 100+ built-in entries covering <code>.env</code>, <code>.git</code>, admin panels, backup files, config endpoints, and debug routes. Supply a custom wordlist via <code>wordlist_file</code> for larger sweeps.</div>
+            <div class="op-desc">Directory brute-force — 100+ built-in paths covering <code>.env</code>, <code>.git</code>, admin panels, backups, debug routes. Accepts custom wordlist via <code>wordlist_file</code>.</div>
           </div>
           <div class="op-card">
             <div class="op-name">sqli <span class="op-badge">test_url</span></div>
-            <div class="op-desc">Error-based SQL injection detection. Tests each query parameter with payloads for 15+ database error patterns (MySQL, PostgreSQL, MSSQL, Oracle, SQLite, DB2). Uses safe detection-only payloads - no data modification.</div>
+            <div class="op-desc">Error-based + time-based blind SQL injection. Tests all query params against 15+ DB error patterns (MySQL, PostgreSQL, MSSQL, Oracle, SQLite) and sleep-based blind detection (3 s threshold).</div>
           </div>
           <div class="op-card">
             <div class="op-name">xss <span class="op-badge">test_url</span></div>
-            <div class="op-desc">Reflected XSS detection. Tests query parameters for unencoded reflection of a probe string. Detects HTML context injection and identifies parameters where a payload would execute in the browser.</div>
+            <div class="op-desc">Reflected XSS detection across query parameters. Tests 6+ payloads including HTML injection, attribute injection, and event handlers. Flags unencoded reflection.</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">csrf</div>
+            <div class="op-desc">Scan all forms on the target page for missing anti-CSRF tokens. Detects <code>_token</code>, <code>csrfmiddlewaretoken</code>, <code>authenticity_token</code>, <code>__RequestVerificationToken</code>, and <code>csrf-token</code> meta tags.</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">bypass_403 <span class="op-badge">bypass_path</span></div>
+            <div class="op-desc">Test access control bypass on a 403-protected path via header injection (<code>X-Forwarded-For: 127.0.0.1</code>, <code>X-Custom-IP-Authorization</code>, Referer) and path manipulation (<code>/%2f</code>, <code>/./</code>, <code>/..;/</code>, URL encoding).</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">open_redirect</div>
+            <div class="op-desc">Test common redirect parameters (<code>url</code>, <code>redirect</code>, <code>next</code>, <code>return</code>, <code>goto</code>, 12+ more) for unvalidated external redirects using <code>//evil.com</code> and protocol-relative payloads.</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">framework_cves</div>
+            <div class="op-desc">Probe CVE-associated paths for Jira (CVE-2019-11581, CVE-2019-8451, CVE-2021-26086, 8 paths), AEM (CVE-2016-0957, 4 paths), and Confluence. Auto-detects framework from response before probing.</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">file_upload</div>
+            <div class="op-desc">Detect file upload endpoints by scanning the page for <code>multipart/form-data</code> forms and probing common upload paths (<code>/upload</code>, <code>/api/upload</code>, <code>/attachments</code>, etc.).</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">rate_limit</div>
+            <div class="op-desc">Send 10 rapid requests and check whether rate limiting is enforced (429 response or increasing latency). Useful for testing login, API, and password reset endpoints.</div>
           </div>
           <div class="op-card">
             <div class="op-name">spider <span class="op-badge">max_pages</span></div>
-            <div class="op-desc">Crawl the site breadth-first up to <code>max_pages</code> (default 50). Collects all internal URLs, form actions, JS file references, and external links. Stays within the same domain - no cross-origin crawling.</div>
+            <div class="op-desc">Breadth-first crawl up to <code>max_pages</code> (default 50). Collects internal URLs, form actions, JS file references, and external links. Stays within the same domain.</div>
           </div>
           <div class="op-card">
             <div class="op-name">dork</div>
-            <div class="op-desc">Generate 18+ Google dork queries for the target domain: exposed configs, login pages, sensitive file types, cached content, and related subdomains. Also links to Shodan, crt.sh, Wayback Machine, and other OSINT resources.</div>
+            <div class="op-desc">Generate 18+ Google dork queries for the target domain: exposed configs, login pages, sensitive file types, and cached content. Links to Shodan, crt.sh, and Wayback Machine.</div>
           </div>
           <div class="op-card">
             <div class="op-name">ssl</div>
-            <div class="op-desc">Deep SSL/TLS analysis: negotiated protocol version, cipher suite, certificate subject/issuer/SANs, expiry, and whether the site enforces HTTPS redirect. Flags TLS 1.0/1.1 and weak cipher usage.</div>
+            <div class="op-desc">SSL/TLS analysis: protocol version, cipher suite, cert subject/issuer/SANs, expiry, HTTPS redirect enforcement. Flags TLS 1.0/1.1 and weak ciphers.</div>
           </div>
           <div class="op-card">
             <div class="op-name">waf</div>
-            <div class="op-desc">Fingerprint WAF presence and type from response headers (<code>cf-ray</code>, <code>x-amzn-requestid</code>, <code>x-sucuri-id</code>, etc.) and body patterns. Detects Cloudflare, AWS WAF, ModSecurity, Akamai, Imperva, F5 BigIP, and Sucuri.</div>
+            <div class="op-desc">WAF fingerprinting from response headers and body patterns. Detects Cloudflare, AWS WAF, ModSecurity, Akamai, Imperva, F5 BigIP, and Sucuri.</div>
           </div>
           <div class="op-card">
             <div class="op-name">full</div>
-            <div class="op-desc">Run all non-intrusive operations: recon + headers + cors + cookies + dirs + ssl + waf in one pass. Output is combined into a single findings report with severity-sorted results.</div>
-          </div>
-          <div class="op-card">
-            <div class="op-name">vulnlib</div>
-            <div class="op-desc">Browse the built-in OWASP vulnerability knowledge base. Covers OWASP Top 10 entries with descriptions, impact, detection approach, fix recommendations, and links to PortSwigger Web Security Academy and OWASP resources.</div>
+            <div class="op-desc">Run all operations in one pass: recon + headers + cors + cookies + dirs + sqli + xss + csrf + open_redirect + framework_cves + file_upload + waf + ssl. Requires <code>test_url</code> for injection checks.</div>
           </div>
         </div>
       </section>
@@ -421,37 +463,61 @@ secV (websec) ❯ <span class="kw">run</span> https://example.com</code></pre>
               <td><code>test_url</code></td>
               <td>string</td>
               <td>—</td>
-              <td>Full URL including query parameters for SQLi and XSS testing. E.g. <code>https://example.com/search?q=test</code>. Required for <code>sqli</code> and <code>xss</code> operations.</td>
+              <td>URL with query parameters for SQLi and XSS testing. E.g. <code>https://example.com/search?q=test</code>. Required for <code>sqli</code> and <code>xss</code>.</td>
+            </tr>
+            <tr>
+              <td><code>bypass_path</code></td>
+              <td>string</td>
+              <td>/admin</td>
+              <td>Path to test for 403 bypass. Used with <code>bypass_403</code> operation.</td>
+            </tr>
+            <tr>
+              <td><code>cookies</code></td>
+              <td>string</td>
+              <td>—</td>
+              <td>Session cookies for authenticated scanning. Format: <code>key=value; key2=value2</code>.</td>
+            </tr>
+            <tr>
+              <td><code>headers_str</code></td>
+              <td>string</td>
+              <td>—</td>
+              <td>Custom request headers. Format: <code>Header-Name: value; Header2: value</code>.</td>
+            </tr>
+            <tr>
+              <td><code>user_agent</code></td>
+              <td>string</td>
+              <td>Mozilla/5.0…</td>
+              <td>User-Agent for all requests. Override to test WAF bypass or mimic a specific browser.</td>
             </tr>
             <tr>
               <td><code>threads</code></td>
               <td>integer</td>
               <td>10</td>
-              <td>Concurrent threads for directory discovery. Range 1-50. Higher values are faster but more detectable.</td>
+              <td>Concurrent threads for directory discovery. Range 1-50.</td>
             </tr>
             <tr>
               <td><code>timeout</code></td>
               <td>number</td>
               <td>10.0</td>
-              <td>HTTP request timeout in seconds. Range 3.0-30.0.</td>
+              <td>HTTP request timeout in seconds.</td>
             </tr>
             <tr>
               <td><code>max_pages</code></td>
               <td>integer</td>
               <td>50</td>
-              <td>Maximum pages to crawl in the <code>spider</code> operation. Range 1-500.</td>
+              <td>Maximum pages to crawl in the <code>spider</code> operation.</td>
             </tr>
             <tr>
               <td><code>wordlist_file</code></td>
               <td>string</td>
               <td>—</td>
-              <td>Path to a custom wordlist file for directory discovery. One path per line. Falls back to the built-in list if not set.</td>
+              <td>Path to a custom wordlist for directory discovery. One path per line. Falls back to built-in list if not set.</td>
             </tr>
             <tr>
               <td><code>verbose</code></td>
               <td>boolean</td>
               <td>false</td>
-              <td>Enable verbose output. Shows all requests, including negative results, during discovery operations.</td>
+              <td>Verbose output — shows all requests including negative results.</td>
             </tr>
           </tbody>
         </table>
@@ -462,23 +528,23 @@ secV (websec) ❯ <span class="kw">run</span> https://example.com</code></pre>
       <section id="tiers">
         <p class="sec-label">Reference</p>
         <h2>Installation Tiers</h2>
-        <p>websec degrades gracefully. Core operations work with Python stdlib only. Install optional packages to unlock the full feature set.</p>
+        <p>Core recon operations work with Python stdlib only. Add <code>requests</code> for active testing. Add <code>beautifulsoup4</code> for HTML-aware spidering.</p>
 
         <div class="tier-grid">
           <div class="tier-card">
             <div class="tier-label">Basic</div>
             <div class="tier-name">stdlib only</div>
-            <div class="tier-desc">DNS lookup, WHOIS, SSL inspection, security headers, robots.txt, directory brute-force, WAF detection, Google dorks, vulnlib. No install required.</div>
+            <div class="tier-desc">DNS, WHOIS, SSL inspection, security headers, robots.txt, directory brute-force, WAF detection, Google dorks. No install required.</div>
           </div>
           <div class="tier-card">
             <div class="tier-label">Standard</div>
             <div class="tier-name">+ requests</div>
-            <div class="tier-desc">Full HTTP session handling, CORS testing, cookie analysis, SQLi detection, XSS detection, WAF fingerprinting. <code>pip3 install requests</code></div>
+            <div class="tier-desc">CORS, cookie audit, error-based + time-blind SQLi, reflected XSS, CSRF, 403 bypass, open redirect, framework CVEs, file upload detection. <code>pip3 install requests</code></div>
           </div>
           <div class="tier-card">
             <div class="tier-label">Full</div>
             <div class="tier-name">+ beautifulsoup4</div>
-            <div class="tier-desc">HTML parsing for spider/form detection, JS file enumeration, link extraction, XSS in form inputs. <code>pip3 install beautifulsoup4</code></div>
+            <div class="tier-desc">HTML parsing for spider/form detection, JS file enumeration, CSRF token detection in forms. <code>pip3 install beautifulsoup4</code></div>
           </div>
         </div>
 
@@ -491,40 +557,38 @@ pip3 install requests beautifulsoup4 dnspython</code></pre>
         <p class="sec-label">Examples</p>
         <h2>Usage Examples</h2>
 
-        <h3>OSINT - passive recon only</h3>
+        <h3>Passive OSINT recon</h3>
         <pre><code>secV (websec) ❯ <span class="kw">set</span> operation recon
 secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
 
-        <h3>Directory discovery with SecLists</h3>
+        <h3>Error-based + time-blind SQLi</h3>
+        <pre><code>secV (websec) ❯ <span class="kw">set</span> operation sqli
+secV (websec) ❯ <span class="kw">set</span> test_url https://target.com/search?q=test&id=1
+secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
+
+        <h3>403 bypass on /admin</h3>
+        <pre><code>secV (websec) ❯ <span class="kw">set</span> operation bypass_403
+secV (websec) ❯ <span class="kw">set</span> bypass_path /admin
+secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
+
+        <h3>Framework CVE probe (Jira/AEM/Confluence)</h3>
+        <pre><code>secV (websec) ❯ <span class="kw">set</span> operation framework_cves
+secV (websec) ❯ <span class="kw">run</span> https://jira.target.com</code></pre>
+
+        <h3>Authenticated CSRF + XSS scan</h3>
+        <pre><code>secV (websec) ❯ <span class="kw">set</span> operation csrf
+secV (websec) ❯ <span class="kw">set</span> cookies PHPSESSID=abc123; auth=xyz
+secV (websec) ❯ <span class="kw">run</span> https://target.com/dashboard</code></pre>
+
+        <h3>Directory brute-force with SecLists</h3>
         <pre><code>secV (websec) ❯ <span class="kw">set</span> operation dirs
 secV (websec) ❯ <span class="kw">set</span> threads 20
 secV (websec) ❯ <span class="kw">set</span> wordlist_file /usr/share/seclists/Discovery/Web-Content/common.txt
 secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
 
-        <h3>SQLi on a parameterized endpoint</h3>
-        <pre><code>secV (websec) ❯ <span class="kw">set</span> operation sqli
-secV (websec) ❯ <span class="kw">set</span> test_url https://target.com/product?id=1
-secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
-
-        <h3>CORS misconfiguration test</h3>
-        <pre><code>secV (websec) ❯ <span class="kw">set</span> operation cors
-secV (websec) ❯ <span class="kw">run</span> https://api.target.com</code></pre>
-
-        <h3>Generate dorks without touching the server</h3>
-        <pre><code>secV (websec) ❯ <span class="kw">set</span> operation dork
-secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
-
-        <h3>Crawl and map the site</h3>
-        <pre><code>secV (websec) ❯ <span class="kw">set</span> operation spider
-secV (websec) ❯ <span class="kw">set</span> max_pages 100
-secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
-
-        <h3>Learn about a vulnerability before testing it</h3>
-        <pre><code>secV (websec) ❯ <span class="kw">set</span> operation vulnlib
-secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
-
         <h3>Full assessment</h3>
         <pre><code>secV (websec) ❯ <span class="kw">set</span> operation full
+secV (websec) ❯ <span class="kw">set</span> test_url https://target.com/search?q=test
 secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
       </section>
 
@@ -538,10 +602,10 @@ secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
           <span>Authorization required. Unauthorized testing may violate the CFAA, Computer Misuse Act, and equivalent laws globally. Always get explicit written permission. For bug bounty work, read the program scope before running any checks.</span>
         </div>
 
-        <p>SQLi and XSS tests use safe detection payloads only. They send crafted strings to detect error messages or unencoded reflection - no data is modified, deleted, or exfiltrated. Time-based blind SQLi is not included.</p>
-        <p>The <code>dork</code> operation generates query strings for manual use in Google - it does not interact with Google's servers. Copy the output and run searches manually.</p>
-        <p>For deep SSL analysis, pair with <a href="https://www.ssllabs.com/ssltest/" target="_blank">ssllabs.com/ssltest</a>. For manual testing after automated checks, Burp Suite Community (free) provides a proxy and repeater for inspecting requests and responses directly.</p>
-        <p>The <code>[LEARN]</code> context printed by each operation references <a href="https://portswigger.net/web-security" target="_blank">PortSwigger Web Security Academy</a> and the <a href="https://owasp.org/www-project-top-ten/" target="_blank">OWASP Top 10</a> for deeper reading on each vulnerability class.</p>
+        <p>SQLi uses safe detection payloads — error messages and timing responses only. Time-based blind sends a 3-second sleep payload; expect ~3 s additional latency per parameter per DB type. No data is modified or extracted.</p>
+        <p>The <code>bypass_403</code> operation only fires if the target path actually returns 403. Header bypass results (<code>200</code>) are definitive findings. Path manipulation results (<code>200</code>) may require manual confirmation to rule out redirects.</p>
+        <p>The <code>dork</code> operation generates query strings for manual use in Google — it does not interact with Google's servers. Paste the output directly into search.</p>
+        <p><code>framework_cves</code> auto-detects framework from the response before probing — it checks Jira paths regardless as a fallback in case detection fails.</p>
       </section>
 
       <!-- Author -->
