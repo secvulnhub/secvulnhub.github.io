@@ -221,7 +221,7 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
           <span class="tag">OSINT</span>
           <span class="tag">OWASP</span>
           <span class="tag">Python 3</span>
-          <span class="tag">v2.4.0</span>
+          <span class="tag">v2.4.1</span>
         </div>
       </div>
       <div class="module-stats">
@@ -247,6 +247,10 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
         <li><a href="#params">Parameters</a></li>
         <li><a href="#tiers">Install Tiers</a></li>
         <li><a href="#stealth">Stealth</a></li>
+        <li><a href="#op-php-payload">php_payload</a></li>
+        <li><a href="#op-msf-payload">msf_payload</a></li>
+        <li><a href="#op-fuzz">fuzz</a></li>
+        <li><a href="#op-burp-export">burp_export</a></li>
         <li><div class="sidebar-sep">More</div></li>
         <li><a href="#examples">Examples</a></li>
         <li><a href="#notes">Notes</a></li>
@@ -467,6 +471,22 @@ secV (websec) ❯ <span class="kw">run</span> https://example.com</code></pre>
             <div class="op-desc">Display and validate stealth configuration: shows exact headers being sent, active UA, delay/jitter settings, proxy reachability test. Recommends missing controls (proxy, jitter, WAF evasion).</div>
           </div>
           <div class="op-card">
+            <div class="op-name">php_payload <span class="op-badge">lhost</span></div>
+            <div class="op-desc">Generate PHP reverse shell, webshell, cmd page, or obfuscated payload. Set <code>php_type</code> to <code>reverse</code>, <code>webshell</code>, <code>cmd</code>, <code>obfuscated</code>, or <code>all</code>. Output written to <code>~/ZX01C/websec/&lt;target&gt;/php_payloads/</code>.</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">msf_payload <span class="op-badge">lhost</span></div>
+            <div class="op-desc">Generate msfvenom web payloads (php, war, jsp, aspx) and a matching <code>handler.rc</code> for msfconsole. Shows the exact command to launch the listener after generation.</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">fuzz <span class="op-badge">wordlist</span></div>
+            <div class="op-desc">Directory and path fuzzing. Auto-picks the first available tool: ffuf, gobuster, or dirbuster. Streams live output. Accepts custom wordlist, thread count, file extensions, and a forced engine via <code>fuzz_engine</code>.</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">burp_export <span class="op-badge">raw_request</span></div>
+            <div class="op-desc">Takes a raw HTTP request and outputs a <code>.req</code> file, Burp scope JSON, and an intruder payload list. Paste the captured request via <code>raw_request</code> before running.</div>
+          </div>
+          <div class="op-card">
             <div class="op-name">full</div>
             <div class="op-desc">Run all operations in one pass: recon + headers + cors + cookies + dirs + sqli + xss + csrf + open_redirect + framework_cves + file_upload + waf + ssl + wordpress. Requires <code>test_url</code> for injection checks.</div>
           </div>
@@ -652,6 +672,191 @@ secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
           <span class="callout-mark">!</span>
           <span>Stealth controls reduce your fingerprint — they do not grant authorization. You still need explicit written permission to test any target. Unauthorized testing is illegal regardless of how undetectable it is.</span>
         </div>
+      </section>
+
+      <!-- php_payload -->
+      <section id="op-php-payload">
+        <p class="sec-label">Operation</p>
+        <h2>php_payload</h2>
+        <p>Generates PHP payloads for upload or injection scenarios. Choose a type with <code>php_type</code>, point <code>lhost</code> at your listener, and run. Files land in <code>~/ZX01C/websec/&lt;target&gt;/php_payloads/</code>.</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>php_type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>reverse</code></td><td>Full reverse shell in Pentest Monkey style. Connects back to <code>lhost:lport</code> on execution.</td></tr>
+            <tr><td><code>webshell</code></td><td>Accepts commands via a POST <code>cmd</code> parameter. Minimal footprint, no callback required.</td></tr>
+            <tr><td><code>cmd</code></td><td>Accepts commands via a GET <code>?cmd=</code> parameter. One-liner, useful for quick RCE checks.</td></tr>
+            <tr><td><code>obfuscated</code></td><td>Layered obfuscation using base64, chr(), and hex encoding to bypass simple content filters.</td></tr>
+            <tr><td><code>all</code></td><td>Writes all four types to separate files in the output directory.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Parameters</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Parameter</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>php_type</code></td><td>reverse</td><td>Payload type: <code>reverse</code>, <code>webshell</code>, <code>cmd</code>, <code>obfuscated</code>, <code>all</code>.</td></tr>
+            <tr><td><code>lhost</code></td><td>—</td><td>Listener IP for the reverse shell callback. Required for <code>reverse</code> and <code>all</code>.</td></tr>
+            <tr><td><code>lport</code></td><td>4444</td><td>Listener port.</td></tr>
+            <tr><td><code>php_obfuscate</code></td><td>false</td><td>Apply an additional obfuscation pass on top of the selected type.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Example</h3>
+        <pre><code><span class="comment"># Write all PHP payload types to disk</span>
+secV (websec) ❯ <span class="kw">set</span> operation php_payload
+secV (websec) ❯ <span class="kw">set</span> php_type all
+secV (websec) ❯ <span class="kw">set</span> lhost 10.10.14.1
+secV (websec) ❯ <span class="kw">set</span> lport 4444
+secV (websec) ❯ <span class="kw">run</span> https://example.com
+
+<span class="comment"># Obfuscated webshell only</span>
+secV (websec) ❯ <span class="kw">set</span> operation php_payload
+secV (websec) ❯ <span class="kw">set</span> php_type webshell
+secV (websec) ❯ <span class="kw">set</span> php_obfuscate true
+secV (websec) ❯ <span class="kw">run</span> https://example.com</code></pre>
+
+        <div class="callout warn">
+          <span class="callout-mark">!</span>
+          <span>These payloads are for use on systems you own or have explicit written permission to test. Uploading shells to unauthorized targets is a criminal offense.</span>
+        </div>
+      </section>
+
+      <!-- msf_payload -->
+      <section id="op-msf-payload">
+        <p class="sec-label">Operation</p>
+        <h2>msf_payload</h2>
+        <p>Runs msfvenom to generate web-focused payloads and writes a ready-to-use <code>handler.rc</code> resource script alongside them. After generation, the module prints the exact msfconsole command to start the handler.</p>
+
+        <h3>Parameters</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Parameter</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>payload_type</code></td><td>php/meterpreter/reverse_tcp</td><td>Any msfvenom payload string. Common choices: <code>php/meterpreter/reverse_tcp</code>, <code>java/meterpreter/reverse_tcp</code>, <code>windows/meterpreter/reverse_tcp</code>.</td></tr>
+            <tr><td><code>format</code></td><td>raw</td><td>Output format: <code>raw</code>, <code>war</code>, <code>jsp</code>, <code>aspx</code>.</td></tr>
+            <tr><td><code>lhost</code></td><td>—</td><td>Listener IP. Required.</td></tr>
+            <tr><td><code>lport</code></td><td>4444</td><td>Listener port.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Example</h3>
+        <pre><code><span class="comment"># WAR payload for Tomcat deployment</span>
+secV (websec) ❯ <span class="kw">set</span> operation msf_payload
+secV (websec) ❯ <span class="kw">set</span> format war
+secV (websec) ❯ <span class="kw">set</span> lhost 10.10.14.1
+secV (websec) ❯ <span class="kw">set</span> lport 4444
+secV (websec) ❯ <span class="kw">run</span> https://example.com
+
+<span class="comment"># ASPX payload for IIS targets</span>
+secV (websec) ❯ <span class="kw">set</span> operation msf_payload
+secV (websec) ❯ <span class="kw">set</span> payload_type windows/meterpreter/reverse_tcp
+secV (websec) ❯ <span class="kw">set</span> format aspx
+secV (websec) ❯ <span class="kw">set</span> lhost 10.10.14.1
+secV (websec) ❯ <span class="kw">run</span> https://example.com</code></pre>
+
+        <p>Output includes the generated payload file and a <code>handler.rc</code> you can pass directly to msfconsole:</p>
+        <pre><code>msfconsole -r ~/ZX01C/websec/&lt;target&gt;/handler.rc</code></pre>
+
+        <div class="callout warn">
+          <span class="callout-mark">!</span>
+          <span>Requires msfvenom installed. Part of the Metasploit Framework. Not included in secV - install separately via your package manager.</span>
+        </div>
+      </section>
+
+      <!-- fuzz -->
+      <section id="op-fuzz">
+        <p class="sec-label">Operation</p>
+        <h2>fuzz</h2>
+        <p>Directory and path fuzzing using external tools. Checks for ffuf, gobuster, and dirbuster in that order and uses the first one found. Output streams live to the terminal. Results are also written to <code>~/ZX01C/websec/&lt;target&gt;/fuzz/</code>.</p>
+
+        <h3>Parameters</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Parameter</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>wordlist</code></td><td>built-in</td><td>Path to a custom wordlist file. One entry per line. If not set, the module uses its built-in path list.</td></tr>
+            <tr><td><code>threads</code></td><td>40</td><td>Concurrent request threads passed to the fuzzing engine.</td></tr>
+            <tr><td><code>extensions</code></td><td>—</td><td>Comma-separated file extensions to append to each word, e.g. <code>php,html,txt</code>.</td></tr>
+            <tr><td><code>fuzz_engine</code></td><td>auto</td><td>Force a specific tool: <code>ffuf</code>, <code>gobuster</code>, or <code>dirbuster</code>. Skips auto-detection.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Example</h3>
+        <pre><code><span class="comment"># Auto-detect engine, fuzz for PHP and text files</span>
+secV (websec) ❯ <span class="kw">set</span> operation fuzz
+secV (websec) ❯ <span class="kw">set</span> extensions php,txt
+secV (websec) ❯ <span class="kw">run</span> https://example.com
+
+<span class="comment"># Force ffuf with SecLists wordlist and 80 threads</span>
+secV (websec) ❯ <span class="kw">set</span> operation fuzz
+secV (websec) ❯ <span class="kw">set</span> fuzz_engine ffuf
+secV (websec) ❯ <span class="kw">set</span> wordlist /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt
+secV (websec) ❯ <span class="kw">set</span> threads 80
+secV (websec) ❯ <span class="kw">set</span> extensions php,html,bak
+secV (websec) ❯ <span class="kw">run</span> https://example.com</code></pre>
+
+        <div class="callout">
+          <span class="callout-mark">i</span>
+          <span>At least one of ffuf, gobuster, or dirbuster must be installed and on <code>$PATH</code>. ffuf is recommended - fastest and most flexible of the three.</span>
+        </div>
+      </section>
+
+      <!-- burp_export -->
+      <section id="op-burp-export">
+        <p class="sec-label">Operation</p>
+        <h2>burp_export</h2>
+        <p>Takes a raw HTTP request and produces three files: a <code>.req</code> file with the raw request, a Burp Suite scope JSON, and an intruder payload list extracted from the request parameters. Saves to <code>~/ZX01C/websec/&lt;target&gt;/burp_export/</code>.</p>
+
+        <h3>Parameters</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Parameter</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>raw_request</code></td><td>—</td><td>The full raw HTTP request text, including method line, headers, and body. Paste from a proxy intercept or manual capture. Required.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Outputs</h3>
+        <div class="feat-grid">
+          <div class="feat-cell">
+            <div class="feat-icon">File</div>
+            <div class="feat-name">Raw .req</div>
+            <div class="feat-desc">The original HTTP request saved as-is, ready for use with curl, nc, or replay tools.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">JSON</div>
+            <div class="feat-name">Burp Scope</div>
+            <div class="feat-desc">Burp Suite scope JSON for the target host. Import directly via Project Options - Scope.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">List</div>
+            <div class="feat-name">Intruder Payloads</div>
+            <div class="feat-desc">Parameter names and values extracted from the request, formatted as an intruder payload list.</div>
+          </div>
+        </div>
+
+        <h3>Example</h3>
+        <pre><code><span class="comment"># Set the raw request and run against the target</span>
+secV (websec) ❯ <span class="kw">set</span> operation burp_export
+secV (websec) ❯ <span class="kw">set</span> raw_request <span class="str">POST /login HTTP/1.1
+Host: example.com
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=hunter2</span>
+secV (websec) ❯ <span class="kw">run</span> https://example.com
+
+<span class="comment"># Output</span>
+<span class="comment"># ~/ZX01C/websec/example.com/burp_export/request.req</span>
+<span class="comment"># ~/ZX01C/websec/example.com/burp_export/scope.json</span>
+<span class="comment"># ~/ZX01C/websec/example.com/burp_export/intruder_payloads.txt</span></code></pre>
       </section>
 
       <!-- Examples -->

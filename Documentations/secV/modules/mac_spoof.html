@@ -216,7 +216,7 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
     <div class="module-meta">
       <div>
         <h1 class="module-title">mac_spoof<span>.</span></h1>
-        <p class="module-sub">Per-interface MAC address rotation daemon for Linux. Background per-interface processes, locally-administered OUI prefix, automatic original MAC restoration, dry-run preview, and multi-interface support.</p>
+        <p class="module-sub">Per-interface MAC address rotation daemon for Linux. Background processes, locally-administered OUI generation, real vendor OUI spoofing (Apple, Samsung, Intel, Cisco, Dell), rotation history, stealth mode, persistent systemd service.</p>
         <div class="module-tags">
           <span class="tag hi">secV Module</span>
           <span class="tag">Network Anonymity</span>
@@ -224,7 +224,7 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
           <span class="tag">Daemon Mode</span>
           <span class="tag">iproute2</span>
           <span class="tag">Python 3.6+</span>
-          <span class="tag">v2.1.0</span>
+          <span class="tag">v2.2.0</span>
         </div>
       </div>
       <div class="module-stats">
@@ -250,6 +250,8 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
         <li><a href="#params">Parameters</a></li>
         <li><a href="#internals">Internals</a></li>
         <li><a href="#mac-format">MAC Format</a></li>
+        <li><a href="#vendor">Vendor Spoofing</a></li>
+        <li><a href="#persistence">Persistence</a></li>
         <li><div class="sidebar-sep">More</div></li>
         <li><a href="#examples">Examples</a></li>
         <li><a href="#troubleshoot">Troubleshooting</a></li>
@@ -296,6 +298,16 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
             <div class="feat-icon">Restore</div>
             <div class="feat-name">Auto-Restoration</div>
             <div class="feat-desc">Stop action always brings the interface back to its original vendor MAC. State file is cleaned up automatically.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Vendor</div>
+            <div class="feat-name">Vendor Spoofing</div>
+            <div class="feat-desc">Spoof as Apple, Samsung, Intel, Cisco, or Dell using a real OUI prefix. The last three octets are random so it looks like a real device on the network.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Stealth</div>
+            <div class="feat-name">Stealth Mode</div>
+            <div class="feat-desc">Set stealth true and the daemon only rotates when the interface disconnects and reconnects. Useful when you need a stable IP but want a fresh MAC on every new association.</div>
           </div>
         </div>
       </section>
@@ -349,6 +361,18 @@ secV (mac_spoof) ❯ <span class="kw">run</span> target   <span class="comment">
             <div class="mode-key">status</div>
             <div class="mode-desc">Report daemon PID, uptime, current MAC, original MAC, and rotation interval for each tracked interface.</div>
           </div>
+          <div class="mode-card">
+            <div class="mode-key">vendor</div>
+            <div class="mode-desc">Spoof as a real hardware vendor. Set the <code>vendor</code> param to <code>apple</code>, <code>samsung</code>, <code>intel</code>, <code>cisco</code>, or <code>dell</code>. Uses a real OUI prefix from that vendor's registered range.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">restore</div>
+            <div class="mode-desc">Restore the original MAC from state without stopping a running daemon. Falls back to <code>ethtool -P</code> if no state file exists.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">history</div>
+            <div class="mode-desc">Show the rotation log for the interface. Each entry has a timestamp, MAC, and how the change was triggered.</div>
+          </div>
         </div>
 
         <div class="callout crit">
@@ -382,7 +406,7 @@ secV (mac_spoof) ❯ <span class="kw">run</span> target   <span class="comment">
               <td><code>action</code></td>
               <td>string</td>
               <td>start</td>
-              <td>Operation to perform: <code>start</code>, <code>stop</code>, or <code>status</code>.</td>
+              <td>Operation to perform: <code>start</code>, <code>stop</code>, <code>status</code>, <code>vendor</code>, <code>restore</code>, or <code>history</code>.</td>
             </tr>
             <tr>
               <td><code>interval</code></td>
@@ -395,6 +419,24 @@ secV (mac_spoof) ❯ <span class="kw">run</span> target   <span class="comment">
               <td>boolean</td>
               <td>false</td>
               <td>Preview all actions without executing. Prints what would change and what original MACs would be saved.</td>
+            </tr>
+            <tr>
+              <td><code>vendor</code></td>
+              <td>string</td>
+              <td>—</td>
+              <td>Vendor name for the <code>vendor</code> action: <code>apple</code>, <code>samsung</code>, <code>intel</code>, <code>cisco</code>, <code>dell</code></td>
+            </tr>
+            <tr>
+              <td><code>stealth</code></td>
+              <td>boolean</td>
+              <td>false</td>
+              <td>Only rotate on disconnect events instead of a fixed interval.</td>
+            </tr>
+            <tr>
+              <td><code>persistent</code></td>
+              <td>boolean</td>
+              <td>false</td>
+              <td>Write a systemd user service so the daemon starts automatically on login.</td>
             </tr>
           </tbody>
         </table>
@@ -498,6 +540,76 @@ ip link set wlan0 up</code></pre>
         </div>
       </section>
 
+      <!-- Vendor Spoofing -->
+      <section id="vendor">
+        <p class="sec-label">Vendor Spoofing</p>
+        <h2>Vendor Spoofing</h2>
+        <p>The built-in <code>02:00:00</code> prefix is easy to spot. Any network scanner or IDS that checks OUI databases will flag it immediately as locally-administered and not tied to any hardware manufacturer. Vendor spoofing replaces that prefix with a real OUI from Apple, Samsung, Intel, Cisco, or Dell, so the address looks like a legitimate device on the segment.</p>
+        <p>The first three octets come from that vendor's registered OUI range. The last three octets are random, the same as the locally-administered mode. The result passes a basic OUI lookup and blends into device pools common on most enterprise or consumer networks.</p>
+
+        <h3>Detection risk comparison</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Detection vector</th><th>Locally-administered</th><th>Vendor-spoofed</th></tr></thead>
+          <tbody>
+            <tr><td>OUI database lookup</td><td>Instant flag: <code>02:00:00</code> is not a real vendor</td><td>Passes: OUI matches a known manufacturer</td></tr>
+            <tr><td>Wireshark / passive capture</td><td>Labeled "Locally Administered"</td><td>Labeled with vendor name</td></tr>
+            <tr><td>802.1X / NAC</td><td>High suspicion</td><td>Lower suspicion, still fingerprinted by other signals</td></tr>
+            <tr><td>ARP cache churn</td><td>Medium: rapid changes are unusual</td><td>Medium: same churn pattern applies</td></tr>
+            <tr><td>DHCP fingerprinting</td><td>OS/stack still visible</td><td>OS/stack still visible</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Usage</h3>
+        <pre><code>sudo secV
+<span class="kw">use</span> mac_spoof
+<span class="kw">set</span> iface wlan0
+<span class="kw">set</span> action vendor
+<span class="kw">set</span> vendor apple
+<span class="kw">run</span> target
+
+<span class="comment"># rotate continuously with Apple OUIs</span>
+<span class="kw">set</span> action start
+<span class="kw">set</span> vendor apple
+<span class="kw">set</span> interval 60
+<span class="kw">run</span> target</code></pre>
+
+        <div class="callout warn">
+          <span class="callout-mark">!</span>
+          <span>Vendor spoofing does not make you invisible. 802.1X enterprise networks fingerprint beyond the MAC using EAP identity, DHCP options, TCP/IP stack behavior, and probe frame patterns. Use vendor spoofing to blend into expected device pools on a target segment, not as a stand-alone evasion technique.</span>
+        </div>
+      </section>
+
+      <!-- Persistence -->
+      <section id="persistence">
+        <p class="sec-label">Persistence</p>
+        <h2>Persistence</h2>
+        <p>Setting <code>persistent true</code> makes mac_spoof write a systemd user service file at <code>~/.config/systemd/user/mac_spoof_&lt;iface&gt;.service</code>, then enables and starts it with <code>systemctl --user</code>. The daemon will start automatically when you log in without any extra steps.</p>
+        <p>The service file is scoped to your user session. It does not require writing to system-level systemd directories, but the daemon itself still needs root for <code>ip link</code> operations, so the service runs with <code>sudo</code> internally.</p>
+
+        <h3>Setup</h3>
+        <pre><code>sudo secV
+<span class="kw">use</span> mac_spoof
+<span class="kw">set</span> iface wlan0
+<span class="kw">set</span> vendor apple
+<span class="kw">set</span> interval 60
+<span class="kw">set</span> persistent true
+<span class="kw">run</span> target
+
+<span class="comment"># Verify the service is active</span>
+systemctl --user status mac_spoof_wlan0</code></pre>
+
+        <h3>Disable persistence</h3>
+        <pre><code><span class="comment"># Stop and disable the service</span>
+systemctl --user stop mac_spoof_wlan0
+systemctl --user disable mac_spoof_wlan0
+
+<span class="comment"># Remove the unit file</span>
+rm ~/.config/systemd/user/mac_spoof_wlan0.service
+systemctl --user daemon-reload</code></pre>
+      </section>
+
       <!-- Examples -->
       <section id="examples">
         <p class="sec-label">Usage</p>
@@ -548,6 +660,32 @@ secV (mac_spoof) ❯ <span class="kw">run</span> target
         <pre><code>secV (mac_spoof) ❯ <span class="kw">set</span> iface wlan0
 secV (mac_spoof) ❯ <span class="kw">set</span> interval 5.0   <span class="comment"># 5 seconds - keeps connection alive longer</span>
 secV (mac_spoof) ❯ <span class="kw">run</span> target</code></pre>
+
+        <h3>Vendor spoof - one-shot</h3>
+        <pre><code>secV (mac_spoof) ❯ <span class="kw">set</span> iface wlan0
+secV (mac_spoof) ❯ <span class="kw">set</span> action vendor
+secV (mac_spoof) ❯ <span class="kw">set</span> vendor samsung
+secV (mac_spoof) ❯ <span class="kw">run</span> target
+
+<span class="comment"># Output</span>
+[+] wlan0 MAC set to 04:18:d6:3a:7f:c2 (Samsung OUI)</code></pre>
+
+        <h3>Restore original MAC without stopping daemon</h3>
+        <pre><code>secV (mac_spoof) ❯ <span class="kw">set</span> action restore
+secV (mac_spoof) ❯ <span class="kw">set</span> iface wlan0
+secV (mac_spoof) ❯ <span class="kw">run</span> target
+
+<span class="comment"># If no state file: falls back to ethtool -P to read the permanent address</span></code></pre>
+
+        <h3>Rotation history</h3>
+        <pre><code>secV (mac_spoof) ❯ <span class="kw">set</span> action history
+secV (mac_spoof) ❯ <span class="kw">set</span> iface wlan0
+secV (mac_spoof) ❯ <span class="kw">run</span> target
+
+<span class="comment"># Output - one entry per rotation</span>
+2026-05-04 12:01:03  02:00:00:1a:2b:3c  trigger=interval
+2026-05-04 12:01:33  02:00:00:4d:5e:6f  trigger=interval
+2026-05-04 12:02:05  04:18:d6:3a:7f:c2  trigger=vendor</code></pre>
       </section>
 
       <!-- Troubleshooting -->

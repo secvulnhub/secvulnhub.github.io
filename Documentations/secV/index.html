@@ -948,12 +948,23 @@ footer {
     </a>
 
     <a class="module-card reveal" href="modules/websec.html">
-      <span class="mod-status status-beta">Beta</span>
+      <span class="mod-status status-stable">Stable</span>
       <div class="mod-name">websec</div>
       <div class="mod-category">Web · Offensive</div>
-      <div class="mod-desc">Full-stack web attack surface tool. DNS/WHOIS/SSL OSINT, security headers, CORS, cookies, directory brute-force, SQLi (error + time-blind), XSS, CSRF, 403 bypass, open redirect, framework CVEs (Jira/AEM/Confluence), WAF fingerprinting, web spidering, and Google dorks.</div>
+      <div class="mod-desc">Full-stack web attack surface tool. DNS/WHOIS/SSL OSINT, security headers, CORS, cookies, directory brute-force, SQLi (error + time-blind), XSS, CSRF, 403 bypass, open redirect, framework CVEs (Jira/AEM/Confluence), WAF fingerprinting, web spidering, and Google dorks. PHP payload generation, msfvenom web payloads, fuzzing, and Burp Suite export.</div>
       <div class="mod-tags">
-        <span class="tag">osint</span><span class="tag">sqli</span><span class="tag">xss</span><span class="tag">csrf</span><span class="tag">403bypass</span><span class="tag">cve</span><span class="tag">waf</span>
+        <span class="tag">osint</span><span class="tag">sqli</span><span class="tag">xss</span><span class="tag">csrf</span><span class="tag">403bypass</span><span class="tag">cve</span><span class="tag">waf</span><span class="tag">fuzzing</span>
+      </div>
+      <span class="mod-arrow">→</span>
+    </a>
+
+    <a class="module-card reveal" href="modules/ctfpwn.html">
+      <span class="mod-status status-stable">Stable</span>
+      <div class="mod-name">ctfpwn</div>
+      <div class="mod-category">CTF · Autopwn</div>
+      <div class="mod-desc">Syncs github.com/0xb0rn3/CTFs, lists all rooms sorted newest first, runs standalone autopwn scripts against a target, auto-extracts flags (THM{}/HTB{}), and saves run logs to ~/ZX01C/CTF/. Tracks new rooms between pulls.</div>
+      <div class="mod-tags">
+        <span class="tag">ctf</span><span class="tag">tryhackme</span><span class="tag">hackthebox</span><span class="tag">autopwn</span><span class="tag">flags</span>
       </div>
       <span class="mod-arrow">→</span>
     </a>
@@ -1282,7 +1293,7 @@ sudo journalctl -u secv-c2 -f</code></pre>
       <div class="chain-num">D</div>
       <div>
         <div class="chain-content-title">Disguised class names</div>
-        <div class="chain-content-body">DexClassLoader class placed at <span class="chain-content-code">com.android.system.health.Payload</span>. <span class="chain-content-code">AgentService</span> embedded in the boot persistence APK at <span class="chain-content-code">com.termux.boot.AgentService</span>.</div>
+        <div class="chain-content-body">DexClassLoader class placed at <span class="chain-content-code">com.android.system.health.Payload</span>. <span class="chain-content-code">AgentService</span> embedded in the boot persistence APK at <span class="chain-content-code">com.android.system.health.AgentService</span>.</div>
       </div>
     </div>
   </div>

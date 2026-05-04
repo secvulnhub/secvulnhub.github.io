@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ctfpwn - SecV Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+:root {
+  --bg:      #050505;
+  --bg1:     #0d0d0d;
+  --bg2:     #141414;
+  --bg3:     #1c1c1c;
+  --border:  rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.13);
+  --border3: rgba(255,255,255,0.2);
+  --text:    #a8a8a8;
+  --muted:   #505050;
+  --dim:     #252525;
+  --white:   #f0f0f0;
+  --off:     #d8d8d8;
+  --grey:    #787878;
+  --acc:     #88aacc;
+  --mono:    'JetBrains Mono', monospace;
+  --disp:    'Syne', sans-serif;
+  --nav-h:   52px;
+  --transition: 0.16s ease;
+}
+
+body { font-family: var(--mono); background: var(--bg); color: var(--text); line-height: 1.7; overflow-x: hidden; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 2px; }
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--nav-h); display: flex; align-items: center;
+  justify-content: space-between; padding: 0 2.5rem;
+  border-bottom: 1px solid transparent; transition: border-color 0.3s, background 0.3s;
+}
+nav.scrolled { background: rgba(5,5,5,0.96); backdrop-filter: blur(16px); border-color: var(--border); }
+.logo { font-family: var(--disp); font-size: 0.9rem; font-weight: 700; color: var(--off); text-decoration: none; letter-spacing: 0.01em; display: flex; align-items: center; gap: 0.55rem; }
+.logo-mark { width: 6px; height: 6px; background: var(--white); flex-shrink: 0; }
+.nav-links { display: flex; align-items: center; gap: 0.1rem; }
+.nav-link { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-decoration: none; padding: 0.4rem 0.75rem; transition: color var(--transition); }
+.nav-link:hover { color: var(--text); }
+.nav-link.active { color: var(--white); }
+.nav-btn { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); text-decoration: none; padding: 0.4rem 0.9rem; border: 1px solid var(--border2); margin-left: 0.5rem; transition: border-color var(--transition), color var(--transition); }
+.nav-btn:hover { border-color: var(--white); color: var(--white); }
+.nav-btn.primary { background: var(--white); border-color: var(--white); color: var(--bg); }
+.nav-btn.primary:hover { background: transparent; color: var(--white); }
+.nav-burger { display: none; background: none; border: 1px solid var(--border2); padding: 0.4rem 0.6rem; cursor: pointer; border-radius: 3px; flex-direction: column; gap: 4px; }
+.nav-burger span { display: block; width: 18px; height: 1px; background: var(--text); transition: transform var(--transition), opacity var(--transition); }
+body.nav-open .nav-burger span:nth-child(1) { transform: rotate(45deg) translate(3.5px,3.5px); }
+body.nav-open .nav-burger span:nth-child(2) { opacity: 0; }
+body.nav-open .nav-burger span:nth-child(3) { transform: rotate(-45deg) translate(3.5px,-3.5px); }
+
+.page { max-width: 1080px; margin: 0 auto; padding: 0 2.5rem; }
+.doc-header { padding-top: calc(var(--nav-h) + 3.5rem); padding-bottom: 3.5rem; border-bottom: 1px solid var(--border); animation: rise 0.45s ease both; }
+@keyframes rise { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+
+.breadcrumb { font-size: 0.56rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.75rem; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.breadcrumb a { color: var(--muted); text-decoration: none; transition: color var(--transition); }
+.breadcrumb a:hover { color: var(--text); }
+.breadcrumb span { color: var(--dim); }
+
+.module-meta { display: flex; align-items: flex-start; justify-content: space-between; gap: 2.5rem; flex-wrap: wrap; }
+.module-title { font-family: var(--disp); font-size: clamp(2.8rem, 6vw, 4.8rem); font-weight: 800; letter-spacing: -0.04em; color: var(--white); line-height: 0.95; margin-bottom: 0.85rem; }
+.module-title span { color: var(--grey); font-weight: 400; }
+.module-sub { font-size: 0.84rem; color: var(--muted); line-height: 1.85; max-width: 500px; margin-bottom: 1.5rem; }
+.module-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.tag { font-size: 0.5rem; letter-spacing: 0.14em; text-transform: uppercase; padding: 0.18rem 0.55rem; border: 1px solid var(--border2); color: var(--muted); }
+.tag.hi { color: var(--white); border-color: rgba(255,255,255,0.28); }
+.module-stats { display: flex; flex-direction: column; gap: 1rem; min-width: 210px; }
+.stat-row { display: flex; justify-content: space-between; align-items: center; padding: 0.55rem 0; border-bottom: 1px solid var(--border); font-size: 0.68rem; gap: 2rem; }
+.stat-row:last-child { border-bottom: none; }
+.stat-lbl { letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.stat-v { color: var(--white); font-weight: 500; }
+
+.doc-body { display: grid; grid-template-columns: 200px 1fr; gap: 4rem; padding: 3.5rem 0; align-items: start; }
+.sidebar { position: sticky; top: calc(var(--nav-h) + 1rem); }
+.sidebar-nav { list-style: none; }
+.sidebar-nav li { margin-bottom: 0.05rem; }
+.sidebar-nav a { display: block; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-decoration: none; padding: 0.4rem 0; border-left: 2px solid transparent; padding-left: 0.75rem; transition: color var(--transition), border-color var(--transition); }
+.sidebar-nav a:hover { color: var(--text); border-color: var(--border2); }
+.sidebar-nav a.active { color: var(--white); border-color: var(--white); }
+.sidebar-sep { font-size: 0.48rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); padding: 0.7rem 0 0.25rem 0.75rem; margin-top: 0.5rem; }
+
+.content section { padding-bottom: 3.5rem; border-bottom: 1px solid var(--border); margin-bottom: 3.5rem; }
+.content section:last-child { border-bottom: none; }
+.sec-label { font-size: 0.52rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--grey); margin-bottom: 0.55rem; }
+
+h2 { font-family: var(--disp); font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 800; letter-spacing: -0.03em; color: var(--white); margin-bottom: 1.25rem; line-height: 1.05; }
+h3 { font-family: var(--disp); font-size: 1.05rem; font-weight: 700; color: var(--off); margin: 2rem 0 0.8rem; letter-spacing: -0.01em; }
+p { font-size: 0.82rem; color: var(--text); line-height: 1.85; margin-bottom: 0.9rem; }
+p:last-child { margin-bottom: 0; }
+a { color: var(--grey); }
+a:hover { color: var(--white); }
+
+pre { background: var(--bg1); border: 1px solid var(--border); border-left: 3px solid var(--border3); padding: 1.1rem 1.35rem; overflow-x: auto; margin: 1rem 0; font-size: 0.76rem; line-height: 1.75; border-radius: 0 2px 2px 0; }
+code { font-family: var(--mono); font-size: 0.76rem; background: var(--bg1); border: 1px solid var(--border); padding: 0.08rem 0.35rem; color: var(--off); }
+pre code { background: none; border: none; padding: 0; font-size: inherit; }
+.comment { color: var(--muted); font-style: italic; }
+.kw { color: var(--white); }
+.str { color: var(--grey); }
+
+.table-wrap { overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 0.74rem; min-width: 420px; }
+th { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey); text-align: left; padding: 0.6rem 1rem; border-bottom: 1px solid var(--border2); background: var(--bg1); white-space: nowrap; }
+td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; line-height: 1.65; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg1); }
+td:first-child { color: var(--off); font-weight: 500; white-space: nowrap; }
+td code { font-size: 0.7rem; }
+
+.feat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); margin: 1.25rem 0; }
+.feat-cell { background: var(--bg); padding: 1.1rem; transition: background var(--transition); }
+.feat-cell:hover { background: var(--bg1); }
+.feat-icon { font-size: 0.54rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey); margin-bottom: 0.4rem; }
+.feat-name { font-family: var(--disp); font-size: 0.88rem; font-weight: 700; color: var(--white); margin-bottom: 0.3rem; }
+.feat-desc { font-size: 0.72rem; color: var(--muted); line-height: 1.6; }
+
+.mode-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); margin: 1.25rem 0; }
+.mode-card { background: var(--bg); padding: 1.25rem; transition: background var(--transition); }
+.mode-card:hover { background: var(--bg1); }
+.mode-key { font-family: var(--disp); font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.4rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; }
+.mode-badge { font-size: 0.46rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.12rem 0.38rem; border: 1px solid var(--border2); color: var(--muted); }
+.mode-badge.dflt { color: var(--white); border-color: rgba(255,255,255,0.28); }
+.mode-desc { font-size: 0.71rem; color: var(--muted); line-height: 1.6; }
+
+.callout { display: flex; gap: 0.75rem; padding: 0.95rem 1.15rem; border: 1px solid var(--border2); border-left: 3px solid var(--border2); margin: 1.25rem 0; font-size: 0.78rem; line-height: 1.7; color: var(--text); border-radius: 0 2px 2px 0; }
+.callout.warn { border-left-color: var(--grey); }
+.callout.crit { border-left-color: var(--white); background: rgba(255,255,255,0.02); }
+.callout-mark { font-size: 0.64rem; color: var(--grey); flex-shrink: 0; margin-top: 0.15rem; }
+
+.process-chain { display: flex; flex-direction: column; border: 1px solid var(--border); margin: 1.25rem 0; }
+.pc-step { display: grid; grid-template-columns: 2.5rem 1fr; gap: 0.85rem; padding: 1rem 1.15rem; border-bottom: 1px solid var(--border); align-items: start; background: var(--bg); transition: background var(--transition); }
+.pc-step:last-child { border-bottom: none; }
+.pc-step:hover { background: var(--bg1); }
+.pc-num { font-family: var(--disp); font-size: 0.72rem; font-weight: 800; color: var(--muted); }
+.pc-title { font-size: 0.76rem; font-weight: 600; color: var(--white); margin-bottom: 0.25rem; }
+.pc-body { font-size: 0.68rem; color: var(--muted); line-height: 1.65; }
+
+.author-card { display: flex; gap: 1.75rem; align-items: flex-start; padding: 1.75rem; border: 1px solid var(--border2); background: var(--bg1); margin-top: 1.5rem; }
+.author-avatar { width: 52px; height: 52px; background: var(--bg3); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-family: var(--disp); font-size: 1.2rem; font-weight: 800; color: var(--white); flex-shrink: 0; }
+.author-name { font-family: var(--disp); font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.2rem; }
+.author-role { font-size: 0.56rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--grey); margin-bottom: 0.75rem; }
+.author-bio { font-size: 0.76rem; color: var(--muted); line-height: 1.75; margin-bottom: 0.85rem; }
+.author-links { display: flex; gap: 1rem; flex-wrap: wrap; }
+.author-link { font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--grey); text-decoration: none; display: flex; align-items: center; gap: 0.3rem; transition: color var(--transition); }
+.author-link:hover { color: var(--white); }
+
+footer { border-top: 1px solid var(--border); margin-top: 2rem; }
+.foot-inner { max-width: 1080px; margin: 0 auto; padding: 1.5rem 2.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.foot-brand { font-family: var(--disp); font-size: 0.88rem; font-weight: 700; color: var(--muted); text-decoration: none; }
+.foot-links { display: flex; gap: 1.75rem; }
+.foot-link { font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color var(--transition); }
+.foot-link:hover { color: var(--text); }
+.foot-note { font-size: 0.52rem; color: var(--dim); letter-spacing: 0.06em; }
+
+@media (max-width: 860px) {
+  nav { padding: 0 1.5rem; }
+  .nav-links { display: none; }
+  .nav-burger { display: flex; }
+  body.nav-open .nav-links { display: flex; position: fixed; top: var(--nav-h); left: 0; right: 0; background: var(--bg); border-bottom: 1px solid var(--border); flex-direction: column; padding: 1rem 1.5rem 1.5rem; gap: 0.25rem; align-items: flex-start; z-index: 99; }
+  .page { padding: 0 1.5rem; }
+  .doc-body { grid-template-columns: 1fr; gap: 0; }
+  .sidebar { display: none; }
+  .module-title { font-size: 2.6rem; }
+  .author-card { flex-direction: column; gap: 1rem; }
+  .module-stats { min-width: unset; width: 100%; }
+  pre { font-size: 0.7rem; }
+}
+@media (max-width: 540px) {
+  .feat-grid { grid-template-columns: 1fr; }
+  .mode-grid { grid-template-columns: 1fr; }
+  .page { padding: 0 1rem; }
+  pre { padding: 0.85rem 1rem; }
+  .doc-header { padding-top: calc(var(--nav-h) + 2rem); }
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a class="logo" href="../index.html">
+    <span class="logo-mark"></span>
+    SecVulnHub
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="../index.html">Docs</a>
+    <a class="nav-link" href="netrecon.html">netrecon</a>
+    <a class="nav-link" href="android_pentest.html">android</a>
+    <a class="nav-link" href="wifi_monitor.html">wifi_monitor</a>
+    <a class="nav-link active" href="ctfpwn.html">ctfpwn</a>
+    <a class="nav-btn" href="https://github.com/0xb0rn3" target="_blank">GitHub</a>
+    <a class="nav-btn primary" href="https://discord.gg/SecVulnHub" target="_blank">Discord</a>
+  </div>
+  <button class="nav-burger" id="burger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="page">
+
+  <div class="doc-header">
+    <div class="breadcrumb">
+      <a href="../index.html">SecVulnHub</a>
+      <span>/</span>
+      <a href="../index.html#modules">Modules</a>
+      <span>/</span>
+      ctfpwn
+    </div>
+    <div class="module-meta">
+      <div>
+        <h1 class="module-title">ctfpwn<span>.</span></h1>
+        <p class="module-sub">Clones github.com/0xb0rn3/CTFs, lists all rooms sorted newest first, and runs standalone autopwn scripts against a target. Flags are auto-extracted from script output (THM{}, HTB{}, flag{} patterns) and the full run log is saved to ~/ZX01C/CTF/&lt;room&gt;/.</p>
+        <div class="module-tags">
+          <span class="tag hi">secV Module</span>
+          <span class="tag">CTF</span>
+          <span class="tag">TryHackMe</span>
+          <span class="tag">HackTheBox</span>
+          <span class="tag">Autopwn</span>
+          <span class="tag">Python 3</span>
+          <span class="tag">v1.1.0</span>
+        </div>
+      </div>
+      <div class="module-stats">
+        <div class="stat-row"><span class="stat-lbl">Category</span><span class="stat-v">CTF</span></div>
+        <div class="stat-row"><span class="stat-lbl">Language</span><span class="stat-v">Python 3</span></div>
+        <div class="stat-row"><span class="stat-lbl">Location</span><span class="stat-v">tools/ctf/ctfpwn/</span></div>
+        <div class="stat-row"><span class="stat-lbl">Author</span><span class="stat-v">dezthejackal | 0xb0rn3</span></div>
+        <div class="stat-row"><span class="stat-lbl">Version</span><span class="stat-v">v1.1.0</span></div>
+        <div class="stat-row"><span class="stat-lbl">License</span><span class="stat-v">MIT</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-body">
+
+    <aside class="sidebar">
+      <ul class="sidebar-nav">
+        <li><div class="sidebar-sep">Overview</div></li>
+        <li><a href="#overview" class="active">What it does</a></li>
+        <li><a href="#quickstart">Quick Start</a></li>
+        <li><div class="sidebar-sep">Reference</div></li>
+        <li><a href="#operations">Operations</a></li>
+        <li><a href="#params">Parameters</a></li>
+        <li><a href="#internals">How It Works</a></li>
+        <li><a href="#rooms">Room List</a></li>
+        <li><div class="sidebar-sep">More</div></li>
+        <li><a href="#examples">Examples</a></li>
+        <li><a href="#deps">Dependencies</a></li>
+        <li><a href="#author">Author</a></li>
+      </ul>
+    </aside>
+
+    <div class="content">
+
+      <!-- Overview -->
+      <section id="overview">
+        <p class="sec-label">Overview</p>
+        <h2>What ctfpwn does</h2>
+        <p>ctfpwn is secV's CTF automation module. It clones the <a href="https://github.com/0xb0rn3/CTFs" target="_blank">0xb0rn3/CTFs</a> repository, mirrors all rooms to <code>~/ZX01C/CTF/</code>, and runs the standalone autopwn script for any room directly against a target IP. Flag patterns — <code>THM{}</code>, <code>HTB{}</code>, and <code>flag{}</code> — are extracted automatically from script output and printed inline.</p>
+        <p>Room state is tracked in <code>~/.secv/ctfs_state.json</code> so ctfpwn knows exactly which rooms appeared since your last pull. Every run writes a full log to <code>~/ZX01C/CTF/&lt;room&gt;/run_&lt;timestamp&gt;.log</code>.</p>
+
+        <div class="feat-grid">
+          <div class="feat-cell">
+            <div class="feat-icon">Sync</div>
+            <div class="feat-name">Repo Mirror</div>
+            <div class="feat-desc">Clones <code style="font-size:0.64rem">github.com/0xb0rn3/CTFs</code> to <code style="font-size:0.64rem">~/.secv/ctfs/</code> on first run, then pulls on every subsequent call.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Detection</div>
+            <div class="feat-name">Flag Extraction</div>
+            <div class="feat-desc">Scans all script output for <code style="font-size:0.64rem">THM{}</code>, <code style="font-size:0.64rem">HTB{}</code>, and <code style="font-size:0.64rem">flag{}</code> patterns and prints matches immediately.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">State</div>
+            <div class="feat-name">New Room Tracking</div>
+            <div class="feat-desc">Room state stored in <code style="font-size:0.64rem">~/.secv/ctfs_state.json</code>. Rooms added since last pull are marked in list output.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Logs</div>
+            <div class="feat-name">Run Logs</div>
+            <div class="feat-desc">Full stdout from every autopwn run saved to <code style="font-size:0.64rem">~/ZX01C/CTF/&lt;room&gt;/run_&lt;timestamp&gt;.log</code> for review.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Search</div>
+            <div class="feat-name">Full-Text Search</div>
+            <div class="feat-desc">Search scans room names, writeup files, and exploit script source. Useful for finding rooms by technique, CVE, or tool name.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Filter</div>
+            <div class="feat-name">Platform Filter</div>
+            <div class="feat-desc">Filter rooms by platform: <code style="font-size:0.64rem">THM</code>, <code style="font-size:0.64rem">HTB</code>, or <code style="font-size:0.64rem">ALL</code>. Defaults to TryHackMe.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Start -->
+      <section id="quickstart">
+        <p class="sec-label">Quick Start</p>
+        <h2>Running ctfpwn</h2>
+        <p>Connect to your platform VPN before running any autopwn script. Then load ctfpwn and pull the latest rooms.</p>
+
+        <pre><code><span class="comment"># Pull all rooms on first run</span>
+secV
+secV ❯ <span class="kw">use</span> ctfpwn
+secV (ctfpwn) ❯ <span class="kw">set</span> operation pull
+secV (ctfpwn) ❯ <span class="kw">run</span> none
+
+<span class="comment"># List all rooms sorted newest first</span>
+secV (ctfpwn) ❯ <span class="kw">set</span> operation list
+secV (ctfpwn) ❯ <span class="kw">run</span> none</code></pre>
+
+        <h3>Run a specific room</h3>
+        <pre><code>secV (ctfpwn) ❯ <span class="kw">set</span> operation run
+secV (ctfpwn) ❯ <span class="kw">set</span> ctf simplectf
+secV (ctfpwn) ❯ <span class="kw">run</span> 10.10.85.42</code></pre>
+
+        <h3>Run latest room against a target</h3>
+        <pre><code>secV (ctfpwn) ❯ <span class="kw">set</span> operation latest
+secV (ctfpwn) ❯ <span class="kw">run</span> 10.10.85.42</code></pre>
+
+        <div class="callout warn">
+          <span class="callout-mark">i</span>
+          <span>Connect to TryHackMe or HackTheBox VPN before running any autopwn script. Scripts reach out to the target IP directly and will fail or hang without an active VPN session.</span>
+        </div>
+      </section>
+
+      <!-- Operations -->
+      <section id="operations">
+        <p class="sec-label">Reference</p>
+        <h2>Operations</h2>
+        <p>The <code>operation</code> parameter controls what ctfpwn does when <code>run</code> is called.</p>
+
+        <div class="mode-grid">
+          <div class="mode-card">
+            <div class="mode-key">list <span class="mode-badge dflt">default</span></div>
+            <div class="mode-desc">List all CTFs sorted newest first. Rooms added since the last pull are marked with a new indicator.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">pull</div>
+            <div class="mode-desc">Clone the repo on first use or pull updates. Mirrors all room files to <code style="font-size:0.64rem">~/ZX01C/CTF/</code> and updates the state file.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">latest</div>
+            <div class="mode-desc">Show the newest CTF room. If a target IP is passed to <code>run</code>, executes that room's autopwn script immediately.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">run</div>
+            <div class="mode-desc">Run a specific room's autopwn script against a target IP. Room matched case-insensitively with partial name support.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">info</div>
+            <div class="mode-desc">Print the README or writeup for a room. Requires <code>ctf</code> parameter to identify the room.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">search</div>
+            <div class="mode-desc">Full-text search across room names, writeup files, and exploit scripts. Requires a <code>query</code> parameter.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">new</div>
+            <div class="mode-desc">Show only rooms added since the last pull. Reads from the state file — no network call required.</div>
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <span class="callout-mark">!</span>
+          <span>The <code>search</code> operation scans room names, writeups, AND exploit scripts. On large repos this can take a few seconds. Results include file paths so you know exactly where a match was found.</span>
+        </div>
+      </section>
+
+      <!-- Parameters -->
+      <section id="params">
+        <p class="sec-label">Reference</p>
+        <h2>Parameters</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>list</td>
+              <td>Operation to run: <code>list</code>, <code>pull</code>, <code>latest</code>, <code>run</code>, <code>info</code>, <code>search</code>, or <code>new</code>.</td>
+            </tr>
+            <tr>
+              <td><code>ctf</code></td>
+              <td>string</td>
+              <td>—</td>
+              <td>Room name for <code>run</code> and <code>info</code> operations. Case-insensitive, partial match supported. E.g. <code>simple</code> matches <code>simplectf</code>.</td>
+            </tr>
+            <tr>
+              <td><code>platform</code></td>
+              <td>string</td>
+              <td>THM</td>
+              <td>Platform filter applied to <code>list</code>, <code>new</code>, and <code>search</code>. Values: <code>THM</code>, <code>HTB</code>, or <code>ALL</code>.</td>
+            </tr>
+            <tr>
+              <td><code>query</code></td>
+              <td>string</td>
+              <td>—</td>
+              <td>Search term for the <code>search</code> operation. Matched against room names, writeup text, and script source.</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </section>
+
+      <!-- Internals -->
+      <section id="internals">
+        <p class="sec-label">How It Works</p>
+        <h2>Sync and run workflow</h2>
+        <p>Understanding the pull and run sequence helps when debugging connectivity or stale room state.</p>
+
+        <h3>Sync workflow</h3>
+        <div class="process-chain">
+          <div class="pc-step">
+            <div class="pc-num">01</div>
+            <div>
+              <div class="pc-title">Clone or pull</div>
+              <div class="pc-body">On first run, <code>git clone https://github.com/0xb0rn3/CTFs ~/.secv/ctfs/</code>. On subsequent pulls, <code>git pull</code> inside the same directory fetches any new commits.</div>
+            </div>
+          </div>
+          <div class="pc-step">
+            <div class="pc-num">02</div>
+            <div>
+              <div class="pc-title">Mirror room files</div>
+              <div class="pc-body">Each room directory from the repo is copied to <code>~/ZX01C/CTF/&lt;room_name&gt;/</code>. Existing files are overwritten with the latest version from the repo.</div>
+            </div>
+          </div>
+          <div class="pc-step">
+            <div class="pc-num">03</div>
+            <div>
+              <div class="pc-title">Update state file</div>
+              <div class="pc-body">Room list and pull timestamp written to <code>~/.secv/ctfs_state.json</code>. The previous state is compared to detect which rooms are new since the last pull.</div>
+            </div>
+          </div>
+          <div class="pc-step">
+            <div class="pc-num">04</div>
+            <div>
+              <div class="pc-title">Report new rooms</div>
+              <div class="pc-body">Rooms that appear in the current state but not the previous state are flagged as new. These show up in <code>list</code>, <code>new</code>, and the pull summary.</div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Run workflow</h3>
+        <div class="process-chain">
+          <div class="pc-step">
+            <div class="pc-num">01</div>
+            <div>
+              <div class="pc-title">Resolve room</div>
+              <div class="pc-body">The <code>ctf</code> parameter is matched case-insensitively against room names in <code>~/.secv/ctfs/</code>. Partial matches are accepted — first match wins.</div>
+            </div>
+          </div>
+          <div class="pc-step">
+            <div class="pc-num">02</div>
+            <div>
+              <div class="pc-title">Locate autopwn script</div>
+              <div class="pc-body">ctfpwn looks for the room's standalone script inside the matched directory. Scripts accept the target IP as the first positional argument.</div>
+            </div>
+          </div>
+          <div class="pc-step">
+            <div class="pc-num">03</div>
+            <div>
+              <div class="pc-title">Execute and stream output</div>
+              <div class="pc-body">The script is executed with the target IP: <code>python3 exploit.py &lt;target_ip&gt;</code>. Output is streamed to the terminal in real time while being captured for log and flag extraction.</div>
+            </div>
+          </div>
+          <div class="pc-step">
+            <div class="pc-num">04</div>
+            <div>
+              <div class="pc-title">Extract flags and save log</div>
+              <div class="pc-body">All lines matching <code>THM\{[^}]+\}</code>, <code>HTB\{[^}]+\}</code>, or <code>flag\{[^}]+\}</code> are printed as extracted flags. The full run log is written to <code>~/ZX01C/CTF/&lt;room&gt;/run_&lt;timestamp&gt;.log</code>.</div>
+            </div>
+          </div>
+        </div>
+
+        <h3>State file structure</h3>
+        <p>The state file at <code>~/.secv/ctfs_state.json</code> records the room list and pull timestamp. The <code>new</code> operation diffs current vs previous state to find additions.</p>
+        <pre><code>{
+  "last_pull":  1746403200,
+  "rooms": [
+    "Biohazard",
+    "AttacktiveDirectory",
+    "simplectf",
+    "rootmeCTF"
+  ]
+}</code></pre>
+      </section>
+
+      <!-- Room List -->
+      <section id="rooms">
+        <p class="sec-label">Room List</p>
+        <h2>Available rooms</h2>
+        <p>25 TryHackMe rooms, sorted newest first. HTB rooms are in progress.</p>
+
+        <h3>TryHackMe (25 rooms)</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Room</th><th>Platform</th></tr></thead>
+          <tbody>
+            <tr><td>01</td><td>Biohazard</td><td>THM</td></tr>
+            <tr><td>02</td><td>AttacktiveDirectory</td><td>THM</td></tr>
+            <tr><td>03</td><td>UltraTech</td><td>THM</td></tr>
+            <tr><td>04</td><td>Blog</td><td>THM</td></tr>
+            <tr><td>05</td><td>0day</td><td>THM</td></tr>
+            <tr><td>06</td><td>Dogcat</td><td>THM</td></tr>
+            <tr><td>07</td><td>Ghizer</td><td>THM</td></tr>
+            <tr><td>08</td><td>Relevant</td><td>THM</td></tr>
+            <tr><td>09</td><td>Wgel</td><td>THM</td></tr>
+            <tr><td>10</td><td>Wonderland</td><td>THM</td></tr>
+            <tr><td>11</td><td>Cheese-CTF</td><td>THM</td></tr>
+            <tr><td>12</td><td>Year of the pig</td><td>THM</td></tr>
+            <tr><td>13</td><td>Rabbit_Store</td><td>THM</td></tr>
+            <tr><td>14</td><td>Silver_Platter</td><td>THM</td></tr>
+            <tr><td>15</td><td>crypto_failures</td><td>THM</td></tr>
+            <tr><td>16</td><td>sticker_shop</td><td>THM</td></tr>
+            <tr><td>17</td><td>chill-hack</td><td>THM</td></tr>
+            <tr><td>18</td><td>W1seGuy</td><td>THM</td></tr>
+            <tr><td>19</td><td>agent_sudo</td><td>THM</td></tr>
+            <tr><td>20</td><td>bounty_hacker</td><td>THM</td></tr>
+            <tr><td>21</td><td>Hidden_Deep_Into_My_Heart</td><td>THM</td></tr>
+            <tr><td>22</td><td>VulnNet-Internal</td><td>THM</td></tr>
+            <tr><td>23</td><td>pickle-rick</td><td>THM</td></tr>
+            <tr><td>24</td><td>simplectf</td><td>THM</td></tr>
+            <tr><td>25</td><td>rootmeCTF</td><td>THM</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>HackTheBox</h3>
+        <p>Coming soon. Set <code>platform HTB</code> to filter for HTB rooms once available.</p>
+      </section>
+
+      <!-- Examples -->
+      <section id="examples">
+        <p class="sec-label">Usage</p>
+        <h2>Examples</h2>
+
+        <h3>List all CTFs</h3>
+        <pre><code>secV ❯ <span class="kw">use</span> ctfpwn
+secV (ctfpwn) ❯ <span class="kw">set</span> operation list
+secV (ctfpwn) ❯ <span class="kw">run</span> none</code></pre>
+
+        <h3>Pull and sync everything</h3>
+        <pre><code>secV (ctfpwn) ❯ <span class="kw">set</span> operation pull
+secV (ctfpwn) ❯ <span class="kw">run</span> none
+
+<span class="comment"># Output</span>
+[+] Pulling 0xb0rn3/CTFs ...
+[+] Mirrored 25 rooms to ~/ZX01C/CTF/
+[+] 2 new rooms since last pull: Biohazard, AttacktiveDirectory</code></pre>
+
+        <h3>Run latest against a target</h3>
+        <pre><code>secV (ctfpwn) ❯ <span class="kw">set</span> operation latest
+secV (ctfpwn) ❯ <span class="kw">run</span> 10.10.85.42
+
+<span class="comment"># Runs Biohazard autopwn against 10.10.85.42</span></code></pre>
+
+        <h3>Run a specific room</h3>
+        <pre><code>secV (ctfpwn) ❯ <span class="kw">set</span> operation run
+secV (ctfpwn) ❯ <span class="kw">set</span> ctf simplectf
+secV (ctfpwn) ❯ <span class="kw">run</span> 10.10.85.42
+
+<span class="comment"># Output</span>
+[+] Running simplectf against 10.10.85.42
+[+] Flag found: THM{Mg1tsM@g1c}
+[+] Log saved: ~/ZX01C/CTF/simplectf/run_1746403200.log</code></pre>
+
+        <h3>Search by technique</h3>
+        <pre><code>secV (ctfpwn) ❯ <span class="kw">set</span> operation search
+secV (ctfpwn) ❯ <span class="kw">set</span> query ssti
+secV (ctfpwn) ❯ <span class="kw">run</span> none
+
+<span class="comment"># Scans room names, writeups, and exploit scripts for "ssti"</span></code></pre>
+
+        <h3>See what is new since last pull</h3>
+        <pre><code>secV (ctfpwn) ❯ <span class="kw">set</span> operation new
+secV (ctfpwn) ❯ <span class="kw">run</span> none</code></pre>
+
+        <h3>Read a room's writeup</h3>
+        <pre><code>secV (ctfpwn) ❯ <span class="kw">set</span> operation info
+secV (ctfpwn) ❯ <span class="kw">set</span> ctf dogcat
+secV (ctfpwn) ❯ <span class="kw">run</span> none</code></pre>
+
+        <h3>Filter by platform</h3>
+        <pre><code>secV (ctfpwn) ❯ <span class="kw">set</span> operation list
+secV (ctfpwn) ❯ <span class="kw">set</span> platform ALL
+secV (ctfpwn) ❯ <span class="kw">run</span> none</code></pre>
+      </section>
+
+      <!-- Dependencies -->
+      <section id="deps">
+        <p class="sec-label">Dependencies</p>
+        <h2>Required and optional tools</h2>
+        <p>ctfpwn itself only needs Python 3 and git. Individual room scripts may require additional tools depending on the techniques they use.</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tool</th><th>Required</th><th>Used for</th></tr></thead>
+          <tbody>
+            <tr><td><code>python3</code></td><td>Yes</td><td>Running ctfpwn and autopwn scripts</td></tr>
+            <tr><td><code>git</code></td><td>Yes</td><td>Cloning and pulling the CTFs repo</td></tr>
+            <tr><td><code>nmap</code></td><td>Optional</td><td>Most room scripts use nmap for initial port scanning</td></tr>
+            <tr><td><code>gobuster</code></td><td>Optional</td><td>Web rooms that include directory or vhost brute-forcing</td></tr>
+            <tr><td><code>sshpass</code></td><td>Optional</td><td>Privesc scripts that automate SSH login with a found credential</td></tr>
+            <tr><td><code>hydra</code></td><td>Optional</td><td>Brute force rooms requiring credential spraying</td></tr>
+            <tr><td><code>nodejs</code></td><td>Optional</td><td>Rooms with JavaScript-based exploits</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Install required dependencies</h3>
+        <pre><code><span class="comment"># Debian / Ubuntu / Kali</span>
+sudo apt install python3 git nmap gobuster sshpass hydra nodejs
+
+<span class="comment"># Arch / CachyOS</span>
+sudo pacman -S python git nmap gobuster sshpass hydra nodejs</code></pre>
+      </section>
+
+      <!-- Author -->
+      <section id="author">
+        <p class="sec-label">About</p>
+        <h2>Author</h2>
+        <div class="author-card">
+          <div class="author-avatar">0x</div>
+          <div>
+            <div class="author-name">dezthejackal | 0xb0rn3</div>
+            <div class="author-role">CTF Player · secV Developer</div>
+            <div class="author-bio">CTF write-up author and tool builder. ctfpwn is part of the secV offensive security framework, bringing CTF automation into the same modular shell used for network recon, mobile pentesting, and C2 operations. Rooms cover TryHackMe and HackTheBox across web exploitation, privilege escalation, cryptography, and binary challenges.</div>
+            <div class="author-links">
+              <a class="author-link" href="https://github.com/0xb0rn3" target="_blank">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                GitHub
+              </a>
+              <a class="author-link" href="https://github.com/0xb0rn3/CTFs" target="_blank">
+                CTFs repo
+              </a>
+              <a class="author-link" href="../index.html">
+                secV docs
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- .content -->
+  </div><!-- .doc-body -->
+</div><!-- .page -->
+
+<footer>
+  <div class="foot-inner">
+    <a class="foot-brand" href="../index.html">SecVulnHub</a>
+    <div class="foot-links">
+      <a class="foot-link" href="../index.html">Docs Hub</a>
+      <a class="foot-link" href="netrecon.html">netrecon</a>
+      <a class="foot-link" href="wifi_monitor.html">wifi_monitor</a>
+      <a class="foot-link" href="android_pentest.html">android</a>
+      <a class="foot-link" href="https://github.com/secvulnhub" target="_blank">GitHub</a>
+    </div>
+    <span class="foot-note">MIT License · secV by 0xb0rn3</span>
+  </div>
+</footer>
+
+<script>
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', scrollY > 20);
+}, { passive: true });
+
+document.getElementById('burger').addEventListener('click', () => {
+  document.body.classList.toggle('nav-open');
+});
+
+const sections = document.querySelectorAll('.content section[id]');
+const navLinks = document.querySelectorAll('.sidebar-nav a[href^="#"]');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-52px 0px -60% 0px' });
+sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
