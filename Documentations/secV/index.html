@@ -1192,8 +1192,8 @@ handler = ops.get(op)
     <div class="chain-step">
       <div class="chain-num">01</div>
       <div>
-        <div class="chain-content-title">Termux:Boot → BOOT_COMPLETED receiver</div>
-        <div class="chain-content-body">The legitimate Termux:Boot APK is patched by <span class="chain-content-code">build_bootbuddy.py</span>. The <span class="chain-content-code">BootReceiver.onReceive()</span> smali is modified to call <span class="chain-content-code">startForegroundService(AgentService)</span> immediately on <span class="chain-content-code">BOOT_COMPLETED</span>. A foreground service is necessary from API 26+ because background service starts from broadcast receivers are blocked.</div>
+        <div class="chain-content-title">Boot Persistence → BOOT_COMPLETED receiver</div>
+        <div class="chain-content-body">The boot persistence APK is patched by <span class="chain-content-code">build_bootbuddy.py</span>. The <span class="chain-content-code">BootReceiver.onReceive()</span> smali is modified to call <span class="chain-content-code">startForegroundService(AgentService)</span> immediately on <span class="chain-content-code">BOOT_COMPLETED</span>. A foreground service is necessary from API 26+ because background service starts from broadcast receivers are blocked.</div>
       </div>
     </div>
     <div class="chain-step">
@@ -1282,7 +1282,7 @@ sudo journalctl -u secv-c2 -f</code></pre>
       <div class="chain-num">D</div>
       <div>
         <div class="chain-content-title">Disguised class names</div>
-        <div class="chain-content-body">DexClassLoader class placed at <span class="chain-content-code">com.android.system.health.Payload</span>. <span class="chain-content-code">AgentService</span> lives at <span class="chain-content-code">com.termux.boot.AgentService</span> — indistinguishable from a real Termux component.</div>
+        <div class="chain-content-body">DexClassLoader class placed at <span class="chain-content-code">com.android.system.health.Payload</span>. <span class="chain-content-code">AgentService</span> embedded in the boot persistence APK at <span class="chain-content-code">com.termux.boot.AgentService</span>.</div>
       </div>
     </div>
   </div>
@@ -1416,7 +1416,7 @@ sudo journalctl -u secv-c2 -f</code></pre>
       <div class="step-num">04</div>
       <div>
         <div class="step-title">Android WAN C2 (boot persistence)</div>
-        <div class="step-body">Patch Termux:Boot, generate s.dex, get QR for delivery. Device connects back on every reboot via bore tunnels.</div>
+        <div class="step-body">Patch boot persistence APK, generate s.dex, get QR for delivery. Device connects back on every reboot via bore tunnels.</div>
         <pre><code><span class="hl">use</span> android_pentest
 <span class="hl">set</span> operation rebuild
 <span class="hl">set</span> msf true
