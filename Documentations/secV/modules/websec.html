@@ -213,7 +213,7 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
     <div class="module-meta">
       <div>
         <h1 class="module-title">websec<span>.</span></h1>
-        <p class="module-sub">Full-stack web offensive tool. DNS/WHOIS/SSL OSINT, security headers, CORS, cookies, directory brute-force, SQLi (error + time-blind), XSS, CSRF, 403 bypass, open redirect, framework CVEs, WAF fingerprinting, web spidering, and Google dorks.</p>
+        <p class="module-sub">Full-stack web offensive tool. DNS/WHOIS/SSL OSINT, security headers, CORS, cookies, directory brute-force, SQLi (error + time-blind + WAF evasion), XSS, CSRF, 403 bypass, open redirect, framework CVEs, WordPress attack surface, WAF fingerprinting, web spidering, Google dorks, and built-in stealth &amp; anonymization (UA rotation, proxy routing, request jitter).</p>
         <div class="module-tags">
           <span class="tag hi">secV Module</span>
           <span class="tag">Web Offensive</span>
@@ -221,7 +221,7 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
           <span class="tag">OSINT</span>
           <span class="tag">OWASP</span>
           <span class="tag">Python 3</span>
-          <span class="tag">v1.0.0</span>
+          <span class="tag">v2.4.0</span>
         </div>
       </div>
       <div class="module-stats">
@@ -246,6 +246,7 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
         <li><a href="#operations">Operations</a></li>
         <li><a href="#params">Parameters</a></li>
         <li><a href="#tiers">Install Tiers</a></li>
+        <li><a href="#stealth">Stealth</a></li>
         <li><div class="sidebar-sep">More</div></li>
         <li><a href="#examples">Examples</a></li>
         <li><a href="#notes">Notes</a></li>
@@ -259,7 +260,7 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
       <section id="overview">
         <p class="sec-label">Overview</p>
         <h2>What websec does</h2>
-        <p>websec is the single web offensive tool in secV. It covers the full attack chain from passive OSINT to active vulnerability testing: DNS/WHOIS/SSL reconnaissance, security posture auditing, injection testing, access control bypass, and framework CVE probing. No educational commentary — just results.</p>
+        <p>websec is the single web offensive tool in secV. It covers the full attack chain from passive OSINT to active exploitation: DNS/WHOIS/SSL reconnaissance, security posture auditing, injection testing, access control bypass, WordPress attack surface enumeration, and framework CVE probing. Built-in stealth layer keeps your traffic indistinguishable from a real browser. No educational commentary — just results.</p>
         <p>Works with Python stdlib only for recon. Add <code>requests</code> for full injection and active testing capabilities. <code>beautifulsoup4</code> enables HTML-aware spidering and form detection.</p>
 
         <div class="feat-grid">
@@ -328,6 +329,16 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
             <div class="feat-name">Framework CVEs</div>
             <div class="feat-desc">Auto-detect and probe Jira, AEM, and Confluence for known CVE paths. 15+ paths covering SSRF, SSTI, info disclosure, and file read.</div>
           </div>
+          <div class="feat-cell">
+            <div class="feat-icon">WP</div>
+            <div class="feat-name">WordPress Surface</div>
+            <div class="feat-desc">User enumeration via REST API and /?author=N, xmlrpc.php brute-force risk, plugin list from source, version disclosure, wp-login.php and wp-cron.php exposure.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Ghost</div>
+            <div class="feat-name">Stealth Mode</div>
+            <div class="feat-desc">UA rotation across 20 real browser strings, full Sec-Fetch-* browser headers, configurable request delay and jitter, proxy/Tor routing, WAF-evasion payload variants for SQLi and XSS.</div>
+          </div>
         </div>
       </section>
 
@@ -353,6 +364,16 @@ secV (websec) ❯ <span class="kw">run</span> https://example.com
 
 <span class="comment"># Full scan with injection testing</span>
 secV (websec) ❯ <span class="kw">set</span> operation full
+secV (websec) ❯ <span class="kw">set</span> test_url https://example.com/search?q=test
+secV (websec) ❯ <span class="kw">run</span> https://example.com
+
+<span class="comment"># Stealth scan through Tor with WAF evasion</span>
+secV (websec) ❯ <span class="kw">set</span> stealth true
+secV (websec) ❯ <span class="kw">set</span> proxy socks5://127.0.0.1:9050
+secV (websec) ❯ <span class="kw">set</span> delay 0.5
+secV (websec) ❯ <span class="kw">set</span> jitter 1.5
+secV (websec) ❯ <span class="kw">set</span> waf_evasion true
+secV (websec) ❯ <span class="kw">set</span> operation sqli
 secV (websec) ❯ <span class="kw">set</span> test_url https://example.com/search?q=test
 secV (websec) ❯ <span class="kw">run</span> https://example.com</code></pre>
 
@@ -438,8 +459,16 @@ secV (websec) ❯ <span class="kw">run</span> https://example.com</code></pre>
             <div class="op-desc">WAF fingerprinting from response headers and body patterns. Detects Cloudflare, AWS WAF, ModSecurity, Akamai, Imperva, F5 BigIP, and Sucuri.</div>
           </div>
           <div class="op-card">
+            <div class="op-name">wordpress</div>
+            <div class="op-desc">WordPress attack surface enumeration: version disclosure (generator meta), user enumeration via REST API (/wp-json/wp/v2/users) and /?author=N, xmlrpc.php brute-force/SSRF risk, plugin list from page source, wp-login.php and wp-cron.php exposure.</div>
+          </div>
+          <div class="op-card">
+            <div class="op-name">stealth</div>
+            <div class="op-desc">Display and validate stealth configuration: shows exact headers being sent, active UA, delay/jitter settings, proxy reachability test. Recommends missing controls (proxy, jitter, WAF evasion).</div>
+          </div>
+          <div class="op-card">
             <div class="op-name">full</div>
-            <div class="op-desc">Run all operations in one pass: recon + headers + cors + cookies + dirs + sqli + xss + csrf + open_redirect + framework_cves + file_upload + waf + ssl. Requires <code>test_url</code> for injection checks.</div>
+            <div class="op-desc">Run all operations in one pass: recon + headers + cors + cookies + dirs + sqli + xss + csrf + open_redirect + framework_cves + file_upload + waf + ssl + wordpress. Requires <code>test_url</code> for injection checks.</div>
           </div>
         </div>
       </section>
@@ -519,6 +548,45 @@ secV (websec) ❯ <span class="kw">run</span> https://example.com</code></pre>
               <td>false</td>
               <td>Verbose output — shows all requests including negative results.</td>
             </tr>
+            <tr>
+              <td colspan="4" style="background:var(--bg2);font-weight:600;color:var(--accent);padding:.5rem 1rem;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;">Stealth &amp; Anonymization</td>
+            </tr>
+            <tr>
+              <td><code>stealth</code></td>
+              <td>boolean</td>
+              <td>false</td>
+              <td>Enable stealth mode. Activates UA rotation and adds full browser header set (Accept, Accept-Language, Sec-Fetch-*, DNT, Cache-Control, Pragma) on every request. Strips scanner-identifying headers.</td>
+            </tr>
+            <tr>
+              <td><code>rotate_ua</code></td>
+              <td>boolean</td>
+              <td>false</td>
+              <td>Rotate User-Agent on every request from a pool of 20+ real Chrome, Firefox, Safari, Edge, and Opera strings. Enabled automatically when <code>stealth true</code>.</td>
+            </tr>
+            <tr>
+              <td><code>delay</code></td>
+              <td>number</td>
+              <td>0</td>
+              <td>Fixed delay in seconds inserted before each request. Use with <code>jitter</code> to randomize timing and avoid rate-based bot detection.</td>
+            </tr>
+            <tr>
+              <td><code>jitter</code></td>
+              <td>number</td>
+              <td>0</td>
+              <td>Adds a random 0–N second offset to each delay. E.g. <code>delay 0.5</code> + <code>jitter 1.5</code> means each request waits 0.5–2.0 s.</td>
+            </tr>
+            <tr>
+              <td><code>proxy</code></td>
+              <td>string</td>
+              <td>—</td>
+              <td>Route all traffic through a proxy. Accepts HTTP (<code>http://host:port</code>), HTTPS, and SOCKS5 (<code>socks5://host:port</code>) formats. Use <code>socks5://127.0.0.1:9050</code> for Tor or <code>http://127.0.0.1:8080</code> for Burp.</td>
+            </tr>
+            <tr>
+              <td><code>waf_evasion</code></td>
+              <td>boolean</td>
+              <td>false</td>
+              <td>Append WAF-evasion payload variants to SQLi and XSS tests: comment injection (<code>/*!UNION*/</code>), case mixing, URL/double encoding, HTML entity encoding, null-byte tricks, and obfuscated event handlers.</td>
+            </tr>
           </tbody>
         </table>
         </div>
@@ -550,6 +618,40 @@ secV (websec) ❯ <span class="kw">run</span> https://example.com</code></pre>
 
         <pre><code><span class="comment"># Full install</span>
 pip3 install requests beautifulsoup4 dnspython</code></pre>
+      </section>
+
+      <!-- Stealth -->
+      <section id="stealth">
+        <p class="sec-label">Reference</p>
+        <h2>Stealth &amp; Anonymization</h2>
+        <p>websec has a built-in stealth layer that makes every request indistinguishable from a real browser session. Combine all controls for maximum coverage against WAF/IDS fingerprinting.</p>
+
+        <h3>How it works</h3>
+        <p><strong>UA rotation</strong> — every request picks a different User-Agent from a pool of 20 real browser strings (Chrome, Firefox, Safari, Edge, Opera, mobile). Server logs show mixed browser traffic rather than a single repeated scanner string.</p>
+        <p><strong>Browser headers</strong> — stealth mode adds the full set of headers a real browser sends: <code>Accept</code>, <code>Accept-Language</code>, <code>Accept-Encoding</code>, <code>DNT</code>, <code>Upgrade-Insecure-Requests</code>, <code>Sec-Fetch-Dest/Mode/Site/User</code>, <code>Cache-Control</code>, <code>Pragma</code>. Requests without these are trivially identified as automated.</p>
+        <p><strong>Timing</strong> — fixed delay plus random jitter makes inter-request timing look human. Without jitter, even a 1 s delay is detectable as automated by its regularity.</p>
+        <p><strong>Proxy routing</strong> — all requests go through the configured proxy. Use Tor (<code>socks5://127.0.0.1:9050</code>) to hide your real IP from server logs, or Burp (<code>http://127.0.0.1:8080</code>) to intercept and replay traffic manually.</p>
+        <p><strong>WAF evasion payloads</strong> — when <code>waf_evasion true</code>, SQLi and XSS tests run a second pass with obfuscated variants: MySQL comment injection (<code>/*!UNION*/</code>), case mixing, percent/double encoding, HTML entity encoding, and obfuscated event handlers. WAFs pattern-match on known payload strings — these variants bypass signature-only rulesets.</p>
+
+        <h3>Check your posture</h3>
+        <pre><code>secV (websec) ❯ <span class="kw">set</span> operation stealth
+secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
+        <p>Prints the exact headers being sent, current UA, delay/jitter values, and tests proxy reachability. Flags any missing controls.</p>
+
+        <h3>Full stealth profile</h3>
+        <pre><code>secV (websec) ❯ <span class="kw">set</span> stealth true
+secV (websec) ❯ <span class="kw">set</span> proxy socks5://127.0.0.1:9050
+secV (websec) ❯ <span class="kw">set</span> delay 0.5
+secV (websec) ❯ <span class="kw">set</span> jitter 1.5
+secV (websec) ❯ <span class="kw">set</span> waf_evasion true
+secV (websec) ❯ <span class="kw">set</span> operation full
+secV (websec) ❯ <span class="kw">set</span> test_url https://target.com/search?q=test
+secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
+
+        <div class="callout crit">
+          <span class="callout-mark">!</span>
+          <span>Stealth controls reduce your fingerprint — they do not grant authorization. You still need explicit written permission to test any target. Unauthorized testing is illegal regardless of how undetectable it is.</span>
+        </div>
       </section>
 
       <!-- Examples -->
@@ -586,6 +688,27 @@ secV (websec) ❯ <span class="kw">set</span> threads 20
 secV (websec) ❯ <span class="kw">set</span> wordlist_file /usr/share/seclists/Discovery/Web-Content/common.txt
 secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
 
+        <h3>WordPress attack surface</h3>
+        <pre><code>secV (websec) ❯ <span class="kw">set</span> operation wordpress
+secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
+
+        <h3>Stealth SQLi through Tor with WAF evasion</h3>
+        <pre><code>secV (websec) ❯ <span class="kw">set</span> stealth true
+secV (websec) ❯ <span class="kw">set</span> proxy socks5://127.0.0.1:9050
+secV (websec) ❯ <span class="kw">set</span> delay 0.5
+secV (websec) ❯ <span class="kw">set</span> jitter 1.5
+secV (websec) ❯ <span class="kw">set</span> waf_evasion true
+secV (websec) ❯ <span class="kw">set</span> operation sqli
+secV (websec) ❯ <span class="kw">set</span> test_url https://target.com/search?q=test
+secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
+
+        <h3>Authenticated scan with session cookie</h3>
+        <pre><code>secV (websec) ❯ <span class="kw">set</span> stealth true
+secV (websec) ❯ <span class="kw">set</span> cookies PHPSESSID=abc123; auth_token=xyz
+secV (websec) ❯ <span class="kw">set</span> operation full
+secV (websec) ❯ <span class="kw">set</span> test_url https://target.com/dashboard?id=1
+secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
+
         <h3>Full assessment</h3>
         <pre><code>secV (websec) ❯ <span class="kw">set</span> operation full
 secV (websec) ❯ <span class="kw">set</span> test_url https://target.com/search?q=test
@@ -605,7 +728,10 @@ secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
         <p>SQLi uses safe detection payloads — error messages and timing responses only. Time-based blind sends a 3-second sleep payload; expect ~3 s additional latency per parameter per DB type. No data is modified or extracted.</p>
         <p>The <code>bypass_403</code> operation only fires if the target path actually returns 403. Header bypass results (<code>200</code>) are definitive findings. Path manipulation results (<code>200</code>) may require manual confirmation to rule out redirects.</p>
         <p>The <code>dork</code> operation generates query strings for manual use in Google — it does not interact with Google's servers. Paste the output directly into search.</p>
-        <p><code>framework_cves</code> auto-detects framework from the response before probing — it checks Jira paths regardless as a fallback in case detection fails.</p>
+        <p><code>framework_cves</code> uses strict framework detection from HTTP response headers (<code>X-Seraph-LoginReason</code>, <code>X-AUSERNAME</code> for Jira) to avoid false positives on unrelated sites.</p>
+        <p><strong>Stealth + delay:</strong> <code>delay</code> and <code>jitter</code> add sleep time before every request — including multi-threaded directory brute-force. Reduce <code>threads</code> when using delay to avoid the delay being applied concurrently rather than sequentially.</p>
+        <p><strong>SOCKS5 proxy</strong> (Tor) requires <code>requests[socks]</code>: <code>pip3 install requests[socks]</code>. HTTP proxies work with the standard requests install.</p>
+        <p><code>waf_evasion</code> roughly doubles the number of SQLi and XSS payloads tested. Expect proportionally longer runtime.</p>
       </section>
 
       <!-- Author -->
