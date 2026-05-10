@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>adsec - SecV Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+:root {
+  --bg:      #050505;
+  --bg1:     #0d0d0d;
+  --bg2:     #141414;
+  --bg3:     #1c1c1c;
+  --border:  rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.13);
+  --border3: rgba(255,255,255,0.2);
+  --text:    #a8a8a8;
+  --muted:   #505050;
+  --dim:     #252525;
+  --white:   #f0f0f0;
+  --off:     #d8d8d8;
+  --grey:    #787878;
+  --acc:     #88aacc;
+  --mono:    'JetBrains Mono', monospace;
+  --disp:    'Syne', sans-serif;
+  --nav-h:   52px;
+  --transition: 0.16s ease;
+}
+
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 2px; }
+
+/* ── Nav ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
+}
+nav.scrolled {
+  background: rgba(5,5,5,0.96);
+  backdrop-filter: blur(16px);
+  border-color: var(--border);
+}
+.logo {
+  font-family: var(--disp);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--off);
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.logo-mark { width: 6px; height: 6px; background: var(--white); flex-shrink: 0; }
+.nav-links { display: flex; align-items: center; gap: 0.1rem; }
+.nav-link {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.4rem 0.75rem;
+  transition: color var(--transition);
+}
+.nav-link:hover { color: var(--text); }
+.nav-btn {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text);
+  text-decoration: none;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--border2);
+  margin-left: 0.5rem;
+  transition: border-color var(--transition), color var(--transition);
+}
+.nav-btn:hover { border-color: var(--white); color: var(--white); }
+.nav-btn.primary { background: var(--white); border-color: var(--white); color: var(--bg); }
+.nav-btn.primary:hover { background: transparent; color: var(--white); }
+
+/* Mobile nav toggle */
+.nav-burger {
+  display: none;
+  background: none;
+  border: 1px solid var(--border2);
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  border-radius: 3px;
+  flex-direction: column;
+  gap: 4px;
+}
+.nav-burger span { display: block; width: 18px; height: 1px; background: var(--text); transition: transform var(--transition), opacity var(--transition); }
+body.nav-open .nav-burger span:nth-child(1) { transform: rotate(45deg) translate(3.5px,3.5px); }
+body.nav-open .nav-burger span:nth-child(2) { opacity: 0; }
+body.nav-open .nav-burger span:nth-child(3) { transform: rotate(-45deg) translate(3.5px,-3.5px); }
+
+/* ── Page wrapper ── */
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+}
+
+/* ── Doc Header ── */
+.doc-header {
+  padding-top: calc(var(--nav-h) + 3.5rem);
+  padding-bottom: 3.5rem;
+  border-bottom: 1px solid var(--border);
+  animation: rise 0.45s ease both;
+}
+@keyframes rise { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+
+.breadcrumb {
+  font-size: 0.56rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.breadcrumb a { color: var(--muted); text-decoration: none; transition: color var(--transition); }
+.breadcrumb a:hover { color: var(--text); }
+.breadcrumb span { color: var(--dim); }
+
+.module-meta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+}
+.module-title {
+  font-family: var(--disp);
+  font-size: clamp(2.8rem, 6vw, 4.8rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--white);
+  line-height: 0.95;
+  margin-bottom: 0.85rem;
+}
+.module-title span { color: var(--grey); font-weight: 400; }
+.module-sub {
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.85;
+  max-width: 500px;
+  margin-bottom: 1.5rem;
+}
+.module-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.tag {
+  font-size: 0.5rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.55rem;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+}
+.tag.hi { color: var(--white); border-color: rgba(255,255,255,0.28); }
+
+.module-stats { display: flex; flex-direction: column; gap: 1rem; min-width: 210px; }
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.68rem;
+  gap: 2rem;
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-lbl { letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.stat-v { color: var(--white); font-weight: 500; }
+
+/* ── Doc body grid ── */
+.doc-body {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 4rem;
+  padding: 3.5rem 0;
+  align-items: start;
+}
+
+/* ── Sidebar ── */
+.sidebar { position: sticky; top: calc(var(--nav-h) + 1rem); }
+.sidebar-nav { list-style: none; }
+.sidebar-nav li { margin-bottom: 0.05rem; }
+.sidebar-nav a {
+  display: block;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.4rem 0;
+  border-left: 2px solid transparent;
+  padding-left: 0.75rem;
+  transition: color var(--transition), border-color var(--transition);
+}
+.sidebar-nav a:hover { color: var(--text); border-color: var(--border2); }
+.sidebar-nav a.active { color: var(--white); border-color: var(--white); }
+.sidebar-sep {
+  font-size: 0.48rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dim);
+  padding: 0.7rem 0 0.25rem 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* ── Content sections ── */
+.content section {
+  padding-bottom: 3.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 3.5rem;
+}
+.content section:last-child { border-bottom: none; }
+
+.sec-label {
+  font-size: 0.52rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 0.55rem;
+}
+
+h2 {
+  font-family: var(--disp);
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--white);
+  margin-bottom: 1.25rem;
+  line-height: 1.05;
+}
+
+h3 {
+  font-family: var(--disp);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--off);
+  margin: 2rem 0 0.8rem;
+  letter-spacing: -0.01em;
+}
+
+p {
+  font-size: 0.82rem;
+  color: var(--text);
+  line-height: 1.85;
+  margin-bottom: 0.9rem;
+}
+p:last-child { margin-bottom: 0; }
+
+a { color: var(--grey); }
+a:hover { color: var(--white); }
+
+/* ── Code ── */
+pre {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border3);
+  padding: 1.1rem 1.35rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+  font-size: 0.76rem;
+  line-height: 1.75;
+  border-radius: 0 2px 2px 0;
+}
+code {
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  padding: 0.08rem 0.35rem;
+  color: var(--off);
+}
+pre code { background: none; border: none; padding: 0; font-size: inherit; }
+.comment { color: var(--muted); font-style: italic; }
+.kw { color: var(--white); }
+.str { color: var(--grey); }
+
+/* ── Tables ── */
+.table-wrap { overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 0.74rem; min-width: 420px; }
+th {
+  font-family: var(--mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey);
+  text-align: left;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border2);
+  background: var(--bg1);
+  white-space: nowrap;
+}
+td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: top;
+  line-height: 1.65;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg1); }
+td:first-child { color: var(--off); font-weight: 500; white-space: nowrap; }
+td code { font-size: 0.7rem; }
+
+/* ── Feature grid ── */
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+.feat-cell {
+  background: var(--bg);
+  padding: 1.1rem;
+  transition: background var(--transition);
+}
+.feat-cell:hover { background: var(--bg1); }
+.feat-icon {
+  font-size: 0.54rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 0.4rem;
+}
+.feat-name {
+  font-family: var(--disp);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.3rem;
+}
+.feat-desc { font-size: 0.72rem; color: var(--muted); line-height: 1.6; }
+
+/* ── Callouts ── */
+.callout {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.95rem 1.15rem;
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--border2);
+  margin: 1.25rem 0;
+  font-size: 0.78rem;
+  line-height: 1.7;
+  color: var(--text);
+  border-radius: 0 2px 2px 0;
+}
+.callout.warn { border-left-color: var(--grey); }
+.callout.crit { border-left-color: var(--white); background: rgba(255,255,255,0.02); }
+.callout.info { border-left-color: var(--muted); }
+.callout-mark { font-size: 0.64rem; color: var(--grey); flex-shrink: 0; margin-top: 0.15rem; }
+
+/* ── Scan mode cards ── */
+.mode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+.mode-card {
+  background: var(--bg);
+  padding: 1.1rem;
+  transition: background var(--transition);
+  cursor: default;
+}
+.mode-card:hover { background: var(--bg1); }
+.mode-key {
+  font-family: var(--disp);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.mode-badge {
+  font-size: 0.46rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.12rem 0.38rem;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+}
+.mode-badge.dflt { color: var(--white); border-color: rgba(255,255,255,0.28); }
+.mode-desc { font-size: 0.71rem; color: var(--muted); line-height: 1.6; }
+
+/* ── Author card ── */
+.author-card {
+  display: flex;
+  gap: 1.75rem;
+  align-items: flex-start;
+  padding: 1.75rem;
+  border: 1px solid var(--border2);
+  background: var(--bg1);
+  margin-top: 1.5rem;
+}
+.author-avatar {
+  width: 52px; height: 52px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--disp);
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--white);
+  flex-shrink: 0;
+}
+.author-name {
+  font-family: var(--disp);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.2rem;
+}
+.author-role {
+  font-size: 0.56rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 0.75rem;
+}
+.author-bio {
+  font-size: 0.76rem;
+  color: var(--muted);
+  line-height: 1.75;
+  margin-bottom: 0.85rem;
+}
+.author-links { display: flex; gap: 1rem; flex-wrap: wrap; }
+.author-link {
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--grey);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: color var(--transition);
+}
+.author-link:hover { color: var(--white); }
+
+/* ── Device category grid ── */
+.dev-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+.dev-cat {
+  background: var(--bg);
+  padding: 1rem;
+  transition: background var(--transition);
+}
+.dev-cat:hover { background: var(--bg1); }
+.dev-cat-label {
+  font-size: 0.5rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 0.3rem;
+}
+.dev-cat-name {
+  font-family: var(--disp);
+  font-weight: 700;
+  color: var(--white);
+  font-size: 0.92rem;
+  margin-bottom: 0.35rem;
+}
+.dev-cat-ports { font-size: 0.66rem; color: var(--muted); line-height: 1.6; }
+
+/* ── Web section list ── */
+.feature-list {
+  margin: 0.75rem 0 1rem 1.1rem;
+  font-size: 0.78rem;
+  color: var(--text);
+  line-height: 2;
+}
+
+/* ── Footer ── */
+footer { border-top: 1px solid var(--border); margin-top: 2rem; }
+.foot-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 1.5rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.foot-brand {
+  font-family: var(--disp);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-decoration: none;
+}
+.foot-links { display: flex; gap: 1.75rem; }
+.foot-link {
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+.foot-link:hover { color: var(--text); }
+.foot-note { font-size: 0.52rem; color: var(--dim); letter-spacing: 0.06em; }
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  nav { padding: 0 1.5rem; }
+  .nav-links { display: none; }
+  .nav-burger { display: flex; }
+  body.nav-open .nav-links {
+    display: flex;
+    position: fixed;
+    top: var(--nav-h);
+    left: 0; right: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    flex-direction: column;
+    padding: 1rem 1.5rem 1.5rem;
+    gap: 0.25rem;
+    align-items: flex-start;
+    z-index: 99;
+  }
+  .page { padding: 0 1.5rem; }
+  .doc-body { grid-template-columns: 1fr; gap: 0; }
+  .sidebar { display: none; }
+  .dev-cat-grid { grid-template-columns: 1fr 1fr; }
+  .module-title { font-size: 2.6rem; }
+  .author-card { flex-direction: column; gap: 1rem; }
+  .module-stats { min-width: unset; width: 100%; }
+  pre { font-size: 0.7rem; }
+}
+
+@media (max-width: 540px) {
+  .dev-cat-grid { grid-template-columns: 1fr; }
+  .feat-grid { grid-template-columns: 1fr; }
+  .mode-grid { grid-template-columns: 1fr; }
+  .page { padding: 0 1rem; }
+  pre { padding: 0.85rem 1rem; }
+  .doc-header { padding-top: calc(var(--nav-h) + 2rem); }
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav id="nav">
+  <a class="logo" href="../index.html">
+    <span class="logo-mark"></span>
+    SecVulnHub
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="../index.html#projects">Arsenal</a>
+    <a class="nav-link" href="../index.html#mission">Mission</a>
+    <a class="nav-link" href="../index.html#contribute">Contribute</a>
+    <a class="nav-btn" href="https://github.com/0xb0rn3" target="_blank">GitHub</a>
+    <a class="nav-btn primary" href="https://discord.gg/SecVulnHub" target="_blank">Discord</a>
+  </div>
+  <button class="nav-burger" id="burger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="page">
+
+  <!-- Doc Header -->
+  <div class="doc-header">
+    <div class="breadcrumb">
+      <a href="../index.html">SecVulnHub</a>
+      <span>/</span>
+      <a href="../index.html#projects">Arsenal</a>
+      <span>/</span>
+      Docs
+      <span>/</span>
+      adsec
+    </div>
+    <div class="module-meta">
+      <div>
+        <h1 class="module-title">adsec<span>.</span></h1>
+        <p class="module-sub">Linux-side Active Directory penetration testing module. DC discovery, LDAP enumeration, Kerberoasting, AS-REP roasting, password spraying, DCSync, and BloodHound collection — all from a single Linux attack box. 15 operations, 2 auto pipelines.</p>
+        <div class="module-tags">
+          <span class="tag hi">secV Module</span>
+          <span class="tag">Active Directory</span>
+          <span class="tag">Kerberoast</span>
+          <span class="tag">BloodHound</span>
+          <span class="tag">DCSync</span>
+          <span class="tag">Python 3</span>
+          <span class="tag">Stable</span>
+        </div>
+      </div>
+      <div class="module-stats">
+        <div class="stat-row"><span class="stat-lbl">Category</span><span class="stat-v">Network · Active Directory</span></div>
+        <div class="stat-row"><span class="stat-lbl">Status</span><span class="stat-v">Stable</span></div>
+        <div class="stat-row"><span class="stat-lbl">Location</span><span class="stat-v">tools/network/adsec/</span></div>
+        <div class="stat-row"><span class="stat-lbl">Entry</span><span class="stat-v">python3 adsec.py</span></div>
+        <div class="stat-row"><span class="stat-lbl">Operations</span><span class="stat-v">15 (13 std + 2 auto)</span></div>
+        <div class="stat-row"><span class="stat-lbl">License</span><span class="stat-v">MIT</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="doc-body">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <ul class="sidebar-nav">
+        <li><div class="sidebar-sep">Overview</div></li>
+        <li><a href="#overview" class="active">What it does</a></li>
+        <li><a href="#quickstart">Quick Start</a></li>
+        <li><div class="sidebar-sep">Reference</div></li>
+        <li><a href="#operations">Operations</a></li>
+        <li><a href="#params">Parameters</a></li>
+        <li><div class="sidebar-sep">More</div></li>
+        <li><a href="#examples">Examples</a></li>
+        <li><a href="#requirements">Requirements</a></li>
+      </ul>
+    </aside>
+
+    <!-- Content -->
+    <div class="content">
+
+      <!-- Overview -->
+      <section id="overview">
+        <p class="sec-label">Overview</p>
+        <h2>What adsec does</h2>
+        <p>adsec is the Active Directory penetration testing module inside SecV. It provides a complete Linux-side attack workflow against Windows AD environments — from unauthenticated domain controller discovery through authenticated enumeration, credential attacks, and post-authentication data collection.</p>
+        <p>The module wraps impacket, ldap3, netexec, and bloodhound-python into a unified interface. Every operation reads JSON from stdin and writes structured JSON to stdout, making it composable with other secV modules and standard tooling. Two built-in auto pipelines chain operations together for both unauthenticated and authenticated engagements.</p>
+        <p>Supported environments: Arch Linux, Kali Linux, BlackArch, and Debian-based distributions. All dependency checks run at module startup — missing tools are reported clearly before any operation begins.</p>
+        <div class="feat-grid">
+          <div class="feat-cell">
+            <div class="feat-icon">Discovery</div>
+            <div class="feat-name">Unauthenticated</div>
+            <div class="feat-desc">DC discovery, SMB null sessions, RPC endpoint mapping, anonymous LDAP bind — no credentials needed.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Enumeration</div>
+            <div class="feat-name">LDAP &amp; Users</div>
+            <div class="feat-desc">Full LDAP dump: users, groups, GPOs, OUs, trusts, AdminSDHolder members, disabled accounts, never-expire flags.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Credential Attacks</div>
+            <div class="feat-name">Kerberos &amp; Spray</div>
+            <div class="feat-desc">Kerberoasting, AS-REP roasting, lockout-aware password spraying with threshold detection and jitter.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Post-Auth</div>
+            <div class="feat-name">DCSync &amp; BloodHound</div>
+            <div class="feat-desc">impacket secretsdump for NTLM hashes and Kerberos keys. BloodHound collection with all methods, ZIP output.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Pass-the-Hash</div>
+            <div class="feat-name">Hash Auth</div>
+            <div class="feat-desc">All authenticated operations accept NTLM hash (LM:NT format) in place of a plaintext password.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Pipelines</div>
+            <div class="feat-name">Auto Chains</div>
+            <div class="feat-desc">auto: no-cred safe chain. auto_auth: full authenticated chain ending in BloodHound ZIP.</div>
+          </div>
+        </div>
+        <div class="callout warn">
+          <span class="callout-mark">!</span>
+          adsec is an offensive security tool. Use only on systems you own or have explicit written authorisation to test. Credential attacks such as password spraying carry lockout risk — read the lockout_threshold parameter documentation before running spray against production environments.
+        </div>
+      </section>
+
+      <!-- Quick Start -->
+      <section id="quickstart">
+        <p class="sec-label">Quick Start</p>
+        <h2>Running adsec</h2>
+        <p>adsec reads JSON from stdin and writes JSON to stdout. The input takes a <code>target</code> (DC IP or domain FQDN), an <code>operation</code> name, and an optional <code>params</code> object.</p>
+        <pre><code><span class="comment"># Unauthenticated DC discovery — no credentials needed</span>
+echo '{
+  "target": "192.168.1.10",
+  "params": { "operation": "dc_discover", "domain": "corp.local" }
+}' | python3 adsec.py | jq .
+
+<span class="comment"># Kerberoasting — requests TGS for all SPNs, saves hashes</span>
+echo '{
+  "target": "192.168.1.10",
+  "params": {
+    "operation": "kerberoast",
+    "domain": "corp.local",
+    "username": "jdoe",
+    "password": "Password123",
+    "output": "/tmp/kerberoast_hashes.txt"
+  }
+}' | python3 adsec.py
+
+<span class="comment"># Full unauthenticated auto pipeline</span>
+echo '{
+  "target": "corp.local",
+  "params": {
+    "operation": "auto",
+    "domain": "corp.local",
+    "output": "/tmp/adsec_auto"
+  }
+}' | python3 adsec.py | jq .data</code></pre>
+        <div class="callout info">
+          <span class="callout-mark">i</span>
+          The default operation is <code>dc_discover</code>. If no <code>operation</code> key is provided in params, adsec runs DC discovery automatically. All other operations require an explicit operation name.
+        </div>
+      </section>
+
+      <!-- Operations -->
+      <section id="operations">
+        <p class="sec-label">Reference</p>
+        <h2>Operations</h2>
+        <p>adsec provides 15 operations across four categories. Pass the operation name as <code>params.operation</code> in the JSON input.</p>
+
+        <h3>Discovery (unauthenticated)</h3>
+        <p>These four operations require no credentials. They are safe to run without lockout risk and form the basis of the <code>auto</code> pipeline.</p>
+        <div class="mode-grid">
+          <div class="mode-card">
+            <div class="mode-key">dc_discover <span class="mode-badge dflt">default</span></div>
+            <div class="mode-desc">Find domain controllers via DNS SRV record queries and LDAP probes. No credentials required. Returns DC hostnames, IPs, and site information.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">smb_enum <span class="mode-badge">no creds</span></div>
+            <div class="mode-desc">SMB share enumeration via null session. Fingerprints SMB version, signing status, and lists accessible shares. Uses netexec.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">rpc_enum <span class="mode-badge">no creds</span></div>
+            <div class="mode-desc">RPC endpoint mapping via MSRPC. Enumerates users and groups through the SAMR and LSARPC pipes without credentials where permitted.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">ldap_anon <span class="mode-badge">no creds</span></div>
+            <div class="mode-desc">Anonymous LDAP bind attempt. Discovers base DN, naming contexts, and any attributes exposed to anonymous readers.</div>
+          </div>
+        </div>
+
+        <h3>Authenticated enumeration</h3>
+        <p>These operations require valid domain credentials (username + password or NTLM hash). They perform deep enumeration of the AD environment.</p>
+        <div class="mode-grid">
+          <div class="mode-card">
+            <div class="mode-key">ldap_enum <span class="mode-badge">auth</span></div>
+            <div class="mode-desc">Full authenticated LDAP dump: all users, groups, GPOs, OUs, password policies, domain trusts, and ACL relationships via ldap3.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">user_enum <span class="mode-badge">auth</span></div>
+            <div class="mode-desc">Enumerate all domain user accounts. Flags disabled accounts, never-expire password flags, last logon timestamps, and accounts with no pre-auth required.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">group_enum <span class="mode-badge">auth</span></div>
+            <div class="mode-desc">Enumerate all domain groups with full nested membership resolution. Highlights AdminSDHolder-protected accounts and privileged group members.</div>
+          </div>
+        </div>
+
+        <h3>Credential attacks</h3>
+        <p>These operations target credential weaknesses in the domain. Review lockout policy before running <code>spray</code>.</p>
+        <div class="mode-grid">
+          <div class="mode-card">
+            <div class="mode-key">kerberoast <span class="mode-badge">creds</span></div>
+            <div class="mode-desc">Kerberoasting: requests TGS tickets for all accounts with registered SPNs. Saves RC4/AES hashes to output file for offline cracking with hashcat.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">asreproast <span class="mode-badge">no creds</span></div>
+            <div class="mode-desc">AS-REP roasting: finds accounts with DONT_REQUIRE_PREAUTH set and dumps their AS-REP hashes for offline cracking. No credentials required.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">spray <span class="mode-badge">careful</span></div>
+            <div class="mode-desc">Lockout-aware password spraying. Detects lockout threshold via LDAP policy query, enforces configurable delay between rounds, applies per-account jitter to avoid pattern detection.</div>
+          </div>
+        </div>
+        <div class="callout crit">
+          <span class="callout-mark">!</span>
+          The <code>spray</code> operation reads the domain lockout policy before starting. If <code>lockout_threshold</code> cannot be determined automatically, it defaults to 3 attempts per account. Always verify the lockout window with the domain owner before running spray against a production environment.
+        </div>
+
+        <h3>Post-authentication</h3>
+        <p>These operations require elevated credentials — typically a domain admin or account with DCSync rights.</p>
+        <div class="mode-grid">
+          <div class="mode-card">
+            <div class="mode-key">secretsdump <span class="mode-badge">priv</span></div>
+            <div class="mode-desc">DCSync via impacket secretsdump. Dumps all NTLM hashes, Kerberos keys, and domain secrets. Supports pass-the-hash with the hash parameter.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">bloodhound <span class="mode-badge">auth</span></div>
+            <div class="mode-desc">BloodHound data collection via bloodhound-python using all collection methods. Output is a ZIP archive ready for import into BloodHound CE.</div>
+          </div>
+        </div>
+
+        <h3>Auto pipelines</h3>
+        <p>Two built-in chained pipelines cover the most common engagement workflows. Both run constituent operations sequentially and aggregate their output into a single JSON result.</p>
+        <div class="mode-grid">
+          <div class="mode-card">
+            <div class="mode-key">auto <span class="mode-badge">safe</span></div>
+            <div class="mode-desc">Safe no-credential pipeline: dc_discover → smb_enum → ldap_anon → kerberoast → asreproast. No lockout-risk operations. Suitable for initial unauthenticated engagement phase.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">auto_auth <span class="mode-badge">full</span></div>
+            <div class="mode-desc">Authenticated full pipeline: ldap_enum → user_enum → group_enum → kerberoast → asreproast → bloodhound. Requires domain credentials. Produces complete AD picture and BloodHound ZIP.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Parameters -->
+      <section id="params">
+        <h2>Parameters</h2>
+        <p>All parameters go inside the <code>params</code> object of the JSON input alongside the <code>operation</code> key.</p>
+        <h3>Core</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>target</td><td>string</td><td>required</td><td>DC IP address or domain FQDN (e.g. <code>192.168.1.10</code> or <code>corp.local</code>)</td></tr>
+              <tr><td>operation</td><td>string</td><td>dc_discover</td><td>Operation name. See the Operations section for all valid values.</td></tr>
+              <tr><td>domain</td><td>string</td><td>""</td><td>Domain name in FQDN format, e.g. <code>corp.local</code>. Required for most operations.</td></tr>
+              <tr><td>username</td><td>string</td><td>""</td><td>Domain username for authenticated operations. Combine with <code>password</code> or <code>hash</code>.</td></tr>
+              <tr><td>password</td><td>string</td><td>""</td><td>Domain password for authenticated operations. Mutually exclusive with <code>hash</code>.</td></tr>
+              <tr><td>hash</td><td>string</td><td>""</td><td>NTLM hash for pass-the-hash authentication. Format: <code>LM:NT</code> (use 32 zeros for LM portion if unknown).</td></tr>
+              <tr><td>output</td><td>string</td><td>""</td><td>Output file path for hash dumps (kerberoast, asreproast) or directory path for BloodHound ZIP and auto pipeline results.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Spray &amp; Threading</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>threads</td><td>integer</td><td>5</td><td>Thread count for spray and enumeration operations. Keep low to avoid triggering rate-based detection.</td></tr>
+              <tr><td>delay</td><td>integer (seconds)</td><td>30</td><td>Delay between spray rounds in seconds. Should exceed the domain observation window for lockout counting.</td></tr>
+              <tr><td>lockout_threshold</td><td>integer</td><td>3</td><td>Maximum authentication attempts per account before the account is skipped. adsec queries the domain policy and uses whichever is lower.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Examples -->
+      <section id="examples">
+        <p class="sec-label">Examples</p>
+        <h2>Examples</h2>
+
+        <h3>Unauthenticated DC and SMB discovery</h3>
+        <pre><code>echo '{
+  "target": "10.10.10.5",
+  "params": {
+    "operation": "dc_discover",
+    "domain": "htb.local"
+  }
+}' | python3 adsec.py | jq '.data.domain_controllers'
+
+<span class="comment"># Follow up with SMB null session enum</span>
+echo '{
+  "target": "10.10.10.5",
+  "params": {
+    "operation": "smb_enum",
+    "domain": "htb.local"
+  }
+}' | python3 adsec.py | jq '.data.shares'</code></pre>
+
+        <h3>Kerberoasting with hash output</h3>
+        <pre><code>echo '{
+  "target": "192.168.100.5",
+  "params": {
+    "operation": "kerberoast",
+    "domain": "corp.local",
+    "username": "jdoe",
+    "password": "Summer2024!",
+    "output": "/tmp/kerb_hashes.txt"
+  }
+}' | python3 adsec.py
+
+<span class="comment"># Crack hashes offline</span>
+hashcat -m 13100 /tmp/kerb_hashes.txt /usr/share/wordlists/rockyou.txt</code></pre>
+
+        <h3>AS-REP roasting (no credentials)</h3>
+        <pre><code>echo '{
+  "target": "dc01.corp.local",
+  "params": {
+    "operation": "asreproast",
+    "domain": "corp.local",
+    "output": "/tmp/asrep_hashes.txt"
+  }
+}' | python3 adsec.py | jq '.data.vulnerable_accounts'
+
+<span class="comment"># Crack AS-REP hashes</span>
+hashcat -m 18200 /tmp/asrep_hashes.txt /usr/share/wordlists/rockyou.txt</code></pre>
+
+        <h3>Pass-the-hash DCSync with secretsdump</h3>
+        <pre><code>echo '{
+  "target": "192.168.1.10",
+  "params": {
+    "operation": "secretsdump",
+    "domain": "corp.local",
+    "username": "Administrator",
+    "hash": "00000000000000000000000000000000:fc525c9683e8fe067095ba2ddc971889",
+    "output": "/tmp/dcsync_output.txt"
+  }
+}' | python3 adsec.py | jq '.data.accounts | length'</code></pre>
+
+        <h3>Full authenticated auto pipeline with BloodHound collection</h3>
+        <pre><code>echo '{
+  "target": "192.168.1.10",
+  "params": {
+    "operation": "auto_auth",
+    "domain": "corp.local",
+    "username": "pentest",
+    "password": "P@ssw0rd",
+    "output": "/tmp/adsec_results"
+  }
+}' | python3 adsec.py | jq '{
+  users: .data.user_enum.count,
+  groups: .data.group_enum.count,
+  kerberoastable: (.data.kerberoast.hashes | length),
+  asreproastable: (.data.asreproast.hashes | length),
+  bloodhound_zip: .data.bloodhound.output_file
+}'</code></pre>
+      </section>
+
+      <!-- Requirements -->
+      <section id="requirements">
+        <h2>Requirements</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Dependency</th><th>Install</th><th>Used by</th></tr></thead>
+            <tbody>
+              <tr><td>impacket</td><td><code>pip3 install impacket</code></td><td>secretsdump (DCSync), Kerberos ticket requests, SMB/RPC operations</td></tr>
+              <tr><td>ldap3</td><td><code>pip3 install ldap3</code></td><td>ldap_anon, ldap_enum, user_enum, group_enum — all LDAP operations</td></tr>
+              <tr><td>nxc (netexec)</td><td><code>pip3 install netexec</code></td><td>smb_enum, rpc_enum, spray — SMB/RPC/auth operations</td></tr>
+              <tr><td>bloodhound-python</td><td><code>pip3 install bloodhound</code></td><td>bloodhound operation and auto_auth pipeline BloodHound collection</td></tr>
+              <tr><td>python3-dnspython</td><td><code>pip3 install dnspython</code></td><td>dc_discover — DNS SRV record queries for DC location</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout info">
+          <span class="callout-mark">i</span>
+          All five dependencies are checked at startup. If a dependency is missing, adsec reports which operations are unavailable and exits cleanly rather than failing mid-operation. Install all five for full functionality across all 15 operations.
+        </div>
+        <p>All dependencies are available via pip3 and are present by default on Kali Linux and BlackArch. On Arch Linux and Debian, install them with pip3 inside a virtual environment or use the system package manager where packages are available (e.g. <code>python3-impacket</code> on Debian).</p>
+      </section>
+
+    </div><!-- /content -->
+  </div><!-- /doc-body -->
+</div><!-- /page -->
+
+<footer>
+  <div class="foot-inner">
+    <a class="foot-brand" href="../index.html">SecVulnHub</a>
+    <div class="foot-links">
+      <a class="foot-link" href="../index.html">← Back to Hub</a>
+      <a class="foot-link" href="netrecon.html">netrecon →</a>
+      <a class="foot-link" href="wifi_monitor.html">wifi_monitor →</a>
+      <a class="foot-link" href="mac_spoof.html">mac_spoof →</a>
+      <a class="foot-link" href="websec.html">websec →</a>
+      <a class="foot-link" href="ctfpwn.html">ctfpwn →</a>
+      <a class="foot-link" href="windowsAD.html">winadsec →</a>
+      <a class="foot-link" href="https://github.com/secvulnhub/secV" target="_blank">GitHub ↗</a>
+    </div>
+    <span class="foot-note">MIT © 2024–2026 SecVulnHub</span>
+  </div>
+</footer>
+
+<script>
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', scrollY > 20);
+}, { passive: true });
+
+document.getElementById('burger').addEventListener('click', () => {
+  document.body.classList.toggle('nav-open');
+});
+
+const sections = document.querySelectorAll('.content section[id]');
+const navLinks = document.querySelectorAll('.sidebar-nav a[href^="#"]');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-52px 0px -60% 0px' });
+sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
