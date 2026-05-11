@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iot_pwn - SecV Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+:root {
+  --bg:      #050505;
+  --bg1:     #0d0d0d;
+  --bg2:     #141414;
+  --bg3:     #1c1c1c;
+  --border:  rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.13);
+  --border3: rgba(255,255,255,0.2);
+  --text:    #a8a8a8;
+  --muted:   #505050;
+  --dim:     #252525;
+  --white:   #f0f0f0;
+  --off:     #d8d8d8;
+  --grey:    #787878;
+  --acc:     #88aacc;
+  --mono:    'JetBrains Mono', monospace;
+  --disp:    'Syne', sans-serif;
+  --nav-h:   52px;
+  --transition: 0.16s ease;
+}
+
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 2px; }
+
+/* ── Nav ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
+}
+nav.scrolled {
+  background: rgba(5,5,5,0.96);
+  backdrop-filter: blur(16px);
+  border-color: var(--border);
+}
+.logo {
+  font-family: var(--disp);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--off);
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.logo-mark { width: 6px; height: 6px; background: var(--white); flex-shrink: 0; }
+.nav-links { display: flex; align-items: center; gap: 0.1rem; }
+.nav-link {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.4rem 0.75rem;
+  transition: color var(--transition);
+}
+.nav-link:hover { color: var(--text); }
+.nav-btn {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text);
+  text-decoration: none;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--border2);
+  margin-left: 0.5rem;
+  transition: border-color var(--transition), color var(--transition);
+}
+.nav-btn:hover { border-color: var(--white); color: var(--white); }
+.nav-btn.primary { background: var(--white); border-color: var(--white); color: var(--bg); }
+.nav-btn.primary:hover { background: transparent; color: var(--white); }
+
+/* Mobile nav toggle */
+.nav-burger {
+  display: none;
+  background: none;
+  border: 1px solid var(--border2);
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  border-radius: 3px;
+  flex-direction: column;
+  gap: 4px;
+}
+.nav-burger span { display: block; width: 18px; height: 1px; background: var(--text); transition: transform var(--transition), opacity var(--transition); }
+body.nav-open .nav-burger span:nth-child(1) { transform: rotate(45deg) translate(3.5px,3.5px); }
+body.nav-open .nav-burger span:nth-child(2) { opacity: 0; }
+body.nav-open .nav-burger span:nth-child(3) { transform: rotate(-45deg) translate(3.5px,-3.5px); }
+
+/* ── Page wrapper ── */
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+}
+
+/* ── Doc Header ── */
+.doc-header {
+  padding-top: calc(var(--nav-h) + 3.5rem);
+  padding-bottom: 3.5rem;
+  border-bottom: 1px solid var(--border);
+  animation: rise 0.45s ease both;
+}
+@keyframes rise { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+
+.breadcrumb {
+  font-size: 0.56rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.breadcrumb a { color: var(--muted); text-decoration: none; transition: color var(--transition); }
+.breadcrumb a:hover { color: var(--text); }
+.breadcrumb span { color: var(--dim); }
+
+.module-meta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+}
+.module-title {
+  font-family: var(--disp);
+  font-size: clamp(2.8rem, 6vw, 4.8rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--white);
+  line-height: 0.95;
+  margin-bottom: 0.85rem;
+}
+.module-title span { color: var(--grey); font-weight: 400; }
+.module-sub {
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.85;
+  max-width: 500px;
+  margin-bottom: 1.5rem;
+}
+.module-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.tag {
+  font-size: 0.5rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.55rem;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+}
+.tag.hi { color: var(--white); border-color: rgba(255,255,255,0.28); }
+
+.module-stats { display: flex; flex-direction: column; gap: 1rem; min-width: 210px; }
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.68rem;
+  gap: 2rem;
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-lbl { letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.stat-v { color: var(--white); font-weight: 500; }
+
+/* ── Doc body grid ── */
+.doc-body {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 4rem;
+  padding: 3.5rem 0;
+  align-items: start;
+}
+
+/* ── Sidebar ── */
+.sidebar { position: sticky; top: calc(var(--nav-h) + 1rem); }
+.sidebar-nav { list-style: none; }
+.sidebar-nav li { margin-bottom: 0.05rem; }
+.sidebar-nav a {
+  display: block;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.4rem 0;
+  border-left: 2px solid transparent;
+  padding-left: 0.75rem;
+  transition: color var(--transition), border-color var(--transition);
+}
+.sidebar-nav a:hover { color: var(--text); border-color: var(--border2); }
+.sidebar-nav a.active { color: var(--white); border-color: var(--white); }
+.sidebar-sep {
+  font-size: 0.48rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dim);
+  padding: 0.7rem 0 0.25rem 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* ── Content sections ── */
+.content section {
+  padding-bottom: 3.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 3.5rem;
+}
+.content section:last-child { border-bottom: none; }
+
+.sec-label {
+  font-size: 0.52rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 0.55rem;
+}
+
+h2 {
+  font-family: var(--disp);
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--white);
+  margin-bottom: 1.25rem;
+  line-height: 1.05;
+}
+
+h3 {
+  font-family: var(--disp);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--off);
+  margin: 2rem 0 0.8rem;
+  letter-spacing: -0.01em;
+}
+
+p {
+  font-size: 0.82rem;
+  color: var(--text);
+  line-height: 1.85;
+  margin-bottom: 0.9rem;
+}
+p:last-child { margin-bottom: 0; }
+
+a { color: var(--grey); }
+a:hover { color: var(--white); }
+
+/* ── Code ── */
+pre {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border3);
+  padding: 1.1rem 1.35rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+  font-size: 0.76rem;
+  line-height: 1.75;
+  border-radius: 0 2px 2px 0;
+}
+code {
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  padding: 0.08rem 0.35rem;
+  color: var(--off);
+}
+pre code { background: none; border: none; padding: 0; font-size: inherit; }
+.comment { color: var(--muted); font-style: italic; }
+.kw { color: var(--white); }
+.str { color: var(--grey); }
+
+/* ── Tables ── */
+.table-wrap { overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 0.74rem; min-width: 420px; }
+th {
+  font-family: var(--mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey);
+  text-align: left;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border2);
+  background: var(--bg1);
+  white-space: nowrap;
+}
+td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: top;
+  line-height: 1.65;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg1); }
+td:first-child { color: var(--off); font-weight: 500; white-space: nowrap; }
+td code { font-size: 0.7rem; }
+
+/* ── Feature grid ── */
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+.feat-cell {
+  background: var(--bg);
+  padding: 1.1rem;
+  transition: background var(--transition);
+}
+.feat-cell:hover { background: var(--bg1); }
+.feat-icon {
+  font-size: 0.54rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 0.4rem;
+}
+.feat-name {
+  font-family: var(--disp);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.3rem;
+}
+.feat-desc { font-size: 0.72rem; color: var(--muted); line-height: 1.6; }
+
+/* ── Callouts ── */
+.callout {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.95rem 1.15rem;
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--border2);
+  margin: 1.25rem 0;
+  font-size: 0.78rem;
+  line-height: 1.7;
+  color: var(--text);
+  border-radius: 0 2px 2px 0;
+}
+.callout.warn { border-left-color: var(--grey); }
+.callout.crit { border-left-color: var(--white); background: rgba(255,255,255,0.02); }
+.callout.info { border-left-color: var(--muted); }
+.callout-mark { font-size: 0.64rem; color: var(--grey); flex-shrink: 0; margin-top: 0.15rem; }
+
+/* ── Scan mode cards ── */
+.mode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+.mode-card {
+  background: var(--bg);
+  padding: 1.1rem;
+  transition: background var(--transition);
+  cursor: default;
+}
+.mode-card:hover { background: var(--bg1); }
+.mode-key {
+  font-family: var(--disp);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.mode-badge {
+  font-size: 0.46rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.12rem 0.38rem;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+}
+.mode-badge.dflt { color: var(--white); border-color: rgba(255,255,255,0.28); }
+.mode-desc { font-size: 0.71rem; color: var(--muted); line-height: 1.6; }
+
+/* ── Author card ── */
+.author-card {
+  display: flex;
+  gap: 1.75rem;
+  align-items: flex-start;
+  padding: 1.75rem;
+  border: 1px solid var(--border2);
+  background: var(--bg1);
+  margin-top: 1.5rem;
+}
+.author-avatar {
+  width: 52px; height: 52px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--disp);
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--white);
+  flex-shrink: 0;
+}
+.author-name {
+  font-family: var(--disp);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 0.2rem;
+}
+.author-role {
+  font-size: 0.56rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 0.75rem;
+}
+.author-bio {
+  font-size: 0.76rem;
+  color: var(--muted);
+  line-height: 1.75;
+  margin-bottom: 0.85rem;
+}
+.author-links { display: flex; gap: 1rem; flex-wrap: wrap; }
+.author-link {
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--grey);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: color var(--transition);
+}
+.author-link:hover { color: var(--white); }
+
+/* ── Device category grid ── */
+.dev-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+.dev-cat {
+  background: var(--bg);
+  padding: 1rem;
+  transition: background var(--transition);
+}
+.dev-cat:hover { background: var(--bg1); }
+.dev-cat-label {
+  font-size: 0.5rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: 0.3rem;
+}
+.dev-cat-name {
+  font-family: var(--disp);
+  font-weight: 700;
+  color: var(--white);
+  font-size: 0.92rem;
+  margin-bottom: 0.35rem;
+}
+.dev-cat-ports { font-size: 0.66rem; color: var(--muted); line-height: 1.6; }
+
+/* ── Web section list ── */
+.feature-list {
+  margin: 0.75rem 0 1rem 1.1rem;
+  font-size: 0.78rem;
+  color: var(--text);
+  line-height: 2;
+}
+
+/* ── Footer ── */
+footer { border-top: 1px solid var(--border); margin-top: 2rem; }
+.foot-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 1.5rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.foot-brand {
+  font-family: var(--disp);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-decoration: none;
+}
+.foot-links { display: flex; gap: 1.75rem; }
+.foot-link {
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+.foot-link:hover { color: var(--text); }
+.foot-note { font-size: 0.52rem; color: var(--dim); letter-spacing: 0.06em; }
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  nav { padding: 0 1.5rem; }
+  .nav-links { display: none; }
+  .nav-burger { display: flex; }
+  body.nav-open .nav-links {
+    display: flex;
+    position: fixed;
+    top: var(--nav-h);
+    left: 0; right: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    flex-direction: column;
+    padding: 1rem 1.5rem 1.5rem;
+    gap: 0.25rem;
+    align-items: flex-start;
+    z-index: 99;
+  }
+  .page { padding: 0 1.5rem; }
+  .doc-body { grid-template-columns: 1fr; gap: 0; }
+  .sidebar { display: none; }
+  .dev-cat-grid { grid-template-columns: 1fr 1fr; }
+  .module-title { font-size: 2.6rem; }
+  .author-card { flex-direction: column; gap: 1rem; }
+  .module-stats { min-width: unset; width: 100%; }
+  pre { font-size: 0.7rem; }
+}
+
+@media (max-width: 540px) {
+  .dev-cat-grid { grid-template-columns: 1fr; }
+  .feat-grid { grid-template-columns: 1fr; }
+  .mode-grid { grid-template-columns: 1fr; }
+  .page { padding: 0 1rem; }
+  pre { padding: 0.85rem 1rem; }
+  .doc-header { padding-top: calc(var(--nav-h) + 2rem); }
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav id="nav">
+  <a class="logo" href="../index.html">
+    <span class="logo-mark"></span>
+    SecVulnHub
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="../index.html#projects">Arsenal</a>
+    <a class="nav-link" href="../index.html#mission">Mission</a>
+    <a class="nav-link" href="../index.html#contribute">Contribute</a>
+    <a class="nav-btn" href="https://github.com/0xb0rn3" target="_blank">GitHub</a>
+    <a class="nav-btn primary" href="https://discord.gg/SecVulnHub" target="_blank">Discord</a>
+  </div>
+  <button class="nav-burger" id="burger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="page">
+
+  <!-- Doc Header -->
+  <div class="doc-header">
+    <div class="breadcrumb">
+      <a href="../index.html">SecVulnHub</a>
+      <span>/</span>
+      Docs
+      <span>/</span>
+      iot_pwn
+    </div>
+    <div class="module-meta">
+      <div>
+        <h1 class="module-title">iot_pwn<span>.</span></h1>
+        <p class="module-sub">IoT and router exploitation module — default credential attacks across SSH, Telnet, FTP, and HTTP admin panels; SNMP community string brute-force; UPnP SSDP exposure detection; RTSP no-auth stream checks; and embedded CVE probes for known router vulnerabilities. Inspired by routersploit.</p>
+        <div class="module-tags">
+          <span class="tag hi">secV Module</span>
+          <span class="tag">Network / IoT</span>
+          <span class="tag">Default Creds</span>
+          <span class="tag">SNMP Brute</span>
+          <span class="tag">UPnP / SSDP</span>
+          <span class="tag">RTSP No-Auth</span>
+          <span class="tag">CVE Probes</span>
+          <span class="tag">routersploit</span>
+          <span class="tag">Python 3.8+</span>
+          <span class="tag">v1.0.0</span>
+        </div>
+      </div>
+      <div class="module-stats">
+        <div class="stat-row"><span class="stat-lbl">Category</span><span class="stat-v">Network / IoT</span></div>
+        <div class="stat-row"><span class="stat-lbl">Language</span><span class="stat-v">Python 3</span></div>
+        <div class="stat-row"><span class="stat-lbl">Author</span><span class="stat-v">0xb0rn3</span></div>
+        <div class="stat-row"><span class="stat-lbl">Version</span><span class="stat-v">1.0.0</span></div>
+        <div class="stat-row"><span class="stat-lbl">Status</span><span class="stat-v">Stable</span></div>
+        <div class="stat-row"><span class="stat-lbl">License</span><span class="stat-v">MIT</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="doc-body">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <ul class="sidebar-nav">
+        <li><div class="sidebar-sep">Overview</div></li>
+        <li><a href="#overview" class="active">What it does</a></li>
+        <li><a href="#quickstart">Quick Start</a></li>
+        <li><div class="sidebar-sep">Reference</div></li>
+        <li><a href="#attack-modules">Attack Modules</a></li>
+        <li><a href="#params">Parameters</a></li>
+        <li><a href="#cve-checks">CVE Checks</a></li>
+        <li><a href="#output">Output Structure</a></li>
+        <li><div class="sidebar-sep">More</div></li>
+        <li><a href="#dependencies">Dependencies</a></li>
+        <li><a href="#examples">Examples</a></li>
+        <li><div class="sidebar-sep">Modules</div></li>
+        <li><a href="netrecon.html">netrecon</a></li>
+        <li><a href="android_pentest.html">android_pentest</a></li>
+        <li><a href="iot_pwn.html" style="color:var(--white);border-color:var(--white);">iot_pwn</a></li>
+      </ul>
+    </aside>
+
+    <!-- Content -->
+    <div class="content">
+
+      <!-- Overview -->
+      <section id="overview">
+        <p class="sec-label">Overview</p>
+        <h2>What iot_pwn does</h2>
+        <p>iot_pwn is the IoT and router exploitation module inside SecV. It performs automated default credential attacks across SSH, Telnet, FTP, and HTTP admin panels; brute-forces SNMP community strings; detects unauthenticated UPnP SSDP exposure; checks for RTSP streams accessible without authentication; and probes for known high-severity router CVEs — all against a single target IP in one run.</p>
+        <p>The credential database embeds 68 credential pairs sourced from routersploit and real-world IoT vendor defaults, covering Huawei, ZTE, TP-Link, D-Link, Zyxel, Netgear, Cisco, Ubiquiti, Dahua, and Hikvision. SNMP community string brute-force uses a built-in list of 24 commonly observed strings. All attack modules execute concurrently via Python's <code>ThreadPoolExecutor</code>, with per-service stop-on-success logic so the run ends as soon as valid credentials are found.</p>
+        <div class="feat-grid">
+          <div class="feat-cell">
+            <div class="feat-icon">Credentials</div>
+            <div class="feat-name">68 Pairs</div>
+            <div class="feat-desc">Embedded default credential pairs from routersploit + 10 major IoT vendors. Stop-on-success per service.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">SNMP</div>
+            <div class="feat-name">24 Communities</div>
+            <div class="feat-desc">UDP raw-socket brute-force of 24 community strings on port 161. Extracts sysDescr on success.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">UPnP</div>
+            <div class="feat-name">SSDP Probe</div>
+            <div class="feat-desc">M-SEARCH multicast probe on UDP 1900. Captures server banner and location URL.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">RTSP</div>
+            <div class="feat-name">No-Auth Check</div>
+            <div class="feat-desc">OPTIONS probe on common RTSP ports. Flags streams reachable without a 401 challenge.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">CVEs</div>
+            <div class="feat-name">4 Probes</div>
+            <div class="feat-desc">Active probes for CVE-2017-17215, CVE-2020-29583, CVE-2021-20090, CVE-2019-16920.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Concurrency</div>
+            <div class="feat-name">ThreadPool</div>
+            <div class="feat-desc">All modules run in parallel via ThreadPoolExecutor. Configurable thread count and per-connection timeout.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">HTTP</div>
+            <div class="feat-name">Admin Discovery</div>
+            <div class="feat-desc">Probes 6 common web ports. Detects admin panels and tests Basic/Digest authentication.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Output</div>
+            <div class="feat-name">JSON Report</div>
+            <div class="feat-desc">Structured JSON with creds, SNMP data, UPnP banners, open ports, CVE hits, and scan duration.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Start -->
+      <section id="quickstart">
+        <p class="sec-label">Quick Start</p>
+        <h2>Running iot_pwn</h2>
+        <p>Load the module inside the SecV console with <code>use iot_pwn</code>, then provide a target IP and run. All attack modules are enabled by default. Individual modules can be toggled off with boolean parameters.</p>
+        <pre><code><span class="comment"># Full default scan against a router</span>
+use iot_pwn
+run 192.168.1.1
+
+<span class="comment"># HTTP + SNMP only</span>
+use iot_pwn
+set ssh false
+set telnet false
+set ftp false
+set rtsp false
+set upnp false
+run 192.168.1.1
+
+<span class="comment"># Fast scan, limited creds</span>
+use iot_pwn
+set max_creds 20
+set timeout 2
+run 192.168.1.1</code></pre>
+        <div class="callout info">
+          <span class="callout-mark">i</span>
+          Install <code>paramiko</code> before running SSH checks. HTTP checks require <code>requests</code>. All other modules (Telnet, FTP, SNMP, RTSP, UPnP) rely only on the Python standard library.
+        </div>
+      </section>
+
+      <!-- Attack Modules -->
+      <section id="attack-modules">
+        <p class="sec-label">Reference</p>
+        <h2>Attack modules</h2>
+        <p>Each module targets a specific protocol. All modules run concurrently. Modules that find valid credentials stop testing remaining pairs immediately.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Module</th>
+                <th>Protocol</th>
+                <th>Port</th>
+                <th>Description</th>
+                <th>Requires</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>SSH</td>
+                <td>TCP</td>
+                <td>22</td>
+                <td>Default credential testing via paramiko</td>
+                <td><code>paramiko</code></td>
+              </tr>
+              <tr>
+                <td>Telnet</td>
+                <td>TCP</td>
+                <td>23</td>
+                <td>Default credential testing via raw socket (no telnetlib)</td>
+                <td>stdlib</td>
+              </tr>
+              <tr>
+                <td>FTP</td>
+                <td>TCP</td>
+                <td>21</td>
+                <td>Default credential testing via ftplib</td>
+                <td>stdlib</td>
+              </tr>
+              <tr>
+                <td>HTTP</td>
+                <td>TCP</td>
+                <td>80/443/8080/8443/8888/9090</td>
+                <td>Admin panel discovery + Basic/Digest credential testing</td>
+                <td><code>requests</code></td>
+              </tr>
+              <tr>
+                <td>SNMP</td>
+                <td>UDP</td>
+                <td>161</td>
+                <td>Community string brute-force via raw UDP packets</td>
+                <td>stdlib</td>
+              </tr>
+              <tr>
+                <td>RTSP</td>
+                <td>TCP</td>
+                <td>554/7000/8554</td>
+                <td>No-auth stream detection via OPTIONS probe</td>
+                <td>stdlib</td>
+              </tr>
+              <tr>
+                <td>UPnP</td>
+                <td>UDP</td>
+                <td>1900</td>
+                <td>SSDP M-SEARCH exposure detection</td>
+                <td>stdlib</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout warn">
+          <span class="callout-mark">!</span>
+          Telnet credential testing uses a raw socket implementation instead of the deprecated <code>telnetlib</code> module, ensuring compatibility with Python 3.11+ where <code>telnetlib</code> was removed.
+        </div>
+      </section>
+
+      <!-- Parameters -->
+      <section id="params">
+        <h2>Parameters</h2>
+        <p>All parameters are set with <code>set &lt;param&gt; &lt;value&gt;</code> inside the SecV console before running.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>target</td>
+                <td>string</td>
+                <td><em>required</em></td>
+                <td>Target IP address</td>
+              </tr>
+              <tr>
+                <td>ssh</td>
+                <td>bool</td>
+                <td>true</td>
+                <td>Test SSH default credentials</td>
+              </tr>
+              <tr>
+                <td>telnet</td>
+                <td>bool</td>
+                <td>true</td>
+                <td>Test Telnet default credentials</td>
+              </tr>
+              <tr>
+                <td>ftp</td>
+                <td>bool</td>
+                <td>true</td>
+                <td>Test FTP default credentials</td>
+              </tr>
+              <tr>
+                <td>http</td>
+                <td>bool</td>
+                <td>true</td>
+                <td>HTTP admin panel discovery + credential testing</td>
+              </tr>
+              <tr>
+                <td>snmp</td>
+                <td>bool</td>
+                <td>true</td>
+                <td>SNMP community string brute-force</td>
+              </tr>
+              <tr>
+                <td>rtsp</td>
+                <td>bool</td>
+                <td>true</td>
+                <td>RTSP no-auth stream check</td>
+              </tr>
+              <tr>
+                <td>upnp</td>
+                <td>bool</td>
+                <td>true</td>
+                <td>UPnP SSDP exposure check</td>
+              </tr>
+              <tr>
+                <td>threads</td>
+                <td>int</td>
+                <td>20</td>
+                <td>Concurrent worker threads</td>
+              </tr>
+              <tr>
+                <td>timeout</td>
+                <td>float</td>
+                <td>3.0</td>
+                <td>Per-connection timeout (seconds)</td>
+              </tr>
+              <tr>
+                <td>max_creds</td>
+                <td>int</td>
+                <td>68</td>
+                <td>Max credential pairs to test per service</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout info">
+          <span class="callout-mark">i</span>
+          Reducing <code>max_creds</code> and <code>timeout</code> gives a fast triage pass. The full 68-pair list with default timeout is recommended for thorough assessments.
+        </div>
+      </section>
+
+      <!-- CVE Checks -->
+      <section id="cve-checks">
+        <h2>CVE checks</h2>
+        <p>iot_pwn embeds active exploit probes for four high-impact router CVEs. Each probe is run as part of the main scan pass and findings are included in the <code>vulnerabilities</code> list of the JSON output.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>CVE</th>
+                <th>Severity</th>
+                <th>Target</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>CVE-2017-17215</td>
+                <td><span style="color:var(--white);font-weight:600;">CRITICAL</span></td>
+                <td>Huawei HG532</td>
+                <td>UPnP SOAP command injection via <code>NewStatusURL</code> — allows unauthenticated remote code execution through the TR-064 interface</td>
+              </tr>
+              <tr>
+                <td>CVE-2020-29583</td>
+                <td><span style="color:var(--white);font-weight:600;">CRITICAL</span></td>
+                <td>Zyxel firewalls/APs</td>
+                <td>Hardcoded backdoor account (<code>zyfwp</code>) with a fixed plaintext password present in firmware — full admin access</td>
+              </tr>
+              <tr>
+                <td>CVE-2021-20090</td>
+                <td><span style="color:var(--white);font-weight:600;">CRITICAL</span></td>
+                <td>Arcadyan routers</td>
+                <td>Path traversal in web interface allowing authentication bypass — affects multiple ISP-branded devices sharing the same Arcadyan firmware</td>
+              </tr>
+              <tr>
+                <td>CVE-2019-16920</td>
+                <td><span style="color:var(--white);font-weight:600;">CRITICAL</span></td>
+                <td>D-Link routers</td>
+                <td>Unauthenticated command injection via the <code>ping</code> diagnostic endpoint — no authentication required, OS-level command execution</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout crit">
+          <span class="callout-mark">!</span>
+          All four CVE probes send real HTTP requests to the target. Use only on networks and devices you are authorised to test. A successful CVE hit is reported as a CRITICAL finding in the output.
+        </div>
+      </section>
+
+      <!-- Output Structure -->
+      <section id="output">
+        <h2>Output structure</h2>
+        <p>iot_pwn returns a structured JSON object. All findings are keyed by service or check type.</p>
+        <pre><code>{
+  "target":       "192.168.1.1",
+  "open_ports":   [21, 22, 23, 80, 161],
+  "creds": {
+    "ssh":    [{"user": "admin", "pass": "admin"}],
+    "telnet": [],
+    "ftp":    [{"user": "admin", "pass": "1234"}],
+    "http":   [{"user": "admin", "pass": "password"}]
+  },
+  "snmp": {
+    "valid_communities": ["public", "private"],
+    "sys_info": "Linux router 3.10.49 #1 SMP"
+  },
+  "upnp": {
+    "exposed": true,
+    "server":  "Linux/2.6.39, UPnP/1.0, Portable SDK for UPnP/1.6.18",
+    "location": "http://192.168.1.1:1900/rootDesc.xml"
+  },
+  "rtsp":         true,
+  "admin_panels": ["http://192.168.1.1:80/", "http://192.168.1.1:8080/"],
+  "http_banners": {
+    "80":   "Server: GoAhead/3.6.5",
+    "8080": "Server: mini_httpd/1.30"
+  },
+  "vulnerabilities": [
+    {
+      "id":       "CVE-2017-17215",
+      "severity": "CRITICAL",
+      "desc":     "Huawei HG532 UPnP SOAP command injection"
+    }
+  ],
+  "summary": "2 services with default credentials. SNMP public/private accessible. UPnP exposed. 1 CVE confirmed.",
+  "scan_duration": 14.7
+}</code></pre>
+        <h3>Field reference</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>target</td><td>string</td><td>The IP address that was scanned</td></tr>
+              <tr><td>open_ports</td><td>list[int]</td><td>TCP/UDP ports found open during pre-scan</td></tr>
+              <tr><td>creds</td><td>dict</td><td>Per-service lists of <code>{user, pass}</code> pairs that authenticated successfully</td></tr>
+              <tr><td>snmp</td><td>dict</td><td>Valid community strings found and sysDescr value extracted from the device</td></tr>
+              <tr><td>upnp</td><td>dict</td><td>Whether SSDP responded; captured server banner and location URL</td></tr>
+              <tr><td>rtsp</td><td>bool</td><td>True if any RTSP port responded without requiring authentication</td></tr>
+              <tr><td>admin_panels</td><td>list[str]</td><td>URLs of discovered HTTP admin panels</td></tr>
+              <tr><td>http_banners</td><td>dict</td><td>Server header values keyed by port number</td></tr>
+              <tr><td>vulnerabilities</td><td>list</td><td>CVE probe results — each entry has <code>id</code>, <code>severity</code>, and <code>desc</code></td></tr>
+              <tr><td>summary</td><td>string</td><td>Human-readable one-line summary of all findings</td></tr>
+              <tr><td>scan_duration</td><td>float</td><td>Total elapsed seconds for the complete scan</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Dependencies -->
+      <section id="dependencies">
+        <h2>Dependencies</h2>
+        <p>The core module — Telnet, FTP, SNMP, RTSP, UPnP — requires only the Python standard library. Two optional packages unlock SSH and HTTP attack modules.</p>
+        <pre><code><span class="comment"># Optional but recommended</span>
+pip3 install paramiko    <span class="comment"># SSH credential testing</span>
+pip3 install requests    <span class="comment"># HTTP admin panel discovery</span></code></pre>
+        <div class="callout info">
+          <span class="callout-mark">i</span>
+          If <code>paramiko</code> is not installed, the SSH module is silently skipped — no hard failure. The same applies to <code>requests</code> and the HTTP module. Install both for a complete assessment.
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Package</th><th>Enables</th><th>Install</th></tr></thead>
+            <tbody>
+              <tr><td>paramiko</td><td>SSH default credential testing on port 22</td><td><code>pip3 install paramiko</code></td></tr>
+              <tr><td>requests</td><td>HTTP admin panel discovery + Basic/Digest auth testing</td><td><code>pip3 install requests</code></td></tr>
+              <tr><td>stdlib only</td><td>Telnet, FTP, SNMP, RTSP, UPnP, CVE probes</td><td>No install needed</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Examples -->
+      <section id="examples">
+        <h2>Examples</h2>
+        <h3>Full scan of a home router</h3>
+        <p>Run all attack modules against a consumer router at 192.168.1.1. Credentials, SNMP communities, and CVE hits are all reported in a single JSON output.</p>
+        <pre><code>use iot_pwn
+run 192.168.1.1</code></pre>
+
+        <h3>HTTP and SNMP audit only</h3>
+        <p>Disable all other modules to focus on web admin panel discovery and SNMP exposure — useful when you already know SSH/Telnet are closed.</p>
+        <pre><code>use iot_pwn
+set ssh false
+set telnet false
+set ftp false
+set rtsp false
+set upnp false
+run 192.168.1.1</code></pre>
+
+        <h3>Fast triage with limited credentials</h3>
+        <p>Reduce <code>max_creds</code> to the 20 most common pairs and lower the per-connection timeout for a quick sweep. Suitable for initial triage across multiple devices.</p>
+        <pre><code>use iot_pwn
+set max_creds 20
+set timeout 2
+run 192.168.1.1</code></pre>
+
+        <h3>IP camera check — RTSP and HTTP only</h3>
+        <p>Target an IP camera that you know exposes RTSP and an HTTP management interface. All other modules are disabled to reduce noise.</p>
+        <pre><code>use iot_pwn
+set ssh false
+set telnet false
+set ftp false
+set snmp false
+set upnp false
+run 192.168.1.100</code></pre>
+
+        <h3>Industrial router — SNMP + CVE focus</h3>
+        <p>When targeting a Huawei or D-Link router in an industrial segment, focus on SNMP community brute-force and the embedded CVE probes. Disable credential-based modules to keep traffic minimal.</p>
+        <pre><code>use iot_pwn
+set ssh false
+set telnet false
+set ftp false
+set http false
+set rtsp false
+set upnp false
+set snmp true
+run 10.0.1.1</code></pre>
+
+        <h3>Aggressive full scan with increased threads</h3>
+        <p>Increase thread count for faster concurrent testing on a fast local network. All modules enabled, full credential list.</p>
+        <pre><code>use iot_pwn
+set threads 50
+set timeout 5
+run 192.168.0.1</code></pre>
+      </section>
+
+    </div><!-- /content -->
+  </div><!-- /doc-body -->
+</div><!-- /page -->
+
+<footer>
+  <div class="foot-inner">
+    <a class="foot-brand" href="../index.html">SecVulnHub</a>
+    <div class="foot-links">
+      <a class="foot-link" href="../index.html">Docs Hub</a>
+      <a class="foot-link" href="netrecon.html">netrecon</a>
+      <a class="foot-link" href="android_pentest.html">android_pentest</a>
+      <a class="foot-link" href="iot_pwn.html">iot_pwn</a>
+      <a class="foot-link" href="wifi_monitor.html">wifi_monitor</a>
+      <a class="foot-link" href="websec.html">websec</a>
+      <a class="foot-link" href="ctfpwn.html">ctfpwn</a>
+      <a class="foot-link" href="adsec.html">adsec</a>
+      <a class="foot-link" href="https://github.com/secvulnhub/secV" target="_blank">GitHub</a>
+    </div>
+    <span class="foot-note">MIT &copy; 2024&ndash;2026 SecVulnHub</span>
+  </div>
+</footer>
+
+<script>
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', scrollY > 20);
+}, { passive: true });
+
+document.getElementById('burger').addEventListener('click', () => {
+  document.body.classList.toggle('nav-open');
+});
+
+const sections = document.querySelectorAll('.content section[id]');
+const navLinks = document.querySelectorAll('.sidebar-nav a[href^="#"]');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-52px 0px -60% 0px' });
+sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
