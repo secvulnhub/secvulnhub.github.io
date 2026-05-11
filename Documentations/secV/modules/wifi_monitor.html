@@ -627,7 +627,7 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
           <span class="tag">Device Fingerprint</span>
           <span class="tag">CVE Lookup</span>
           <span class="tag">Python 3.8+</span>
-          <span class="tag">v1.0.0</span>
+          <span class="tag">v2.1.0</span>
         </div>
       </div>
       <div class="module-stats">
@@ -635,7 +635,8 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
         <div class="stat-row"><span class="stat-lbl">Language</span><span class="stat-v">Python 3</span></div>
         <div class="stat-row"><span class="stat-lbl">Location</span><span class="stat-v">tools/network/wifi_monitor/</span></div>
         <div class="stat-row"><span class="stat-lbl">Author</span><span class="stat-v">0xb0rn3</span></div>
-        <div class="stat-row"><span class="stat-lbl">Version</span><span class="stat-v">1.0.0</span></div>
+        <div class="stat-row"><span class="stat-lbl">Version</span><span class="stat-v">2.1.0</span></div>
+        <div class="stat-row"><span class="stat-lbl">Modes</span><span class="stat-v">23</span></div>
         <div class="stat-row"><span class="stat-lbl">License</span><span class="stat-v">MIT</span></div>
       </div>
     </div>
@@ -649,12 +650,8 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
         <li><a href="#overview" class="active">What it does</a></li>
         <li><a href="#quickstart">Quick Start</a></li>
         <li><div class="sidebar-sep">Reference</div></li>
-        <li><a href="#modes">Scan Modes</a></li>
+        <li><a href="#modes">Modes</a></li>
         <li><a href="#params">Parameters</a></li>
-        <li><a href="#devices">Device Detection</a></li>
-        <li><a href="#threats">Threat Detection</a></li>
-        <li><a href="#cve">CVE Lookup</a></li>
-        <li><a href="#output">Output Format</a></li>
         <li><div class="sidebar-sep">More</div></li>
         <li><a href="#examples">Examples</a></li>
         <li><a href="#requirements">Requirements</a></li>
@@ -668,95 +665,211 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
       <section id="overview">
         <p class="sec-label">Overview</p>
         <h2>What wifi_monitor does</h2>
-        <p>wifi_monitor is SecV's real-time WiFi network monitoring module. It discovers all active hosts on a subnet using ARP broadcasts (scapy) with automatic TCP-ping fallback when running without root. For each discovered host it runs an async port scanner, grabs SSL certificates, HTTP headers, and SSH banners, fingerprints the device type, and cross-references open services against the CIRCL CVE API.</p>
-        <p>The threat detection engine automatically flags critical exposures - databases open to the network, cleartext protocols like Telnet and FTP, default credential services, and end-of-life SSH versions - giving you a prioritized risk picture without manual triage.</p>
+        <p>wifi_monitor is SecV's WiFi penetration testing module. It wraps aircrack-ng, wifite, hostapd, and dnsmasq into a unified interface covering the full WiFi attack chain: monitor mode management, packet injection testing, network scanning, handshake capture, WEP/WPA/WPA2 cracking, WPS attacks, PMKID extraction, evil twin AP, MitM, and payload delivery over WiFi. For LAN-side work, it also includes an async host discovery and port scanning component.</p>
+        <p>All operations read JSON from stdin and return structured JSON to stdout. Requires root and a WiFi adapter that supports monitor mode and packet injection (e.g. Alfa AWUS036ACH, RTL8812AU chipset).</p>
         <div class="feat-grid">
           <div class="feat-cell">
-            <div class="feat-icon">Discovery</div>
-            <div class="feat-name">ARP + TCP</div>
-            <div class="feat-desc">ARP broadcast via scapy for fast L2 discovery. TCP-ping fallback for non-root environments.</div>
+            <div class="feat-icon">Setup</div>
+            <div class="feat-name">Monitor Mode</div>
+            <div class="feat-desc">Enable/disable monitor mode, test injection capability, check required tool availability.</div>
           </div>
           <div class="feat-cell">
-            <div class="feat-icon">Scanning</div>
-            <div class="feat-name">Async Ports</div>
-            <div class="feat-desc">Concurrent async port scanner. SSL cert grab, HTTP header pull, SSH version banner - per host.</div>
+            <div class="feat-icon">Recon</div>
+            <div class="feat-name">WiFi Scan</div>
+            <div class="feat-desc">Scan for all nearby APs: BSSID, ESSID, channel, signal, encryption type, WPS availability.</div>
           </div>
           <div class="feat-cell">
-            <div class="feat-icon">Intel</div>
-            <div class="feat-name">CVE Lookup</div>
-            <div class="feat-desc">CIRCL CVE API with 24h local cache. Keyword search per detected service/vendor.</div>
+            <div class="feat-icon">Attacks</div>
+            <div class="feat-name">Deauth + Capture</div>
+            <div class="feat-desc">802.11 deauthentication frames to force client reconnect. WPA handshake capture with auto-deauth.</div>
           </div>
           <div class="feat-cell">
-            <div class="feat-icon">Classify</div>
-            <div class="feat-name">Device Types</div>
-            <div class="feat-desc">Auto-fingerprints IoT cameras, routers, NAS, databases, web servers, Linux hosts.</div>
+            <div class="feat-icon">Cracking</div>
+            <div class="feat-name">WPA/WEP/PMKID</div>
+            <div class="feat-desc">aircrack-ng or hashcat wordlist cracking of WPA handshakes. PMKID capture without client. WEP ARP replay.</div>
           </div>
           <div class="feat-cell">
-            <div class="feat-icon">Risk</div>
-            <div class="feat-name">Threat Flags</div>
-            <div class="feat-desc">Critical: exposed DB, Telnet, FTP. Warning: EOL SSH, default-cred services, unencrypted admin.</div>
+            <div class="feat-icon">Advanced</div>
+            <div class="feat-name">Evil Twin + MitM</div>
+            <div class="feat-desc">Rogue AP with DHCP. Optional captive portal. ARP-based MitM with optional SSL strip.</div>
           </div>
           <div class="feat-cell">
-            <div class="feat-icon">Output</div>
-            <div class="feat-name">JSON Report</div>
-            <div class="feat-desc">Structured per-host JSON: ports, banners, device type, CVEs, threat flags, summary stats.</div>
+            <div class="feat-icon">Delivery</div>
+            <div class="feat-name">Shell over WiFi</div>
+            <div class="feat-desc">Generate reverse shell payloads. Optionally deliver via evil twin AP HTTP server.</div>
           </div>
+        </div>
+        <div class="callout warn">
+          <span class="callout-mark">!</span>
+          wifi_monitor requires root. Most modes require a WiFi adapter supporting monitor mode and injection. Run <code>set mode check_tools</code> first to verify your environment.
         </div>
       </section>
 
       <!-- Quick Start -->
       <section id="quickstart">
         <p class="sec-label">Quick Start</p>
-        <h2>Running a scan</h2>
-        <p>wifi_monitor reads a JSON context from stdin - target is the subnet CIDR or single IP, params controls scan depth and features.</p>
-        <pre><code><span class="comment"># Basic subnet scan - ARP discover + port scan + CVE lookup</span>
+        <h2>Running wifi_monitor</h2>
+        <p>wifi_monitor reads JSON from stdin. The <code>target</code> field is the interface name (e.g. <code>wlan0</code>) for most modes, or a subnet CIDR for LAN scan modes.</p>
+        <pre><code><span class="comment"># Step 1: verify tools and adapter</span>
 sudo secV
 secV ❯ use wifi_monitor
-secV (wifi_monitor) ❯ run 192.168.1.0/24
+secV (wifi_monitor) ❯ set mode check_tools
+secV (wifi_monitor) ❯ run wlan0
 
-<span class="comment"># Deep scan with all CVE lookups</span>
-secV (wifi_monitor) ❯ set mode deep
-secV (wifi_monitor) ❯ set cve_lookup true
-secV (wifi_monitor) ❯ run 192.168.1.0/24
+<span class="comment"># Step 2: enable monitor mode</span>
+secV (wifi_monitor) ❯ set mode monitor_on
+secV (wifi_monitor) ❯ run wlan0
 
-<span class="comment"># Direct stdin invocation</span>
-echo '{
-  "target": "192.168.1.0/24",
-  "params": {
-    "mode": "monitor",
-    "ports": "top-20",
-    "port_scan": true,
-    "cve_lookup": true,
-    "concurrency": 50
-  }
-}' | python3 wifi_monitor.py | jq .
+<span class="comment"># Step 3: scan for APs</span>
+secV (wifi_monitor) ❯ set mode wifi_scan
+secV (wifi_monitor) ❯ set duration 15
+secV (wifi_monitor) ❯ run wlan0
 
-<span class="comment"># Passive only - discovery no port scan</span>
-echo '{"target": "10.0.0.0/24", "params": {"mode": "passive", "port_scan": false}}' \
-  | python3 wifi_monitor.py</code></pre>
-        <div class="callout warn">
-          <span class="callout-mark">!</span>
-          Run as root for ARP scanning (required for scapy L2 broadcasts). Without root, TCP-ping fallback is used - slower and may miss some hosts.
-        </div>
+<span class="comment"># Step 4: capture WPA handshake (auto-deauth)</span>
+secV (wifi_monitor) ❯ set mode capture
+secV (wifi_monitor) ❯ set bssid AA:BB:CC:DD:EE:FF
+secV (wifi_monitor) ❯ set channel 6
+secV (wifi_monitor) ❯ run wlan0
+
+<span class="comment"># Step 5: crack it</span>
+secV (wifi_monitor) ❯ set mode crack
+secV (wifi_monitor) ❯ set capture_file /tmp/capture-01.cap
+secV (wifi_monitor) ❯ set wordlist /usr/share/wordlists/rockyou.txt
+secV (wifi_monitor) ❯ run wlan0
+
+<span class="comment"># Or run the full auto pipeline</span>
+secV (wifi_monitor) ❯ set mode auto
+secV (wifi_monitor) ❯ set wordlist /usr/share/wordlists/rockyou.txt
+secV (wifi_monitor) ❯ run wlan0</code></pre>
       </section>
 
       <!-- Scan Modes -->
       <section id="modes">
         <p class="sec-label">Reference</p>
-        <h2>Scan modes</h2>
-        <p>The <code>mode</code> parameter controls what runs - discovery only, port scanning, banner grabbing, and CVE enrichment depth.</p>
+        <h2>Modes</h2>
+        <p>Set via <code>set mode &lt;name&gt;</code>. Default is <code>scan</code>.</p>
+
+        <h3>Setup</h3>
         <div class="mode-grid">
           <div class="mode-card">
-            <div class="mode-key">monitor <span class="mode-badge dflt">default</span></div>
-            <div class="mode-desc">ARP discovery + top-20 port scan + SSL/HTTP/SSH banners + device fingerprint. Balanced.</div>
+            <div class="mode-key">check_tools</div>
+            <div class="mode-desc">Check availability of required tools: aircrack-ng, airodump-ng, aireplay-ng, airmon-ng, hostapd, dnsmasq, hcxtools. Returns a tool inventory with status per binary.</div>
           </div>
           <div class="mode-card">
-            <div class="mode-key">passive <span class="mode-badge">quiet</span></div>
-            <div class="mode-desc">ARP discovery only - no port scanning, no banners. Just which hosts are alive and their MACs.</div>
+            <div class="mode-key">monitor_on</div>
+            <div class="mode-desc">Enable monitor mode on the specified interface using <code>airmon-ng start</code>. Returns the monitor interface name (e.g. <code>wlan0mon</code>).</div>
           </div>
           <div class="mode-card">
-            <div class="mode-key">deep <span class="mode-badge">thorough</span></div>
-            <div class="mode-desc">Full discovery + top-100 ports + banners + CVE lookup for every detected service. Slower.</div>
+            <div class="mode-key">monitor_off</div>
+            <div class="mode-desc">Disable monitor mode and restore managed mode via <code>airmon-ng stop</code>.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">inject_test</div>
+            <div class="mode-desc">Test packet injection capability via <code>aireplay-ng --test</code>. Confirms the adapter can send 802.11 frames.</div>
+          </div>
+        </div>
+
+        <h3>Discovery</h3>
+        <div class="mode-grid">
+          <div class="mode-card">
+            <div class="mode-key">scan <span class="mode-badge dflt">default</span></div>
+            <div class="mode-desc">LAN host discovery: ARP broadcast (scapy) + async port scanner + SSL/HTTP/SSH banners. Target is a subnet CIDR or single IP.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">discover</div>
+            <div class="mode-desc">ARP-only host discovery with no port scanning. Returns live hosts and their MACs. Target is a subnet CIDR.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">wifi_scan</div>
+            <div class="mode-desc">Scan for nearby APs using airodump-ng. Returns BSSID, ESSID, channel, signal (dBm), encryption (WEP/WPA/WPA2/WPA3), and WPS availability for each AP.</div>
+          </div>
+        </div>
+
+        <h3>Handshake &amp; capture</h3>
+        <div class="mode-grid">
+          <div class="mode-card">
+            <div class="mode-key">deauth</div>
+            <div class="mode-desc">Send 802.11 deauthentication frames to a client or all clients (<code>FF:FF:FF:FF:FF:FF</code>) on a target AP. Forces client reconnect to trigger handshake capture.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">capture</div>
+            <div class="mode-desc">Capture WPA handshake on a target AP. Runs airodump-ng on the target channel, optionally sends deauth frames to speed up the process, and monitors for a complete 4-way handshake.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">handshake_check</div>
+            <div class="mode-desc">Verify a capture file contains a complete WPA 4-way handshake using aircrack-ng. Set <code>capture_file</code>, optionally <code>bssid</code> and <code>essid</code> to filter.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">pmkid</div>
+            <div class="mode-desc">Capture PMKID from target AP using hcxdumptool. Does not require a connected client. Output is a hashcat-compatible <code>.hc22000</code> file.</div>
+          </div>
+        </div>
+
+        <h3>Cracking</h3>
+        <div class="mode-grid">
+          <div class="mode-card">
+            <div class="mode-key">crack</div>
+            <div class="mode-desc">Crack a WPA handshake or PMKID file using aircrack-ng (default) or hashcat. Set <code>capture_file</code>, <code>wordlist</code>, and optionally <code>bssid</code>/<code>essid</code>.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">auto_crack</div>
+            <div class="mode-desc">Auto-detect capture format (handshake or PMKID), convert as needed, and attempt cracking with both aircrack-ng and hashcat in sequence.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">decrypt</div>
+            <div class="mode-desc">Decrypt a <code>.cap</code> file using a known WPA key or WEP key via <code>airdecap-ng</code>. Outputs decrypted packets in a new pcap.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">airolib</div>
+            <div class="mode-desc">Manage an airolib-ng precomputed PMK database. Actions: <code>stats</code>, <code>import_wordlist</code>, <code>batch</code> (compute PMKs). Speeds up WPA cracking for a fixed ESSID.</div>
+          </div>
+        </div>
+
+        <h3>WEP attacks</h3>
+        <div class="mode-grid">
+          <div class="mode-card">
+            <div class="mode-key">wep_attack</div>
+            <div class="mode-desc">WEP key recovery via ARP replay (<code>arp_replay</code>) or chopchop. Captures IVs with aireplay-ng, cracks with aircrack-ng once enough IVs are collected.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">forge_packet</div>
+            <div class="mode-desc">Craft and inject a custom 802.11 frame using aireplay-ng <code>--arpreplay</code>. Set BSSID, destination MAC, source MAC, and repeat count.</div>
+          </div>
+        </div>
+
+        <h3>WPS attacks</h3>
+        <div class="mode-grid">
+          <div class="mode-card">
+            <div class="mode-key">wps_scan</div>
+            <div class="mode-desc">Scan for WPS-enabled APs on the target interface. Returns BSSID, ESSID, and WPS lock status.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">wps_attack</div>
+            <div class="mode-desc">WPS PIN brute-force via reaver/bully. Supports Pixie-Dust attack (<code>pixiedust=true</code>) and manual PIN entry. Returns WPA passphrase on success.</div>
+          </div>
+        </div>
+
+        <h3>Advanced attacks</h3>
+        <div class="mode-grid">
+          <div class="mode-card">
+            <div class="mode-key">evil_twin</div>
+            <div class="mode-desc">Create a rogue AP with the same ESSID as a target. Runs hostapd + dnsmasq DHCP. Optional captive portal on a configurable port. Captures credentials from clients that connect.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">mitm</div>
+            <div class="mode-desc">ARP-based man-in-the-middle between a victim and the gateway. Enables IP forwarding and optionally captures traffic. Supports SSL strip via arpspoof + sslstrip.</div>
+          </div>
+        </div>
+
+        <h3>Automation &amp; delivery</h3>
+        <div class="mode-grid">
+          <div class="mode-card">
+            <div class="mode-key">auto</div>
+            <div class="mode-desc">Full automated pipeline: wifi_scan → select target → capture handshake (with deauth) → crack with wordlist. Skips WEP or WPS targets based on flags.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">shell</div>
+            <div class="mode-desc">Generate reverse shell payloads via the <code>revshell</code> module and start a listener. With <code>deliver_via_evil_twin=true</code>, serves the payload over an evil twin AP HTTP server.</div>
           </div>
         </div>
       </section>
@@ -764,231 +877,148 @@ echo '{"target": "10.0.0.0/24", "params": {"mode": "passive", "port_scan": false
       <!-- Parameters -->
       <section id="params">
         <h2>Parameters</h2>
-        <p>All parameters go in the <code>params</code> object of the JSON stdin input.</p>
+        <p>All parameters go in the <code>params</code> object of the JSON stdin input alongside <code>mode</code>.</p>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+            <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Used by</th></tr></thead>
             <tbody>
-              <tr><td><code>mode</code></td><td>string</td><td>monitor</td><td>Scan profile: <code>monitor</code>, <code>passive</code>, <code>deep</code></td></tr>
-              <tr><td><code>ports</code></td><td>string</td><td>top-20</td><td>Port preset: <code>top-20</code>, <code>top-100</code>, <code>full</code>, or custom range like <code>80,443,8080</code></td></tr>
-              <tr><td><code>port_scan</code></td><td>boolean</td><td>true</td><td>Enable per-host port scanning after discovery</td></tr>
-              <tr><td><code>cve_lookup</code></td><td>boolean</td><td>true</td><td>Query CIRCL CVE API for detected service keywords (24h cache)</td></tr>
-              <tr><td><code>timeout</code></td><td>integer</td><td>3</td><td>Per-host/port connection timeout in seconds</td></tr>
-              <tr><td><code>concurrency</code></td><td>integer</td><td>50</td><td>Max concurrent async scan workers</td></tr>
+              <tr><td><code>mode</code></td><td>string</td><td>scan</td><td>All modes</td></tr>
+              <tr><td><code>iface</code></td><td>string</td><td>""</td><td>All WiFi modes (target or <code>iface</code>)</td></tr>
+              <tr><td><code>bssid</code></td><td>string</td><td>""</td><td>deauth, capture, crack, pmkid, wps_attack, mitm</td></tr>
+              <tr><td><code>essid</code></td><td>string</td><td>""</td><td>capture, crack, evil_twin, shell</td></tr>
+              <tr><td><code>channel</code></td><td>string</td><td>""</td><td>deauth, capture, wifi_scan, evil_twin, wps_attack, shell</td></tr>
+              <tr><td><code>duration</code></td><td>integer</td><td>60</td><td>wifi_scan, capture, pmkid, mitm, evil_twin, wps_attack, shell</td></tr>
+              <tr><td><code>wordlist</code></td><td>string</td><td>""</td><td>crack, auto_crack, auto</td></tr>
+              <tr><td><code>capture_file</code></td><td>string</td><td>""</td><td>crack, auto_crack, handshake_check, decrypt</td></tr>
+              <tr><td><code>out_dir</code></td><td>string</td><td>""</td><td>capture, pmkid, wep_attack, decrypt</td></tr>
+              <tr><td><code>deauth</code></td><td>boolean</td><td>true</td><td>capture — whether to send deauth frames</td></tr>
+              <tr><td><code>deauth_count</code></td><td>integer</td><td>10</td><td>deauth, capture</td></tr>
+              <tr><td><code>client_mac</code></td><td>string</td><td>FF:FF:FF:FF:FF:FF</td><td>deauth, capture, wep_attack</td></tr>
+              <tr><td><code>pixiedust</code></td><td>boolean</td><td>true</td><td>wps_attack — try Pixie-Dust first</td></tr>
+              <tr><td><code>use_hashcat</code></td><td>boolean</td><td>false</td><td>crack — use hashcat instead of aircrack-ng</td></tr>
+              <tr><td><code>captive_portal</code></td><td>boolean</td><td>false</td><td>evil_twin — enable captive portal</td></tr>
+              <tr><td><code>victim</code></td><td>string</td><td>""</td><td>mitm — victim IP</td></tr>
+              <tr><td><code>gateway</code></td><td>string</td><td>""</td><td>mitm — gateway IP</td></tr>
+              <tr><td><code>lhost</code></td><td>string</td><td>auto</td><td>shell</td></tr>
+              <tr><td><code>lport</code></td><td>integer</td><td>4444</td><td>shell</td></tr>
+              <tr><td><code>deliver_via_evil_twin</code></td><td>boolean</td><td>false</td><td>shell — serve payload over rogue AP</td></tr>
             </tbody>
           </table>
         </div>
-
-        <h3>Port Presets</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Preset</th><th>Ports</th><th>Use case</th></tr></thead>
-            <tbody>
-              <tr><td><code>top-20</code></td><td>21, 22, 23, 25, 53, 80, 110, 139, 443, 445, 3306, 3389, 5432, 5900, 6379, 8080, 8443, 8888, 27017</td><td>Quick triage - most exposed services</td></tr>
-              <tr><td><code>top-100</code></td><td>Extended common service ports</td><td>Thorough scan for pentesting</td></tr>
-              <tr><td><code>full</code></td><td>1–65535</td><td>Complete sweep - slow, noisy</td></tr>
-              <tr><td>custom</td><td>e.g. <code>80,443,8080-8090</code></td><td>Targeted scan of specific ports</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- Device Detection -->
-      <section id="devices">
-        <h2>Device fingerprinting</h2>
-        <p>wifi_monitor classifies each host into a device category based on open ports, HTTP headers, SSL certificate subjects, and SSH banners. This determines which CVE keywords are searched and which threat checks run.</p>
-        <div class="dev-cat-grid">
-          <div class="dev-cat">
-            <div class="dev-cat-label">Category</div>
-            <div class="dev-cat-name">IoT Camera</div>
-            <div class="dev-cat-ports">Ports: 554 (RTSP), 8080, 8888<br>Signals: RTSP stream headers, IP cam HTTP UI</div>
-          </div>
-          <div class="dev-cat">
-            <div class="dev-cat-label">Category</div>
-            <div class="dev-cat-name">Router / Gateway</div>
-            <div class="dev-cat-ports">Ports: 80, 443, 53, 23<br>Signals: Router/DD-WRT/OpenWrt headers, Telnet</div>
-          </div>
-          <div class="dev-cat">
-            <div class="dev-cat-label">Category</div>
-            <div class="dev-cat-name">NAS Device</div>
-            <div class="dev-cat-ports">Ports: 445, 139, 548, 2049<br>Signals: Samba, AFP, NFS service banners</div>
-          </div>
-          <div class="dev-cat">
-            <div class="dev-cat-label">Category</div>
-            <div class="dev-cat-name">Database Server</div>
-            <div class="dev-cat-ports">Ports: 3306, 5432, 27017, 6379, 1433<br>Signals: MySQL, PostgreSQL, MongoDB, Redis, MSSQL banners</div>
-          </div>
-          <div class="dev-cat">
-            <div class="dev-cat-label">Category</div>
-            <div class="dev-cat-name">Web Server</div>
-            <div class="dev-cat-ports">Ports: 80, 443, 8080, 8443<br>Signals: Apache, nginx, IIS, lighttpd headers</div>
-          </div>
-          <div class="dev-cat">
-            <div class="dev-cat-label">Category</div>
-            <div class="dev-cat-name">Linux Host</div>
-            <div class="dev-cat-ports">Ports: 22, 80<br>Signals: OpenSSH banner, default web pages</div>
-          </div>
-        </div>
-        <p>Unmatched hosts are labeled <code>unknown</code>. The fingerprint is based on banner content and port combinations - no active OS fingerprinting probes are sent.</p>
-      </section>
-
-      <!-- Threat Detection -->
-      <section id="threats">
-        <h2>Threat detection</h2>
-        <p>After scanning, the engine automatically evaluates each host against a set of threat rules. Findings are categorized as <code>critical</code>, <code>warning</code>, or <code>info</code> and included in the output report.</p>
-        <div class="threat-grid">
-          <div class="threat-card">
-            <div class="threat-port">critical · port 23</div>
-            <div class="threat-name">Telnet Exposed</div>
-            <div class="threat-desc">Cleartext remote access. Credential sniffing trivial on-LAN. Should be disabled.</div>
-          </div>
-          <div class="threat-card">
-            <div class="threat-port">critical · port 21</div>
-            <div class="threat-name">FTP Exposed</div>
-            <div class="threat-desc">Cleartext file transfer and credentials. Often misconfigured with anonymous login.</div>
-          </div>
-          <div class="threat-card">
-            <div class="threat-port">critical · port 3306/5432/27017</div>
-            <div class="threat-name">Database Open</div>
-            <div class="threat-desc">Database port exposed directly on the network. No app-layer boundary. Auth bypass risk.</div>
-          </div>
-          <div class="threat-card">
-            <div class="threat-port">critical · port 6379</div>
-            <div class="threat-name">Redis Exposed</div>
-            <div class="threat-desc">Redis default config has no auth. Remote code execution via <code>CONFIG SET dir</code> / cron writes.</div>
-          </div>
-          <div class="threat-card">
-            <div class="threat-port">warning · port 22</div>
-            <div class="threat-name">EOL SSH Version</div>
-            <div class="threat-desc">OpenSSH below 8.x or other EOL versions. Known vulns unpatched. Check banner.</div>
-          </div>
-          <div class="threat-card">
-            <div class="threat-port">warning · port 80</div>
-            <div class="threat-name">Unencrypted Admin</div>
-            <div class="threat-desc">Admin/management UI over HTTP (no TLS). Credentials sent in cleartext.</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- CVE Lookup -->
-      <section id="cve">
-        <h2>CVE lookup</h2>
-        <p>When <code>cve_lookup</code> is enabled, wifi_monitor queries the <a href="https://cve.circl.lu" target="_blank">CIRCL CVE API</a> for each detected service keyword - e.g. <code>openssh</code>, <code>apache</code>, <code>nginx</code>, <code>mysql</code> - and includes matching CVEs in the per-host output.</p>
-        <p>Results are cached locally for 24 hours to avoid hammering the API on repeated scans of the same network.</p>
-        <pre><code><span class="comment"># CVE lookup endpoint used</span>
-https://cve.circl.lu/api/search/{keyword}
-
-<span class="comment"># Example keywords derived from banner grabbing</span>
-openssh 7.4       → search: openssh
-Apache/2.4.51     → search: apache
-nginx/1.18.0      → search: nginx
-MySQL 5.7.36      → search: mysql
-Redis 6.2.6       → search: redis</code></pre>
-        <div class="callout info">
-          <span class="callout-mark">ℹ</span>
-          CVE results are keyword-matched, not version-specific. Review CVE details manually to confirm applicability to the exact version found.
-        </div>
-      </section>
-
-      <!-- Output -->
-      <section id="output">
-        <h2>Output format</h2>
-        <p>wifi_monitor returns structured JSON - a top-level <code>data</code> object with a hosts array and a summary block.</p>
-        <pre><code>{
-  "success": true,
-  "data": {
-    "hosts": [
-      {
-        "ip": "192.168.1.1",
-        "mac": "aa:bb:cc:dd:ee:ff",
-        "hostname": "router.local",
-        "device_type": "router",
-        "open_ports": [80, 443, 23],
-        "services": {
-          "80":  { "banner": "Apache/2.4.51", "http_title": "Router Admin" },
-          "443": { "ssl_subject": "CN=router.local" },
-          "23":  { "banner": "DD-WRT v3.0" }
-        },
-        "cves": [
-          { "id": "CVE-2021-41773", "summary": "Apache path traversal...", "cvss": 9.8 }
-        ],
-        "threats": [
-          { "level": "critical", "type": "telnet_exposed", "port": 23,
-            "detail": "Telnet exposed - cleartext remote access" },
-          { "level": "warning", "type": "unencrypted_admin", "port": 80,
-            "detail": "Admin interface over HTTP" }
-        ]
-      }
-    ],
-    "summary": {
-      "total_hosts": 12,
-      "hosts_with_threats": 4,
-      "critical_threats": 2,
-      "warning_threats": 6,
-      "scan_time_s": 8.3
-    }
-  }
-}</code></pre>
       </section>
 
       <!-- Examples -->
       <section id="examples">
         <p class="sec-label">Examples</p>
-        <h2>Common usage patterns</h2>
+        <h2>Examples</h2>
 
-        <h3>Passive host discovery only</h3>
-        <pre><code>secV ❯ use wifi_monitor
-secV (wifi_monitor) ❯ set mode passive
-secV (wifi_monitor) ❯ run 192.168.1.0/24</code></pre>
+        <h3>Check environment and enable monitor mode</h3>
+        <pre><code>echo '{"target": "wlan0", "params": {"mode": "check_tools"}}' | sudo python3 wifi_monitor.py | jq .data
 
-        <h3>Deep scan with CVE lookup</h3>
-        <pre><code>sudo secV
-secV ❯ use wifi_monitor
-secV (wifi_monitor) ❯ set mode deep
-secV (wifi_monitor) ❯ set cve_lookup true
-secV (wifi_monitor) ❯ set concurrency 100
-secV (wifi_monitor) ❯ run 10.0.0.0/24</code></pre>
+echo '{"target": "wlan0", "params": {"mode": "monitor_on"}}' | sudo python3 wifi_monitor.py | jq .data.monitor_iface</code></pre>
 
-        <h3>Single host banner grab</h3>
+        <h3>Scan for APs and capture WPA handshake</h3>
+        <pre><code><span class="comment"># Scan (use wlan0mon after monitor_on)</span>
+echo '{"target": "wlan0mon", "params": {"mode": "wifi_scan", "duration": 20}}' \
+  | sudo python3 wifi_monitor.py | jq '.data.networks[]'
+
+<span class="comment"># Capture handshake — auto-deauths clients to trigger</span>
+echo '{
+  "target": "wlan0mon",
+  "params": {
+    "mode":     "capture",
+    "bssid":    "AA:BB:CC:DD:EE:FF",
+    "channel":  "6",
+    "out_dir":  "/tmp/captures",
+    "duration": 120
+  }
+}' | sudo python3 wifi_monitor.py | jq '.data'</code></pre>
+
+        <h3>Crack WPA handshake</h3>
         <pre><code>echo '{
-  "target": "192.168.1.1",
-  "params": { "ports": "top-20", "cve_lookup": false }
-}' | python3 wifi_monitor.py | jq '.data.hosts[0]'</code></pre>
+  "target": "wlan0mon",
+  "params": {
+    "mode":         "crack",
+    "capture_file": "/tmp/captures/capture-01.cap",
+    "wordlist":     "/usr/share/wordlists/rockyou.txt",
+    "bssid":        "AA:BB:CC:DD:EE:FF"
+  }
+}' | python3 wifi_monitor.py | jq '.data.key'</code></pre>
 
-        <h3>Extract only hosts with critical threats</h3>
-        <pre><code>echo '{"target": "192.168.1.0/24", "params": {}}' \
-  | python3 wifi_monitor.py \
-  | jq '.data.hosts[] | select(.threats[] | .level == "critical")'</code></pre>
+        <h3>PMKID attack (no client needed)</h3>
+        <pre><code>echo '{
+  "target": "wlan0mon",
+  "params": {
+    "mode":    "pmkid",
+    "bssid":   "AA:BB:CC:DD:EE:FF",
+    "out_dir": "/tmp/captures",
+    "duration": 60
+  }
+}' | sudo python3 wifi_monitor.py
 
-        <h3>Custom port range</h3>
-        <pre><code>secV (wifi_monitor) ❯ set ports 80,443,8080,8443,3000,5000,9200
-secV (wifi_monitor) ❯ run 192.168.1.0/24</code></pre>
+<span class="comment"># Then crack the .hc22000 file</span>
+echo '{
+  "target": "wlan0mon",
+  "params": {
+    "mode":         "crack",
+    "capture_file": "/tmp/captures/pmkid-AA_BB_CC_DD_EE_FF.hc22000",
+    "wordlist":     "/usr/share/wordlists/rockyou.txt",
+    "use_hashcat":  true
+  }
+}' | python3 wifi_monitor.py | jq '.data.key'</code></pre>
+
+        <h3>Evil twin AP</h3>
+        <pre><code>echo '{
+  "target": "wlan0",
+  "params": {
+    "mode":     "evil_twin",
+    "essid":    "CoffeeShop_Free",
+    "channel":  "6",
+    "duration": 300,
+    "captive_portal": true,
+    "captive_port":   8080
+  }
+}' | sudo python3 wifi_monitor.py | jq '.data'</code></pre>
+
+        <h3>Full auto pipeline</h3>
+        <pre><code>echo '{
+  "target": "wlan0mon",
+  "params": {
+    "mode":           "auto",
+    "wordlist":       "/usr/share/wordlists/rockyou.txt",
+    "scan_duration":  20,
+    "attack_timeout": 120
+  }
+}' | sudo python3 wifi_monitor.py | jq '.data'</code></pre>
       </section>
 
       <!-- Requirements -->
       <section id="requirements">
         <p class="sec-label">Requirements</p>
-        <h2>Installation tiers</h2>
-        <p>wifi_monitor is tiered - basic mode works with just Python stdlib, full mode adds scapy for ARP and aiohttp for async CVE requests.</p>
+        <h2>Requirements</h2>
+        <p>Most WiFi attack modes require root and a compatible adapter. Run <code>check_tools</code> first to see which binaries are present.</p>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Tier</th><th>Package</th><th>Feature</th></tr></thead>
+            <thead><tr><th>Dependency</th><th>Install</th><th>Used by</th></tr></thead>
             <tbody>
-              <tr><td>Basic</td><td>stdlib only</td><td>TCP-ping discovery, sync port scan</td></tr>
-              <tr><td>Standard</td><td><code>scapy</code></td><td>ARP broadcast host discovery (faster, more accurate)</td></tr>
-              <tr><td>Full</td><td><code>scapy</code> + <code>aiohttp</code></td><td>+ async CVE API lookups (required for <code>cve_lookup</code>)</td></tr>
+              <tr><td>aircrack-ng suite</td><td><code>sudo apt install aircrack-ng</code></td><td>monitor_on/off, inject_test, wifi_scan, capture, deauth, crack, wep_attack</td></tr>
+              <tr><td>hcxtools / hcxdumptool</td><td><code>sudo apt install hcxtools hcxdumptool</code></td><td>pmkid, auto_crack</td></tr>
+              <tr><td>hostapd</td><td><code>sudo apt install hostapd</code></td><td>evil_twin</td></tr>
+              <tr><td>dnsmasq</td><td><code>sudo apt install dnsmasq</code></td><td>evil_twin (DHCP server)</td></tr>
+              <tr><td>reaver / bully</td><td><code>sudo apt install reaver</code></td><td>wps_attack</td></tr>
+              <tr><td>scapy</td><td><code>pip3 install scapy</code></td><td>scan, discover (LAN ARP discovery)</td></tr>
+              <tr><td>hashcat</td><td><code>sudo apt install hashcat</code></td><td>crack (optional, GPU acceleration)</td></tr>
             </tbody>
           </table>
         </div>
-        <pre><code><span class="comment"># Standard install (recommended)</span>
-pip3 install scapy aiohttp
+        <pre><code><span class="comment"># Install all system deps (Debian/Ubuntu)</span>
+sudo apt install aircrack-ng hcxtools hcxdumptool hostapd dnsmasq reaver hashcat
 
-<span class="comment"># Or via install.sh which handles everything</span>
+<span class="comment"># Python deps</span>
+pip3 install scapy
+
+<span class="comment"># Or via install.sh</span>
 ./install.sh</code></pre>
-        <div class="callout info">
-          <span class="callout-mark">ℹ</span>
-          Scapy requires root for ARP scans. Run <code>sudo secV</code> or use the TCP-ping fallback without root (set <code>mode: passive</code> or drop scapy).
-        </div>
       </section>
 
       <!-- Author -->
@@ -1000,7 +1030,7 @@ pip3 install scapy aiohttp
           <div>
             <div class="author-name">0xb0rn3</div>
             <div class="author-role">SecVulnHub · Security Research</div>
-            <div class="author-bio">Security researcher and tool developer. wifi_monitor was built to give pentesters and defenders a fast, self-contained network situational awareness tool that works on any subnet without heavy external dependencies.</div>
+            <div class="author-bio">Security researcher and tool developer. wifi_monitor was built to consolidate the aircrack-ng attack chain, evil twin, WPS attacks, and PMKID into a single secV module with structured JSON output.</div>
             <div class="author-links">
               <a class="author-link" href="https://github.com/0xb0rn3" target="_blank">↗ GitHub</a>
               <a class="author-link" href="https://github.com/secvulnhub/secV" target="_blank">↗ SecV Repo</a>
