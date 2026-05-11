@@ -621,13 +621,16 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
     <div class="module-meta">
       <div>
         <h1 class="module-title">netrecon<span>.</span></h1>
-        <p class="module-sub">Concurrent multi-engine network reconnaissance. nmap, masscan, rustscan, arp-scan, Shodan, gobuster, nikto, whatweb, searchsploit - all in one pass. Built-in IoT/camera/ICS device detection and full-stack firewall evasion.</p>
+        <p class="module-sub">Concurrent multi-engine network reconnaissance. nmap, masscan, rustscan, arp-scan, Shodan, gobuster, nikto, whatweb, searchsploit — all in one pass. Built-in IoT/camera/ICS device detection, SSL cert domain extraction, country/ASN-based targeting, GeoIP2 offline lookup, and full-stack firewall evasion.</p>
         <div class="module-tags">
           <span class="tag hi">secV Module</span>
           <span class="tag">Network Recon</span>
           <span class="tag">IoT Detection</span>
           <span class="tag">ICS/SCADA</span>
           <span class="tag">FW Evasion</span>
+          <span class="tag">SSL Extraction</span>
+          <span class="tag">Country/ASN</span>
+          <span class="tag">GeoIP2</span>
           <span class="tag">Python 3.8+</span>
           <span class="tag">v1.0.0</span>
         </div>
@@ -655,8 +658,11 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
         <li><div class="sidebar-sep">Reference</div></li>
         <li><a href="#modes">Scan Modes</a></li>
         <li><a href="#params">Parameters</a></li>
+        <li><a href="#targets">Target Formats</a></li>
         <li><a href="#ports">Port Presets</a></li>
         <li><a href="#devices">Device Detection</a></li>
+        <li><a href="#ssl">SSL Extraction</a></li>
+        <li><a href="#geoip">GeoIP2</a></li>
         <li><a href="#evasion">Evasion</a></li>
         <li><a href="#web">Web Enumeration</a></li>
         <li><a href="#output">Output Format</a></li>
@@ -674,8 +680,8 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
       <section id="overview">
         <p class="sec-label">Overview</p>
         <h2>What netrecon does</h2>
-        <p>netrecon is a concurrent multi-engine network reconnaissance module inside SecV. It runs nmap, masscan, rustscan, arp-scan, Shodan, gobuster, ffuf, whatweb, and searchsploit all in a single scan pass, building a full profile for every host discovered. Every engine runs in parallel - scan time scales with host count, not tool count.</p>
-        <p>On top of standard port scanning, the module adds automatic device category classification for IoT hardware, IP cameras, routers, NAS devices, ICS/SCADA systems, and Flock Safety LPR surveillance cameras. Each category triggers the relevant protocol probes, CVE correlations, and vulnerability flags automatically.</p>
+        <p>netrecon is a concurrent multi-engine network reconnaissance module inside SecV. It runs nmap, masscan, rustscan, arp-scan, Shodan, gobuster, ffuf, whatweb, and searchsploit all in a single scan pass, building a full profile for every host discovered. Every engine runs in parallel — scan time scales with host count, not tool count.</p>
+        <p>On top of standard port scanning, the module adds automatic device category classification for IoT hardware, IP cameras, routers, NAS devices, ICS/SCADA systems, and Flock Safety LPR surveillance cameras. SSL certificate domains (CN + all SANs) are extracted from every TLS port. Country and ASN-based targeting lets you scope scans to entire countries or BGP autonomous systems. GeoIP2 local DB support provides offline, rate-limit-free ASN and country lookups.</p>
         <div class="feat-grid">
           <div class="feat-cell">
             <div class="feat-icon">Engines</div>
@@ -693,6 +699,21 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
             <div class="feat-desc">Auto-detects camera, router, NAS, IoT, ICS/SCADA, surveillance. Protocol probes included.</div>
           </div>
           <div class="feat-cell">
+            <div class="feat-icon">TLS</div>
+            <div class="feat-name">SSL Domains</div>
+            <div class="feat-desc">Extracts CN + all SANs from TLS certs on every host. CDN noise filtered. Stored in ssl_domains[].</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Targeting</div>
+            <div class="feat-name">Country / ASN</div>
+            <div class="feat-desc">country:de / asn:AS15169 targets fetch live CIDRs from ipdeny.com and RIPE stat API.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">GeoIP</div>
+            <div class="feat-name">GeoIP2 Offline</div>
+            <div class="feat-desc">MaxMind GeoLite2 local DB for ASN + country. No rate limits, works offline. Falls back to ipinfo.io.</div>
+          </div>
+          <div class="feat-cell">
             <div class="feat-icon">Evasion</div>
             <div class="feat-name">FW Bypass</div>
             <div class="feat-desc">Packet frags, random decoys, source-port spoof, data padding, proxychains wrapping.</div>
@@ -705,7 +726,7 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
           <div class="feat-cell">
             <div class="feat-icon">Output</div>
             <div class="feat-name">Multi-Format</div>
-            <div class="feat-desc">JSON host profiles + nmap XML + HTML report (xsltproc) + Metasploit RC file.</div>
+            <div class="feat-desc">JSON + self-contained HTML report (no xsltproc needed) + nmap XML + Metasploit RC file.</div>
           </div>
         </div>
       </section>
@@ -734,6 +755,14 @@ echo '{
 <span class="comment"># IoT sweep - MQTT, RTSP, camera, ICS protocols</span>
 echo '{"target": "10.0.0.0/24", "params": {"ports": "device"}}' \
   | python3 netrecon.py | jq '.data.hosts[] | {ip, device_category}'
+
+<span class="comment"># Country-wide scan — all German IP space (ipdeny.com CIDRs, 1024 sample IPs)</span>
+echo '{"target": "country:de", "params": {"max_hosts": 1024}}' \
+  | python3 netrecon.py
+
+<span class="comment"># ASN scan — all Google-announced prefixes (RIPE stat API)</span>
+echo '{"target": "asn:AS15169", "params": {"max_hosts": 200}}' \
+  | python3 netrecon.py
 
 <span class="comment"># Evasion mode through proxychains</span>
 echo '{
@@ -802,6 +831,7 @@ echo '{
               <tr><td>exclude</td><td>comma-separated IPs</td><td>""</td><td>IPs to skip entirely</td></tr>
               <tr><td>shodan_key</td><td>string</td><td>""</td><td>Shodan API key for external intel</td></tr>
               <tr><td>nvd_api_key</td><td>string</td><td>env: NVD_API_KEY</td><td>NVD API key for live CVE enrichment</td></tr>
+              <tr><td>max_hosts</td><td>integer</td><td>1024</td><td>Max representative IPs sampled from <code>country:</code> / <code>asn:</code> targets</td></tr>
             </tbody>
           </table>
         </div>
@@ -858,6 +888,84 @@ echo '{
               <tr><td>all</td><td>1–65535</td><td>Complete port space - use with care on large nets</td></tr>
             </tbody>
           </table>
+        </div>
+      </section>
+
+      <!-- Target Formats -->
+      <section id="targets">
+        <h2>Target formats</h2>
+        <p>Pass any of these formats as the <code>target</code> field in the JSON input. Multiple targets can be comma-separated.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Format</th><th>Example</th><th>How it works</th></tr></thead>
+            <tbody>
+              <tr><td>Single IP</td><td><code>192.168.1.1</code></td><td>Direct host scan</td></tr>
+              <tr><td>CIDR</td><td><code>192.168.1.0/24</code></td><td>All hosts in subnet (capped at 1024 unless deep mode)</td></tr>
+              <tr><td>Range</td><td><code>192.168.1.1-50</code></td><td>Expanded to individual IPs</td></tr>
+              <tr><td>Hostname</td><td><code>example.com</code></td><td>Resolved via DNS then scanned</td></tr>
+              <tr><td>Multi</td><td><code>10.0.0.1,10.0.0.5</code></td><td>Each target parsed independently</td></tr>
+              <tr><td><code>country:XX</code></td><td><code>country:de</code></td><td>Fetches all CIDRs for the country from ipdeny.com, samples one IP per CIDR up to <code>max_hosts</code>. Passes full CIDR list to masscan natively.</td></tr>
+              <tr><td><code>asn:AS####</code></td><td><code>asn:AS15169</code></td><td>Fetches all announced prefixes for the ASN via RIPE stat API. Samples one IP per prefix up to <code>max_hosts</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout info">
+          <span class="callout-mark">ℹ</span>
+          <code>country:</code> and <code>asn:</code> targets require <code>requests</code> to be installed for the CIDR/prefix fetch. The sampled IPs represent the range for per-host profiling; masscan receives the full CIDR list for port discovery.
+        </div>
+      </section>
+
+      <!-- SSL Extraction -->
+      <section id="ssl">
+        <h2>SSL cert domain extraction</h2>
+        <p>After port scanning, netrecon automatically probes every TLS port on each host (443, 8443, 9443, 465, 636, 993, 995) and extracts the certificate's Common Name and all Subject Alternative Names. The result is stored in <code>host.ssl_domains[]</code> and shown inline in the terminal output.</p>
+        <h3>Extraction method</h3>
+        <p>With <code>cryptography</code> installed, the full DER certificate is parsed to extract every SAN. Without it, the stdlib <code>ssl</code> module's decoded cert dict is used as a fallback — both CN and DNS SANs are captured.</p>
+        <h3>Noise filtering</h3>
+        <p>Raw domains from the cert are passed through <code>_clean_domains()</code> before being stored. This strips:</p>
+        <ul class="feature-list">
+          <li>Wildcard prefixes (<code>*.example.com</code> → <code>example.com</code>)</li>
+          <li>CDN-assigned default hostnames (cloudfront.net, akamaiedge.net, fastly.net, cloudflare.net, amazonaws.com, azure*.net, trafficmanager.net)</li>
+          <li>Hash hostnames — long hex strings before the first dot</li>
+          <li>Bare labels with no dot (internal-only names)</li>
+        </ul>
+        <pre><code><span class="comment"># Example: host with TLS on 443</span>
+{
+  "ip": "93.184.216.34",
+  "ssl_domains": ["example.com", "www.example.com"]
+}</code></pre>
+        <div class="callout info">
+          <span class="callout-mark">ℹ</span>
+          Install <code>pip3 install cryptography</code> for full SAN extraction. Without it, only the CN and any SANs exposed via the stdlib decoded dict are captured.
+        </div>
+      </section>
+
+      <!-- GeoIP2 -->
+      <section id="geoip">
+        <h2>GeoIP2 offline lookup</h2>
+        <p>By default, ASN and country lookups use the ipinfo.io API (requires <code>requests</code>). If MaxMind GeoLite2 databases are present locally, the module uses them instead — no rate limits, no API key, fully offline.</p>
+        <h3>DB search paths</h3>
+        <p>The module checks these locations in order for each DB type:</p>
+        <pre><code><span class="comment"># GeoLite2-ASN.mmdb — ASN number + organisation</span>
+~/.secv/GeoLite2-ASN.mmdb
+/var/lib/secv/GeoLite2-ASN.mmdb
+/usr/share/GeoIP/GeoLite2-ASN.mmdb
+
+<span class="comment"># GeoLite2-City.mmdb — country ISO code + city name</span>
+~/.secv/GeoLite2-City.mmdb
+/var/lib/secv/GeoLite2-City.mmdb
+/usr/share/GeoIP/GeoLite2-City.mmdb</code></pre>
+        <h3>Setup</h3>
+        <pre><code>pip3 install geoip2 --break-system-packages
+
+<span class="comment"># Download free DBs (account required) from:</span>
+<span class="comment"># https://dev.maxmind.com/geoip/geolite2-free-geolocation-data</span>
+
+mkdir -p ~/.secv
+mv GeoLite2-ASN.mmdb GeoLite2-City.mmdb ~/.secv/</code></pre>
+        <div class="callout info">
+          <span class="callout-mark">ℹ</span>
+          If no local DB is found and <code>requests</code> is available, the module falls back to ipinfo.io automatically. If neither is available, ASN/country fields are left empty.
         </div>
       </section>
 
@@ -996,9 +1104,9 @@ echo '{
     "hosts_discovered": 12,
     "engines_used": ["nmap", "masscan", "arp"],
     "capabilities": { ... },
-    "hosts": [ ... ],       <span class="comment">// per-host profiles</span>
+    "hosts": [ ... ],       <span class="comment">// per-host profiles (includes ssl_domains[])</span>
     "summary": { ... },     <span class="comment">// aggregate stats</span>
-    "outputs": { ... }      <span class="comment">// file paths if output_dir set</span>
+    "outputs": { ... }      <span class="comment">// html_report, nmap_xml, msf_rc paths (if output_dir set)</span>
   },
   "errors": []
 }</code></pre>
@@ -1013,6 +1121,7 @@ echo '{
   "device_category": "camera",      <span class="comment">// camera|router|nas|iot|ics|surveillance</span>
   "risk_score": 85,
   "risk_level": "CRITICAL",
+  "ssl_domains": ["camera-01.example.com", "www.example.com"],  <span class="comment">// CN + SANs, noise-filtered</span>
   "services": [ ... ],
   "vulnerabilities": [
     {
@@ -1109,6 +1218,14 @@ echo '{
     "data_length": 64
   }
 }' | python3 netrecon.py</code></pre>
+        <h3>Country-wide scan</h3>
+        <pre><code><span class="comment"># Sample 500 hosts from German IP space (fetches all .de CIDRs from ipdeny.com)</span>
+echo '{"target": "country:de", "params": {"max_hosts": 500, "ports": "top-100"}}' \
+  | python3 netrecon.py | jq '.data.hosts[] | {ip, country, asn, ssl_domains}'</code></pre>
+        <h3>ASN recon</h3>
+        <pre><code><span class="comment"># Probe 200 hosts across Google's announced prefixes (RIPE stat API)</span>
+echo '{"target": "asn:AS15169", "params": {"max_hosts": 200}}' \
+  | python3 netrecon.py | jq '.data.hosts[] | {ip, asn, ssl_domains, risk_level}'</code></pre>
         <h3>Passive intel only</h3>
         <pre><code>echo '{"target": "example.com", "params": {"passive_only": true, "shodan_key": "KEY"}}' \
   | python3 netrecon.py</code></pre>
@@ -1131,9 +1248,11 @@ echo '{
               <tr><td>Full</td><td><code>masscan nmap arp-scan whatweb gobuster nikto</code> + root</td><td>SYN scans, rapid discovery, web tech, directory brute, vuln scan</td></tr>
               <tr><td>Python libs</td><td><code>pip3 install requests scapy dnspython shodan</code></td><td>HTTP probing, ARP, DNS, Shodan</td></tr>
               <tr><td>IoT/Camera</td><td><code>pip3 install mmh3</code></td><td>Favicon hash fingerprinting (17 camera models)</td></tr>
+              <tr><td>SSL extraction</td><td><code>pip3 install cryptography</code></td><td>Full DER cert parsing — CN + all SANs from TLS certs</td></tr>
+              <tr><td>GeoIP2 offline</td><td><code>pip3 install geoip2</code> + GeoLite2 <code>.mmdb</code> files</td><td>Offline ASN + country lookup, no rate limits, no API key</td></tr>
               <tr><td>SMB/SNMP</td><td><code>apt install nmblookup smbclient snmpwalk</code></td><td>NetBIOS names, share enum, SNMP community probe</td></tr>
               <tr><td>Evasion</td><td><code>proxychains4</code> + configured proxy</td><td>Route scans through SOCKS proxy</td></tr>
-              <tr><td>Full output</td><td><code>apt install ffuf xsltproc exploitdb</code></td><td>ffuf fallback, HTML reports, searchsploit</td></tr>
+              <tr><td>Full output</td><td><code>apt install ffuf xsltproc exploitdb</code></td><td>ffuf fallback, searchsploit (HTML report built-in, no xsltproc needed)</td></tr>
               <tr><td>NVD enrichment</td><td>NVD API key in <code>NVD_API_KEY</code> env var</td><td>Live CVSS scores and full CVE descriptions</td></tr>
             </tbody>
           </table>
@@ -1148,7 +1267,7 @@ echo '{
       <section id="author">
         <p class="sec-label">Module Author</p>
         <h2>Who built this</h2>
-        <p>netrecon is a community contribution to SecVulnHub by 0xb0rn3, a senior security researcher and tool developer. The module consolidates features from several prior projects: s3rp (evasion/FW bypass), r3cond0g (MAC/CVE/TLS enrichment), flock-back (IoT/surveillance detection), and Vader (device presets and IoT port profiles).</p>
+        <p>netrecon is a community contribution to SecVulnHub by 0xb0rn3, a senior security researcher and tool developer. The module consolidates features from several prior projects: s3rp (evasion/FW bypass), r3cond0g (MAC/CVE/TLS enrichment), and flock-back (IoT/surveillance detection).</p>
         <div class="author-card">
           <div class="author-avatar">0x</div>
           <div>
