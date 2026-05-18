@@ -834,6 +834,9 @@ footer {
     <a class="nav-link" href="#shell">Shell</a>
     <a class="nav-link" href="#c2stack">C2 Stack</a>
     <a class="nav-link" href="#quickstart">Quickstart</a>
+    <a class="nav-link" href="#foundations">Foundations</a>
+    <a class="nav-link" href="#buildmod">Build</a>
+    <a class="nav-link" href="#vmsetup">VM Setup</a>
     <a class="nav-cta" href="https://github.com/secvulnhub" target="_blank">GitHub →</a>
   </div>
   <button class="burger" id="burger"><span></span><span></span><span></span></button>
@@ -907,9 +910,9 @@ footer {
       <span class="mod-status status-stable">Stable</span>
       <div class="mod-name">android_pentest</div>
       <div class="mod-category">Mobile · Android</div>
-      <div class="mod-desc">Full Android security testing suite — APK static analysis, smali patching, boot receiver persistence, WAN C2 with DexClassLoader staging, Frida/Objection instrumentation, QR-based payload delivery, and a full web GUI (mode=gui) that embeds all operations including the C2 dashboard.</div>
+      <div class="mod-desc">Complete Android pentest suite — 39 operations across static analysis, smali patching, boot receiver persistence, WAN C2 with DexClassLoader staging, Frida/Objection instrumentation, QR delivery, live screen mirror, camera stream, mic recording, and a full web GUI (mode=gui) including the C2 dashboard and Live Media tab. v2.4.2</div>
       <div class="mod-tags">
-        <span class="tag">adb</span><span class="tag">apktool</span><span class="tag">dexclassloader</span><span class="tag">bore</span><span class="tag">frida</span><span class="tag">qr</span>
+        <span class="tag">adb</span><span class="tag">apktool</span><span class="tag">dexclassloader</span><span class="tag">bore</span><span class="tag">frida</span><span class="tag">qr</span><span class="tag">live-media</span>
       </div>
       <span class="mod-arrow">→</span>
     </a>
@@ -997,6 +1000,28 @@ footer {
       <div class="mod-desc">Syncs github.com/0xb0rn3/CTFs, lists all rooms sorted newest first, runs standalone autopwn scripts against a target, auto-extracts flags (THM{}/HTB{}), and saves run logs to ~/ZX01C/CTF/. Tracks new rooms between pulls.</div>
       <div class="mod-tags">
         <span class="tag">ctf</span><span class="tag">tryhackme</span><span class="tag">hackthebox</span><span class="tag">autopwn</span><span class="tag">flags</span>
+      </div>
+      <span class="mod-arrow">→</span>
+    </a>
+
+    <a class="module-card reveal" href="modules/revshell.html">
+      <span class="mod-status status-stable">Stable</span>
+      <div class="mod-name">revshell</div>
+      <div class="mod-category">Network · C2</div>
+      <div class="mod-desc">Multi-mode reverse shell generator and live handler. Generates payloads for bash, Python, PowerShell, netcat, PHP, and 30+ other types. Auto-starts listener on configured port. Includes msfvenom wrapper for staged and stageless Meterpreter payloads across all platforms.</div>
+      <div class="mod-tags">
+        <span class="tag">shell</span><span class="tag">listener</span><span class="tag">msfvenom</span><span class="tag">powershell</span><span class="tag">payload</span>
+      </div>
+      <span class="mod-arrow">→</span>
+    </a>
+
+    <a class="module-card reveal" href="modules/badusb.html">
+      <span class="mod-status status-stable">Stable</span>
+      <div class="mod-name">badusb</div>
+      <div class="mod-category">Hardware · USB</div>
+      <div class="mod-desc">BadUSB attack payload generator and deployer. Generates DuckyScript and HID payloads for USB Rubber Ducky, Digispark, and Teensy boards. Produces Windows PowerShell droppers, Linux persistence oneliners, and macOS payloads. Supports staged delivery via HTTP server.</div>
+      <div class="mod-tags">
+        <span class="tag">hid</span><span class="tag">duckyscript</span><span class="tag">rubber-ducky</span><span class="tag">digispark</span><span class="tag">usb</span>
       </div>
       <span class="mod-arrow">→</span>
     </a>
@@ -1514,6 +1539,861 @@ sudo journalctl -u secv-c2 -f</code></pre>
 
 <hr class="rule">
 
+<!-- FOUNDATIONS -->
+<div class="wrap" id="foundations">
+  <div class="section-label">
+    <span class="section-num">07</span>
+    <span>Zero to Exploit</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>Foun<span class="h2-stroke">dations</span></h2>
+
+  <p class="body-text reveal">secV is a command-line security framework. If you are new to terminals, shells, or what these tools do under the hood — this section builds the mental model. Experienced readers can skip to <a href="#quickstart">Quickstart</a>.</p>
+
+  <div class="info-grid">
+    <div class="info-card reveal">
+      <div class="info-card-num">01</div>
+      <div class="info-card-title">Terminal</div>
+      <div class="info-card-body">The window that accepts your text and shows output. <code>xterm</code>, <code>Alacritty</code>, <code>Windows Terminal</code>, and the VS Code integrated terminal are all terminals. When you run secV you are inside one.</div>
+    </div>
+    <div class="info-card reveal">
+      <div class="info-card-num">02</div>
+      <div class="info-card-title">Shell</div>
+      <div class="info-card-body">The program running inside the terminal. It reads commands, finds the right binary, runs it, and shows output. <code>bash</code> and <code>zsh</code> are shells. secV is also a shell — a specialised one for security operations with its own REPL loop.</div>
+    </div>
+    <div class="info-card reveal">
+      <div class="info-card-num">03</div>
+      <div class="info-card-title">Binary / Executable</div>
+      <div class="info-card-body">A compiled program stored as a file on disk. When you run <code>./secV</code> the OS loads that file into RAM and executes it. The secV binary is written in Go and compiles to ~4 MB.</div>
+    </div>
+    <div class="info-card reveal">
+      <div class="info-card-num">04</div>
+      <div class="info-card-title">stdin / stdout</div>
+      <div class="info-card-body">Every running process has three default streams: <code>stdin</code> (input), <code>stdout</code> (normal output), <code>stderr</code> (errors). secV uses stdin to send parameters to modules and reads their findings back over stdout.</div>
+    </div>
+    <div class="info-card reveal">
+      <div class="info-card-num">05</div>
+      <div class="info-card-title">JSON</div>
+      <div class="info-card-body">JavaScript Object Notation — a human-readable data format: <code>{"key": "value"}</code>. secV sends a JSON object to each module's stdin and expects JSON findings back. Not tied to JavaScript — every language reads and writes it.</div>
+    </div>
+    <div class="info-card reveal">
+      <div class="info-card-num">06</div>
+      <div class="info-card-title">Ports</div>
+      <div class="info-card-body">A numbered endpoint on a network interface (0–65535). Servers listen on specific ports: SSH on 22, HTTP on 80, HTTPS on 443. When secV scans a target it probes which ports are open and what service is behind each one.</div>
+    </div>
+    <div class="info-card reveal">
+      <div class="info-card-num">07</div>
+      <div class="info-card-title">Dependencies</div>
+      <div class="info-card-body">External tools a module needs. <code>android_pentest</code> depends on <code>adb</code>, <code>apktool</code>, and <code>metasploit-framework</code>. The shell checks each with <code>which</code> at load time and warns before you run an operation that needs a missing tool.</div>
+    </div>
+    <div class="info-card reveal">
+      <div class="info-card-num">08</div>
+      <div class="info-card-title">Security Module</div>
+      <div class="info-card-body">In secV, a module is a Python (or Bash) script that implements one category of attack or analysis. It reads a JSON target and parameters from stdin, runs tools like <code>nmap</code> or <code>adb</code>, and writes structured findings back to stdout.</div>
+    </div>
+  </div>
+
+  <h3>Common Ports Quick Reference</h3>
+  <div class="two-col reveal">
+    <div class="col-card">
+      <div class="col-card-title">Infrastructure Services</div>
+      <div class="col-card-body">
+        <table class="param-table" style="margin:0">
+          <tr><td>22</td><td style="color:var(--dust)">SSH</td><td>Secure remote shell</td></tr>
+          <tr><td>23</td><td style="color:var(--dust)">Telnet</td><td>Unencrypted remote shell</td></tr>
+          <tr><td>21</td><td style="color:var(--dust)">FTP</td><td>File transfer (plain)</td></tr>
+          <tr><td>25</td><td style="color:var(--dust)">SMTP</td><td>Email sending</td></tr>
+          <tr><td>53</td><td style="color:var(--dust)">DNS</td><td>Name resolution</td></tr>
+          <tr><td>161</td><td style="color:var(--dust)">SNMP</td><td>Device management (UDP)</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="col-card">
+      <div class="col-card-title">Web &amp; Directory Services</div>
+      <div class="col-card-body">
+        <table class="param-table" style="margin:0">
+          <tr><td>80</td><td style="color:var(--dust)">HTTP</td><td>Web (unencrypted)</td></tr>
+          <tr><td>443</td><td style="color:var(--dust)">HTTPS</td><td>Web (TLS)</td></tr>
+          <tr><td>389</td><td style="color:var(--dust)">LDAP</td><td>Active Directory queries</td></tr>
+          <tr><td>636</td><td style="color:var(--dust)">LDAPS</td><td>LDAP over TLS</td></tr>
+          <tr><td>445</td><td style="color:var(--dust)">SMB</td><td>Windows file sharing</td></tr>
+          <tr><td>88</td><td style="color:var(--dust)">Kerberos</td><td>AD authentication tickets</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <h3>What Happens When You Run a Module</h3>
+  <div class="chain reveal">
+    <div class="chain-step">
+      <div class="chain-num">01</div>
+      <div>
+        <div class="chain-content-title">You type: use android_pentest → set operation recon → run 192.168.1.5</div>
+        <div class="chain-content-body">The secV shell reads three commands. <span class="chain-content-code">use</span> loads the module manifest from <span class="chain-content-code">tools/mobile/android/module.json</span>. <span class="chain-content-code">set</span> stores "operation=recon" in an in-memory map. <span class="chain-content-code">run</span> begins execution.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">02</div>
+      <div>
+        <div class="chain-content-title">Shell serialises parameters to one JSON line</div>
+        <div class="chain-content-body">Builds: <span class="chain-content-code">{"target":"192.168.1.5","params":{"operation":"recon"}}</span> and writes it to the module process's stdin pipe. The module reads exactly one line and blocks until it arrives.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">03</div>
+      <div>
+        <div class="chain-content-title">Module receives JSON and dispatches</div>
+        <div class="chain-content-body"><span class="chain-content-code">android_pentest.py</span> parses the line, extracts <span class="chain-content-code">operation="recon"</span>, calls the corresponding function, and runs <span class="chain-content-code">adb devices</span> and other recon tools — printing progress to stdout as it goes.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">04</div>
+      <div>
+        <div class="chain-content-title">Shell streams output and collects findings</div>
+        <div class="chain-content-body">Plain progress lines print directly to your terminal. Lines prefixed <span class="chain-content-code">FINDING:</span> are parsed as structured JSON and stored in the session. When the module exits the shell shows a finding count summary.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- BUILD A MODULE -->
+<div class="wrap" id="buildmod">
+  <div class="section-label">
+    <span class="section-num">08</span>
+    <span>For Developers</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>Build a <span class="h2-stroke">Module</span></h2>
+
+  <p class="body-text reveal">secV modules are Python scripts (Bash and Go work too) dropped into <code>tools/</code> alongside a <code>module.json</code> manifest. No shell modifications are needed. Drop the files in, type <code>reload</code> inside secV, and the module appears in tab-completion.</p>
+
+  <h3>Minimum File Layout</h3>
+<pre class="reveal"><code><span class="hl">tools/</span>
+└── network/
+    └── <span class="kw">portcheck/</span>               <span class="cm"># new module folder</span>
+        ├── <span class="st">module.json</span>            <span class="cm"># manifest (required)</span>
+        └── portcheck.py            <span class="cm"># entry-point script</span></code></pre>
+
+  <h3>module.json — Full Specification</h3>
+<pre class="reveal"><code>{
+  <span class="st">"name"</span>:        <span class="st">"portcheck"</span>,          <span class="cm">// unique module ID — matches folder name</span>
+  <span class="st">"version"</span>:     <span class="st">"1.0.0"</span>,              <span class="cm">// semver</span>
+  <span class="st">"category"</span>:   <span class="st">"network"</span>,             <span class="cm">// folder category used for grouping</span>
+  <span class="st">"description"</span>: <span class="st">"Check if a TCP port is open"</span>,
+  <span class="st">"author"</span>:      <span class="st">"you"</span>,
+  <span class="st">"executable"</span>:  <span class="st">"python3 portcheck.py"</span>, <span class="cm">// command the shell spawns</span>
+  <span class="st">"dependencies"</span>: [<span class="st">"python3"</span>],           <span class="cm">// checked with `which` at load time</span>
+  <span class="st">"optional_dependencies"</span>: {            <span class="cm">// hints shown — not required to load</span>
+    <span class="st">"nmap"</span>: <span class="st">"pacman -S nmap"</span>
+  },
+  <span class="st">"timeout"</span>: <span class="nu">120</span>,                       <span class="cm">// seconds before shell kills process</span>
+  <span class="st">"inputs"</span>: {
+    <span class="st">"port"</span>: {
+      <span class="st">"type"</span>:        <span class="st">"string"</span>,            <span class="cm">// string | int | bool | choice</span>
+      <span class="st">"required"</span>:    <span class="kw">true</span>,
+      <span class="st">"description"</span>: <span class="st">"TCP port to check"</span>
+    },
+    <span class="st">"timeout_sec"</span>: {
+      <span class="st">"type"</span>:        <span class="st">"int"</span>,
+      <span class="st">"required"</span>:    <span class="kw">false</span>,
+      <span class="st">"default"</span>:     <span class="st">"5"</span>,
+      <span class="st">"description"</span>: <span class="st">"Connection timeout in seconds"</span>
+    }
+  }
+}</code></pre>
+
+  <h3>Complete Python Module Example</h3>
+  <p class="body-text reveal">A complete, working portcheck module. The only required pattern: read one JSON line from stdin on startup, dispatch on params, print progress to stdout, prefix structured results with <code>FINDING:</code>.</p>
+
+<pre class="reveal"><code><span class="kw">#!/usr/bin/env python3</span>
+<span class="kw">import</span> json, sys, socket
+
+<span class="cm"># ── Read dispatch payload from shell ──────────────────────────────</span>
+data   = json.loads(sys.stdin.readline())
+target = data.get(<span class="st">"target"</span>, <span class="st">""</span>)
+params = data.get(<span class="st">"params"</span>, {})
+port   = int(params.get(<span class="st">"port"</span>, <span class="nu">80</span>))
+t_sec  = int(params.get(<span class="st">"timeout_sec"</span>, <span class="nu">5</span>))
+
+<span class="cm"># ── Progress lines stream directly to terminal ────────────────────</span>
+print(f<span class="st">"[*] Checking {target}:{port} (timeout={t_sec}s)"</span>, flush=<span class="kw">True</span>)
+
+<span class="kw">try</span>:
+    s = socket.create_connection((target, port), timeout=t_sec)
+    s.close()
+    status = <span class="st">"open"</span>
+    print(f<span class="st">"[+] Port {port} is OPEN"</span>, flush=<span class="kw">True</span>)
+<span class="kw">except</span> (socket.timeout, ConnectionRefusedError):
+    status = <span class="st">"closed"</span>
+    print(f<span class="st">"[-] Port {port} is CLOSED"</span>, flush=<span class="kw">True</span>)
+<span class="kw">except</span> Exception <span class="kw">as</span> e:
+    status = <span class="st">"error"</span>
+    print(f<span class="st">"[!] Error: {e}"</span>, flush=<span class="kw">True</span>)
+
+<span class="cm"># ── FINDING lines are parsed by the shell into session ────────────</span>
+print(f<span class="st">"FINDING: {json.dumps({'host': target, 'port': port, 'status': status})}"</span>)
+print(f<span class="st">"LOG: portcheck completed for {target}:{port}"</span>)</code></pre>
+
+  <h3>Bash Module Example</h3>
+<pre class="reveal"><code><span class="kw">#!/usr/bin/env bash</span>
+<span class="cm"># Read and parse the JSON dispatch payload with jq</span>
+PAYLOAD=$(cat)
+TARGET=$(echo "$PAYLOAD" | jq -r '.target')
+PORT=$(echo   "$PAYLOAD" | jq -r '.params.port // "80"')
+
+echo "[*] Checking $TARGET:$PORT"
+
+if timeout 5 bash -c "echo > /dev/tcp/$TARGET/$PORT" 2>/dev/null; then
+  STATUS="open"; echo "[+] Port $PORT OPEN"
+else
+  STATUS="closed"; echo "[-] Port $PORT CLOSED"
+fi
+
+echo "FINDING: $(jq -n --arg h "$TARGET" --arg p "$PORT" --arg s "$STATUS" \
+  '{host:$h,port:$p,status:$s}')"</code></pre>
+
+  <h3>Bare Metal OS Setup</h3>
+  <p class="body-text reveal">secV runs directly on the metal — no containers, no VMs, no abstraction layers. The Go binary and Python modules call real system tools (<code>adb</code>, <code>nmap</code>, <code>msfconsole</code>, <code>bore</code>) that must be present on the host. This section is the authoritative installation reference for every supported platform.</p>
+
+  <h3>Minimum Hardware Requirements</h3>
+  <div class="info-grid">
+    <div class="info-card reveal">
+      <div class="info-card-num">CPU</div>
+      <div class="info-card-title">x86_64 or ARM64</div>
+      <div class="info-card-body">Any modern 64-bit processor. ARM64 (Apple Silicon, Raspberry Pi 5, phone boards) is supported — build from source. No minimum clock speed; scan performance scales linearly with core count.</div>
+    </div>
+    <div class="info-card reveal">
+      <div class="info-card-num">RAM</div>
+      <div class="info-card-title">4 GB minimum · 8 GB recommended</div>
+      <div class="info-card-body">Metasploit Framework alone requires ~1 GB at rest. Running concurrent netrecon + android_pentest + msfconsole comfortably needs 6–8 GB. 4 GB is the hard floor for basic usage.</div>
+    </div>
+    <div class="info-card reveal">
+      <div class="info-card-num">DISK</div>
+      <div class="info-card-title">20 GB free</div>
+      <div class="info-card-body">Metasploit + apktool + Go toolchain + module outputs account for ~12 GB. Leave 8 GB headroom for APK builds, scan logs, DEX files, and captured media from android_pentest.</div>
+    </div>
+    <div class="info-card reveal">
+      <div class="info-card-num">NET</div>
+      <div class="info-card-title">Ethernet + Wi-Fi adapter</div>
+      <div class="info-card-body">wifi_monitor requires a wireless adapter that supports monitor mode and packet injection. Most Alfa adapters (AWUS036ACH, AWUS036NHA) work out of the box. Internal adapters rarely support monitor mode on laptops.</div>
+    </div>
+    <div class="info-card reveal">
+      <div class="info-card-num">USB</div>
+      <div class="info-card-title">USB 2.0 or higher</div>
+      <div class="info-card-body">Android pentest requires a physical USB port for ADB. badusb payload deployment requires a USB port for the HID device (Rubber Ducky, Digispark). Do not run android_pentest through a passive USB hub.</div>
+    </div>
+    <div class="info-card reveal">
+      <div class="info-card-num">OS</div>
+      <div class="info-card-title">Linux only</div>
+      <div class="info-card-body">Arch Linux / CachyOS (primary), Kali Linux (secondary), Debian/Ubuntu, Fedora, and Alpine. macOS partial (no wifi_monitor, no udev). Windows is not supported. WSL2 lacks ADB passthrough — use bare metal.</div>
+    </div>
+  </div>
+
+  <h3>System Package Installation</h3>
+  <p class="body-text reveal">Install all required system packages before running <code>install.sh</code>. The install script detects your package manager and runs the correct command automatically — but if you prefer to install manually, use the table below. All packages must be system-wide; do not use user-local or sandboxed installations.</p>
+
+  <div class="two-col reveal">
+    <div class="col-card">
+      <div class="col-card-title">Arch Linux / CachyOS / Manjaro</div>
+      <div class="col-card-body">
+<pre style="margin:0;border:none;background:none;padding:0;font-size:0.62rem;line-height:1.9"><span class="hl">sudo pacman -Syu</span>
+<span class="hl">sudo pacman -S</span> \
+  go python python-pip git \
+  android-tools apktool \
+  nmap masscan jq bore \
+  aircrack-ng iw wireless_tools \
+  metasploit frida \
+  imagemagick ffmpeg \
+  impacket netexec bloodhound \
+  python-ldap3 python-requests \
+  python-paramiko python-scapy</pre>
+      </div>
+    </div>
+    <div class="col-card">
+      <div class="col-card-title">Kali Linux / Debian / Ubuntu</div>
+      <div class="col-card-body">
+<pre style="margin:0;border:none;background:none;padding:0;font-size:0.62rem;line-height:1.9"><span class="hl">sudo apt update && sudo apt install -y</span> \
+  golang-go python3 python3-pip git \
+  adb apktool default-jdk \
+  nmap masscan jq \
+  aircrack-ng iw wireless-tools \
+  metasploit-framework \
+  frida-tools \
+  imagemagick ffmpeg \
+  impacket-scripts netexec \
+  python3-ldap3 python3-requests \
+  python3-paramiko python3-scapy
+<span class="hl">pip3 install frida-tools</span> --break-system-packages</pre>
+      </div>
+    </div>
+  </div>
+
+  <h3>Go Toolchain and Binary Compilation</h3>
+  <p class="body-text reveal">secV's shell is written in Go and must be compiled from source. The Go toolchain version must be 1.21 or higher. If your distro ships an older Go, install directly from go.dev.</p>
+
+<pre class="reveal"><code><span class="cm"># Verify Go version (need 1.21+)</span>
+<span class="hl">go version</span>
+
+<span class="cm"># Clone and build</span>
+<span class="hl">git clone</span> https://github.com/secvulnhub/secV
+<span class="hl">cd</span> secV
+<span class="hl">go build</span> -o secV main.go
+
+<span class="cm"># Make available system-wide (optional)</span>
+<span class="hl">sudo cp</span> secV /usr/local/bin/secV
+<span class="hl">sudo chmod</span> +x /usr/local/bin/secV</code></pre>
+
+  <h3>ADB and Android USB Permissions</h3>
+  <p class="body-text reveal">ADB requires a udev rule so Linux grants your user access to Android USB devices without root. Without this rule, <code>adb devices</code> returns an empty list even when the device is plugged in with USB debugging enabled.</p>
+
+<pre class="reveal"><code><span class="cm"># Write the udev rule (covers all Android vendor IDs)</span>
+<span class="hl">sudo tee</span> /etc/udev/rules.d/51-android.rules &lt;&lt;'EOF'
+SUBSYSTEM=="usb", ATTR{idVendor}=="18d1", MODE="0666", GROUP="plugdev"
+SUBSYSTEM=="usb", ATTR{idVendor}=="04e8", MODE="0666", GROUP="plugdev"
+SUBSYSTEM=="usb", ATTR{idVendor}=="22b8", MODE="0666", GROUP="plugdev"
+SUBSYSTEM=="usb", ATTR{idVendor}=="0bb4", MODE="0666", GROUP="plugdev"
+SUBSYSTEM=="usb", ATTR{idVendor}=="12d1", MODE="0666", GROUP="plugdev"
+SUBSYSTEM=="usb", ATTR{idVendor}=="2717", MODE="0666", GROUP="plugdev"
+SUBSYSTEM=="usb", ATTR{idVendor}=="1004", MODE="0666", GROUP="plugdev"
+EOF
+
+<span class="hl">sudo chmod</span> a+r /etc/udev/rules.d/51-android.rules
+<span class="hl">sudo udevadm control</span> --reload-rules
+<span class="hl">sudo udevadm trigger</span>
+
+<span class="cm"># Add your user to plugdev group (logout/login to take effect)</span>
+<span class="hl">sudo usermod</span> -aG plugdev $USER</code></pre>
+
+  <h3>Wireless Adapter — Monitor Mode Setup</h3>
+  <p class="body-text reveal">wifi_monitor requires the wireless interface to be placed in monitor mode before running. Most distros block monitor mode by default via NetworkManager. Kill interfering processes first.</p>
+
+<pre class="reveal"><code><span class="cm"># Identify your wireless interface name</span>
+<span class="hl">ip link show</span>                    <span class="cm"># look for wlan0, wlp3s0, wlan1, etc.</span>
+
+<span class="cm"># Kill processes that fight for the interface</span>
+<span class="hl">sudo airmon-ng check kill</span>
+
+<span class="cm"># Put the adapter into monitor mode</span>
+<span class="hl">sudo ip link set</span> wlan0 down
+<span class="hl">sudo iw dev</span> wlan0 set type monitor
+<span class="hl">sudo ip link set</span> wlan0 up
+
+<span class="cm"># Verify monitor mode is active</span>
+<span class="hl">iw dev</span> wlan0 info | grep type   <span class="cm"># should print: type monitor</span>
+
+<span class="cm"># Restore managed mode after testing</span>
+<span class="hl">sudo ip link set</span> wlan0 down
+<span class="hl">sudo iw dev</span> wlan0 set type managed
+<span class="hl">sudo ip link set</span> wlan0 up
+<span class="hl">sudo systemctl restart</span> NetworkManager</code></pre>
+
+  <h3>Bore — NAT Bypass Tunnel</h3>
+  <p class="body-text reveal">android_pentest WAN mode requires <code>bore</code> to punch through carrier NAT. Bore is a Rust binary — install via cargo or download the pre-built release.</p>
+
+<pre class="reveal"><code><span class="cm"># Option A — cargo (Rust must be installed)</span>
+<span class="hl">cargo install</span> bore-cli
+
+<span class="cm"># Option B — pre-built binary (Arch AUR)</span>
+<span class="hl">yay -S</span> bore-cli
+
+<span class="cm"># Option C — direct binary download</span>
+<span class="hl">curl -L</span> https://github.com/ekzhang/bore/releases/latest/download/bore-x86_64-unknown-linux-musl.tar.gz \
+  | tar xz
+<span class="hl">sudo mv</span> bore /usr/local/bin/bore
+
+<span class="cm"># Verify</span>
+<span class="hl">bore</span> --version</code></pre>
+
+  <h3>Metasploit Framework</h3>
+  <p class="body-text reveal">MSF must be initialised before secV can use it. Run the database setup once after installation. secV starts msfconsole as a subprocess and communicates via RC files — it does not use the RPC API.</p>
+
+<pre class="reveal"><code><span class="cm"># Arch</span>
+<span class="hl">sudo pacman -S</span> metasploit
+
+<span class="cm"># Kali / Debian (already included in Kali)</span>
+<span class="hl">sudo apt install</span> metasploit-framework
+
+<span class="cm"># One-time database initialisation</span>
+<span class="hl">sudo msfdb init</span>
+
+<span class="cm"># Verify MSF starts clean (Ctrl+C to exit)</span>
+<span class="hl">msfconsole</span> -q -x "version; exit"</code></pre>
+
+  <h3>install.sh — What It Actually Does</h3>
+  <div class="chain reveal">
+    <div class="chain-step">
+      <div class="chain-num">01</div>
+      <div>
+        <div class="chain-content-title">Detects package manager</div>
+        <div class="chain-content-body">Checks for <span class="chain-content-code">pacman</span>, <span class="chain-content-code">apt</span>, <span class="chain-content-code">dnf</span>, <span class="chain-content-code">zypper</span>, and <span class="chain-content-code">apk</span> in order. Runs the appropriate install command for the full dependency list in <span class="chain-content-code">rqm.md</span>.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">02</div>
+      <div>
+        <div class="chain-content-title">Compiles the Go binary</div>
+        <div class="chain-content-body">Runs <span class="chain-content-code">go build -o secV main.go</span>. If Go is not found it exits with a clear error message rather than trying to install Go itself — Go must be on PATH before running install.sh.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">03</div>
+      <div>
+        <div class="chain-content-title">Sets executable permissions on all module scripts</div>
+        <div class="chain-content-body"><span class="chain-content-code">chmod +x</span> is applied recursively to every <span class="chain-content-code">.py</span> and <span class="chain-content-code">.sh</span> file under <span class="chain-content-code">tools/</span>. Without this, the shell cannot spawn module processes.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">04</div>
+      <div>
+        <div class="chain-content-title">Writes the udev rule for ADB</div>
+        <div class="chain-content-body">Creates <span class="chain-content-code">/etc/udev/rules.d/51-android.rules</span> with major Android vendor IDs if it does not already exist, then reloads udev. Requires sudo — the script will prompt for the password.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">05</div>
+      <div>
+        <div class="chain-content-title">Runs dependency verification</div>
+        <div class="chain-content-body">Iterates every <span class="chain-content-code">module.json</span> in the repo, checks each dependency with <span class="chain-content-code">which</span>, and prints a per-module table: ✓ Found / ✗ Missing. Any Missing entry means that module's dependent operations will fail at runtime.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Testing Your Module — Bare Metal Integration</h3>
+  <p class="body-text reveal">All testing is done against real system tools on the live machine. There are no mocks, no stubs, no sandboxes. If a command works in the terminal it should work through secV — if it does not, the issue is in the JSON dispatch, the executable path, or a missing dependency.</p>
+
+  <div class="chain reveal">
+    <div class="chain-step">
+      <div class="chain-num">01</div>
+      <div>
+        <div class="chain-content-title">Pipe test directly — no secV required</div>
+        <div class="chain-content-body">From the module folder: <span class="chain-content-code">echo '{"target":"127.0.0.1","params":{"port":"22"}}' | python3 portcheck.py</span>. If output looks correct here, the module works. Bugs showing only through secV are dispatch bugs, not logic bugs.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">02</div>
+      <div>
+        <div class="chain-content-title">Verify all deps pass inside secV</div>
+        <div class="chain-content-body">Launch secV, then: <span class="chain-content-code">info portcheck</span>. Every entry in the manifest's <span class="chain-content-code">dependencies</span> array must show ✓ Found. ✗ Missing means the binary is not on PATH — install it or add it to <span class="chain-content-code">optional_dependencies</span> if it is truly optional.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">03</div>
+      <div>
+        <div class="chain-content-title">Live reload cycle</div>
+        <div class="chain-content-body">Edit the module file, then inside secV run <span class="chain-content-code">reload</span> → <span class="chain-content-code">use portcheck</span> → <span class="chain-content-code">set port 22</span> → <span class="chain-content-code">run 127.0.0.1</span>. Confirm FINDING lines appear and no Python traceback hits stdout (tracebacks break JSON parsing).</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">04</div>
+      <div>
+        <div class="chain-content-title">Cross-module regression check</div>
+        <div class="chain-content-body">After adding or changing a module, run an unrelated module (<span class="chain-content-code">use netrecon</span> → <span class="chain-content-code">run 127.0.0.1</span>) to confirm the reload did not corrupt the module registry. All previously-working modules must still load cleanly.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">05</div>
+      <div>
+        <div class="chain-content-title">Scaffold with gen_module.py</div>
+        <div class="chain-content-body"><span class="chain-content-code">python3 gen_module.py</span> asks a series of questions and generates both <span class="chain-content-code">module.json</span> and a starter Python file with the stdin read, dispatch table, and FINDING pattern already in place.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>System Health Check — Run This Before Every Session</h3>
+<pre class="reveal"><code><span class="cm"># ADB — device must appear here before any android_pentest op</span>
+<span class="hl">adb devices</span>
+
+<span class="cm"># Network interfaces — confirm monitor-mode adapter is visible</span>
+<span class="hl">ip link show</span>
+<span class="hl">iw dev</span>
+
+<span class="cm"># Metasploit DB — must be running for MSF-backed operations</span>
+<span class="hl">sudo msfdb status</span>
+
+<span class="cm"># Bore — confirm the binary is on PATH</span>
+<span class="hl">bore</span> --version
+
+<span class="cm"># secV dependency table for all modules</span>
+<span class="hl">./secV</span> -check-deps        <span class="cm"># prints ✓/✗ for every module's full dep list</span>
+
+<span class="cm"># Quick smoke test — localhost recon, should complete in under 5s</span>
+<span class="hl">echo</span> '{"target":"127.0.0.1","params":{"mode":"quick"}}' \
+  | python3 tools/network/netrecon/netrecon.py</code></pre>
+
+  <div class="callout reveal">
+    <strong>PR checklist:</strong> module.json validates · dependencies array complete · FINDING: prefix on all structured output · no hardcoded absolute paths · pipe test passes on clean system · <code>info &lt;module&gt;</code> shows all deps as Found · no tracebacks reach stdout · PR title: <code>feat(module): add &lt;name&gt; — &lt;one-line desc&gt;</code>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- VM SETUP -->
+<div class="wrap" id="vmsetup">
+  <div class="section-label">
+    <span class="section-num">09</span>
+    <span>Isolated Lab Environment</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>VM <span class="h2-stroke">Setup</span></h2>
+
+  <p class="body-text reveal">A virtual machine gives you a reproducible, snapshot-able secV environment isolated from your daily driver. Break it, snapshot it, clone it per engagement. This section builds each supported OS from ISO to a running secV install — start to finish, no assumed knowledge.</p>
+
+  <div class="callout reveal">
+    <strong>Bare metal vs VM:</strong> Bare metal gives full hardware access — real USB for ADB, physical Wi-Fi card for monitor mode. A VM is better for sandboxed development, repeatable lab builds, and contributors who cannot dedicate a machine. For active Android pentest or wifi_monitor work, prefer bare metal or USB passthrough.
+  </div>
+
+  <h3>VM Specification — All Distros</h3>
+  <div class="info-grid">
+    <div class="info-card reveal">
+      <div class="info-card-num">CPU</div>
+      <div class="info-card-title">4 virtual cores</div>
+      <div class="info-card-body">Minimum 2 vCPUs. 4 recommended — MSF handler, bore tunnel, python module, and the secV shell all compete for CPU during a live engagement.</div>
+    </div>
+    <div class="info-card reveal">
+      <div class="info-card-num">RAM</div>
+      <div class="info-card-title">8 GB</div>
+      <div class="info-card-body">Hard floor is 4 GB. Metasploit Framework uses ~1 GB at rest. Running android_pentest GUI + msfconsole + bore simultaneously needs 6–8 GB to avoid swap thrash.</div>
+    </div>
+    <div class="info-card reveal">
+      <div class="info-card-num">DISK</div>
+      <div class="info-card-title">40 GB, thin provision</div>
+      <div class="info-card-body">Use thin/dynamic allocation so the image only occupies actual data on the host. APK builds, DEX files, scan logs, and captured media can grow fast — leave headroom.</div>
+    </div>
+    <div class="info-card reveal">
+      <div class="info-card-num">NET</div>
+      <div class="info-card-title">Bridged adapter</div>
+      <div class="info-card-body">Bridged gives the VM a real LAN IP visible to target devices. NAT works for internet-only but blocks ADB-over-network and bore tunnel callbacks. Use bridged for any live testing.</div>
+    </div>
+    <div class="info-card reveal">
+      <div class="info-card-num">USB</div>
+      <div class="info-card-title">USB 3.0 passthrough</div>
+      <div class="info-card-body">For ADB: enable USB 3.0 controller and add a USB filter for your phone's vendor ID in VirtualBox, or use <code>virt-manager</code> device passthrough in QEMU/KVM. Without passthrough, <code>adb devices</code> sees nothing.</div>
+    </div>
+    <div class="info-card reveal">
+      <div class="info-card-num">BOOT</div>
+      <div class="info-card-title">UEFI</div>
+      <div class="info-card-body">Enable EFI/UEFI in the VM firmware settings. All modern ISO installers expect it. BIOS legacy mode works but produces a different partition layout — the guides below assume UEFI.</div>
+    </div>
+  </div>
+
+  <h3>Hypervisor — QEMU/KVM vs VirtualBox</h3>
+  <div class="two-col reveal">
+    <div class="col-card">
+      <div class="col-card-title">QEMU/KVM — Recommended on Linux hosts</div>
+      <div class="col-card-body">
+        Native Linux hypervisor. Near-bare-metal performance via KVM acceleration. USB passthrough via <code>virt-manager</code> device wizard. Snapshots via <code>virsh snapshot-create</code>. Best choice if your host is Linux.
+<pre style="margin:0.75rem 0 0;border:none;background:none;padding:0;font-size:0.6rem;line-height:1.85"><span class="hl">sudo pacman -S</span> qemu-full virt-manager libvirt dnsmasq
+<span class="hl">sudo systemctl enable</span> --now libvirtd
+<span class="hl">sudo usermod</span> -aG libvirt,kvm $USER</pre>
+      </div>
+    </div>
+    <div class="col-card">
+      <div class="col-card-title">VirtualBox — Cross-platform alternative</div>
+      <div class="col-card-body">
+        Works on Linux, macOS, and Windows hosts. GUI-driven setup. USB passthrough requires the VirtualBox Extension Pack (free for personal use). Snapshots via Machine → Take Snapshot.
+<pre style="margin:0.75rem 0 0;border:none;background:none;padding:0;font-size:0.6rem;line-height:1.85"><span class="cm"># Arch host</span>
+<span class="hl">sudo pacman -S</span> virtualbox virtualbox-host-modules-arch
+<span class="hl">sudo modprobe</span> vboxdrv
+<span class="hl">sudo usermod</span> -aG vboxusers $USER</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── ARCH ─── -->
+  <h3>Arch Linux — Primary Platform</h3>
+  <p class="body-text reveal">Arch is the primary secV development platform. CachyOS (a real-time kernel Arch fork) is what the core team runs. This is the most involved install but gives you the most control.</p>
+
+  <p class="body-text reveal" style="font-size:0.66rem">Download the ISO from <strong style="color:var(--ash)">archlinux.org/download</strong>. Verify the SHA256 checksum before booting. Create the VM with the specs above, attach the ISO, enable UEFI, set network to Bridged, and boot.</p>
+
+  <div class="chain reveal">
+    <div class="chain-step">
+      <div class="chain-num">01</div>
+      <div>
+        <div class="chain-content-title">Verify boot and internet</div>
+        <div class="chain-content-body"><span class="chain-content-code">loadkeys us</span> to set keyboard layout. Then <span class="chain-content-code">ping -c3 archlinux.org</span> — this must succeed before continuing. If it fails, check the VM network adapter is set to Bridged.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">02</div>
+      <div>
+        <div class="chain-content-title">Sync clock and partition</div>
+        <div class="chain-content-body"><span class="chain-content-code">timedatectl set-ntp true</span> then <span class="chain-content-code">fdisk /dev/vda</span> (QEMU) or <span class="chain-content-code">/dev/sda</span> (VirtualBox). Inside fdisk: <span class="chain-content-code">g</span> → GPT table · <span class="chain-content-code">n</span> → partition 1 +512M → type EFI System (<span class="chain-content-code">t 1</span>) · <span class="chain-content-code">n</span> → partition 2 default → Linux filesystem · <span class="chain-content-code">w</span> → write.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">03</div>
+      <div>
+        <div class="chain-content-title">Format and mount</div>
+        <div class="chain-content-body"><span class="chain-content-code">mkfs.fat -F32 /dev/vda1</span> · <span class="chain-content-code">mkfs.ext4 /dev/vda2</span> · <span class="chain-content-code">mount /dev/vda2 /mnt</span> · <span class="chain-content-code">mkdir -p /mnt/boot/efi</span> · <span class="chain-content-code">mount /dev/vda1 /mnt/boot/efi</span></div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">04</div>
+      <div>
+        <div class="chain-content-title">Install base system and generate fstab</div>
+        <div class="chain-content-body"><span class="chain-content-code">pacstrap /mnt base linux linux-firmware base-devel sudo nano</span> — takes a few minutes depending on connection speed. Then <span class="chain-content-code">genfstab -U /mnt >> /mnt/etc/fstab</span> and <span class="chain-content-code">arch-chroot /mnt</span> to enter the new system.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">05</div>
+      <div>
+        <div class="chain-content-title">Configure time zone, locale, and hostname</div>
+        <div class="chain-content-body"><span class="chain-content-code">ln -sf /usr/share/zoneinfo/Region/City /etc/localtime</span> · <span class="chain-content-code">hwclock --systohc</span> · add <span class="chain-content-code">en_US.UTF-8 UTF-8</span> to <span class="chain-content-code">/etc/locale.gen</span> then <span class="chain-content-code">locale-gen</span> · <span class="chain-content-code">echo "LANG=en_US.UTF-8" > /etc/locale.conf</span> · <span class="chain-content-code">echo "secv-arch" > /etc/hostname</span></div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">06</div>
+      <div>
+        <div class="chain-content-title">Create user with correct groups</div>
+        <div class="chain-content-body"><span class="chain-content-code">passwd</span> (set root password) · <span class="chain-content-code">useradd -m -G wheel,plugdev,audio,video,storage -s /bin/bash yourname</span> · <span class="chain-content-code">passwd yourname</span> · <span class="chain-content-code">EDITOR=nano visudo</span> → uncomment <span class="chain-content-code">%wheel ALL=(ALL:ALL) ALL</span>. The <span class="chain-content-code">plugdev</span> group is required for ADB USB access.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">07</div>
+      <div>
+        <div class="chain-content-title">Install GRUB and enable networking</div>
+        <div class="chain-content-body"><span class="chain-content-code">pacman -S grub efibootmgr networkmanager</span> · <span class="chain-content-code">grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB</span> · <span class="chain-content-code">grub-mkconfig -o /boot/grub/grub.cfg</span> · <span class="chain-content-code">systemctl enable NetworkManager</span></div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">08</div>
+      <div>
+        <div class="chain-content-title">Exit, unmount, and reboot</div>
+        <div class="chain-content-body"><span class="chain-content-code">exit</span> (leaves chroot) · <span class="chain-content-code">umount -R /mnt</span> · <span class="chain-content-code">reboot</span>. <strong style="color:var(--ash)">Remove the ISO from the virtual optical drive before the VM restarts</strong> — otherwise it will boot the installer again instead of the new system.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">09</div>
+      <div>
+        <div class="chain-content-title">Post-reboot: install all secV dependencies</div>
+        <div class="chain-content-body">Log in as your user, then run the single-line install command below. This covers every dependency for all secV modules.</div>
+      </div>
+    </div>
+  </div>
+
+<pre class="reveal"><code><span class="hl">sudo pacman -Syu</span>
+<span class="hl">sudo pacman -S</span> go python python-pip git nmap masscan android-tools \
+               apktool default-jdk metasploit bore jq nodejs \
+               aircrack-ng iw wireless_tools imagemagick ffmpeg \
+               frida python-requests python-ldap3 python-scapy \
+               python-paramiko netexec bloodhound impacket
+
+<span class="cm"># MSF database — one time only</span>
+<span class="hl">sudo msfdb init</span>
+<span class="hl">msfconsole</span> -q -x <span class="st">"version; exit"</span>
+
+<span class="cm"># ADB USB permissions</span>
+<span class="hl">sudo tee</span> /etc/udev/rules.d/51-android.rules &lt;&lt;'EOF'
+SUBSYSTEM=="usb", ATTR{idVendor}=="18d1", MODE="0666", GROUP="plugdev"
+SUBSYSTEM=="usb", ATTR{idVendor}=="04e8", MODE="0666", GROUP="plugdev"
+SUBSYSTEM=="usb", ATTR{idVendor}=="0bb4", MODE="0666", GROUP="plugdev"
+SUBSYSTEM=="usb", ATTR{idVendor}=="22b8", MODE="0666", GROUP="plugdev"
+EOF
+<span class="hl">sudo udevadm control</span> --reload-rules && <span class="hl">sudo udevadm trigger</span>
+
+<span class="cm"># Clone and install secV</span>
+<span class="hl">git clone</span> https://github.com/secvulnhub/secV && <span class="hl">cd</span> secV
+<span class="hl">bash</span> install.sh
+<span class="hl">./secV</span> --version && <span class="hl">./secV</span> -check-deps</code></pre>
+
+  <!-- ─── KALI ─── -->
+  <h3>Kali Linux</h3>
+  <p class="body-text reveal">Kali ships most offensive tools pre-installed, making it the fastest path to a working secV lab. The only manual fix required is replacing the outdated packaged Go — Kali frequently ships 1.18 or older, and secV requires 1.21+.</p>
+
+  <p class="body-text reveal" style="font-size:0.66rem">Download from <strong style="color:var(--ash)">kali.org/get-kali</strong> → Installer Images → Kali Linux 64-Bit (Installer). Create the VM with the standard specs, attach the ISO, and boot.</p>
+
+  <div class="chain reveal">
+    <div class="chain-step">
+      <div class="chain-num">01</div>
+      <div>
+        <div class="chain-content-title">Graphical installer — step by step</div>
+        <div class="chain-content-body">Select <strong style="color:var(--ash)">Graphical Install</strong> · Language: English · Location: your country · Keyboard: English (US) · Hostname: <span class="chain-content-code">secv-kali</span> · Domain: leave blank · create a username and password · Partitioning: Guided — use entire disk, all files in one partition · Software: leave defaults ticked · install GRUB to the primary drive · Finish → reboot → remove ISO.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">02</div>
+      <div>
+        <div class="chain-content-title">Replace system Go with upstream 1.21+</div>
+        <div class="chain-content-body">Kali's <span class="chain-content-code">golang-go</span> package is often 1.18 or older. Download the official Go 1.21 binary, extract to <span class="chain-content-code">/usr/local/go</span>, and add it to PATH. The commands are in the block below.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">03</div>
+      <div>
+        <div class="chain-content-title">Install bore and init MSF database</div>
+        <div class="chain-content-body">Bore is not in the Kali apt repos — download the pre-built binary. Metasploit is pre-installed but the PostgreSQL database must be initialised once with <span class="chain-content-code">sudo msfdb init</span>.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">04</div>
+      <div>
+        <div class="chain-content-title">Clone and install secV</div>
+        <div class="chain-content-body"><span class="chain-content-code">bash install.sh</span> detects apt, installs any remaining deps, compiles the binary, writes the ADB udev rule, and runs the dependency verification table.</div>
+      </div>
+    </div>
+  </div>
+
+<pre class="reveal"><code><span class="hl">sudo apt update</span> && <span class="hl">sudo apt full-upgrade</span> -y
+
+<span class="cm"># Replace outdated Go</span>
+<span class="hl">wget</span> -q https://go.dev/dl/go1.21.13.linux-amd64.tar.gz
+<span class="hl">sudo rm</span> -rf /usr/local/go
+<span class="hl">sudo tar</span> -C /usr/local -xzf go1.21.13.linux-amd64.tar.gz
+<span class="hl">echo</span> <span class="st">'export PATH=$PATH:/usr/local/go/bin'</span> >> ~/.bashrc && <span class="hl">source</span> ~/.bashrc
+<span class="hl">go version</span>   <span class="cm"># must print go1.21.x or higher</span>
+
+<span class="cm"># Bore — not in apt</span>
+<span class="hl">curl</span> -L https://github.com/ekzhang/bore/releases/latest/download/bore-x86_64-unknown-linux-musl.tar.gz \
+  | tar xz && <span class="hl">sudo mv</span> bore /usr/local/bin/
+
+<span class="cm"># MSF database initialisation (Kali ships MSF pre-installed)</span>
+<span class="hl">sudo msfdb init</span>
+<span class="hl">msfconsole</span> -q -x <span class="st">"version; exit"</span>
+
+<span class="cm"># Clone and install secV</span>
+<span class="hl">git clone</span> https://github.com/secvulnhub/secV && <span class="hl">cd</span> secV
+<span class="hl">bash</span> install.sh
+<span class="hl">./secV</span> --version && <span class="hl">./secV</span> -check-deps</code></pre>
+
+  <!-- ─── UBUNTU / DEBIAN ─── -->
+  <h3>Ubuntu / Debian</h3>
+  <p class="body-text reveal">Ubuntu 24.04 LTS and Debian 12 Bookworm are both supported. Neither ships MSF or offensive tools by default — they must be installed manually. Both also package an outdated Go that must be replaced with the upstream binary.</p>
+
+  <p class="body-text reveal" style="font-size:0.66rem">Downloads: Ubuntu 24.04 LTS from <strong style="color:var(--ash)">ubuntu.com/download/server</strong> (server ISO is lighter) · Debian 12 from <strong style="color:var(--ash)">debian.org/distrib/netinst</strong>.</p>
+
+  <div class="chain reveal">
+    <div class="chain-step">
+      <div class="chain-num">01</div>
+      <div>
+        <div class="chain-content-title">Installer — Ubuntu</div>
+        <div class="chain-content-body">Boot ISO → guided install → set hostname <span class="chain-content-code">secv-ubuntu</span> · create a user · disk: Erase disk and install (entire disk, one partition) · do not enable LVM unless you know you need it · GRUB to primary drive · reboot, remove ISO.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">01</div>
+      <div>
+        <div class="chain-content-title">Installer — Debian</div>
+        <div class="chain-content-body">Boot ISO → Graphical Install → language, keyboard, hostname <span class="chain-content-code">secv-debian</span> · root password · create user · partitioning: Guided — entire disk, all files in one partition · software selection: untick desktop environment, keep SSH server and standard utilities for a headless pentest box · GRUB to primary drive → reboot, remove ISO.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">02</div>
+      <div>
+        <div class="chain-content-title">Replace system Go and install deps</div>
+        <div class="chain-content-body">Ubuntu ships Go 1.21+ from Ubuntu 24.04 onwards — verify with <span class="chain-content-code">go version</span> before downloading. Debian 12 ships 1.19 — always replace. Use the Rapid7 MSF installer since MSF is not in apt.</div>
+      </div>
+    </div>
+  </div>
+
+<pre class="reveal"><code><span class="hl">sudo apt update</span> && <span class="hl">sudo apt full-upgrade</span> -y
+
+<span class="cm"># Replace Go if version is below 1.21</span>
+<span class="hl">go version</span>   <span class="cm"># check first — Ubuntu 24.04 may already be 1.21+</span>
+<span class="hl">wget</span> -q https://go.dev/dl/go1.21.13.linux-amd64.tar.gz
+<span class="hl">sudo rm</span> -rf /usr/local/go
+<span class="hl">sudo tar</span> -C /usr/local -xzf go1.21.13.linux-amd64.tar.gz
+<span class="hl">echo</span> <span class="st">'export PATH=$PATH:/usr/local/go/bin'</span> >> ~/.bashrc && <span class="hl">source</span> ~/.bashrc
+
+<span class="cm"># System packages</span>
+<span class="hl">sudo apt install</span> -y python3 python3-pip git nmap masscan adb apktool \
+                    default-jdk jq nodejs aircrack-ng iw wireless-tools \
+                    imagemagick ffmpeg smbclient
+
+<span class="cm"># Metasploit — Rapid7 official installer</span>
+<span class="hl">curl</span> https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb \
+  > msfinstall && <span class="hl">chmod</span> 755 msfinstall && <span class="hl">sudo</span> ./msfinstall
+<span class="hl">sudo msfdb init</span>
+
+<span class="cm"># Python packages</span>
+<span class="hl">pip3 install</span> requests ldap3 scapy paramiko impacket frida-tools bloodhound \
+             --break-system-packages
+
+<span class="cm"># Bore</span>
+<span class="hl">curl</span> -L https://github.com/ekzhang/bore/releases/latest/download/bore-x86_64-unknown-linux-musl.tar.gz \
+  | tar xz && <span class="hl">sudo mv</span> bore /usr/local/bin/
+
+<span class="cm"># Clone and install secV</span>
+<span class="hl">git clone</span> https://github.com/secvulnhub/secV && <span class="hl">cd</span> secV
+<span class="hl">bash</span> install.sh
+<span class="hl">./secV</span> --version && <span class="hl">./secV</span> -check-deps</code></pre>
+
+  <!-- ─── FEDORA ─── -->
+  <h3>Fedora</h3>
+  <p class="body-text reveal">Fedora 40+ ships a sufficiently modern Go in its official dnf repos — no manual replacement needed. Metasploit and apktool are not in the Fedora repos and require separate installation.</p>
+
+  <p class="body-text reveal" style="font-size:0.66rem">Download from <strong style="color:var(--ash)">fedoraproject.org/workstation</strong> — Fedora Workstation 40 ISO. For a headless pentest box, use the Server ISO instead.</p>
+
+  <div class="chain reveal">
+    <div class="chain-step">
+      <div class="chain-num">01</div>
+      <div>
+        <div class="chain-content-title">Anaconda graphical installer</div>
+        <div class="chain-content-body">Boot ISO → Install to Hard Drive · Language: English · Installation Summary: set Installation Destination (automatic partitioning on your disk) · Network &amp; Hostname: enable wired, hostname <span class="chain-content-code">secv-fedora</span> · Root Account: enable + set password · User Creation: create user, tick <em>Make this user administrator</em> · Begin Installation → reboot → remove ISO.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">02</div>
+      <div>
+        <div class="chain-content-title">Install apktool manually</div>
+        <div class="chain-content-body">apktool is not in the Fedora repos. Download the wrapper script and the JAR from the official GitHub release, place both in <span class="chain-content-code">/usr/local/bin/</span>, and chmod the wrapper. The commands are in the block below.</div>
+      </div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">03</div>
+      <div>
+        <div class="chain-content-title">Install Metasploit via Rapid7 installer</div>
+        <div class="chain-content-body">Metasploit is not in the Fedora dnf repos. The official Rapid7 installer handles it as a self-contained Ruby omnibus package. Run the installer script as root, then <span class="chain-content-code">sudo msfdb init</span>.</div>
+      </div>
+    </div>
+  </div>
+
+<pre class="reveal"><code><span class="hl">sudo dnf update</span> -y
+
+<span class="cm"># Core deps — Go is current in Fedora repos</span>
+<span class="hl">sudo dnf install</span> -y golang python3 python3-pip git nmap jq nodejs \
+                    aircrack-ng iw android-tools imagemagick ffmpeg
+
+<span class="cm"># apktool — not in Fedora repos, install manually</span>
+<span class="hl">wget</span> https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool
+<span class="hl">wget</span> https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.9.3.jar
+<span class="hl">sudo mv</span> apktool /usr/local/bin/ && <span class="hl">sudo mv</span> apktool_*.jar /usr/local/bin/apktool.jar
+<span class="hl">sudo chmod</span> +x /usr/local/bin/apktool
+
+<span class="cm"># Metasploit — Rapid7 official installer</span>
+<span class="hl">curl</span> https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb \
+  > msfinstall && <span class="hl">chmod</span> 755 msfinstall && <span class="hl">sudo</span> ./msfinstall
+<span class="hl">sudo msfdb init</span>
+
+<span class="cm"># Python packages</span>
+<span class="hl">pip3 install</span> requests ldap3 scapy paramiko impacket frida-tools
+
+<span class="cm"># Bore</span>
+<span class="hl">curl</span> -L https://github.com/ekzhang/bore/releases/latest/download/bore-x86_64-unknown-linux-musl.tar.gz \
+  | tar xz && <span class="hl">sudo mv</span> bore /usr/local/bin/
+
+<span class="cm"># ADB udev rule</span>
+<span class="hl">sudo tee</span> /etc/udev/rules.d/51-android.rules &lt;&lt;'EOF'
+SUBSYSTEM=="usb", ATTR{idVendor}=="18d1", MODE="0666", GROUP="plugdev"
+SUBSYSTEM=="usb", ATTR{idVendor}=="04e8", MODE="0666", GROUP="plugdev"
+SUBSYSTEM=="usb", ATTR{idVendor}=="0bb4", MODE="0666", GROUP="plugdev"
+EOF
+<span class="hl">sudo udevadm control</span> --reload-rules && <span class="hl">sudo udevadm trigger</span>
+<span class="hl">sudo usermod</span> -aG plugdev $USER
+
+<span class="cm"># Clone and install secV</span>
+<span class="hl">git clone</span> https://github.com/secvulnhub/secV && <span class="hl">cd</span> secV
+<span class="hl">bash</span> install.sh
+<span class="hl">./secV</span> --version && <span class="hl">./secV</span> -check-deps</code></pre>
+
+  <div class="callout reveal">
+    <strong>Snapshot immediately after secV installs cleanly.</strong> In QEMU/KVM: <code>virsh snapshot-create-as secv-arch clean-install</code>. In VirtualBox: Machine → Take Snapshot → "clean-install". Roll back to this snapshot before each new engagement to start from a known-good state.
+  </div>
+</div>
+
+<hr class="rule">
+
 <footer>
   <div class="foot-inner">
     <a class="foot-brand" href="../../index.html">SECVULNHUB</a>
@@ -1523,6 +2403,9 @@ sudo journalctl -u secv-c2 -f</code></pre>
       <a class="foot-link" href="#modules">Modules</a>
       <a class="foot-link" href="#architecture">Architecture</a>
       <a class="foot-link" href="#c2stack">C2 Stack</a>
+      <a class="foot-link" href="#foundations">Foundations</a>
+      <a class="foot-link" href="#buildmod">Build</a>
+      <a class="foot-link" href="#vmsetup">VM Setup</a>
     </div>
     <span class="foot-note">MIT © 2024–2026 SecVulnHub</span>
   </div>
