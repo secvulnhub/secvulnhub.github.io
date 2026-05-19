@@ -669,6 +669,14 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
         <li><div class="sidebar-sep">More</div></li>
         <li><a href="#examples">Examples</a></li>
         <li><a href="#requirements">Requirements</a></li>
+        <li><div class="sidebar-sep">Internals</div></li>
+        <li><a href="#arch-deep-dive">Architecture</a></li>
+        <li><a href="#nmap-xml">nmap XML</a></li>
+        <li><a href="#port-fingerprint">Fingerprinting</a></li>
+        <li><a href="#evasion-internals">Evasion Bytes</a></li>
+        <li><a href="#netrecon-customization">Customization</a></li>
+        <li><div class="sidebar-sep">Study</div></li>
+        <li><a href="#learning-path">Learning Path</a></li>
         <li><a href="#author">Author</a></li>
       </ul>
     </aside>
@@ -677,6 +685,47 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
     <div class="content">
 
       <!-- Overview -->
+            <!-- ═══════════════════════════════════════════════════════
+           BEGINNER STARTUP — read foundations.html first
+           ═══════════════════════════════════════════════════════ -->
+      <div id="beginner-startup" style="background:linear-gradient(135deg,#0d2018,#111a15);border:2px solid rgba(74,222,128,0.35);border-radius:12px;padding:1.6rem 2rem;margin-bottom:2.5rem">
+        <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem">
+          <div style="width:32px;height:32px;background:#1a4a2e;border:1px solid rgba(74,222,128,0.4);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div>
+            <div style="font-size:0.48rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(74,222,128,0.7)">Beginner Startup</div>
+            <div style="font-size:0.72rem;font-weight:700;color:#f0ede6">New to secV or netrecon? Start here.</div>
+          </div>
+          <a href="../foundations.html" style="margin-left:auto;font-size:0.52rem;color:#4ade80;text-decoration:none;border:1px solid rgba(74,222,128,0.35);padding:0.3rem 0.7rem;border-radius:5px;white-space:nowrap" onmouseover="this.style.background='rgba(74,222,128,0.1)'" onmouseout="this.style.background='transparent'">Foundations guide &rarr;</a>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.8rem;margin-bottom:1.2rem">
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">What you need first</div>
+            <ul style="list-style:none;font-size:0.58rem;color:#666;line-height:1.9"><li>▸ nmap installed: <code>pacman -S nmap</code></li>
+<li>▸ A target IP or range you own or have permission to scan</li>
+<li>▸ Run as root for SYN scanning: <code>sudo ./secv</code></li></ul>
+          </div>
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">Your first safe command</div>
+            <pre style="font-size:0.58rem;color:#9a9a9a;line-height:1.7;margin:0;white-space:pre-wrap">set target 127.0.0.1    # your own machine
+set operation scan
+run</pre>
+          </div>
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">Operations by difficulty</div>
+            <ul style="list-style:none;font-size:0.58rem;color:#666;line-height:1.9">
+              <li><span style="color:#4ade80">&bull;</span> <strong style="color:#bbb">Easy:</strong> scan, host_discover, port_scan</li>
+              <li><span style="color:#fbbf24">&bull;</span> <strong style="color:#bbb">Medium:</strong> service_detect, vuln_scan, iot_probe</li>
+              <li><span style="color:#f87171">&bull;</span> <strong style="color:#bbb">Advanced:</strong> cve_chain, scada_probe, full_enum</li>
+            </ul>
+          </div>
+        </div>
+        <div style="font-size:0.58rem;color:#555;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.8rem">
+          <strong style="color:#888">Key terms:</strong> <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">IP Address</a> — The numeric address of a device on a network &nbsp;·&nbsp; <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">Port</a> — A number (0–65535) identifying a service on a host &nbsp;·&nbsp; <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">nmap</a> — The network scanner that drives most netrecon operations &nbsp;·&nbsp; <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">CVE</a> — An identifier for a known vulnerability (CVE-YEAR-NUMBER)
+          &nbsp;&mdash;&nbsp;<a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">Full glossary &rarr;</a>
+        </div>
+      </div>
       <section id="overview">
         <p class="sec-label">Overview</p>
         <h2>What netrecon does</h2>
@@ -1261,6 +1310,367 @@ echo '{"target": "asn:AS15169", "params": {"max_hosts": 200}}' \
           <span class="callout-mark">ℹ</span>
           The module uses capability detection at startup. If a tool is missing, that engine is silently skipped. The scan still runs with whatever is available - you never get a hard failure from a missing optional dependency.
         </div>
+      </section>
+
+      <!-- ══════════ ARCHITECTURE DEEP DIVE ══════════ -->
+      <section id="arch-deep-dive">
+        <p class="sec-label">Internals</p>
+        <h2>Architecture Deep Dive</h2>
+        <p>
+          This chapter dissects every layer of netrecon — from nmap's raw TCP probes to how
+          XML output is parsed and enriched, how service fingerprinting works at the byte level,
+          and how to extend the module with custom detection logic.
+        </p>
+      </section>
+
+      <section id="nmap-xml">
+        <p class="sec-label">Internals</p>
+        <h2>nmap XML Output — Parsing Internals</h2>
+        <p>
+          netrecon does not parse nmap's human-readable terminal output (which changes between versions).
+          It invokes nmap with <code>-oX -</code> to receive structured XML on stdout, then uses Python's
+          <code>xml.etree.ElementTree</code> to extract port states, service versions, and OS fingerprints.
+        </p>
+        <pre><code><span class="comment">## nmap invocation by netrecon (simplified)</span>
+nmap -sV -sC -O --open -T4 -oX - &lt;targets&gt;
+     ↑     ↑   ↑  ↑    ↑   ↑
+     │     │   │  │    │   └─ output XML to stdout
+     │     │   │  │    └───── timing template 4 (aggressive)
+     │     │   │  └────────── only show open ports
+     │     │   └───────────── OS detection
+     │     └───────────────── run default NSE scripts (-sC)
+     └─────────────────────── service/version detection
+
+<span class="comment">## nmap XML structure (abbreviated)</span>
+&lt;nmaprun scanner="nmap" args="..." start="1748000000"&gt;
+  &lt;host starttime="..." endtime="..."&gt;
+    &lt;status state="up" reason="echo-reply"/&gt;
+    &lt;address addr="192.168.1.10" addrtype="ipv4"/&gt;
+    &lt;address addr="aa:bb:cc:dd:ee:ff" addrtype="mac" vendor="Apple"/&gt;
+    &lt;hostnames&gt;
+      &lt;hostname name="target.local" type="PTR"/&gt;
+    &lt;/hostnames&gt;
+    &lt;os&gt;
+      &lt;osmatch name="Linux 4.15 - 5.6" accuracy="96"&gt;
+        &lt;osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="4.X|5.X"/&gt;
+      &lt;/osmatch&gt;
+    &lt;/os&gt;
+    &lt;ports&gt;
+      &lt;port protocol="tcp" portid="22"&gt;
+        &lt;state state="open" reason="syn-ack"/&gt;
+        &lt;service name="ssh" product="OpenSSH" version="8.9" extrainfo="Ubuntu Linux" method="probed" conf="10"/&gt;
+        &lt;script id="ssh-hostkey" output="..."&gt;...&lt;/script&gt;
+      &lt;/port&gt;
+      &lt;port protocol="tcp" portid="80"&gt;
+        &lt;state state="open" reason="syn-ack"/&gt;
+        &lt;service name="http" product="nginx" version="1.24.0"/&gt;
+      &lt;/port&gt;
+    &lt;/ports&gt;
+  &lt;/host&gt;
+&lt;/nmaprun&gt;</code></pre>
+
+        <h3>How netrecon Parses the XML</h3>
+        <pre><code><span class="comment"># Simplified parser matching what netrecon does internally</span>
+import xml.etree.ElementTree as ET
+
+def parse_nmap_xml(xml_str: str) -&gt; list[dict]:
+    root = ET.fromstring(xml_str)
+    hosts = []
+
+    for host in root.findall("host"):
+        if host.find("status").get("state") != "up":
+            continue
+
+        addr  = host.find("address[@addrtype='ipv4']").get("addr")
+        mac_e = host.find("address[@addrtype='mac']")
+        mac   = mac_e.get("addr") if mac_e is not None else None
+        vendor = mac_e.get("vendor", "") if mac_e is not None else ""
+
+        hostname_e = host.find("hostnames/hostname[@type='PTR']")
+        hostname   = hostname_e.get("name") if hostname_e is not None else ""
+
+        ports = []
+        for port in host.findall("ports/port"):
+            state_e = port.find("state")
+            if state_e.get("state") != "open":
+                continue
+            svc    = port.find("service")
+            scripts = {s.get("id"): s.get("output","") for s in port.findall("script")}
+            ports.append({
+                "port":    int(port.get("portid")),
+                "proto":   port.get("protocol"),
+                "service": svc.get("name","?") if svc is not None else "?",
+                "product": svc.get("product","") if svc is not None else "",
+                "version": svc.get("version","") if svc is not None else "",
+                "scripts": scripts,
+            })
+
+        hosts.append({"ip": addr, "mac": mac, "vendor": vendor,
+                      "hostname": hostname, "ports": ports})
+    return hosts</code></pre>
+      </section>
+
+      <section id="port-fingerprint">
+        <p class="sec-label">Internals</p>
+        <h2>Service Fingerprinting — Byte-Level Probes</h2>
+        <p>
+          nmap's <code>-sV</code> flag performs <strong>service version detection</strong> by sending
+          carefully crafted probe strings to open ports and matching the responses against the
+          <code>nmap-service-probes</code> database (usually at <code>/usr/share/nmap/nmap-service-probes</code>).
+        </p>
+        <pre><code><span class="comment">## nmap-service-probes format (excerpt — HTTP probe)</span>
+Probe TCP GetRequest q|GET / HTTP/1.0\r\n\r\n|
+  <span class="comment"># nmap sends these exact bytes to TCP port:</span>
+  47 45 54 20 2F 20 48 54 54 50 2F 31 2E 30 0D 0A 0D 0A
+  G  E  T     /     H  T  T  P  /  1  .  0  \r \n \r \n
+
+match http m|^HTTP/1\.[01] \d\d\d| p/HTTP title server/ v/$1/ cpe:/a:...../
+  <span class="comment"># Pattern: look for "HTTP/1.x NNN" at start of response</span>
+  <span class="comment"># p/ = product name, v/ = version capture group, cpe/ = CVE lookup key</span>
+
+<span class="comment">## SSH fingerprint probe — nmap reads the SSH banner first</span>
+Probe TCP NULL q||
+match ssh m|^SSH-([.\d]+)-(.+)$|s p/OpenSSH/ v/$2/ i/protocol $1/
+  <span class="comment"># SSH servers send their banner without any probe:</span>
+  <span class="comment"># "SSH-2.0-OpenSSH_8.9p1 Ubuntu-3ubuntu0.6\r\n"</span>
+  <span class="comment"># nmap reads it, matches the regex, extracts version "8.9p1"</span></code></pre>
+
+        <h3>ADB TCP Fingerprint (Custom — netrecon)</h3>
+        <p>
+          netrecon's Android preset includes a custom ADB fingerprinting probe that's not in stock nmap.
+          It sends the ADB <em>CNXN handshake</em> and reads the device banner:
+        </p>
+        <pre><code><span class="comment">## ADB CNXN packet structure (sent by netrecon to port 5555)</span>
+struct adb_message {
+  uint32_t command;    <span class="comment">// 0x4e584e43 = 'CNXN' (little-endian)</span>
+  uint32_t arg0;       <span class="comment">// ADB protocol version: 0x01000001</span>
+  uint32_t arg1;       <span class="comment">// max payload size: 0x00100000 (1MB)</span>
+  uint32_t data_length;
+  uint32_t data_check; <span class="comment">// CRC32 of data field</span>
+  uint32_t magic;      <span class="comment">// command ^ 0xFFFFFFFF</span>
+  char data[];         <span class="comment">// "host::features=..." string</span>
+};
+
+<span class="comment">## Hex dump of ADB CNXN probe (24 header bytes + data):</span>
+43 4E 58 4E  01 00 00 01  00 00 10 00  &lt;len&gt; &lt;crc&gt; &lt;magic&gt;
+C  N  X  N   version      max_sz
+
+data: "host::features=shell_v2,cmd,stat_v2,ls_v2,fixed_push_mkdir\0"
+
+<span class="comment">## If port 5555 is ADB-open, device responds with CNXN containing:</span>
+data: "device::ro.product.name=Pixel7;ro.product.model=Pixel 7;..."
+<span class="comment">## netrecon parses this to extract model, Android version, serial</span></code></pre>
+      </section>
+
+      <section id="evasion-internals">
+        <p class="sec-label">Internals</p>
+        <h2>Scan Evasion — How netrecon Bypasses Firewalls</h2>
+        <p>
+          The <code>mode</code> parameter controls how netrecon evades IDS/IPS and firewall filtering.
+          Each technique manipulates different layers of the TCP/IP stack.
+        </p>
+
+        <h3>Fragmented Packets (<code>mode: fragment</code>)</h3>
+        <pre><code><span class="comment">## Normal TCP SYN to port 80:</span>
+[ IP Header ][ TCP Header (SYN) ]
+  20 bytes      20 bytes min
+
+<span class="comment">## Fragmented (nmap -f flag — 8-byte IP fragments):</span>
+Fragment 1: [ IP Header (MF=1, offset=0) ][ first 8 bytes of TCP header ]
+Fragment 2: [ IP Header (MF=0, offset=1) ][ remaining TCP header bytes ]
+
+<span class="comment">## Effect: IDS that reassembles TCP before inspecting sees the full SYN</span>
+<span class="comment">## IDS that inspects individual fragments misses the TCP header structure</span>
+<span class="comment">## Most modern IDS reassemble — use decoy or timing for better evasion</span>
+
+nmap flag: -f (8-byte frags), -ff (16-byte frags), --mtu &lt;N&gt; (custom)</code></pre>
+
+        <h3>Decoy Scan (<code>mode: decoy</code>)</h3>
+        <pre><code><span class="comment">## Decoy scan: SYN packets appear to come from multiple sources</span>
+nmap -D RND:10 &lt;target&gt;
+<span class="comment"># nmap sends SYN from 10 random IPs + your real IP, interspersed</span>
+<span class="comment"># Target's firewall log shows 11 sources — analyst can't tell which is real</span>
+
+<span class="comment">## Packet level: each "decoy" SYN has a spoofed source IP in the IP header</span>
+<span class="comment">## nmap crafts raw IP packets (requires root) with the spoofed src fields</span>
+<span class="comment">## The actual SYN-ACK replies go to the decoy IPs — real IP's SYN is buried</span></code></pre>
+
+        <h3>Idle Scan (<code>mode: idle</code>)</h3>
+        <pre><code><span class="comment">## Idle scan: your IP never appears in target's logs at all</span>
+nmap -sI &lt;zombie_ip&gt; &lt;target&gt;
+
+<span class="comment">## Mechanism (3 steps per port):</span>
+<span class="comment"># 1. Query zombie's IP ID (IPID) sequence number:</span>
+      attacker → zombie: SYN/ACK → zombie responds RST with IPID=X
+<span class="comment"># 2. Send spoofed SYN to target, pretending to be the zombie:</span>
+      attacker (spoofed=zombie) → target: SYN
+<span class="comment"># 3. If port open: target sends SYN-ACK to zombie → zombie sends RST → zombie IPID increments</span>
+      attacker → zombie: SYN/ACK → zombie RST with IPID=X+2  ← port OPEN
+<span class="comment"># If port closed: target sends RST to zombie → zombie ignores → IPID=X+1  ← port CLOSED</span>
+
+<span class="comment">## Works only if zombie has predictable IPID (older Linux/Windows hosts)</span>
+<span class="comment">## Modern hosts use random IPID — useless as zombies</span></code></pre>
+      </section>
+
+      <section id="netrecon-customization">
+        <p class="sec-label">Extend</p>
+        <h2>Customization &amp; Extension</h2>
+
+        <h3>Adding a Custom Service Detector</h3>
+        <pre><code><span class="comment"># In netrecon.py — SERVICE_DETECTORS dict</span>
+<span class="comment"># Each entry: port → function(banner: bytes) → dict | None</span>
+
+def detect_mqtt(banner: bytes) -&gt; dict | None:
+    <span class="comment"># MQTT CONNECT packet response: starts with 0x20 (CONNACK)</span>
+    if len(banner) &gt;= 4 and banner[0] == 0x20 and banner[1] == 0x02:
+        rc = banner[3]  <span class="comment"># 0=accepted, 1-5=errors</span>
+        return {
+            "service": "mqtt",
+            "auth_required": rc == 4,   <span class="comment"># 0x04 = bad credentials</span>
+            "anonymous":     rc == 0,   <span class="comment"># 0x00 = accepted without auth</span>
+            "severity": "CRITICAL" if rc == 0 else "INFO",
+            "note": "Anonymous MQTT broker — subscribe to all topics: mosquitto_sub -h HOST -t '#'"
+        }
+    return None
+
+SERVICE_DETECTORS = {
+    1883: detect_mqtt,
+    8883: detect_mqtt,   <span class="comment"># MQTT over TLS</span>
+    <span class="comment"># ... existing detectors ...</span>
+}</code></pre>
+
+        <h3>Adding a Custom Report Format</h3>
+        <pre><code><span class="comment"># netrecon.py — REPORT_FORMATS dict</span>
+def format_splunk(findings: list[dict]) -&gt; str:
+    <span class="comment">"""Output findings as Splunk-compatible key=value events."""</span>
+    lines = []
+    for f in findings:
+        kv = " ".join(f'{k}="{v}"' for k, v in f.items() if isinstance(v, (str, int)))
+        lines.append(f"source=secv_netrecon {kv}")
+    return "\n".join(lines)
+
+REPORT_FORMATS = {
+    "json":    format_json,     <span class="comment"># existing</span>
+    "html":    format_html,     <span class="comment"># existing</span>
+    "splunk":  format_splunk,   <span class="comment"># your addition</span>
+}
+
+<span class="comment"># Usage: set output_format splunk</span></code></pre>
+
+        <h3>Adding an NSE Script</h3>
+        <p>
+          netrecon passes <code>--script</code> arguments to nmap. You can bundle a custom NSE script
+          with the secV repo and reference it directly:
+        </p>
+        <pre><code><span class="comment">-- tools/netrecon/scripts/secv-banner-grab.nse</span>
+description = [[Grab raw banner from any open port for secV enrichment.]]
+author = "0xb0rn3"
+categories = {"discovery", "safe"}
+
+local nmap    = require "nmap"
+local shortport = require "shortport"
+
+portrule = shortport.port_or_service({1-65535}, nil, "tcp")
+
+action = function(host, port)
+  local sock = nmap.new_socket()
+  sock:set_timeout(3000)
+  local status, err = sock:connect(host, port)
+  if not status then return nil end
+  local banner
+  status, banner = sock:receive_lines(3)
+  sock:close()
+  if status then
+    return banner:sub(1, 256)   <span class="comment">-- trim to 256 chars</span>
+  end
+end
+
+<span class="comment">-- Reference in netrecon:</span>
+<span class="comment">-- set extra_scripts /path/to/secv-banner-grab.nse</span>
+<span class="comment">-- netrecon appends: --script /path/to/secv-banner-grab.nse to nmap args</span></code></pre>
+      </section>
+
+      <section id="learning-path">
+        <p class="sec-label">Study</p>
+        <h2>Learning Path &amp; Resources</h2>
+        <p>
+          Network reconnaissance is the first phase of every engagement. Build your knowledge
+          from TCP/IP basics through advanced evasion techniques.
+        </p>
+
+        <h3>Step 1: Networking Fundamentals</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Resource</th><th>Type</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>Professor Messer's CompTIA Network+ (free on YouTube)</td><td>Free video course</td><td>Covers TCP/IP, subnets, ports, protocols — everything netrecon operates on. Watch before touching nmap.</td></tr>
+            <tr><td>TCP/IP Illustrated Vol 1 (Stevens)</td><td>Book</td><td>The authoritative TCP/IP reference. Chapter 1-4 explain packets, routing, ports — the foundation for understanding nmap output.</td></tr>
+            <tr><td>Wireshark for beginners (free YouTube)</td><td>Free</td><td>Watch actual packets as nmap scans. Run Wireshark alongside netrecon to see every probe at the byte level.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Step 2: nmap Mastery</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Resource</th><th>Focus</th></tr></thead>
+          <tbody>
+            <tr><td>Nmap Network Scanning (Fyodor, nmap.org/book) — free online</td><td>The official nmap book by its creator. Chapter 5 (port scanning) and Chapter 8 (OS detection) are essential. netrecon is a wrapper around nmap — knowing nmap deeply means you know netrecon deeply.</td></tr>
+            <tr><td>nmap NSE scripting guide (nmap.org/book/nse.html)</td><td>Writing custom NSE scripts. Directly applicable to the netrecon customization guide above.</td></tr>
+            <tr><td>nmap cheat sheet (StationX)</td><td>Quick reference for flags. netrecon sets most flags automatically — this helps you understand which ones and why.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Step 3: Practice Labs</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Platform</th><th>Cost</th><th>Focus</th></tr></thead>
+          <tbody>
+            <tr><td>TryHackMe — "Nmap" room (free)</td><td>Free</td><td>Guided nmap exercises. Run netrecon alongside to compare outputs and understand what secV automates.</td></tr>
+            <tr><td>TryHackMe — "Passive Recon" and "Active Recon" rooms</td><td>Free</td><td>Cover DNS enumeration, WHOIS, Shodan — all integrated into netrecon's web enumeration mode.</td></tr>
+            <tr><td>HackTheBox — Any machine (scan phase)</td><td>Free tier</td><td>Every HackTheBox machine starts with a reconnaissance phase. Use netrecon instead of running nmap manually — compare findings.</td></tr>
+            <tr><td>Vulnhub machines</td><td>Free</td><td>Download VMs and scan them with netrecon. The "android" preset is great for local Android lab machines.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Step 4: Deep Reference</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Resource</th><th>Use For</th></tr></thead>
+          <tbody>
+            <tr><td>Shodan (shodan.io)</td><td>Internet-wide passive reconnaissance — search for devices by banner, port, OS. Complements netrecon's active scanning.</td></tr>
+            <tr><td>Censys (censys.io)</td><td>Similar to Shodan. Excellent for finding SSL certs, open ports across IP ranges before active scanning.</td></tr>
+            <tr><td>HackTricks — Network Services Pentesting (book.hacktricks.xyz)</td><td>Port-by-port exploitation guide. Use it alongside netrecon's findings — when netrecon finds port 21 (FTP), HackTricks tells you how to test it.</td></tr>
+            <tr><td>PTES Technical Guidelines (pentest-standard.org)</td><td>Penetration Testing Execution Standard — professional recon methodology that netrecon implements.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Practice Path</h3>
+        <pre><code><span class="comment">## Progression: from first scan to professional recon</span>
+
+Week 1: Your First Scan
+  Setup: lab-setup.html — Kali + Metasploitable on host-only network
+  Run: netrecon with default settings against 192.168.56.0/24
+  Learn: read every finding — look up every open port in HackTricks
+
+Week 2: Service Fingerprinting
+  Target: Metasploitable 2
+  Run: netrecon with service_scan preset
+  Manual: replicate what netrecon does with nmap -sV -sC -O directly
+  Compare: outputs — understand what each nmap flag adds
+
+Week 3: Evasion Modes
+  Setup: a pfSense firewall VM between Kali and targets
+  Test: each evasion mode (fragment, decoy, idle)
+  Monitor: pfSense logs — which techniques get logged vs evade
+
+Week 4: Android Recon
+  Run: netrecon with android preset against your lab network
+  Connect: an Android device with ADB-WiFi enabled (port 5555)
+  Observe: how netrecon detects and fingerprints the ADB service</code></pre>
       </section>
 
       <!-- Author -->

