@@ -877,6 +877,23 @@ footer {
 
 <hr class="rule">
 
+<!-- COMPLETE MANUAL BANNER -->
+<div class="wrap" style="padding-top:2.5rem;padding-bottom:0">
+  <a href="manual.html" style="display:flex;align-items:center;gap:1.25rem;background:var(--slab);border:var(--bw) solid var(--wall);border-top:var(--bw) solid var(--ash);border-radius:var(--r);padding:1.5rem 1.75rem;text-decoration:none;transition:border-color 0.18s,box-shadow 0.18s;margin-bottom:0" onmouseover="this.style.borderColor='var(--ash)';this.style.boxShadow='0 8px 32px rgba(0,0,0,0.5)'" onmouseout="this.style.borderColor='var(--wall)';this.style.boxShadow='none'">
+    <div style="width:44px;height:44px;background:var(--pit);border:1px solid var(--stone);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ash)" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    </div>
+    <div style="flex:1">
+      <div style="font-size:0.44rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--dust);margin-bottom:0.25rem">Complete Learning Manual - 12000+ lines</div>
+      <div style="font-size:0.82rem;font-weight:700;color:var(--white)">secV Complete Manual v2.4.3 - All Foundations, Languages, Hardware, AI/LLM, Tools</div>
+      <div style="font-size:0.58rem;color:var(--fog);margin-top:0.15rem">CPU internals - x86 ASM - buffer overflows - Python/Bash/Go/C/PowerShell/JS/PHP - hardware - USB/HID - ARM/Android/iOS - steganography - fuzzing - pentest toolchain - LLM security - CTF prep</div>
+    </div>
+    <div style="font-size:0.9rem;color:var(--dust);flex-shrink:0">→</div>
+  </a>
+</div>
+
+<hr class="rule">
+
 <!-- MODULES -->
 <div class="wrap" id="modules">
   <div class="section-label">
@@ -897,7 +914,7 @@ footer {
     <div class="banner-meta">
       <span>
         <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        v2.4.2 Codename: Tauri · Rolling
+        v2.4.3 Codename: Tauri · Rolling
       </span>
       <span>
         <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
@@ -923,7 +940,7 @@ footer {
       <span class="mod-status status-stable">Stable</span>
       <div class="mod-name">android_pentest</div>
       <div class="mod-category">Mobile · Android</div>
-      <div class="mod-desc">Complete Android pentest suite — 39 operations across static analysis, smali patching, boot receiver persistence, WAN C2 with DexClassLoader staging, Frida/Objection instrumentation, QR delivery, live screen mirror, camera stream, mic recording, and a full web GUI (mode=gui) including the C2 dashboard and Live Media tab. v2.4.2</div>
+      <div class="mod-desc">Complete Android pentest suite — 39 operations across static analysis, smali patching, boot receiver persistence, WAN C2 with DexClassLoader staging, Frida/Objection instrumentation, QR delivery, live screen mirror, camera stream, mic recording, and a full web GUI (mode=gui) including the C2 dashboard and Live Media tab. v2.4.3</div>
       <div class="mod-tags">
         <span class="tag">adb</span><span class="tag">apktool</span><span class="tag">dexclassloader</span><span class="tag">bore</span><span class="tag">frida</span><span class="tag">qr</span><span class="tag">live-media</span>
       </div>
@@ -1038,6 +1055,16 @@ footer {
       </div>
       <span class="mod-arrow">→</span>
     </a>
+
+    <div class="module-card reveal">
+      <span class="mod-status status-stable">Stable</span>
+      <div class="mod-name">bitlocker</div>
+      <div class="mod-category">Hardware · Physical</div>
+      <div class="mod-desc">Full-chain BitLocker bypass module. USB deploy, YellowKey attack, BitPixie (CVE-2023-21563), cold boot memory extraction, TPM LPC bus sniffing, DMA via PCILeech, AD recovery key extraction, and Eclipse chain payload generation. Physical access exploitation suite.</div>
+      <div class="mod-tags">
+        <span class="tag">bitlocker</span><span class="tag">tpm</span><span class="tag">dma</span><span class="tag">cold-boot</span><span class="tag">pcileech</span><span class="tag">cve-2023-21563</span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1396,9 +1423,15 @@ sudo journalctl -u secv-c2 -f</code></pre>
   <div class="shell-section reveal">
     <div class="shell-header">
       <span class="shell-title">Module Commands</span>
-      <span class="shell-version">v2.4.2 tauri</span>
+      <span class="shell-version">v2.4.3 tauri</span>
     </div>
     <table class="cmd-table">
+      <tr class="cmd-group-header"><td colspan="2">v2.4.3 New Features</td></tr>
+      <tr><td>setg &lt;param&gt; &lt;value&gt;</td><td>Set a global parameter that persists across all module switches for the session</td></tr>
+      <tr><td>unsetg &lt;param&gt;</td><td>Clear a global parameter. <code>show global</code> lists all active globals.</td></tr>
+      <tr><td>run (no target)</td><td>Bare run reuses the last target automatically - no need to retype the IP</td></tr>
+      <tr><td>options</td><td>Shortcut for <code>show options</code></td></tr>
+      <tr><td>modules</td><td>Shortcut for <code>show modules</code></td></tr>
       <tr class="cmd-group-header"><td colspan="2">Loading Modules</td></tr>
       <tr><td>use &lt;module&gt;</td><td>Load a module by name. Tab completes module names from the tools/ discovery scan.</td></tr>
       <tr><td>back</td><td>Unload the current module and clear params. Equivalent to <code>cd ..</code></td></tr>
